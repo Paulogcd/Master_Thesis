@@ -9,7 +9,7 @@ link-external-newwindow: true
 
 project:
   type: website
-  output-dir: docs
+  output-dir: ../docs
 
 website:
   title: "Modelling climate impact on economy through health"
