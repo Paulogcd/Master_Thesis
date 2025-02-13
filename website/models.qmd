@@ -1,0 +1,17 @@
+---
+title: "Models"
+---
+
+This page is under construction.
+
+This webpage is dedicated to the presentation of the models I worked on within my Master Thesis.
+
+## Tractable model 1
+
+This model is currently under work. 
+Its aim is to be a simplified version of the general framework I want to use. 
+
+[It can be found here](/resources/Tractable_model_1.html). 
+
+
+

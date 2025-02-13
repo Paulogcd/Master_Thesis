@@ -1,0 +1,32 @@
+# Allows the displaying of emojis
+from: markdown+emoji
+
+# Allows the readers to click on images to expand them 
+lightbox: true
+
+# Open the link in another browser tab
+link-external-newwindow: true
+
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Modelling climate impact on economy through health"
+  navbar:
+    background-color: "#454545"
+    title: false
+    left:
+      - href: index.qmd
+        text: Home
+      - models.qmd
+      - about.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+
+
