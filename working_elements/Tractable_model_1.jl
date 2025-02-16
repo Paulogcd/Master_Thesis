@@ -447,6 +447,9 @@ c^{*}=l^{*}\cdot z \iff \left(\frac{z}{\xi}\right)^{\frac{1}{\rho}} = l^{*}\cdot
 $$\iff l^{*}=z^{\frac{1-\rho}{\rho}}\cdot\xi^{-\frac{1}{\rho}}$$
 "
 
+# ╔═╡ 49d95aaa-b5cf-469c-b235-c1eb1ce776b8
+md"In this one period context, the agent works so that the marginal benefit of consumption is equal to the marginal disutility of working."
+
 # ╔═╡ 2d79fea9-af26-4ef9-b938-e40a868f5995
 md" ## In multiple periods
 
@@ -485,7 +488,7 @@ md"
 
 Let us take a sequential form approach.
 
-Assuming the agent maximises over $T$ periods, the discounted total utility the agent tries to maximise is : 
+Assuming the agent maximises over $T$ periods from their 18-th years, the discounted total utility the agent tries to maximise is : 
 
 $$U = \max_{\{c_t,l_t,s_{t+1}\}_{t=18}^{T}}\quad\sum^{T}_{t=18}\beta^{t-18} \cdot \mathbb{E}\left[\frac{c_{t}^{1-\rho}}{1-\rho}-l_{t}\cdot\xi_{t}\right]$$
 
@@ -502,10 +505,34 @@ $$s_{t}\geq 0\quad \forall t \in [\![18,T]\!]$$
 We can therefore write the Lagrangien, such that:
 
 $$\begin{split}
-\mathcal{L}(c_t,l_t,s_{t+1},\lambda_{t},\gamma_{t})=&\sum^{T}_{t=18}\beta^{t-18} \cdot \mathbb{E}\left[\frac{c_{t}^{1-\rho}}{1-\rho}-l_{t}\cdot\xi_{t}\right]\\+&\lambda_{t}\cdot(l_{t}\cdot z_{t}+s_{t}-c_{t}-s_{t+1})\\+&\gamma_{t}(s_{t}-0)
+\mathcal{L}(c_t,l_t,s_{t+1},\lambda_{t},\gamma_{t})=&\sum^{T}_{t=18}\beta^{t-18} \cdot \mathbb{E}[\frac{c_{t}^{1-\rho}}{1-\rho}-l_{t}\cdot\xi_{t}\\+&\lambda_{t}\cdot(l_{t}\cdot z_{t}+s_{t}-c_{t}-s_{t+1})\\+&\gamma_{t}(s_{t}-0)]
 \end{split}$$
+"
 
-The FOC are : 
+# ╔═╡ b7e9a54c-a813-4864-bcf7-8437c4c6d69b
+md"The F.O.C.s are : 
+
+$$\newcommand{\pder}[2]{\frac{\partial#1}{\partial#2}}$$
+
+$$
+\begin{cases}
+\pder{\mathcal{L}}{c_{t}} = \beta^{t-18}\cdot\left(c_{t}^{-\rho}-\lambda_{t}\right) = 0\\
+\pder{\mathcal{L}}{l_{t}} = \beta^{t-18}\cdot\left(-\xi_{t}+\lambda_{t}\cdot z_{t}\right) = 0\\
+\pder{\mathcal{L}}{s_{t+1}} = \beta^{t-18}\cdot(-\lambda_{t}) + \beta^{t-17}\cdot\mathbb{E}\left[\lambda_{t+1}+\gamma_{t+1}\right] = 0\\
+\end{cases}$$
+$$\iff$$
+$$\begin{cases}
+c_{t}^{-\rho} = \lambda_{t} \\
+c_{t}^{-\rho}\cdot z_{t} = \xi_{t} \\
+c_{t}^{-\rho} = \beta\cdot \mathbb{E}\left[c_{t+1}^{-\rho}+\gamma_{t+1}\right]
+\end{cases}$$
+
+At the optimum : 
+
+- The marginal increase of the budget is equal to the marginal benefit of consuming one more unit, i.e. $c_{t}^{-\rho}$ utility.
+- The marginal benefit of working is equal to the marginal disutility of working. 
+- The marginal benefit of consuming at a period is equal to the discounted expected marginal benefit of consuming in the next period (assuming that $\gamma_t = 0, \forall t$).
+
 "
 
 # ╔═╡ 182d2fe5-14f8-4262-b8cf-672f8a1c6f9b
@@ -513,13 +540,13 @@ md"
 
 ### Recursive form
 
-We can define our maximisation program as : 
+We can let our Bellman equation be such as: 
 
 $$\begin{split}
 V(h,w,\text{age},s,z) = \max_{c,l,s'}\{u(c,h,l,w) + \beta\cdot\mathbb{E}_{w,h,ζ}\left[V(h',w',\text{age}',s',z')\right]\} \quad (1)
 \end{split}$$
 
-Let us define : $$\mathbb{S}_{t}\equiv (h_t,w_t,\text{age}_t,s_{t},z_{t})$$. 
+Let us define : $$\mathbb{S}\equiv (h,w,\text{age},s,z)$$. 
 
 We can now write $$(1)$$ such as :
 
@@ -532,17 +559,9 @@ subject to :
 
 $$c + s' \leq l\cdot z + s\quad (2) $$ 
 
-With $s_{t}$ being the savings transferred to period $t$.
+With $s$ being the savings transferred to period $t$ such that: 
 
-$$s_t\geq0 \quad \quad \quad \quad \quad \quad (3)$$
-
-$$z = f(h,w,age)+ X \quad (4)$$
-
-Such that : 
-
-$$f(h,w,\text{age})=\text{age}^{\alpha_4}-\alpha_5\cdot\text{age}\cdot\mathbb{1}\{h=b\}-\alpha_6\cdot\text{age}\cdot\mathbb{1}\{w=d\}$$
-
-$$X\sim \mathcal{N}(0,1)$$
+$$s\geq0 \quad \quad \quad \quad \quad \quad (3)$$
 
 The equation $(2)$ being the budget constraint, and $(3)$ translating the fact that agents do not borrow in this model. The equation $(4)$ is the productivity of the agent.
 
@@ -564,13 +583,13 @@ V(\mathbb{S}) = \max_{l,s'}\{u(l\cdot z +s- s',h,l,w) + \beta\cdot\mathbb{E}_{w,
 
 # ╔═╡ 496514b8-bcaa-4c06-844e-082eb4dfdbca
 md"
-Writing explicitly the Bellman equation, we have: 
+Writing explicitly the utility function, we have: 
 
 $$\newcommand{\disutility}{l \cdot (\phi_{l}+\phi_{w}\cdot\mathbb{1}\{w=d\}+\phi_{h}\cdot\mathbb{1}\{h=b\})}$$
 $$\newcommand{\utility}{\frac{(l\cdot z +s- s')^{1-\rho}}{1-\rho}-\disutility }$$
 
 $$\begin{split}
-V(\mathbb{S}) = & \max_{l,s'}\{\frac{(l\cdot z +s- s')^{1-\rho}}{1-\rho}-l\cdot\xi+\beta\cdot\mathbb{E}_{w,h,ζ}\left[V(\mathbb{S}')\right]\} \quad (1)
+V(\mathbb{S}) = & \max_{l,s'}\Bigl\{\frac{(l\cdot z +s- s')^{1-\rho}}{1-\rho}-l\cdot\xi+\beta\cdot\mathbb{E}_{w,h,ζ}\left[V(\mathbb{S}')\right]\Bigl\} \quad (1)
 \end{split}$$
 
 "
@@ -2292,9 +2311,11 @@ version = "1.4.1+2"
 # ╟─561b8929-c453-4a75-a432-f29031b663ac
 # ╠═5c105e50-d1b8-4af3-b510-588c1dbbc40e
 # ╟─f73b41a5-01f5-4694-b34b-a4648d18fc91
-# ╟─3100a50b-f4f7-4cf9-8c74-edb2b5579779
+# ╠═3100a50b-f4f7-4cf9-8c74-edb2b5579779
+# ╟─49d95aaa-b5cf-469c-b235-c1eb1ce776b8
 # ╟─2d79fea9-af26-4ef9-b938-e40a868f5995
 # ╟─81ab2269-9a8d-4626-9f1f-4a193f4e7fb3
+# ╠═b7e9a54c-a813-4864-bcf7-8437c4c6d69b
 # ╟─182d2fe5-14f8-4262-b8cf-672f8a1c6f9b
 # ╟─76a99e4f-1287-4fb6-9873-1ffc5db9d88e
 # ╠═496514b8-bcaa-4c06-844e-082eb4dfdbca
