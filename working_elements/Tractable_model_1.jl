@@ -1,17 +1,19 @@
 ### A Pluto.jl notebook ###
-# v0.19.47
+# v0.20.4
 
 using Markdown
 using InteractiveUtils
 
 # This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
 macro bind(def, element)
+    #! format: off
     quote
         local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
         local el = $(esc(element))
         global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
         el
     end
+    #! format: on
 end
 
 # ╔═╡ 0d381a45-b8a7-4ce0-a904-b238fd26902d
@@ -396,22 +398,120 @@ begin
 	Plots.title!("Evolution of population over time.")
 end
 
-# ╔═╡ 182d2fe5-14f8-4262-b8cf-672f8a1c6f9b
-md"
+# ╔═╡ f73b41a5-01f5-4694-b34b-a4648d18fc91
+md"# 5. Maximisation programs"
 
-# 5. Maximisation program 
+# ╔═╡ 3100a50b-f4f7-4cf9-8c74-edb2b5579779
+md"## In one period
+
+Considering a one period problem, we have : 
+
+Utility function : 
+
+$$u(c,l) = \frac{c^{1-\rho}}{1-\rho} - l\cdot \xi$$
+
+Budget constraint : 
+
+$$c \le l\cdot z$$
+
+The Lagrangien is : 
+
+$$\mathcal{L}(c,l,\lambda) = \frac{c^{1-\rho}}{1-\rho} - l\cdot \xi + \lambda \cdot(l\cdot z - c)$$
+
+The FOC are : 
+
+$$\begin{align*}
+\begin{cases}
+\frac{\partial \mathcal{L}}{\partial c} = c^{-\rho}-\lambda = 0 \\
+\frac{\partial \mathcal{L}}{\partial l} = -\xi + \lambda\cdot z = 0
+\end{cases}
+&  \iff              &
+\begin{cases}
+c^{-\rho}=\lambda \\
+\xi=\lambda\cdot z
+\end{cases}\\
+\end{align*}$$
+
+$$\implies$$
+
+$$c^{-\rho} \cdot z = \xi$$
+$$\iff$$
+$$c^{*}=\left(\frac{\xi}{z}\right)^{-\frac{1}{\rho}}=\left(\frac{z}{\xi}\right)^{\frac{1}{\rho}}$$
+
+The first FOC implies that $\lambda>0$, meaning that the budget constraint binds. Therefore, we get :
+
+$$\begin{align*}
+c^{*}=l^{*}\cdot z \iff \left(\frac{z}{\xi}\right)^{\frac{1}{\rho}} = l^{*}\cdot z
+\end{align*}$$
+
+$$\iff l^{*}=z^{\frac{1-\rho}{\rho}}\cdot\xi^{-\frac{1}{\rho}}$$
+"
+
+# ╔═╡ 2d79fea9-af26-4ef9-b938-e40a868f5995
+md" ## In multiple periods
+
+Now, let us assume that the agents live several periods and can transmit savings from one period to the next.
 
 First, we can define the utility function of the agent : 
 
-$$u(c,h,l,w)=\frac{c^{1-\rho}}{1-\rho}-\phi(h,l,w)$$
+$$u(c,l,w,h)=\frac{c^{1-\rho}}{1-\rho}-\phi(l,w,h)$$
 
 With $$\phi$$ being the disutility function of working, such that : 
 
-$$\phi(h,l,w) = \phi_{l}\cdot l+\phi_{w}\cdot l\cdot\mathbb{1}\{w=d\}+\phi_{h}\cdot l\cdot\mathbb{1}\{h=b\}$$
+$$\phi(l,w,h) = \phi_{l}\cdot l+\phi_{w}\cdot l\cdot\mathbb{1}\{w=d\}+\phi_{h}\cdot l\cdot\mathbb{1}\{h=b\}$$
 
 $$\iff$$
 
-$$\phi(h,l,w) = l \cdot (\phi_{l}+\phi_{w}\cdot\mathbb{1}\{w=d\}+\phi_{h}\cdot\mathbb{1}\{h=b\})$$
+$$\phi(l,w,h) = l \cdot (\phi_{l}+\phi_{w}\cdot\mathbb{1}\{w=d\}+\phi_{h}\cdot\mathbb{1}\{h=b\})$$
+
+For notation purposes, let us define:
+
+$$\xi\equiv (\phi_{l}+\phi_{w}\cdot\mathbb{1}\{w=d\}+\phi_{h}\cdot\mathbb{1}\{h=b\})$$
+
+We can thus rewrite: 
+
+$$\phi(l,w,h) = l\cdot\xi$$
+
+And therefore : 
+
+$$u(c,l,w,h) = \frac{c^{1-\rho}}{1-\rho}-l\cdot\xi$$
+
+
+"
+
+# ╔═╡ 81ab2269-9a8d-4626-9f1f-4a193f4e7fb3
+md"
+### Sequential form
+
+Let us take a sequential form approach.
+
+Assuming the agent maximises over $T$ periods, the discounted total utility the agent tries to maximise is : 
+
+$$U = \max_{\{c_t,l_t,s_{t+1}\}_{t=18}^{T}}\quad\sum^{T}_{t=18}\beta^{t-18} \cdot \mathbb{E}\left[\frac{c_{t}^{1-\rho}}{1-\rho}-l_{t}\cdot\xi_{t}\right]$$
+
+They are subject to a budget constraint such that : 
+
+$$c_{t}+s_{t+1}\le l_{t}\cdot z_{t}+s_{t}$$
+
+The sum of current consumption and savings transmitted to the next period must be less than the sum of the current labor income and the initial wealth, from the savings of last period.
+
+Let us also impose that the agents cannot borrow, such that : 
+
+$$s_{t}\geq 0\quad \forall t \in [\![18,T]\!]$$
+
+We can therefore write the Lagrangien, such that:
+
+$$\begin{split}
+\mathcal{L}(c_t,l_t,s_{t+1},\lambda_{t},\gamma_{t})=&\sum^{T}_{t=18}\beta^{t-18} \cdot \mathbb{E}\left[\frac{c_{t}^{1-\rho}}{1-\rho}-l_{t}\cdot\xi_{t}\right]\\+&\lambda_{t}\cdot(l_{t}\cdot z_{t}+s_{t}-c_{t}-s_{t+1})\\+&\gamma_{t}(s_{t}-0)
+\end{split}$$
+
+The FOC are : 
+"
+
+# ╔═╡ 182d2fe5-14f8-4262-b8cf-672f8a1c6f9b
+md"
+
+### Recursive form
 
 We can define our maximisation program as : 
 
@@ -430,7 +530,7 @@ V(\mathbb{S}) = \max_{c,l,s'}\{u(c,h,l,w) + \beta\cdot\mathbb{E}_{w,h,\zeta}\lef
 
 subject to : 
 
-$$c_t + s_{t+1} \leq l_t\cdot z_t + s_{t}\quad (2) $$ 
+$$c + s' \leq l\cdot z + s\quad (2) $$ 
 
 With $s_{t}$ being the savings transferred to period $t$.
 
@@ -464,22 +564,14 @@ V(\mathbb{S}) = \max_{l,s'}\{u(l\cdot z +s- s',h,l,w) + \beta\cdot\mathbb{E}_{w,
 
 # ╔═╡ 496514b8-bcaa-4c06-844e-082eb4dfdbca
 md"
-Writing the full program, we have: 
+Writing explicitly the Bellman equation, we have: 
 
 $$\newcommand{\disutility}{l \cdot (\phi_{l}+\phi_{w}\cdot\mathbb{1}\{w=d\}+\phi_{h}\cdot\mathbb{1}\{h=b\})}$$
 $$\newcommand{\utility}{\frac{(l\cdot z +s- s')^{1-\rho}}{1-\rho}-\disutility }$$
 
 $$\begin{split}
-V(\mathbb{S}) = & \max_{l,s'}\{\utility \\ + & \beta\cdot\mathbb{E}_{w,h,ζ}\left[V(\mathbb{S}')\right]\} \quad (1)
+V(\mathbb{S}) = & \max_{l,s'}\{\frac{(l\cdot z +s- s')^{1-\rho}}{1-\rho}-l\cdot\xi+\beta\cdot\mathbb{E}_{w,h,ζ}\left[V(\mathbb{S}')\right]\} \quad (1)
 \end{split}$$
-
-For notation purposes, let us define:
-
-$$\xi\equiv (\phi_{l}+\phi_{w}\cdot\mathbb{1}\{w=d\}+\phi_{h}\cdot\mathbb{1}\{h=b\})$$
-
-We can thus rewrite : 
-
-$$u(c,h,l,w) = \frac{(l\cdot z +s- s')^{1-\rho}}{1-\rho}-l\cdot\xi$$
 
 "
 
@@ -2199,9 +2291,13 @@ version = "1.4.1+2"
 # ╠═7804dcba-6adb-4d3b-9328-32a734acfacb
 # ╟─561b8929-c453-4a75-a432-f29031b663ac
 # ╠═5c105e50-d1b8-4af3-b510-588c1dbbc40e
+# ╟─f73b41a5-01f5-4694-b34b-a4648d18fc91
+# ╟─3100a50b-f4f7-4cf9-8c74-edb2b5579779
+# ╟─2d79fea9-af26-4ef9-b938-e40a868f5995
+# ╟─81ab2269-9a8d-4626-9f1f-4a193f4e7fb3
 # ╟─182d2fe5-14f8-4262-b8cf-672f8a1c6f9b
 # ╟─76a99e4f-1287-4fb6-9873-1ffc5db9d88e
-# ╟─496514b8-bcaa-4c06-844e-082eb4dfdbca
+# ╠═496514b8-bcaa-4c06-844e-082eb4dfdbca
 # ╟─4219f0fe-bd6a-45c2-9ae9-2113a65d9e9e
 # ╟─2acf58c3-3227-4ee6-a72e-1422accb1b98
 # ╟─2711fa92-9877-4441-8456-9c6c40e3fcad
