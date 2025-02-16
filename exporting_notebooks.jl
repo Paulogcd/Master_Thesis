@@ -1,4 +1,6 @@
 
+using Pkg
+Pkg.activate("")
 using PlutoSliderServer
 
 # To export Notebook : 
