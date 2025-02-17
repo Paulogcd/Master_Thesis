@@ -16,230 +16,72 @@ macro bind(def, element)
     #! format: on
 end
 
-# ╔═╡ 0d381a45-b8a7-4ce0-a904-b238fd26902d
+# ╔═╡ 3d96ab22-5640-4a2b-8519-a6fb59b84aeb
 begin
+ 	using PlutoUI
 	using Plots
-	using PlutoUI
-	using Distributions
-	using PlotlyJS
-	using DataFrames
-	using Dates
 end
 
-# ╔═╡ d532165b-d442-4114-a3b9-f866a281c67f
-md"# Framework Model 1
-
-Author: Paulo GUGELMO CAVALHEIRO DIAS
-
-Date: $(monthname(today())) $(day(today())), $(year(today()))
-
-This model aims to set the basis for a further modelisation of the relationship between health and the economic choices of the agents.
-"
-
-# ╔═╡ ab992a5b-6a2c-4457-a651-c6818df8f5e2
-TableOfContents()
-
-# ╔═╡ 0ef87638-e32f-11ef-1ac0-094df082b41c
-md"# Summary
-
-1. Health 
-2. Weather
-3. Productivity
-4. Survival
-5. Maximization Programm 
-6. Other
-"
-
-# ╔═╡ 4c2a0eb5-6bf6-4b8b-9c1d-51107af68743
-md"# 1. Health"
-
-# ╔═╡ 1d30ee07-9993-4cdf-bea0-f318b5461079
-md"
-Health can be either bad or good :
-
-$$h\in\{good, bad\}=\{g,b\}$$
-
-Let us suppose the following transition matrix : 
-
-$$\pi=\begin{pmatrix} p(g|g) & p(b|g) \\ p(g|b) & p(b|b) \end{pmatrix}=\begin{pmatrix} \alpha_1 & 1-\alpha_1 \\ \alpha_2 & 1-\alpha_2 \end{pmatrix}$$
-
-"
-
-# ╔═╡ 33467e51-029b-4fc5-a889-ee8a6e108a7e
-# Good health parameter 1 : 
-@bind α_1 Slider(0:0.001:1, default=0.85)
-
-# ╔═╡ 95d6c246-2773-4141-b53a-428364936b8a
-# Good health parameter 2 : 
-@bind α_2 Slider(0:0.001:1, default=0.35)
-
-# ╔═╡ f2dcf131-4c96-4259-85eb-c78f2ea1b700
-(α_1,α_2)
-
-# ╔═╡ 9cce5faf-f860-494d-8de7-87f0c698e1b7
-# Probability of being in good health next period : 
-health_probability(h) = h == "g" ? α_1 : α_2
-
-# ╔═╡ 811aaa25-8e2b-4aea-8d2b-ec0a86432f7d
-health_probability("b")
-
-# ╔═╡ 85a3ac63-51c0-4908-99d2-7e827e7f5739
-health_probability("g")
-
-# ╔═╡ ea3e3f1f-6e07-470f-bd6c-bb7e12bb9ed8
-md" 
-Let us also define the following indicator functions : 
-"
-
-# ╔═╡ 22220a91-4f5a-4fdc-bd84-f0d79f911034
-begin
-	indicator_function_bad_health(h) = h == "b" ? 1 : 0 
-	# indicator_function_bad_health("b")
-	indicator_function_weather_deviation(w) = w == "d" ? 1 : 0 
-	# indicator_function_weather_variation("n")
-end
-
-# ╔═╡ 78184c09-2a35-4041-8b9b-946ee07d6a90
-indicator_function_bad_health("b")
-
-# ╔═╡ 37dea02b-6d35-46b7-ba69-f3ba4bdd5e19
-indicator_function_weather_deviation("d")
-
-# ╔═╡ a65ab9ac-f91c-4c6c-a162-34a3fc3ced13
-md"
-# 2. Weather
-
-Let us assume that the weather can either follow its normal route, or deviate : 
-
-$$w \in\{normal, deviation\}=\{n,d\}$$
-
-Let us suppose that it has probability $\alpha_3$ of being normal, and $1-\alpha_3$ to deviate.
-
-"
-
-# ╔═╡ 8eff2abf-254e-4336-b2b5-7d46a75279f3
-# Probability of weather being normal : 
-@bind α_3 Slider(0:0.001:1, default=0.5)
-
-# ╔═╡ dc128964-6f99-4695-8c39-4b688b6041d8
-begin
-	weather() = rand(Binomial(1,α_3)) == 1 ? "n" : "d"
-end
-
-# ╔═╡ bb34b464-7e0f-4fe7-ae55-3aa8aff5940a
-weather()
-
-# ╔═╡ 13259939-4338-44c0-904f-2d2a73a25879
-md" 
-# 3. Productivity 
-
-Let us define productivity as $z$, such as : 
-
-$$z = f(h,w,age)+ X$$
-
-With $f(.)$ being a determinisic function of health, weather, and age, and $X$ being stochastic : 
-
-$$f(h,w,\text{age})=\text{age}^{\alpha_4}-\alpha_5\cdot\text{age}\cdot\mathbb{1}\{h=b\}-\alpha_6\cdot\text{age}\cdot\mathbb{1}\{w=d\}$$
-
-$$X\sim \mathcal{N}(0,1)$$
-
-"
-
-# ╔═╡ 4dec6012-eb5c-4db2-bb95-e67e29ef4532
-# Concavity of the function : 
-@bind α_4 Slider(0:0.001:1, default=0.5)
-
-# ╔═╡ 156417da-bd77-425a-a41d-2f5ef31c339c
-# Health penalty :
-@bind α_5 Slider(0:0.001:0.1, default=0.06)
-
-# ╔═╡ 4748644a-e1ef-4e1d-9e43-b0e566a74d0a
-# Bad weather penalty :
-@bind α_6 Slider(0:0.001:0.1, default=0.04)
-
-# ╔═╡ 5439a417-bde0-4255-b310-09140dfe2eda
-begin
-	skill(h,w,age) = age^(α_4)-age*α_5*indicator_function_bad_health(h)-age*α_6*indicator_function_weather_deviation(w)
-	productivity(h,w,age) = skill(h,w,age) + rand(Normal(0,0.3))
-end
-
-# ╔═╡ 4d6ec0eb-f023-451f-80ba-14b6fb3f1e24
-(α_4,α_5,α_6)
-
-# ╔═╡ 7c1b788b-9d94-4d3a-93ce-385bb8a3d3ae
-# Setting the Plots backend : 
-# plotlyjs()
-gr()
-
-# ╔═╡ edf27a0c-9e66-46f1-918b-b404e1b6dc7a
-begin
-	Plots.plot(18:100, skill.("g","n",18:100), label = "Good health in normal weather.")
-	Plots.plot!(18:100, skill.("b","n",18:100), label = "Bad health in normal weather.")
-	Plots.plot!(18:100, skill.("g","d",18:100), label = "Good health in deviation weather.")
-	Plots.plot!(18:100, skill.("b","d",18:100), label = "Bad health in deviation weather.")
-	Plots.plot!(title = "Deterministic skill of workers in \n function of age and weather.")
-end
-
-# ╔═╡ a79e4de7-ad33-4043-a416-2ce3952bbafa
-begin
-	Plots.plot(18:100, productivity.("g","n",18:100), label = "Good health in normal weather.")
-	Plots.plot!(18:100, productivity.("b","n",18:100), label = "Bad health in normal weather.")
-	Plots.plot!(18:100, productivity.("g","d",18:100), label = "Good health in deviation weather.")
-	Plots.plot!(18:100, productivity.("b","d",18:100), label = "Bad health in deviation weather.")
-	Plots.plot!(title = "Semi-sochastic productivity of workers in \n function of age and weather.")
-end
-
-# ╔═╡ 6b7607e3-ced8-4549-9287-e4fc0d578908
+# ╔═╡ 4f09ff9a-ed3d-11ef-098f-b94299262ff2
 md"
 
-# 4. Survival
+# Morbidity and temperature
 
-Let us suppose that the agents have a probability of dying at time $t$, defined as : 
+Let $h$ be the health status in function of temperature.
+Let us assume a linear relationship between the two.
 
-$$\zeta_{t} \equiv \zeta_{t}(\text{age}_{t},h_{t}) = f(\Lambda(n(\text{age}_{t}))+\alpha_{11}*\mathbb{1}\{h=b\}$$
-
-With : 
-
-$$n(\text{x}) = \frac{(\text{x}-\alpha_7)}{\alpha_8}$$
-
-$$\Lambda(\text{x}) = \frac{\alpha_9}{\text{exp}^{-\alpha_{10}\cdot\text{x}}}$$
-
-$$f(x) = 
-\begin{cases} 
-  1 & \text{if } x>1 \\
-  x & \text{if } x\in [0,1] \\
-  0 & \text{if } x<0
-\end{cases}$$
+$$h(t) = \alpha_0+\alpha_1\cdot t$$
 
 "
 
-# ╔═╡ 4f550514-f478-4cce-9cea-2f846c668bcf
-# Effect of age 'mean' normalisation :
-@bind α_7 Slider(0:0.01:100, default=98)
+# ╔═╡ f2972fe5-92d9-48c2-ac9b-aa229d0835c4
+range(start=0,stop=-10,length=100)
 
-# ╔═╡ c54d7f45-46dd-4cc8-ac82-141427fccc3f
-# Effect of age 'sd' normalisation : 
-@bind α_8 Slider(0:0.01:100, default=4)
+# ╔═╡ f4cc1a2f-8ae0-458d-ae12-b953f00510ba
+@bind α_0 Slider(0.0:-0.10101010101010101:-10.0)
 
-# ╔═╡ 3ad533a5-3f3c-46d3-9229-208679e7f01a
-# General survival rate in logistic function : 
-@bind α_9 Slider(0.00:0.01:1.22, default=0.9)
+# ╔═╡ 9cf92ae6-18b8-4f7e-afb1-db7ca119a35c
+@bind α_1 Slider(0.0:-0.10101010101010101:-10.0)
 
-# ╔═╡ 00629ad3-fe8e-403a-8d94-35a74a263447
-# Last effect of age in logistic function : 
-@bind α_10 Slider(0:0.01:1, default=0.5)
-
-# ╔═╡ c2f427aa-9e39-4957-982a-6e863f4a4853
-# Effect of bad health (coefficient of indicator function) :
-@bind α_11 Slider(0:0.01:0.9, default=0.01)
-
-# ╔═╡ 3d11cbe4-e503-43a7-8bba-6d0a590ef980
-(α_7,α_8,α_9,α_10,α_11)
-
-# ╔═╡ 1a578c44-650f-4b5c-8c5a-bbc47ad3a904
+# ╔═╡ d27158cc-4207-463f-a266-41b8af1add0a
 begin
-	normalize(age) = (age-α_7)/α_8
-	Λ(age) = α_9/(exp(-α_10*age))
+	health(temperature) = α_0+α_1*temperature
+	Plots.plot(1 .-health.(1:100))
+	Plots.title!("Visits to the emergency department\n in function of temperature.")
+end
+
+# ╔═╡ a1b6fec8-1398-4b63-b07c-1a2ed4fbac7b
+md"
+# Mortality and temperature
+
+Let us define the mortality $\zeta$ in function of the ambient temperature, such as:
+
+$$\zeta(t) =\alpha_2+\alpha_3\cdot t+\alpha_4\cdot t^2$$
+
+"
+
+# ╔═╡ 2310956e-7243-43de-be64-ec37cb68c71d
+@bind α_2 Slider(0.0:0.01:10.0)
+
+# ╔═╡ 6e4c0cac-7272-4b79-86fd-2d7a03ed879e
+@bind α_3 Slider(0.0:0.01:10.0)
+
+# ╔═╡ 4e283dd7-f6ef-4aa9-9739-9b01f5a7b460
+@bind α_4 Slider(0.0:0.01:10.0)
+
+# ╔═╡ be1ecb76-3659-4f5d-a4d5-e625c8ee73e7
+begin
+	ζ(temperature)=α_2+α_3*temperature+α_4*temperature^2
+	Plots.plot(ζ.(1:100))
+end
+
+# ╔═╡ a8fee011-c47f-41b7-ac75-3c6ba40855ba
+md" # Survival "
+
+# ╔═╡ fae4d514-561f-468f-ba76-2c5933ca0bf5
+begin
+	normalize(age) = (age-100)/2
+	Λ(age) = 2/(exp(-0.5*age))
 	function contain!(x::Number)
 	    if x > 1 
 	        return 1
@@ -250,568 +92,22 @@ begin
 	    end
 	end
 	# ζ the probabiliy of dying :
-	ζ(age,h) = contain!(Λ(normalize(age))+α_11*indicator_function_bad_health(h))
+	indicator_function_bad_health(h) = h == "b" ? 1 : 0 
+
+	ζ(age,h) = contain!(Λ(normalize(age)+2*indicator_function_bad_health(h))+0.2indicator_function_bad_health(h))
 	
 	Plots.plot(1:100, ones(100).-ζ.(1:100,"g"), label = "good health")
 	Plots.plot!(ones(100)-ζ.(1:100,"b"), label = "bad health")
 	Plots.plot!(title = "Probability of surviving for good and bad health.")
 end
 
-# ╔═╡ a7170b37-86d2-4e89-92a1-ef3c19793776
-# Firs period with probability 1 of dying : 
-ζ(99,"b"), ζ(99,"g")
-
-# ╔═╡ 41e9ad1c-248a-4fd4-8c81-c037f213171b
-md" With this survival function defined through the probabiliy of dying, we can now run some simulations. First, we can run a simulation for one person : "
-
-# ╔═╡ 4a88de81-0e41-4889-a45b-d303fa6dbfcf
-begin
-
-	"""
-	The function `sim()` simulates the life of an individual. 
-	It returns a tuple containing: 
-
-	1. Their age of death, 
-	2. Their living status history (1 when living, 0 when being dead),
-	3. Their health status history ("g" when good, "b" when bad).
-	"""
-	function sim()
-		living_history = zeros(100)
-		health_history = Vector{String}(undef,100)
-
-		# previous_health = "g"
-	
-		for t in 1:100
-	    
-		   if t == 1
-		       global previous_health = "g"
-		   end
-	    
-		    # The age : 
-		    age = t
-		    
-		    # The weather ("n" or "d") :
-		    weather_t = weather()
-		    
-		    # The health status : 
-		    # probability of being in good health : 
-		    pgh = probability_good_health = health_probability(previous_health)
-		    health_t = rand(Binomial(1,pgh)) == 1 ? "g" : "b"
-			health_history[t] = health_t
-			global previous_health = health_t
-
-		
-		    # The living status : 
-		    pd = probability_dying = ζ(age,health_t)
-		    living_status = rand(Binomial(1,1-pd))
-		    global living_history[t] = living_status
-
-			# Plots.plot(1:100,living_history)
-
-			# When death comes : 
-			if living_status == 0
-				# print("Agent died at ", t)
-				results = (age,living_history,health_history)
-				return(results)
-				break
-			else
-			end
-			
-		end
-	end
-end
-
-# ╔═╡ 3f7790ab-248d-43f6-9b8c-5fe50e034cc3
-begin
-	# Plots.plot(1:100,living_history)
-	single_results = sim()
-	# typeof(single_results)
-	# single_results[3]
-	# Plots.plot(single_results[2])
-	# Plots.title!("Living status")
-	# single_results
-end
-
-# ╔═╡ ccc5887d-f8b9-4851-9299-043272b9336a
-md"We can now run the simulation for a population of individuals :"
-
-# ╔═╡ 24de739d-d053-4e41-83dd-0e076f2fe471
-begin
-	"""
-	Th function `popsim(I)` runs a simulation for `I` individuals. 
-	
-	It returns a 3 dimensions tuple with, for each individual : 
-
-	- Their age of death 
-	- Their living status history 
-	- Their health history 
-	"""
-	function popsim(I)
-		
-		# Initialize arrays with proper dimensions
-		AOD = age_of_death = Array{Number}(undef, 0)
-		LH = living_history = Array{Vector{Float64}}(undef, 0)
-		HH = health_history = Array{Vector{String}}(undef, 0)
-		
-		# Run simulation
-		for i in 1:I
-		    tmp = sim()
-		    push!(AOD, tmp[1])      # First element of tuple
-		    push!(LH, tmp[2])       # Second element of tuple
-		    push!(HH, tmp[3])       # Third element of tuple
-		end
-
-		# Check dimensions and lengths
-		# println("Dimensions of AOD:", ndims(AOD))
-		# println("Length of AOD:", length(AOD))
-		# println("Dimensions of LH:", ndims(LH))
-		# println("Length of LH:", length(LH))
-		# println("Dimensions of HH:", ndims(HH))
-		# println("Length of HH:", length(HH))
-	
-		println("Life expectancy in this population: ", mean(AOD))
-		
-		results = (AOD,LH,HH)
-		return(results)
-	end
-end
-
-# ╔═╡ 7804dcba-6adb-4d3b-9328-32a734acfacb
-pop_results = popsim(200)
-
-# ╔═╡ 561b8929-c453-4a75-a432-f29031b663ac
-begin
-	# Syntax : 
-	# pop_results[2] # We acces the living status history of all agents
-	# pop_results[2][i] # We acces the living status history of individual i
-	# pop_results[2][i][t] # We acces the living status of individual i at period t
-	# pop_results[2][1][1]
-	# length(pop_results[2]) # Number of individuals
-end
-
-# ╔═╡ 5c105e50-d1b8-4af3-b510-588c1dbbc40e
-begin
-	pop_results[2]
-	pop_living_status = sum(pop_results[2][:])
-	Plots.plot(pop_living_status, label = "Current living population")
-	Plots.xlabel!("Time")
-	Plots.ylabel!("Population")
-	Plots.title!("Evolution of population over time.")
-end
-
-# ╔═╡ f73b41a5-01f5-4694-b34b-a4648d18fc91
-md"# 5. Maximisation programs"
-
-# ╔═╡ 3100a50b-f4f7-4cf9-8c74-edb2b5579779
-md"## In one period
-
-Considering a one period problem, we have : 
-
-Utility function : 
-
-$$u(c,l) = \frac{c^{1-\rho}}{1-\rho} - l\cdot \xi$$
-
-Budget constraint : 
-
-$$c \le l\cdot z$$
-
-The Lagrangien is : 
-
-$$\mathcal{L}(c,l,\lambda) = \frac{c^{1-\rho}}{1-\rho} - l\cdot \xi + \lambda \cdot(l\cdot z - c)$$
-
-The FOC are : 
-
-$$\begin{align*}
-\begin{cases}
-\frac{\partial \mathcal{L}}{\partial c} = c^{-\rho}-\lambda = 0 \\
-\frac{\partial \mathcal{L}}{\partial l} = -\xi + \lambda\cdot z = 0
-\end{cases}
-&  \iff              &
-\begin{cases}
-c^{-\rho}=\lambda \\
-\xi=\lambda\cdot z
-\end{cases}\\
-\end{align*}$$
-
-$$\implies$$
-
-$$c^{-\rho} \cdot z = \xi$$
-$$\iff$$
-$$c^{*}=\left(\frac{\xi}{z}\right)^{-\frac{1}{\rho}}=\left(\frac{z}{\xi}\right)^{\frac{1}{\rho}}$$
-
-The first FOC implies that $\lambda>0$, meaning that the budget constraint binds. Therefore, we get :
-
-$$\begin{align*}
-c^{*}=l^{*}\cdot z \iff \left(\frac{z}{\xi}\right)^{\frac{1}{\rho}} = l^{*}\cdot z
-\end{align*}$$
-
-$$\iff l^{*}=z^{\frac{1-\rho}{\rho}}\cdot\xi^{-\frac{1}{\rho}}$$
-"
-
-# ╔═╡ 49d95aaa-b5cf-469c-b235-c1eb1ce776b8
-md"In this one period context, the agent works so that the marginal benefit of consumption is equal to the marginal disutility of working."
-
-# ╔═╡ 2d79fea9-af26-4ef9-b938-e40a868f5995
-md" ## In multiple periods
-
-Now, let us assume that the agents live several periods and can transmit savings from one period to the next.
-
-First, we can define the utility function of the agent : 
-
-$$u(c,l,w,h)=\frac{c^{1-\rho}}{1-\rho}-\phi(l,w,h)$$
-
-With $$\phi$$ being the disutility function of working, such that : 
-
-$$\phi(l,w,h) = \phi_{l}\cdot l+\phi_{w}\cdot l\cdot\mathbb{1}\{w=d\}+\phi_{h}\cdot l\cdot\mathbb{1}\{h=b\}$$
-
-$$\iff$$
-
-$$\phi(l,w,h) = l \cdot (\phi_{l}+\phi_{w}\cdot\mathbb{1}\{w=d\}+\phi_{h}\cdot\mathbb{1}\{h=b\})$$
-
-For notation purposes, let us define:
-
-$$\xi\equiv (\phi_{l}+\phi_{w}\cdot\mathbb{1}\{w=d\}+\phi_{h}\cdot\mathbb{1}\{h=b\})$$
-
-We can thus rewrite: 
-
-$$\phi(l,w,h) = l\cdot\xi$$
-
-And therefore : 
-
-$$u(c,l,w,h) = \frac{c^{1-\rho}}{1-\rho}-l\cdot\xi$$
-
-
-"
-
-# ╔═╡ 81ab2269-9a8d-4626-9f1f-4a193f4e7fb3
-md"
-### Sequential form
-
-Let us take a sequential form approach.
-
-Assuming the agent maximises over $T$ periods from their 18-th years, the discounted total utility the agent tries to maximise is : 
-
-$$U = \max_{\{c_t,l_t,s_{t+1}\}_{t=18}^{T}}\quad\sum^{T}_{t=18}\beta^{t-18} \cdot \mathbb{E}\left[\frac{c_{t}^{1-\rho}}{1-\rho}-l_{t}\cdot\xi_{t}\right]$$
-
-They are subject to a budget constraint such that : 
-
-$$c_{t}+s_{t+1}\le l_{t}\cdot z_{t}+s_{t}$$
-
-The sum of current consumption and savings transmitted to the next period must be less than the sum of the current labor income and the initial wealth, from the savings of last period.
-
-Let us also impose that the agents cannot borrow, such that : 
-
-$$s_{t}\geq 0\quad \forall t \in [\![18,T]\!]$$
-
-We can therefore write the Lagrangien, such that:
-
-$$\begin{split}
-\mathcal{L}(c_t,l_t,s_{t+1},\lambda_{t},\gamma_{t})=&\sum^{T}_{t=18}\beta^{t-18} \cdot \mathbb{E}[\frac{c_{t}^{1-\rho}}{1-\rho}-l_{t}\cdot\xi_{t}\\+&\lambda_{t}\cdot(l_{t}\cdot z_{t}+s_{t}-c_{t}-s_{t+1})\\+&\gamma_{t}(s_{t}-0)]
-\end{split}$$
-"
-
-# ╔═╡ b7e9a54c-a813-4864-bcf7-8437c4c6d69b
-md"The F.O.C.s are : 
-
-$$\newcommand{\pder}[2]{\frac{\partial#1}{\partial#2}}$$
-
-$$
-\begin{cases}
-\pder{\mathcal{L}}{c_{t}} = \beta^{t-18}\cdot\left(c_{t}^{-\rho}-\lambda_{t}\right) = 0\\
-\pder{\mathcal{L}}{l_{t}} = \beta^{t-18}\cdot\left(-\xi_{t}+\lambda_{t}\cdot z_{t}\right) = 0\\
-\pder{\mathcal{L}}{s_{t+1}} = \beta^{t-18}\cdot(-\lambda_{t}) + \beta^{t-17}\cdot\mathbb{E}\left[\lambda_{t+1}+\gamma_{t+1}\right] = 0\\
-\end{cases}$$
-$$\iff$$
-$$\begin{cases}
-c_{t}^{-\rho} = \lambda_{t} \\
-c_{t}^{-\rho}\cdot z_{t} = \xi_{t} \\
-c_{t}^{-\rho} = \beta\cdot \mathbb{E}\left[c_{t+1}^{-\rho}+\gamma_{t+1}\right]
-\end{cases}$$
-
-At the optimum : 
-
-- The marginal increase of the budget is equal to the marginal benefit of consuming one more unit, i.e. $c_{t}^{-\rho}$ utility.
-- The marginal benefit of working is equal to the marginal disutility of working. 
-- The marginal benefit of consuming at a period is equal to the discounted expected marginal benefit of consuming in the next period (assuming that $\gamma_t = 0, \forall t$).
-
-"
-
-# ╔═╡ 16f8acf3-c913-4a06-85b6-3111e18a7494
-md"
-From the second equation, we have: 
-
-$$c^{-\rho}_{t}\cdot z_t = \xi_{t} \iff c_{t}^{*}=\left(\frac{z_t}{\xi_t}\right)^{\frac{1}{\rho}}$$
-
-
-Since the budget constraint binds, we have: 
-
-$$\left(\frac{z_t}{\xi_t}\right)^{\frac{1}{\rho}}+s_{t+1}=l_{t}\cdot z_{t}+s_{t}$$
-$$\iff$$
-$$l_{t}\cdot z_{t}=\left(\frac{z_t}{\xi_t}\right)^{\frac{1}{\rho}}+s_{t+1}-s_{t}$$
-
-Let us define:
-
-$$\Delta s_{t+1}\equiv s_{t+1}-s_{t}$$
-
-$$l_{t}=z_{t}^{-1}\left[\left(\frac{z_t}{\xi_t}\right)^{\frac{1}{\rho}}+\Delta s_{t+1}\right]$$
-$$\iff$$
-$$l_{t}^{*}=z_{t}^{\frac{1-\rho}{\rho}}\cdot\xi_{t}^{-\frac{1}{\rho}}+z_{t}^{-1}\Delta s_{t+1}$$
-
-
-"
-
-# ╔═╡ 182d2fe5-14f8-4262-b8cf-672f8a1c6f9b
-md"
-
-### Recursive form
-
-We can let our Bellman equation be such as: 
-
-$$\begin{split}
-V(h,w,\text{age},s,z) = \max_{c,l,s'}\{u(c,h,l,w) + \beta\cdot\mathbb{E}_{w,h,ζ}\left[V(h',w',\text{age}',s',z')\right]\} \quad (1)
-\end{split}$$
-
-Let us define : $$\mathbb{S}\equiv (h,w,\text{age},s,z)$$. 
-
-We can now write $$(1)$$ such as :
-
-$$\begin{split}
-V(\mathbb{S}) = \max_{c,l,s'}\{u(c,h,l,w) + \beta\cdot\mathbb{E}_{w,h,\zeta}\left[V(\mathbb{S}')\right]\}
-\quad \quad (1)
-\end{split}$$
-
-subject to : 
-
-$$c + s' \leq l\cdot z + s\quad (2) $$ 
-
-With $s$ being the savings transferred to period $t$ such that: 
-
-$$s\geq0 \quad \quad \quad \quad \quad \quad (3)$$
-
-The equation $(2)$ being the budget constraint, and $(3)$ translating the fact that agents do not borrow in this model. The equation $(4)$ is the productivity of the agent.
-
-"
-
-# ╔═╡ 76a99e4f-1287-4fb6-9873-1ffc5db9d88e
-md"
-Assuming that $(2)$ binds, we can write : 
-
-$$c+s'=l\cdot z + s \iff c = l\cdot z +s- s'$$
-
-And therefore rewrite the maximisation program : 
-
-$$\begin{split}
-V(\mathbb{S}) = \max_{l,s'}\{u(l\cdot z +s- s',h,l,w) + \beta\cdot\mathbb{E}_{w,h,ζ}\left[V(\mathbb{S}')\right]\} \quad (1)
-\end{split}$$
-
-"
-
-# ╔═╡ 496514b8-bcaa-4c06-844e-082eb4dfdbca
-md"
-Writing explicitly the utility function, we have: 
-
-$$\newcommand{\disutility}{l \cdot (\phi_{l}+\phi_{w}\cdot\mathbb{1}\{w=d\}+\phi_{h}\cdot\mathbb{1}\{h=b\})}$$
-$$\newcommand{\utility}{\frac{(l\cdot z +s- s')^{1-\rho}}{1-\rho}-\disutility }$$
-
-$$\begin{split}
-V(\mathbb{S}) = & \max_{l,s'}\Bigl\{\frac{(l\cdot z +s- s')^{1-\rho}}{1-\rho}-l\cdot\xi+\beta\cdot\mathbb{E}_{w,h,ζ}\left[V(\mathbb{S}')\right]\Bigl\} \quad (1)
-\end{split}$$
-
-"
-
-# ╔═╡ 4219f0fe-bd6a-45c2-9ae9-2113a65d9e9e
-md"
-The First Order Conditions (F.O.C.) are : 
-
-$$\frac{\partial V(\mathbb{S})}{\partial l} = 0 \quad (\text{F.O.C. } 1)$$
-$$\iff$$
-$$\frac{\partial u}{\partial c}\cdot\frac{\partial c}{\partial l}+\frac{\partial u}{\partial l}+\beta\cdot\mathbb{E}[\frac{\partial V(\mathbb{S}')}{\partial l}]=0$$
-$$\iff$$
-$$z\cdot c^{-\rho} - \xi + \beta\cdot\mathbb{E}[\frac{\partial V(\mathbb{S}')}{\partial l}]=0$$
-$$\iff$$
-$$z\cdot c^{-\rho} + \beta\cdot\mathbb{E}[\frac{\partial V(\mathbb{S}')}{\partial l}]=\xi \quad (\text{F.O.C. } 1)$$
-
-In words, the marginal utility of working now plus the discounted marginal value of working in the future now is equal to the disutility of working now.
-
-
-
-$$
-	\begin{matrix}
-	\text{marginal utility} \\ \text{of working now}
-	\end{matrix} + 
-	\begin{matrix} 
-	\text{discounted expected future marginal} \\ \text{value of working now}
-	\end{matrix} = \text{disutility of working now}
-$$
-
-
-
-Now, optimizing with respect to the savings decision : 
-
-$$\frac{\partial V(\mathbb{S})}{\partial s'} = 0 \quad (\text{F.O.C. } 2)$$
-$$\iff$$
-
-$$\frac{\partial u}{\partial c}\cdot\frac{\partial c}{\partial s'}+ \beta \cdot \mathbb{E}[\frac{\partial V(\mathbb{S'})}{\partial s'}] = 0$$
-
-$$\iff$$
-
-$$c^{-\rho}\cdot (-1)+ \beta \cdot \mathbb{E}[\frac{\partial V(\mathbb{S'})}{\partial s'}] = 0$$
-$$\iff$$
-$$\beta \cdot \mathbb{E}[\frac{\partial V(\mathbb{S'})}{\partial s'}] = c^{-\rho}\quad (\text{F.O.C. } 2)$$
-"
-
-# ╔═╡ 2acf58c3-3227-4ee6-a72e-1422accb1b98
-md"
-Now, for the first FOC : 
-
-$$\dots \text{Unsolved ? }$$
-
-From the Budget Constraint, we have : 
-
-$$c + s' = l\cdot z + s$$
-
-Isolating the savings, we obtain : 
-
-$$s'= l\cdot z + s-c$$
-
-Iterating the budget constraint, we get : 
-
-$$c' + s'' = l'\cdot z' + s'$$
-
-Plugging the isolated expression of $s'$, we get : 
-
-$$c' + s'' = l'\cdot z' + l\cdot z + s-c$$
-
-$$\iff$$
-$$c' = l'\cdot z' + l\cdot z + s-c-s''$$
-
-Plugging it into the Bellman equation, we obtain : 
-
-$$\frac{\partial V(\mathbb{S}')}{\partial l} = \frac{\partial}{\partial l}\cdot \max_{l',s''}\{u(l'z'+lz+s-c-s'',h',l',w')+\beta\cdot\mathbb{E}[\frac{\partial V(\mathbb{S''})}{\partial l}]\}$$
-
-$$\iff$$
-
-$$\frac{\partial V(\mathbb{S}')}{\partial l} = z\cdot c^{-\rho}+\beta\cdot\mathbb{E}[\frac{V(\mathbb{S}'')}{\partial l}]$$
-
-$$\dots$$
-
-$$z\cdot c^{-\rho} + \beta\cdot\mathbb{E}[z\cdot c^{-\rho}+\beta\cdot\mathbb{E}[\frac{V(\mathbb{S}'')}{\partial l}]=\xi \quad (\text{F.O.C. } 1)$$
-
-
-To obtain a similar result compared to the sequential form, we could assume that:
-
-$$\frac{\partial V(\mathbb{S}')}{\partial l}=0$$
-
-We then obtain:
-
-$$z\cdot c^{-\rho} =\xi \quad (\text{F.O.C. } 1)$$
-
-"
-
-# ╔═╡ 2711fa92-9877-4441-8456-9c6c40e3fcad
-md"
-Now, for the second FOC :
-
-$$\frac{\partial V(\mathbb{S})}{\partial s} = \frac{\partial u}{\partial c}\cdot \frac{\partial c}{\partial s} + \beta \cdot \mathbb{E}[\frac{\partial V(\mathbb{S}')}{\partial s}]$$
-
-$$\frac{\partial V(\mathbb{S})}{\partial s} = \frac{\partial u}{\partial c}\cdot \frac{\partial c}{\partial s} = \frac{\partial u}{\partial c} = c^{-\rho}$$
-$$\iff$$
-$$\frac{\partial V(\mathbb{S}')}{\partial s'} = {c'}^{-\rho}$$
-
-Therefore, the second FOC is : 
-
-$$\beta \cdot \mathbb{E}[{c'}^{-\rho}] = c^{-\rho}\quad (\text{F.O.C. } 2)$$
-
-This is the Euler equation.
-
-"
-
-# ╔═╡ 6f0c1138-61a2-48df-8c82-09de7533e28f
-md"# 6. Other"
-
-# ╔═╡ df9a5201-c5ff-4b32-a913-746bae1c691a
-md"We can define the utility function in Julia : "
-
-# ╔═╡ 23ecebf6-22ff-43a0-97a2-62718f5ebab5
-# Risk aversion :
-@bind ρ Slider(0.00:0.01:1, default=0.9)
-
-# ╔═╡ 1bcb39cf-0a2b-453e-845a-e22caa1bd23b
-# Working penalty :
-@bind ϕ_l Slider(0.00:0.01:1, default=0.9)
-
-# ╔═╡ 27ec39f4-aca3-41da-a6ed-b6bb4a6b1035
-# Working with weather deviation penalty :
-@bind ϕ_w Slider(0.00:0.01:1, default=0.7)
-
-# ╔═╡ e76cb128-d03e-465b-bbb4-9abee96d9249
-# Working in bad health penalty :
-@bind ϕ_h Slider(0.00:0.01:1, default=0.9)
-
-# ╔═╡ f1d6cd8a-1588-4b2a-b7d4-20dbc8b7dfe5
-begin
-	# Indicator function of working : 
-	indicator_function_work(l) = l > 0 ? 1 : 0
-
-	# Disutility function : 
-	ϕ(h,l,w) = ϕ_l * l + ϕ_w * l *indicator_function_weather_deviation(w) + ϕ_h * l * indicator_function_bad_health(h)
-
-	# Utility function : 
-	u(c,h,l,w) = (c^(1-ρ))/(1-ρ) - ϕ(h,l,w)
-end
-
-# ╔═╡ a9e401d2-91ed-49b3-a4e7-318bc2119306
-md"Ploting the utility for good health and bad health agents, we get : "
-
-# ╔═╡ 4ed539e0-cac0-481d-88e1-bef8d3af60a9
-begin
-	# Plots.plot(u.(1:100,"g",1,"n"), label = "Good health, working, normal weather")
-	# Plots.plot!(u.(1:100,"g",1,"d"), label = "Good health, working, deviation weather")
-	# Plots.plot!(u.(1:100,"g",0,"d"), label = "Good health, not working, deviation weather")
-	# Plots.title!("Utility levels of good health agent.")
-	# Plots.xlabel!("Consumption")
-	# Plots.ylabel!("Utility")
-end
-
-# ╔═╡ af7fd14d-2b0a-4d9c-8899-1430e152bab4
-begin 
-	# Plots.plot(u.(1:100,"b",1,"n"), label = "Bad health, working, normal weather")
-	# Plots.plot!(u.(1:100,"b",1,"d"), label = "Bad health, working, deviation weather")
-	# Plots.plot!(u.(1:100,"b",0,"d"), label = "Bad health, not working, deviation weather")
-	# Plots.title!("Utility levels of bad health agent.")
-	# Plots.xlabel!("Consumption")
-	# Plots.ylabel!("Utility")
-end
-
-# ╔═╡ 264be045-c2fa-4cff-ab0a-3d8e79675875
-# Amount of work :
-@bind l Slider(0.00:0.01:10, default=0.5)
-
-# ╔═╡ 2496b1d6-5738-4568-bf3d-c92468d7e900
-begin 
-	Plots.plot(u.(1:100,"g",l,"n"), label = "Good health, normal weather")
-	Plots.plot!(u.(1:100,"b",l,"n"), label = "Bad health, normal weather")
-	Plots.plot!(u.(1:100,"g",l,"d"), label = "Good health, deviation weather")
-	Plots.plot!(u.(1:100,"b",l,"d"), label = "Bad health, deviation weather")
-	Plots.title!("Utility levels of agents for the same amount of work.")
-	Plots.xlabel!("Consumption")
-	Plots.ylabel!("Utility")
-end
-
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-PlotlyJS = "f0f68f2c-4968-5e81-91da-67840de0976a"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
-DataFrames = "~1.7.0"
-Distributions = "~0.25.117"
-PlotlyJS = "~0.18.15"
 Plots = "~1.40.9"
 PlutoUI = "~0.7.61"
 """
@@ -822,7 +118,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "53f1a8203cb0341684b9efae29163d835c5d6acc"
+project_hash = "e0ccfc026729846cf38d67330d7045ef3a02877d"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -844,12 +140,6 @@ version = "1.1.2"
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 version = "1.11.0"
 
-[[deps.AssetRegistry]]
-deps = ["Distributed", "JSON", "Pidfile", "SHA", "Test"]
-git-tree-sha1 = "b25e88db7944f98789130d7b503276bc34bc098e"
-uuid = "bf4720bc-e11a-5d0c-854e-bdca1663c893"
-version = "0.1.0"
-
 [[deps.Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 version = "1.11.0"
@@ -858,12 +148,6 @@ version = "1.11.0"
 git-tree-sha1 = "0691e34b3bb8be9307330f88d1a3c3f25466c24d"
 uuid = "d1d4a3ce-64b1-5f1a-9ba4-7e7e69966f35"
 version = "0.1.9"
-
-[[deps.Blink]]
-deps = ["Base64", "Distributed", "HTTP", "JSExpr", "JSON", "Lazy", "Logging", "MacroTools", "Mustache", "Mux", "Pkg", "Reexport", "Sockets", "WebIO"]
-git-tree-sha1 = "bc93511973d1f949d45b0ea17878e6cb0ad484a1"
-uuid = "ad839575-38b3-5650-b840-f874b8c74a25"
-version = "0.12.9"
 
 [[deps.Bzip2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -900,10 +184,12 @@ deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "Requires", "Statist
 git-tree-sha1 = "a1f44953f2382ebb937d60dafbe2deea4bd23249"
 uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
 version = "0.10.0"
-weakdeps = ["SpecialFunctions"]
 
     [deps.ColorVectorSpace.extensions]
     SpecialFunctionsExt = "SpecialFunctions"
+
+    [deps.ColorVectorSpace.weakdeps]
+    SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [[deps.Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
@@ -937,32 +223,16 @@ git-tree-sha1 = "439e35b0b36e2e5881738abc8857bd92ad6ff9a8"
 uuid = "d38c429a-6771-53c6-b99e-75d170b6e991"
 version = "0.6.3"
 
-[[deps.Crayons]]
-git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
-uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
-version = "4.1.1"
-
 [[deps.DataAPI]]
 git-tree-sha1 = "abe83f3a2f1b857aac70ef8b269080af17764bbe"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
 version = "1.16.0"
-
-[[deps.DataFrames]]
-deps = ["Compat", "DataAPI", "DataStructures", "Future", "InlineStrings", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrecompileTools", "PrettyTables", "Printf", "Random", "Reexport", "SentinelArrays", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
-git-tree-sha1 = "fb61b4812c49343d7ef0b533ba982c46021938a6"
-uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "1.7.0"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
 git-tree-sha1 = "1d0a14036acb104d9e89698bd408f63ab58cdc82"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 version = "0.18.20"
-
-[[deps.DataValueInterfaces]]
-git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
-uuid = "e2d170a0-9d28-54be-80f0-106bbe20a464"
-version = "1.0.0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -980,27 +250,6 @@ deps = ["Mmap"]
 git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 version = "1.9.1"
-
-[[deps.Distributed]]
-deps = ["Random", "Serialization", "Sockets"]
-uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
-version = "1.11.0"
-
-[[deps.Distributions]]
-deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
-git-tree-sha1 = "03aa5d44647eaec98e1920635cdfed5d5560a8b9"
-uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
-version = "0.25.117"
-
-    [deps.Distributions.extensions]
-    DistributionsChainRulesCoreExt = "ChainRulesCore"
-    DistributionsDensityInterfaceExt = "DensityInterface"
-    DistributionsTestExt = "Test"
-
-    [deps.Distributions.weakdeps]
-    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-    DensityInterface = "b429d917-457f-4dbc-8f4c-0cc954292b1d"
-    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
@@ -1047,18 +296,6 @@ version = "4.4.4+1"
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 version = "1.11.0"
 
-[[deps.FillArrays]]
-deps = ["LinearAlgebra"]
-git-tree-sha1 = "6a70198746448456524cb442b8af316927ff3e1a"
-uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
-version = "1.13.0"
-weakdeps = ["PDMats", "SparseArrays", "Statistics"]
-
-    [deps.FillArrays.extensions]
-    FillArraysPDMatsExt = "PDMats"
-    FillArraysSparseArraysExt = "SparseArrays"
-    FillArraysStatisticsExt = "Statistics"
-
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
 git-tree-sha1 = "05882d6995ae5c12bb5f36dd2ed3f61c98cbb172"
@@ -1087,17 +324,6 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "846f7026a9decf3679419122b49f8a1fdb48d2d5"
 uuid = "559328eb-81f9-559d-9380-de523a88c83c"
 version = "1.0.16+0"
-
-[[deps.FunctionalCollections]]
-deps = ["Test"]
-git-tree-sha1 = "04cb9cfaa6ba5311973994fe3496ddec19b6292a"
-uuid = "de31a74c-ac4f-5751-b3fd-e18cd04993ca"
-version = "0.5.0"
-
-[[deps.Future]]
-deps = ["Random"]
-uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
-version = "1.11.0"
 
 [[deps.GLFW_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Xorg_libXcursor_jll", "Xorg_libXi_jll", "Xorg_libXinerama_jll", "Xorg_libXrandr_jll", "libdecor_jll", "xkbcommon_jll"]
@@ -1152,18 +378,6 @@ git-tree-sha1 = "55c53be97790242c29031e5cd45e8ac296dadda3"
 uuid = "2e76f6c2-a576-52d4-95c1-20adfe4de566"
 version = "8.5.0+0"
 
-[[deps.Hiccup]]
-deps = ["MacroTools", "Test"]
-git-tree-sha1 = "6187bb2d5fcbb2007c39e7ac53308b0d371124bd"
-uuid = "9fb69e20-1954-56bb-a84f-559cc56a8ff7"
-version = "0.2.2"
-
-[[deps.HypergeometricFunctions]]
-deps = ["LinearAlgebra", "OpenLibm_jll", "SpecialFunctions"]
-git-tree-sha1 = "2bd56245074fab4015b9174f24ceba8293209053"
-uuid = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
-version = "0.3.27"
-
 [[deps.Hyperscript]]
 deps = ["Test"]
 git-tree-sha1 = "179267cfa5e712760cd43dcae385d7ea90cc25a4"
@@ -1182,38 +396,15 @@ git-tree-sha1 = "b6d6bfdd7ce25b0f9b2f6b3dd56b2673a66c8770"
 uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
 version = "0.2.5"
 
-[[deps.InlineStrings]]
-git-tree-sha1 = "45521d31238e87ee9f9732561bfee12d4eebd52d"
-uuid = "842dd82b-1e85-43dc-bf29-5d0ee9dffc48"
-version = "1.4.2"
-
-    [deps.InlineStrings.extensions]
-    ArrowTypesExt = "ArrowTypes"
-    ParsersExt = "Parsers"
-
-    [deps.InlineStrings.weakdeps]
-    ArrowTypes = "31f734f8-188a-4ce0-8406-c8a06bd891cd"
-    Parsers = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 version = "1.11.0"
 
-[[deps.InvertedIndices]]
-git-tree-sha1 = "6da3c4316095de0f5ee2ebd875df8721e7e0bdbe"
-uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
-version = "1.3.1"
-
 [[deps.IrrationalConstants]]
 git-tree-sha1 = "e2222959fbc6c19554dc15174c81bf7bf3aa691c"
 uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
 version = "0.2.4"
-
-[[deps.IteratorInterfaceExtensions]]
-git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
-uuid = "82899510-4779-5014-852e-03e436cf321d"
-version = "1.0.0"
 
 [[deps.JLFzf]]
 deps = ["Pipe", "REPL", "Random", "fzf_jll"]
@@ -1227,12 +418,6 @@ git-tree-sha1 = "a007feb38b422fbdab534406aeca1b86823cb4d6"
 uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
 version = "1.7.0"
 
-[[deps.JSExpr]]
-deps = ["JSON", "MacroTools", "Observables", "WebIO"]
-git-tree-sha1 = "b413a73785b98474d8af24fd4c8a975e31df3658"
-uuid = "97c1335a-c9c5-57fe-bc5d-ec35cebe8660"
-version = "0.5.4"
-
 [[deps.JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
 git-tree-sha1 = "31e996f0a15c7b280ba9f76636b3ff9e2ae58c9a"
@@ -1244,12 +429,6 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "eac1206917768cb54957c65a615460d87b455fc1"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
 version = "3.1.1+0"
-
-[[deps.Kaleido_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "43032da5832754f58d14a91ffbe86d5f176acda9"
-uuid = "f7e6163d-2fa5-5f23-b69c-1db539e41963"
-version = "0.2.1+0"
 
 [[deps.LAME_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1295,12 +474,6 @@ version = "0.16.6"
     DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
     SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
     SymEngine = "123dc426-2d89-5057-bbad-38513e3affd8"
-
-[[deps.Lazy]]
-deps = ["MacroTools"]
-git-tree-sha1 = "1370f8202dac30758f3c345f9909b97f53d87d3f"
-uuid = "50d2b5c4-7a5e-59d5-8109-a42b560f39c0"
-version = "0.15.1"
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -1455,18 +628,6 @@ version = "1.11.0"
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2023.12.12"
 
-[[deps.Mustache]]
-deps = ["Printf", "Tables"]
-git-tree-sha1 = "3b2db451a872b20519ebb0cec759d3d81a1c6bcb"
-uuid = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
-version = "1.0.20"
-
-[[deps.Mux]]
-deps = ["AssetRegistry", "Base64", "HTTP", "Hiccup", "MbedTLS", "Pkg", "Sockets"]
-git-tree-sha1 = "7295d849103ac4fcbe3b2e439f229c5cc77b9b69"
-uuid = "a975b10e-0019-58db-a62f-e48ff68538c9"
-version = "1.0.2"
-
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
 git-tree-sha1 = "cc0a5deefdb12ab3a096f00a6d42133af4560d71"
@@ -1476,11 +637,6 @@ version = "1.1.2"
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
-
-[[deps.Observables]]
-git-tree-sha1 = "7438a59546cf62428fc9d1bc94729146d37a7225"
-uuid = "510215fc-4207-5dde-b226-833fc4488ee2"
-version = "0.5.5"
 
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1510,12 +666,6 @@ git-tree-sha1 = "a9697f1d06cc3eb3fb3ad49cc67f2cfabaac31ea"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
 version = "3.0.16+0"
 
-[[deps.OpenSpecFun_jll]]
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "1346c9208249809840c91b26703912dff463d335"
-uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
-version = "0.5.6+0"
-
 [[deps.Opus_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "6703a85cb3781bd5909d48730a67205f3f31a575"
@@ -1532,35 +682,17 @@ deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
 version = "10.42.0+1"
 
-[[deps.PDMats]]
-deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
-git-tree-sha1 = "966b85253e959ea89c53a9abebbf2e964fbf593b"
-uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
-version = "0.11.32"
-
 [[deps.Pango_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "FriBidi_jll", "Glib_jll", "HarfBuzz_jll", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "3b31172c032a1def20c98dae3f2cdc9d10e3b561"
 uuid = "36c8627f-9965-5494-a995-c6b170f724f3"
 version = "1.56.1+0"
 
-[[deps.Parameters]]
-deps = ["OrderedCollections", "UnPack"]
-git-tree-sha1 = "34c0e9ad262e5f7fc75b10a9952ca7692cfc5fbe"
-uuid = "d96e819e-fc66-5662-9728-84c9c7592b0a"
-version = "0.12.3"
-
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
 git-tree-sha1 = "8489905bcdbcfac64d1daa51ca07c0d8f0283821"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
 version = "2.8.1"
-
-[[deps.Pidfile]]
-deps = ["FileWatching", "Test"]
-git-tree-sha1 = "2d8aaf8ee10df53d0dfb9b8ee44ae7c04ced2b03"
-uuid = "fa939f87-e72e-5be4-a000-7fc836dbe307"
-version = "1.3.0"
 
 [[deps.Pipe]]
 git-tree-sha1 = "6842804e7867b115ca9de748a0cf6b364523c16d"
@@ -1594,36 +726,6 @@ git-tree-sha1 = "3ca9a356cd2e113c420f2c13bea19f8d3fb1cb18"
 uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
 version = "1.4.3"
 
-[[deps.PlotlyBase]]
-deps = ["ColorSchemes", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Parameters", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
-git-tree-sha1 = "56baf69781fc5e61607c3e46227ab17f7040ffa2"
-uuid = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
-version = "0.8.19"
-
-[[deps.PlotlyJS]]
-deps = ["Base64", "Blink", "DelimitedFiles", "JSExpr", "JSON", "Kaleido_jll", "Markdown", "Pkg", "PlotlyBase", "PlotlyKaleido", "REPL", "Reexport", "Requires", "WebIO"]
-git-tree-sha1 = "e415b25fdec06e57590a7d5ac8e0cf662fa317e2"
-uuid = "f0f68f2c-4968-5e81-91da-67840de0976a"
-version = "0.18.15"
-
-    [deps.PlotlyJS.extensions]
-    CSVExt = "CSV"
-    DataFramesExt = ["DataFrames", "CSV"]
-    IJuliaExt = "IJulia"
-    JSON3Ext = "JSON3"
-
-    [deps.PlotlyJS.weakdeps]
-    CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-    IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
-    JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
-
-[[deps.PlotlyKaleido]]
-deps = ["Artifacts", "Base64", "JSON", "Kaleido_jll"]
-git-tree-sha1 = "ba551e47d7eac212864fdfea3bd07f30202b4a5b"
-uuid = "f2990250-8cf9-495f-b13a-cce12b45703c"
-version = "2.2.6"
-
 [[deps.Plots]]
 deps = ["Base64", "Contour", "Dates", "Downloads", "FFMPEG", "FixedPointNumbers", "GR", "JLFzf", "JSON", "LaTeXStrings", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "PrecompileTools", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "RelocatableFolders", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "TOML", "UUIDs", "UnicodeFun", "UnitfulLatexify", "Unzip"]
 git-tree-sha1 = "dae01f8c2e069a683d3a6e17bbae5070ab94786f"
@@ -1650,12 +752,6 @@ git-tree-sha1 = "7e71a55b87222942f0f9337be62e26b1f103d3e4"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 version = "0.7.61"
 
-[[deps.PooledArrays]]
-deps = ["DataAPI", "Future"]
-git-tree-sha1 = "36d8b4b899628fb92c2749eb488d884a926614d3"
-uuid = "2dfb63ee-cc39-5dd5-95bd-886bf059d720"
-version = "1.4.3"
-
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
 git-tree-sha1 = "5aa36f7049a63a1528fe8f7c3f2113413ffd4e1f"
@@ -1667,12 +763,6 @@ deps = ["TOML"]
 git-tree-sha1 = "9306f6085165d270f7e3db02af26a400d580f5c6"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
 version = "1.4.3"
-
-[[deps.PrettyTables]]
-deps = ["Crayons", "LaTeXStrings", "Markdown", "PrecompileTools", "Printf", "Reexport", "StringManipulation", "Tables"]
-git-tree-sha1 = "1101cd475833706e4d0e7b122218257178f48f34"
-uuid = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
-version = "2.4.0"
 
 [[deps.Printf]]
 deps = ["Unicode"]
@@ -1707,18 +797,6 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Qt6Base_jll", "Qt6Declarative_jll"
 git-tree-sha1 = "729927532d48cf79f49070341e1d918a65aba6b0"
 uuid = "e99dba38-086e-5de3-a5b1-6e4c66e897c3"
 version = "6.7.1+1"
-
-[[deps.QuadGK]]
-deps = ["DataStructures", "LinearAlgebra"]
-git-tree-sha1 = "9da16da70037ba9d701192e27befedefb91ec284"
-uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
-version = "2.11.2"
-
-    [deps.QuadGK.extensions]
-    QuadGKEnzymeExt = "Enzyme"
-
-    [deps.QuadGK.weakdeps]
-    Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "StyledStrings", "Unicode"]
@@ -1759,18 +837,6 @@ git-tree-sha1 = "838a3a4188e2ded87a4f9f184b4b0d78a1e91cb7"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.3.0"
 
-[[deps.Rmath]]
-deps = ["Random", "Rmath_jll"]
-git-tree-sha1 = "852bd0f55565a9e973fcfee83a84413270224dc4"
-uuid = "79098fc4-a85e-5d69-aa6a-4863f24498fa"
-version = "0.8.0"
-
-[[deps.Rmath_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "58cdd8fb2201a6267e1db87ff148dd6c1dbd8ad8"
-uuid = "f50d1b31-88e8-58de-be2c-1cc44531875f"
-version = "0.5.1+0"
-
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 version = "0.7.0"
@@ -1780,12 +846,6 @@ deps = ["Dates"]
 git-tree-sha1 = "3bac05bc7e74a75fd9cba4295cde4045d9fe2386"
 uuid = "6c6a2e73-6563-6170-7368-637461726353"
 version = "1.2.1"
-
-[[deps.SentinelArrays]]
-deps = ["Dates", "Random"]
-git-tree-sha1 = "712fb0231ee6f9120e005ccd56297abbc053e7e0"
-uuid = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
-version = "1.4.8"
 
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
@@ -1817,18 +877,6 @@ deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 version = "1.11.0"
 
-[[deps.SpecialFunctions]]
-deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
-git-tree-sha1 = "64cca0c26b4f31ba18f13f6c12af7c85f478cfde"
-uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
-version = "2.5.0"
-
-    [deps.SpecialFunctions.extensions]
-    SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
-
-    [deps.SpecialFunctions.weakdeps]
-    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-
 [[deps.StableRNGs]]
 deps = ["Random"]
 git-tree-sha1 = "83e6cce8324d49dfaf9ef059227f91ed4441a8e5"
@@ -1857,33 +905,9 @@ git-tree-sha1 = "29321314c920c26684834965ec2ce0dacc9cf8e5"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.34.4"
 
-[[deps.StatsFuns]]
-deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
-git-tree-sha1 = "b423576adc27097764a90e163157bcfc9acf0f46"
-uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
-version = "1.3.2"
-
-    [deps.StatsFuns.extensions]
-    StatsFunsChainRulesCoreExt = "ChainRulesCore"
-    StatsFunsInverseFunctionsExt = "InverseFunctions"
-
-    [deps.StatsFuns.weakdeps]
-    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
-
-[[deps.StringManipulation]]
-deps = ["PrecompileTools"]
-git-tree-sha1 = "725421ae8e530ec29bcbdddbe91ff8053421d023"
-uuid = "892a3eda-7b42-436c-8928-eab12a02cf0e"
-version = "0.4.1"
-
 [[deps.StyledStrings]]
 uuid = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
 version = "1.11.0"
-
-[[deps.SuiteSparse]]
-deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
-uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
@@ -1894,18 +918,6 @@ version = "7.7.0+0"
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 version = "1.0.3"
-
-[[deps.TableTraits]]
-deps = ["IteratorInterfaceExtensions"]
-git-tree-sha1 = "c06b2f539df1c6efa794486abfb6ed2022561a39"
-uuid = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
-version = "1.0.1"
-
-[[deps.Tables]]
-deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "OrderedCollections", "TableTraits"]
-git-tree-sha1 = "598cd7c1f68d1e205689b1c2fe65a9f85846f297"
-uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
-version = "1.12.0"
 
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
@@ -1942,11 +954,6 @@ version = "1.5.1"
 deps = ["Random", "SHA"]
 uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 version = "1.11.0"
-
-[[deps.UnPack]]
-git-tree-sha1 = "387c1f73762231e86e0c9c5443ce3b4a0a9a0c2b"
-uuid = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
-version = "1.0.2"
 
 [[deps.Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
@@ -2000,24 +1007,6 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "5db3e9d307d32baba7067b13fc7b5aa6edd4a19a"
 uuid = "2381bf8a-dfd0-557d-9999-79630e7b1b91"
 version = "1.36.0+0"
-
-[[deps.WebIO]]
-deps = ["AssetRegistry", "Base64", "Distributed", "FunctionalCollections", "JSON", "Logging", "Observables", "Pkg", "Random", "Requires", "Sockets", "UUIDs", "WebSockets", "Widgets"]
-git-tree-sha1 = "0eef0765186f7452e52236fa42ca8c9b3c11c6e3"
-uuid = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
-version = "0.8.21"
-
-[[deps.WebSockets]]
-deps = ["Base64", "Dates", "HTTP", "Logging", "Sockets"]
-git-tree-sha1 = "4162e95e05e79922e44b9952ccbc262832e4ad07"
-uuid = "104b5d7c-a370-577a-8038-80a2059c5097"
-version = "1.6.0"
-
-[[deps.Widgets]]
-deps = ["Colors", "Dates", "Observables", "OrderedCollections"]
-git-tree-sha1 = "e9aeb174f95385de31e70bd15fa066a505ea82b9"
-uuid = "cc8bc4a8-27d6-5769-a93b-9d913e69aa62"
-version = "0.6.7"
 
 [[deps.XML2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Zlib_jll"]
@@ -2299,76 +1288,18 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╟─d532165b-d442-4114-a3b9-f866a281c67f
-# ╟─ab992a5b-6a2c-4457-a651-c6818df8f5e2
-# ╟─0ef87638-e32f-11ef-1ac0-094df082b41c
-# ╠═0d381a45-b8a7-4ce0-a904-b238fd26902d
-# ╟─4c2a0eb5-6bf6-4b8b-9c1d-51107af68743
-# ╟─1d30ee07-9993-4cdf-bea0-f318b5461079
-# ╠═33467e51-029b-4fc5-a889-ee8a6e108a7e
-# ╠═95d6c246-2773-4141-b53a-428364936b8a
-# ╠═f2dcf131-4c96-4259-85eb-c78f2ea1b700
-# ╠═9cce5faf-f860-494d-8de7-87f0c698e1b7
-# ╠═811aaa25-8e2b-4aea-8d2b-ec0a86432f7d
-# ╠═85a3ac63-51c0-4908-99d2-7e827e7f5739
-# ╟─ea3e3f1f-6e07-470f-bd6c-bb7e12bb9ed8
-# ╠═22220a91-4f5a-4fdc-bd84-f0d79f911034
-# ╠═78184c09-2a35-4041-8b9b-946ee07d6a90
-# ╠═37dea02b-6d35-46b7-ba69-f3ba4bdd5e19
-# ╟─a65ab9ac-f91c-4c6c-a162-34a3fc3ced13
-# ╠═8eff2abf-254e-4336-b2b5-7d46a75279f3
-# ╠═dc128964-6f99-4695-8c39-4b688b6041d8
-# ╠═bb34b464-7e0f-4fe7-ae55-3aa8aff5940a
-# ╟─13259939-4338-44c0-904f-2d2a73a25879
-# ╠═5439a417-bde0-4255-b310-09140dfe2eda
-# ╠═4d6ec0eb-f023-451f-80ba-14b6fb3f1e24
-# ╠═4dec6012-eb5c-4db2-bb95-e67e29ef4532
-# ╠═156417da-bd77-425a-a41d-2f5ef31c339c
-# ╠═4748644a-e1ef-4e1d-9e43-b0e566a74d0a
-# ╟─7c1b788b-9d94-4d3a-93ce-385bb8a3d3ae
-# ╠═edf27a0c-9e66-46f1-918b-b404e1b6dc7a
-# ╠═a79e4de7-ad33-4043-a416-2ce3952bbafa
-# ╟─6b7607e3-ced8-4549-9287-e4fc0d578908
-# ╠═4f550514-f478-4cce-9cea-2f846c668bcf
-# ╠═c54d7f45-46dd-4cc8-ac82-141427fccc3f
-# ╠═3ad533a5-3f3c-46d3-9229-208679e7f01a
-# ╠═00629ad3-fe8e-403a-8d94-35a74a263447
-# ╠═c2f427aa-9e39-4957-982a-6e863f4a4853
-# ╠═3d11cbe4-e503-43a7-8bba-6d0a590ef980
-# ╠═a7170b37-86d2-4e89-92a1-ef3c19793776
-# ╠═1a578c44-650f-4b5c-8c5a-bbc47ad3a904
-# ╟─41e9ad1c-248a-4fd4-8c81-c037f213171b
-# ╠═4a88de81-0e41-4889-a45b-d303fa6dbfcf
-# ╠═3f7790ab-248d-43f6-9b8c-5fe50e034cc3
-# ╟─ccc5887d-f8b9-4851-9299-043272b9336a
-# ╠═24de739d-d053-4e41-83dd-0e076f2fe471
-# ╠═7804dcba-6adb-4d3b-9328-32a734acfacb
-# ╟─561b8929-c453-4a75-a432-f29031b663ac
-# ╠═5c105e50-d1b8-4af3-b510-588c1dbbc40e
-# ╟─f73b41a5-01f5-4694-b34b-a4648d18fc91
-# ╟─3100a50b-f4f7-4cf9-8c74-edb2b5579779
-# ╟─49d95aaa-b5cf-469c-b235-c1eb1ce776b8
-# ╟─2d79fea9-af26-4ef9-b938-e40a868f5995
-# ╟─81ab2269-9a8d-4626-9f1f-4a193f4e7fb3
-# ╟─b7e9a54c-a813-4864-bcf7-8437c4c6d69b
-# ╟─16f8acf3-c913-4a06-85b6-3111e18a7494
-# ╟─182d2fe5-14f8-4262-b8cf-672f8a1c6f9b
-# ╟─76a99e4f-1287-4fb6-9873-1ffc5db9d88e
-# ╟─496514b8-bcaa-4c06-844e-082eb4dfdbca
-# ╟─4219f0fe-bd6a-45c2-9ae9-2113a65d9e9e
-# ╟─2acf58c3-3227-4ee6-a72e-1422accb1b98
-# ╟─2711fa92-9877-4441-8456-9c6c40e3fcad
-# ╟─6f0c1138-61a2-48df-8c82-09de7533e28f
-# ╟─df9a5201-c5ff-4b32-a913-746bae1c691a
-# ╠═f1d6cd8a-1588-4b2a-b7d4-20dbc8b7dfe5
-# ╠═23ecebf6-22ff-43a0-97a2-62718f5ebab5
-# ╠═1bcb39cf-0a2b-453e-845a-e22caa1bd23b
-# ╠═27ec39f4-aca3-41da-a6ed-b6bb4a6b1035
-# ╠═e76cb128-d03e-465b-bbb4-9abee96d9249
-# ╟─a9e401d2-91ed-49b3-a4e7-318bc2119306
-# ╟─4ed539e0-cac0-481d-88e1-bef8d3af60a9
-# ╟─af7fd14d-2b0a-4d9c-8899-1430e152bab4
-# ╠═264be045-c2fa-4cff-ab0a-3d8e79675875
-# ╠═2496b1d6-5738-4568-bf3d-c92468d7e900
+# ╠═3d96ab22-5640-4a2b-8519-a6fb59b84aeb
+# ╠═4f09ff9a-ed3d-11ef-098f-b94299262ff2
+# ╠═f2972fe5-92d9-48c2-ac9b-aa229d0835c4
+# ╠═f4cc1a2f-8ae0-458d-ae12-b953f00510ba
+# ╠═9cf92ae6-18b8-4f7e-afb1-db7ca119a35c
+# ╠═d27158cc-4207-463f-a266-41b8af1add0a
+# ╠═a1b6fec8-1398-4b63-b07c-1a2ed4fbac7b
+# ╠═2310956e-7243-43de-be64-ec37cb68c71d
+# ╠═6e4c0cac-7272-4b79-86fd-2d7a03ed879e
+# ╠═4e283dd7-f6ef-4aa9-9739-9b01f5a7b460
+# ╠═be1ecb76-3659-4f5d-a4d5-e625c8ee73e7
+# ╠═a8fee011-c47f-41b7-ac75-3c6ba40855ba
+# ╠═fae4d514-561f-468f-ba76-2c5933ca0bf5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
