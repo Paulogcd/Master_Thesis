@@ -27,6 +27,15 @@ end
 # ╔═╡ 1a530578-edcf-11ef-16d6-cfaab1e489b1
 md"# Visualisation"
 
+# ╔═╡ 963710c3-082d-4e05-9fee-b1a3363d653c
+# ╠═╡ disabled = true
+#=╠═╡
+# Parameters : 
+	# Risk aversion :
+	@bind ρ Slider(0.00:0.01:1, default=0.9)
+	# Working penalty :
+  ╠═╡ =#
+
 # ╔═╡ d9ee9616-5291-4953-84da-7bec00d27c87
 @bind ϕ_l Slider(0.00:0.01:1, default=0.9)
 	# Working with weather deviation penalty :
@@ -55,6 +64,9 @@ md"# Plot with the 3 choice variables and utility as color"
 
 # ╔═╡ 76c8e95c-f9a6-4027-bc52-90122d77d84a
 @bind st Slider(0:0.1:100)
+
+# ╔═╡ 0442cf9c-133c-4a53-9b68-0425c2230940
+ρ = 0.9
 
 # ╔═╡ 76e742ca-5b43-4e80-9184-c62083d8e000
 begin
@@ -193,21 +205,11 @@ begin
 	plotted_u = u.(ct,"g",lt,"n")
 	
 	Plots.plot(ct,stplus1,plott, zcolor = plotted_u, st=:surface)
+	
+	# Plots.plot(ct,stplus1,plotted_u, zcolor = plott.(ct,stplus1), st=:surface)
 	Plots.plot!(xlabel = "consumption", ylabel = "savings at t+1", zlabel = "labor")
 	Plots.plot!(title = "Labor when saturating the budget constraint.")
 end
-
-# ╔═╡ 0442cf9c-133c-4a53-9b68-0425c2230940
-ρ = 0.9
-
-# ╔═╡ 963710c3-082d-4e05-9fee-b1a3363d653c
-# ╠═╡ disabled = true
-#=╠═╡
-# Parameters : 
-	# Risk aversion :
-	@bind ρ Slider(0.00:0.01:1, default=0.9)
-	# Working penalty :
-  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """

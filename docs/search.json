@@ -14,11 +14,25 @@
     "text": "This page is under construction.\nThis webpage is dedicated to the presentation of the models I worked on within my Master Thesis."
   },
   {
-    "objectID": "models.html#tractable-model-1",
-    "href": "models.html#tractable-model-1",
+    "objectID": "models.html#framework-model-1",
+    "href": "models.html#framework-model-1",
     "title": "Models",
-    "section": "Tractable model 1",
-    "text": "Tractable model 1\nThis model is currently under work. Its aim is to be a simplified version of the general framework I want to use.\nIt can be found here."
+    "section": "Framework model 1",
+    "text": "Framework model 1\nThis model is currently under work. Its aim is to be a simplified version of the general framework I want to use.\nIt can be found here."
+  },
+  {
+    "objectID": "models.html#framework-model-2",
+    "href": "models.html#framework-model-2",
+    "title": "Models",
+    "section": "Framework model 2",
+    "text": "Framework model 2\nThis model is currently under work. Its aim is to add to the general framework a continuous variable for temperature.\nIt can be found here."
+  },
+  {
+    "objectID": "models.html#visualisation",
+    "href": "models.html#visualisation",
+    "title": "Models",
+    "section": "Visualisation",
+    "text": "Visualisation\nI am also working on some model visualisation. A notebook about it can be found here."
   },
   {
     "objectID": "index.html",
