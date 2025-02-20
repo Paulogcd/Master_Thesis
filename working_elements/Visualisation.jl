@@ -27,15 +27,6 @@ end
 # ╔═╡ 1a530578-edcf-11ef-16d6-cfaab1e489b1
 md"# Visualisation"
 
-# ╔═╡ 963710c3-082d-4e05-9fee-b1a3363d653c
-# ╠═╡ disabled = true
-#=╠═╡
-# Parameters : 
-	# Risk aversion :
-	@bind ρ Slider(0.00:0.01:1, default=0.9)
-	# Working penalty :
-  ╠═╡ =#
-
 # ╔═╡ d9ee9616-5291-4953-84da-7bec00d27c87
 @bind ϕ_l Slider(0.00:0.01:1, default=0.9)
 	# Working with weather deviation penalty :
@@ -65,10 +56,8 @@ md"# Plot with the 3 choice variables and utility as color"
 # ╔═╡ 76c8e95c-f9a6-4027-bc52-90122d77d84a
 @bind st Slider(0:0.1:100)
 
-# ╔═╡ 0442cf9c-133c-4a53-9b68-0425c2230940
-ρ = 0.9
-
 # ╔═╡ 76e742ca-5b43-4e80-9184-c62083d8e000
+#=╠═╡
 begin
 	# Indicator functions : health, weather, working :
 	indicator_function_bad_health(h) = h == "b" ? 1 : 0 
@@ -81,23 +70,33 @@ begin
 	# Utility function : 
 	u(c,h,l,w) = (c^(1-ρ))/(1-ρ) - ϕ(h,l,w)
 end
+  ╠═╡ =#
 
 # ╔═╡ cf06aa4e-e4b0-4ac1-a0e6-112bae33b3f0
+#=╠═╡
 ξ(w,h) = ϕ_l + ϕ_w * indicator_function_weather_deviation(w) + ϕ_h * indicator_function_bad_health(h)
+  ╠═╡ =#
 
 # ╔═╡ 5b5f9308-38fa-4102-9cb8-0af055010158
+#=╠═╡
 ξ("n","g")
+  ╠═╡ =#
 
 # ╔═╡ 6e0df2a4-8fe5-4126-981d-a8a64ac4867b
+#=╠═╡
 begin
 	skill(h,w,age) = age^(0.5)-age*0.06*indicator_function_bad_health(h)-age*0.04*indicator_function_weather_deviation(w)
 	productivity(h,w,age) = skill(h,w,age) + rand(Normal(0,0.3))
 end
+  ╠═╡ =#
 
 # ╔═╡ bf65b94b-8289-4782-ae09-128af808975c
+#=╠═╡
 Plots.plot(productivity.("g","n",1:100))
+  ╠═╡ =#
 
 # ╔═╡ b3f072db-fd95-4f9e-8d34-104d7b37549e
+#=╠═╡
 begin
 	budget_constraint2(consumption,labor) = labor.*productivity.("g","n",20)
 	
@@ -106,8 +105,10 @@ begin
 	Plots.yaxis!("Budget") 
 	
 end
+  ╠═╡ =#
 
 # ╔═╡ b824c8a2-5a5d-4111-b1ea-02d628a4e7c0
+#=╠═╡
 begin
 	Plots.plot(u.(1:100,"g",1,"n"))
 	Plots.xlabel!("Consumption")
@@ -115,22 +116,30 @@ begin
 	Plots.title!("Utility for a fixed level of labor")
 	Plots.vline!([labor_income])
 end
+  ╠═╡ =#
 
 # ╔═╡ e71f3cbf-6173-4f19-ba82-5e841779f524
+#=╠═╡
 begin
 	Plots.plot(u.(1,"g",1:100,"n"))
 	Plots.xlabel!("Labor")
 	Plots.ylabel!("Utility")
 	Plots.title!("Utility for a fixed a level of Consumption.")
 end
+  ╠═╡ =#
 
 # ╔═╡ 5087c766-7741-4bdb-b737-77e0277bdc4e
+#=╠═╡
 c_star = (ξ("n","g")/productivity("g","n",20))^(-1/ρ)
+  ╠═╡ =#
 
 # ╔═╡ 313ed3fa-d587-4624-b6f6-55ff84d76c86
+#=╠═╡
 l_star = productivity("g","n",20)^((1-ρ)/(ρ)) * ξ("n","g")^(-1/ρ)
+  ╠═╡ =#
 
 # ╔═╡ 6e378dc9-d1f3-469e-9290-b381251603de
+#=╠═╡
 begin
 	plotlyjs()
 	consumption = 1:10
@@ -156,8 +165,10 @@ begin
 	# plot!(budget_x, budget_y, budget_z, label="Budget Constraint", linecolor=:green)
 
 end
+  ╠═╡ =#
 
 # ╔═╡ 5b2036af-be8c-4eb7-9894-76a9b9e0a8c1
+#=╠═╡
 begin
 	# Initialisation: 
 	# z = productivity("g","n",30)
@@ -165,12 +176,17 @@ begin
 	c(z,fixed_ξ) = (z/fixed_ξ)^(1/ρ)
 	# (z,fixed_ξ,ρ,c)
 end
+  ╠═╡ =#
 
 # ╔═╡ ea0baa76-8245-4ca1-ad08-f1eec3ed563f
+#=╠═╡
 ct2 = c(productivity("g","n",20),fixed_ξ)
+  ╠═╡ =#
 
 # ╔═╡ 1d5fa12b-62f7-4754-b3ea-dd23e7e2ae7a
+#=╠═╡
 productivity("g","n",20)
+  ╠═╡ =#
 
 # ╔═╡ 55da8ec0-7c4d-416e-b667-d1c501d99893
 md"This represents the set of possible combinations of savings for next period and labor at the current period to saturate the budget constraint for all possible values of consumption."
@@ -182,6 +198,7 @@ md" # 3d plot of the utility in function of the savings and the labor"
 md"We have computed the optimal consumption level as a function of labor and savings. Therefore, we can compute the utility for a given level of labor and savings."
 
 # ╔═╡ bf2a1850-2e52-4d8f-813b-785e02a73ad2
+#=╠═╡
 begin
 	c_star
 	# u()
@@ -193,8 +210,10 @@ begin
 	optimal_u(l,sprime) = u.(optimal_c.(l,sprime),"g",l,"n")
 	Plots.plot(l,sprime,optimal_u, st=:surface)
 end
+  ╠═╡ =#
 
 # ╔═╡ d71ed33e-d967-4414-ac33-b090248b03eb
+#=╠═╡
 begin
 	lt = 1:100
 	ct = c.(productivity.("g","n",1:100),fixed_ξ)
@@ -210,6 +229,21 @@ begin
 	Plots.plot!(xlabel = "consumption", ylabel = "savings at t+1", zlabel = "labor")
 	Plots.plot!(title = "Labor when saturating the budget constraint.")
 end
+  ╠═╡ =#
+
+# ╔═╡ 963710c3-082d-4e05-9fee-b1a3363d653c
+# ╠═╡ disabled = true
+#=╠═╡
+# Parameters : 
+	# Risk aversion :
+	@bind ρ Slider(0.00:0.01:1, default=0.9)
+	# Working penalty :
+  ╠═╡ =#
+
+# ╔═╡ 0442cf9c-133c-4a53-9b68-0425c2230940
+#=╠═╡
+ρ = 0.9
+  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """

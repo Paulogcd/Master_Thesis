@@ -50,6 +50,9 @@ md"# Summary
 6. Other
 "
 
+# ╔═╡ 72256868-15ad-40d7-978b-16dfdd08f714
+plotly()
+
 # ╔═╡ 4c2a0eb5-6bf6-4b8b-9c1d-51107af68743
 md"# 1. Health"
 
@@ -377,7 +380,7 @@ begin
 end
 
 # ╔═╡ 7804dcba-6adb-4d3b-9328-32a734acfacb
-pop_results = popsim(2000000)
+pop_results = popsim(200)
 
 # ╔═╡ 561b8929-c453-4a75-a432-f29031b663ac
 begin
@@ -726,6 +729,37 @@ This is the Euler equation.
 
 "
 
+# ╔═╡ 2ff645d4-7fb8-43fb-84eb-8ee49eba5517
+md"## Attempt of visualisation : Optimal choices 
+
+Let us now simulate what the lifetime-utility of these agents would be if they take these optimal decisions. 
+
+"
+
+# ╔═╡ 818eef3c-df89-403c-8596-ea001f36ccfa
+md"First, let us try to simulate one individual."
+
+# ╔═╡ d8218dde-6293-47a5-a6c9-b961c888eaf7
+# We set the initial endowments to 0
+@bind s_0 Slider(0.00:0.01:10, default=0)
+
+# ╔═╡ 08b1dff8-2d06-4c7a-8d65-764a14da3c82
+@bind ϕ_l Slider(0.00:0.01:1.00, default = 0.9)
+
+# ╔═╡ d0775972-5951-4e98-9eae-1cc7d96a10f7
+@bind ϕ_w Slider(0.00:0.01:1.00, default = 0.7)
+
+# ╔═╡ 228149ad-e230-4104-87e3-13484bfa8391
+@bind ϕ_h Slider(0.00:0.01:1.00, default = 0.9)
+
+# ╔═╡ 8a95527e-7db3-448e-9047-09f661f41f33
+md"The relationship is positive and linear. This is intuitive : for a given amount of desired savings transferred to the next period, the agent has to work more if they want to consume optimally."
+
+# ╔═╡ e38e36a8-f410-4888-8fa9-eb907cacf127
+md"## Attempt of visualisation : no savings
+
+Let us now try to simulate the life of an agent that does not save."
+
 # ╔═╡ 6f0c1138-61a2-48df-8c82-09de7533e28f
 md"# 6. Other"
 
@@ -736,17 +770,67 @@ md"We can define the utility function in Julia : "
 # Risk aversion :
 @bind ρ Slider(0.00:0.01:1, default=0.9)
 
-# ╔═╡ 1bcb39cf-0a2b-453e-845a-e22caa1bd23b
-# Working penalty :
-@bind ϕ_l Slider(0.00:0.01:1, default=0.9)
+# ╔═╡ 16b59fce-f0d9-40bf-8594-4afa1a4f9d6c
+begin
+	
+	# We first draw the exogenous variables : 
+		# time period : 
+		t = 18
+		# health with a initial good health :
+		past_health = "g"
+		present_health = health_probability(past_health)
+		# weather : 
+		present_weather = weather()
+	
+	# Now, the variables that are determined by these variables : 
+	 # the productivity : 
+	present_productivity = productivity(present_health,present_weather,t)
+	 # the marginal disutility of labor : 
+	ξ(w,h) = ϕ_l + ϕ_w * indicator_function_weather_deviation(w) + ϕ_h * indicator_function_bad_health(h)
+	present_ξ = ξ(present_weather,present_health)
 
-# ╔═╡ 27ec39f4-aca3-41da-a6ed-b6bb4a6b1035
-# Working with weather deviation penalty :
-@bind ϕ_w Slider(0.00:0.01:1, default=0.7)
+	# Now, where the agents decide : 
+	
+	 # We first define different level of savings for the next period : 
+	 ST1 = 0:100
+	 # the agent consumes optimally : 
+	 present_optimal_consumption = (present_productivity/present_ξ)^(1/ρ)
+	
+	 # To reach this level of consumption, they have to work, such that : 
+	 present_optimal_labor_supply(c,st1,s_0,z) = (c+st1-s_0)/z
+	 Plots.plot(ST1,present_optimal_labor_supply.(present_optimal_consumption,ST1,s_0,present_productivity))
+	 Plots.plot!(xaxis = "savings for the next period", yaxis = "optimal present labor")
+	
+	# ξ(w,h) = ϕ_l + ϕ_w * indicator_function_weather_deviation(present_weather) + ϕ_h * indicator_function_bad_health(present_labor_supply)
+end
 
-# ╔═╡ e76cb128-d03e-465b-bbb4-9abee96d9249
-# Working in bad health penalty :
-@bind ϕ_h Slider(0.00:0.01:1, default=0.9)
+# ╔═╡ 745d1669-289b-4c8d-b18c-6e9c712da664
+begin
+	st1 = 0:100
+	lt = 0:100
+	zt = productivity("g","n",30)
+	ct(st1,lt) = lt*zt+0-st1
+	Plots.plot(lt,st1,ct, st = :surface)
+	Plots.plot!(xaxis = "labor", yaxis = "savings at next period", zaxis = "consumption")
+	
+	optimal_ct = zt/present_ξ
+	# Plots.plot!(lt,st1,optimal_ct)
+
+	x = 0.00:100
+	y = 0.00:100
+	# y = range(-2, 2, length=50)
+	X = repeat(reshape(x, :, 1), 1, length(y))
+	Y = repeat(reshape(y, 1, :), length(x), 1)
+	# Z = repeat(reshape[optimal_ct],size(X))
+
+	Z = repeat(reshape([optimal_ct], :, 1), 1, length(y))
+
+	Z = fill(optimal_ct, 100, 100)
+	
+	# repeat([optimal_ct],100)
+	
+	Plots.surface!(X,Y,Z)
+end
 
 # ╔═╡ f1d6cd8a-1588-4b2a-b7d4-20dbc8b7dfe5
 begin
@@ -759,6 +843,125 @@ begin
 	# Utility function : 
 	u(c,h,l,w) = (c^(1-ρ))/(1-ρ) - ϕ(h,l,w)
 end
+
+# ╔═╡ 7ecb1a5a-dc5c-4319-947f-adf4b2a766f0
+begin
+
+	"""
+	The function `choice_sim_nosavings()` simulates the choices of an individual that does not save.
+	It returns a tuple containing: 
+
+	1. Their age of death, 
+	2. Their living status history (1 when living, 0 when being dead),
+	3. Their health status history ("g" when good, "b" when bad).
+	4. Their utility for each period. 
+	5. Their consumption for each period. 
+	6. Their labor supply for each period.
+	7. Their productivity for each period.
+	"""
+	function choice_sim_nosavings()
+		living_history = zeros(100)
+		health_history = Vector{String}(undef,100)
+		utility_history = Vector{Float64}(undef,100)
+		consumption_history = Vector{Float64}(undef,100)
+		health_history = Vector{String}(undef,100)
+		productivity_history = Vector{Float64}(undef,100)
+
+		health_t_1 = String("g")
+	
+		for t in 1:100
+	    
+			# if t == 1
+			# 	health_t_1 = "g"
+			# end
+	    
+		    # The age : 
+		    age = t
+		    
+		    # The weather ("n" or "d") :
+		    weather_t = weather()
+		    
+		    # The health status : 
+		    # probability of being in good health : 
+		    pgh = probability_good_health = health_probability(health_t_1)
+		    health_t = rand(Binomial(1,pgh)) == 1 ? "g" : "b"
+			health_history[t] = health_t
+			health_t_1 = health_t
+		
+		    # The living status : 
+		    pd = probability_dying = ζ(age,health_t)
+		    living_status = rand(Binomial(1,1-pd))
+		    living_history[t] = living_status
+
+			# Choices : 
+
+			# Productivity (exogenous)
+			productivity_t = productivity(health_t,weather_t,age)
+			productivity_history[t] = productivity_t
+
+			# Consumption : 
+			consumption_t = ((productivity_t)/(ξ(weather_t,health_t)))^(1ρ)
+			consumption_history[t] = consumption_t
+
+			# Labor : 
+			labor_t = consumption_t/productivity_t
+
+			# Utility : 
+			u_t = u(consumption_t,health_t,labor_t,weather_t)
+			utility_history[t] = u_t
+
+			# When death comes : 
+			if living_status == 0
+				# print("Agent died at ", t)
+				results = (age,
+					living_history,
+					health_history,
+					utility_history,
+					consumption_history,
+					health_history,
+					productivity_history)
+				return(results)
+				break
+			else
+			end
+			
+		end
+	end
+end
+
+# ╔═╡ aa2aa419-398f-4e36-aef6-4c7fb68e30bb
+begin
+	choice_single = choice_sim_nosavings()
+	Plots.plot(1:100,choice_single[5])
+	Plots.plot!(xaxis = "Age", yaxis = "Consumption")
+end
+
+# ╔═╡ cffdb117-e983-4a3c-b197-35cab66f64b0
+begin
+	Plots.plot(1:100,choice_single[4])
+	Plots.plot!(xaxis = "Age", yaxis = "Utility")
+end
+
+# ╔═╡ 1bcb39cf-0a2b-453e-845a-e22caa1bd23b
+# ╠═╡ disabled = true
+#=╠═╡
+# Working penalty :
+@bind ϕ_l Slider(0.00:0.01:1, default=0.9)
+  ╠═╡ =#
+
+# ╔═╡ 27ec39f4-aca3-41da-a6ed-b6bb4a6b1035
+# ╠═╡ disabled = true
+#=╠═╡
+# Working with weather deviation penalty :
+@bind ϕ_w Slider(0.00:0.01:1, default=0.7)
+  ╠═╡ =#
+
+# ╔═╡ e76cb128-d03e-465b-bbb4-9abee96d9249
+# ╠═╡ disabled = true
+#=╠═╡
+# Working in bad health penalty :
+@bind ϕ_h Slider(0.00:0.01:1, default=0.9)
+  ╠═╡ =#
 
 # ╔═╡ a9e401d2-91ed-49b3-a4e7-318bc2119306
 md"Ploting the utility for good health and bad health agents, we get : "
@@ -2303,6 +2506,7 @@ version = "1.4.1+2"
 # ╟─ab992a5b-6a2c-4457-a651-c6818df8f5e2
 # ╟─0ef87638-e32f-11ef-1ac0-094df082b41c
 # ╠═0d381a45-b8a7-4ce0-a904-b238fd26902d
+# ╠═72256868-15ad-40d7-978b-16dfdd08f714
 # ╟─4c2a0eb5-6bf6-4b8b-9c1d-51107af68743
 # ╟─1d30ee07-9993-4cdf-bea0-f318b5461079
 # ╠═33467e51-029b-4fc5-a889-ee8a6e108a7e
@@ -2358,6 +2562,19 @@ version = "1.4.1+2"
 # ╟─4219f0fe-bd6a-45c2-9ae9-2113a65d9e9e
 # ╟─2acf58c3-3227-4ee6-a72e-1422accb1b98
 # ╟─2711fa92-9877-4441-8456-9c6c40e3fcad
+# ╠═2ff645d4-7fb8-43fb-84eb-8ee49eba5517
+# ╟─818eef3c-df89-403c-8596-ea001f36ccfa
+# ╠═d8218dde-6293-47a5-a6c9-b961c888eaf7
+# ╠═16b59fce-f0d9-40bf-8594-4afa1a4f9d6c
+# ╠═08b1dff8-2d06-4c7a-8d65-764a14da3c82
+# ╠═d0775972-5951-4e98-9eae-1cc7d96a10f7
+# ╠═228149ad-e230-4104-87e3-13484bfa8391
+# ╟─8a95527e-7db3-448e-9047-09f661f41f33
+# ╠═745d1669-289b-4c8d-b18c-6e9c712da664
+# ╟─e38e36a8-f410-4888-8fa9-eb907cacf127
+# ╠═7ecb1a5a-dc5c-4319-947f-adf4b2a766f0
+# ╠═aa2aa419-398f-4e36-aef6-4c7fb68e30bb
+# ╠═cffdb117-e983-4a3c-b197-35cab66f64b0
 # ╟─6f0c1138-61a2-48df-8c82-09de7533e28f
 # ╟─df9a5201-c5ff-4b32-a913-746bae1c691a
 # ╠═f1d6cd8a-1588-4b2a-b7d4-20dbc8b7dfe5
