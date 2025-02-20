@@ -51,7 +51,7 @@ md"# Summary
 "
 
 # ╔═╡ 72256868-15ad-40d7-978b-16dfdd08f714
-plotly()
+plotlyjs()
 
 # ╔═╡ 4c2a0eb5-6bf6-4b8b-9c1d-51107af68743
 md"# 1. Health"
@@ -729,6 +729,20 @@ This is the Euler equation.
 
 "
 
+# ╔═╡ e38e36a8-f410-4888-8fa9-eb907cacf127
+md"## Attempt of visualisation : no savings
+
+Let us now try to simulate the life of an agent that does not save.
+
+We are going to assume that they consume: 
+
+$$c^{*}_{t}=\left(\frac{z_t}{\xi_t}\right)^{\frac{1}{\rho}}$$
+
+And that they work such that:
+
+$$l^{*}_{t}=z_{t}^{-1}\left(c^{*}_{t}\right)=z_{t}^{-1}\cdot\left(\frac{z_t}{\xi_t}\right)^{\frac{1}{\rho}}$$
+"
+
 # ╔═╡ 2ff645d4-7fb8-43fb-84eb-8ee49eba5517
 md"## Attempt of visualisation : Optimal choices 
 
@@ -754,11 +768,6 @@ md"First, let us try to simulate one individual."
 
 # ╔═╡ 8a95527e-7db3-448e-9047-09f661f41f33
 md"The relationship is positive and linear. This is intuitive : for a given amount of desired savings transferred to the next period, the agent has to work more if they want to consume optimally."
-
-# ╔═╡ e38e36a8-f410-4888-8fa9-eb907cacf127
-md"## Attempt of visualisation : no savings
-
-Let us now try to simulate the life of an agent that does not save."
 
 # ╔═╡ 6f0c1138-61a2-48df-8c82-09de7533e28f
 md"# 6. Other"
@@ -865,6 +874,7 @@ begin
 		utility_history = Vector{Float64}(undef,100)
 		consumption_history = Vector{Float64}(undef,100)
 		health_history = Vector{String}(undef,100)
+		labor_history = Vector{Float64}(undef,100)
 		productivity_history = Vector{Float64}(undef,100)
 
 		health_t_1 = String("g")
@@ -905,6 +915,7 @@ begin
 
 			# Labor : 
 			labor_t = consumption_t/productivity_t
+			labor_history[t] = labor_t
 
 			# Utility : 
 			u_t = u(consumption_t,health_t,labor_t,weather_t)
@@ -918,7 +929,7 @@ begin
 					health_history,
 					utility_history,
 					consumption_history,
-					health_history,
+					labor_history,
 					productivity_history)
 				return(results)
 				break
@@ -929,17 +940,41 @@ begin
 	end
 end
 
+# ╔═╡ 9b81ad5f-5f30-438a-8761-120193034e67
+choice_single = choice_sim_nosavings()
+
 # ╔═╡ aa2aa419-398f-4e36-aef6-4c7fb68e30bb
 begin
-	choice_single = choice_sim_nosavings()
-	Plots.plot(1:100,choice_single[5])
+	Plots.plot(1:100,choice_single[5], legend = false)
 	Plots.plot!(xaxis = "Age", yaxis = "Consumption")
 end
 
 # ╔═╡ cffdb117-e983-4a3c-b197-35cab66f64b0
 begin
-	Plots.plot(1:100,choice_single[4])
+	Plots.plot(1:100,choice_single[4], legend = false)
 	Plots.plot!(xaxis = "Age", yaxis = "Utility")
+end
+
+# ╔═╡ eeef3852-6da5-41d2-a80e-33ed0828e3a8
+begin
+	Plots.plot(1:100,choice_single[6], legend = false)
+	Plots.plot!(xaxis = "Age", yaxis = "Work supply")
+end
+
+# ╔═╡ 8c6effe5-2773-4e5b-b670-e3fd6da1a8ea
+begin
+	Plots.plot(1:100,choice_single[7], legend = false)
+	Plots.plot!(xaxis = "Age", yaxis = "Productivity")
+end
+
+# ╔═╡ 6eeab653-8f96-48db-abaf-e9e9f4932a5a
+begin
+	Plots.plot(1:100,choice_single[5], label = "Consumption")
+	Plots.plot!(choice_single[4], label = "Utility")
+	Plots.plot!(choice_single[6], label = "Work supply")
+	# Plots.plot!(choice_single[7].*choice_single[6], label = "Labor income")
+	# Labor income is consumption here, since there is no savings. 
+	Plots.plot!(xaxis = "Age")
 end
 
 # ╔═╡ 1bcb39cf-0a2b-453e-845a-e22caa1bd23b
@@ -2562,7 +2597,15 @@ version = "1.4.1+2"
 # ╟─4219f0fe-bd6a-45c2-9ae9-2113a65d9e9e
 # ╟─2acf58c3-3227-4ee6-a72e-1422accb1b98
 # ╟─2711fa92-9877-4441-8456-9c6c40e3fcad
-# ╠═2ff645d4-7fb8-43fb-84eb-8ee49eba5517
+# ╟─e38e36a8-f410-4888-8fa9-eb907cacf127
+# ╠═7ecb1a5a-dc5c-4319-947f-adf4b2a766f0
+# ╠═9b81ad5f-5f30-438a-8761-120193034e67
+# ╠═aa2aa419-398f-4e36-aef6-4c7fb68e30bb
+# ╠═cffdb117-e983-4a3c-b197-35cab66f64b0
+# ╠═eeef3852-6da5-41d2-a80e-33ed0828e3a8
+# ╠═8c6effe5-2773-4e5b-b670-e3fd6da1a8ea
+# ╠═6eeab653-8f96-48db-abaf-e9e9f4932a5a
+# ╟─2ff645d4-7fb8-43fb-84eb-8ee49eba5517
 # ╟─818eef3c-df89-403c-8596-ea001f36ccfa
 # ╠═d8218dde-6293-47a5-a6c9-b961c888eaf7
 # ╠═16b59fce-f0d9-40bf-8594-4afa1a4f9d6c
@@ -2571,10 +2614,6 @@ version = "1.4.1+2"
 # ╠═228149ad-e230-4104-87e3-13484bfa8391
 # ╟─8a95527e-7db3-448e-9047-09f661f41f33
 # ╠═745d1669-289b-4c8d-b18c-6e9c712da664
-# ╟─e38e36a8-f410-4888-8fa9-eb907cacf127
-# ╠═7ecb1a5a-dc5c-4319-947f-adf4b2a766f0
-# ╠═aa2aa419-398f-4e36-aef6-4c7fb68e30bb
-# ╠═cffdb117-e983-4a3c-b197-35cab66f64b0
 # ╟─6f0c1138-61a2-48df-8c82-09de7533e28f
 # ╟─df9a5201-c5ff-4b32-a913-746bae1c691a
 # ╠═f1d6cd8a-1588-4b2a-b7d4-20dbc8b7dfe5
