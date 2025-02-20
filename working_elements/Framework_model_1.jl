@@ -126,11 +126,14 @@ Let us suppose that it has probability $\alpha_3$ of being normal, and $1-\alpha
 
 # ╔═╡ dc128964-6f99-4695-8c39-4b688b6041d8
 begin
-	weather() = rand(Binomial(1,α_3)) == 1 ? "n" : "d"
+	weather(p) = rand(Binomial(1,p)) == 1 ? "n" : "d"
 end
 
 # ╔═╡ bb34b464-7e0f-4fe7-ae55-3aa8aff5940a
-weather()
+weather(α_3)
+
+# ╔═╡ 14ed8ce1-cd0c-4125-b8e5-18dc9beb9c15
+weather(1)
 
 # ╔═╡ 13259939-4338-44c0-904f-2d2a73a25879
 md" 
@@ -294,7 +297,7 @@ begin
 		    age = t
 		    
 		    # The weather ("n" or "d") :
-		    weather_t = weather()
+		    weather_t = weather(α_3)
 		    
 		    # The health status : 
 		    # probability of being in good health : 
@@ -374,7 +377,7 @@ begin
 	
 		println("Life expectancy in this population: ", mean(AOD))
 		
-		results = (AOD,LH,HH)
+		results = (;age_of_death,living_history,health_history)
 		return(results)
 	end
 end
@@ -743,6 +746,28 @@ And that they work such that:
 $$l^{*}_{t}=z_{t}^{-1}\left(c^{*}_{t}\right)=z_{t}^{-1}\cdot\left(\frac{z_t}{\xi_t}\right)^{\frac{1}{\rho}}$$
 "
 
+# ╔═╡ da5119df-55af-4cc4-890b-963fe890e894
+md"First, let us define the function of the labor disutility : "
+
+# ╔═╡ fe9b7ac6-305a-4fdf-9c21-b5fda8fa46d5
+md"### Aggregate simulation
+
+Let us now try to simulate the choices and utility of several agents, without savings."
+
+# ╔═╡ 235c6844-1f7d-46b7-bb72-5fdd0a43b8eb
+md"Within such a very simplisic model, we can run the simulations for different probability of weather deviation, and compare the outcomes in terms of aggregate utility. Here is an example with the aggregate uility of a society with a probability of he weather staying normal of 0.5.
+
+I only plot untill period 90, because very low consumption levels yield values too large to be handled correctly."
+
+# ╔═╡ 57681a33-f184-405d-8a27-c370a9bcb0ed
+md"Now, comparing across societies, with different probabilities of weather deviation, we get:"
+
+# ╔═╡ 3cd20d71-cf21-489e-996e-7800f6e2ad99
+md"The different values correspond to the probability of the weather being normal."
+
+# ╔═╡ 01b81ae5-eba8-450a-8519-bddb29476628
+md"With only the extreme values : " 
+
 # ╔═╡ 2ff645d4-7fb8-43fb-84eb-8ee49eba5517
 md"## Attempt of visualisation : Optimal choices 
 
@@ -765,6 +790,9 @@ md"First, let us try to simulate one individual."
 
 # ╔═╡ 228149ad-e230-4104-87e3-13484bfa8391
 @bind ϕ_h Slider(0.00:0.01:1.00, default = 0.9)
+
+# ╔═╡ b8d9ee05-99b4-46b8-8898-46b859f8946a
+ξ(w,h) = ϕ_l + ϕ_w * indicator_function_weather_deviation(w) + ϕ_h * indicator_function_bad_health(h)
 
 # ╔═╡ 8a95527e-7db3-448e-9047-09f661f41f33
 md"The relationship is positive and linear. This is intuitive : for a given amount of desired savings transferred to the next period, the agent has to work more if they want to consume optimally."
@@ -789,13 +817,12 @@ begin
 		past_health = "g"
 		present_health = health_probability(past_health)
 		# weather : 
-		present_weather = weather()
+		present_weather = weather(α_3)
 	
 	# Now, the variables that are determined by these variables : 
 	 # the productivity : 
 	present_productivity = productivity(present_health,present_weather,t)
 	 # the marginal disutility of labor : 
-	ξ(w,h) = ϕ_l + ϕ_w * indicator_function_weather_deviation(w) + ϕ_h * indicator_function_bad_health(h)
 	present_ξ = ξ(present_weather,present_health)
 
 	# Now, where the agents decide : 
@@ -815,6 +842,7 @@ end
 
 # ╔═╡ 745d1669-289b-4c8d-b18c-6e9c712da664
 begin
+	plotlyjs()
 	st1 = 0:100
 	lt = 0:100
 	zt = productivity("g","n",30)
@@ -855,9 +883,11 @@ end
 
 # ╔═╡ 7ecb1a5a-dc5c-4319-947f-adf4b2a766f0
 begin
-
 	"""
-	The function `choice_sim_nosavings()` simulates the choices of an individual that does not save.
+	The function `choice_sim_nosavings(p)` simulates the choices of an individual that does not save.
+
+	The parameter `p` is the probability of the weather begin in a deviation state.
+	
 	It returns a tuple containing: 
 
 	1. Their age of death, 
@@ -868,14 +898,14 @@ begin
 	6. Their labor supply for each period.
 	7. Their productivity for each period.
 	"""
-	function choice_sim_nosavings()
+	function choice_sim_nosavings(p)
 		living_history = zeros(100)
 		health_history = Vector{String}(undef,100)
-		utility_history = Vector{Float64}(undef,100)
-		consumption_history = Vector{Float64}(undef,100)
+		utility_history = zeros(100)
+		consumption_history = zeros(100)
 		health_history = Vector{String}(undef,100)
-		labor_history = Vector{Float64}(undef,100)
-		productivity_history = Vector{Float64}(undef,100)
+		labor_history = zeros(100)
+		productivity_history = zeros(100)
 
 		health_t_1 = String("g")
 	
@@ -889,7 +919,7 @@ begin
 		    age = t
 		    
 		    # The weather ("n" or "d") :
-		    weather_t = weather()
+		    weather_t = weather(p)
 		    
 		    # The health status : 
 		    # probability of being in good health : 
@@ -910,7 +940,7 @@ begin
 			productivity_history[t] = productivity_t
 
 			# Consumption : 
-			consumption_t = ((productivity_t)/(ξ(weather_t,health_t)))^(1ρ)
+			consumption_t = ((productivity_t)/(ξ(weather_t,health_t)))^(1/ρ)
 			consumption_history[t] = consumption_t
 
 			# Labor : 
@@ -924,7 +954,7 @@ begin
 			# When death comes : 
 			if living_status == 0
 				# print("Agent died at ", t)
-				results = (age,
+				results = (;age,
 					living_history,
 					health_history,
 					utility_history,
@@ -941,7 +971,7 @@ begin
 end
 
 # ╔═╡ 9b81ad5f-5f30-438a-8761-120193034e67
-choice_single = choice_sim_nosavings()
+choice_single = choice_sim_nosavings(0.5)
 
 # ╔═╡ aa2aa419-398f-4e36-aef6-4c7fb68e30bb
 begin
@@ -975,6 +1005,134 @@ begin
 	# Plots.plot!(choice_single[7].*choice_single[6], label = "Labor income")
 	# Labor income is consumption here, since there is no savings. 
 	Plots.plot!(xaxis = "Age")
+end
+
+# ╔═╡ cf36d6c7-e4d4-418c-9fce-40479ff55898
+begin
+
+	"""
+	The function `choice_sim_nosavings_population(I::Integer,p::Number)` simulates the consumption and labor supply choices of `I` individuals within a world with a probabiliy `p` of the weather deviating.
+
+	It returns an array of size `I`, with each element containing: 
+
+	1. Their age of death,
+
+	2. Their living status history (1 when living, 0 when being dead),
+	
+	3. Their health status history ("g" when good, "b" when bad).
+	
+	4. Their utility for each period.
+	
+	5. Their consumption for each period.
+	
+	6. Their labor supply for each period.
+	
+	7. Their productivity for each period.
+	"""
+	function choice_sim_nosavings_population(I::Integer,p::Number)
+
+		Population = Array{NamedTuple}(undef,I)
+		for i in 1:I
+			Population[i] = choice_sim_nosavings(p)
+		end
+		return Population
+	end
+end
+
+# ╔═╡ 09ea2e1d-ad4e-48ab-9afd-1732f77a4fa1
+pop_choices_5 = choice_sim_nosavings_population(50,0.5)
+
+# ╔═╡ 36716607-70b2-444f-88bb-6f8db70f542e
+begin
+	# The syntax is such that : 
+	
+	# pop_choices[i,:] # will yield the data of the i-th individual. 
+	# pop_choices[1,:] 
+	# pop_choices[:,1] # will yield everything, since the object has one column
+	# typeof(pop_choices[1,:])
+
+	# typeof(pop_choices[1,:]) # Is a vector of one tuple
+	# typeof(pop_choices[1,:][1]) # Is a tuple of 7 elements, coming from choice_sim_nosavings()
+	
+	# pop_choices[i,:][1] # will yield the same data of the i-th individual
+	# pop_choices[1,:][1][d] # will yield the d-th data of the i-th individual
+	# pop_choices[1,:][1][1] # age of death
+	# pop_choices[1,:][1][2] # living history
+	# pop_choices[1,:][1][3] # health history
+	# etc...
+
+	# To sum up the utilities :
+	function aggregating(x)
+		# Get number of time periods
+		number_of_periods = length(x[1,1][:utility_history])
+		
+		# Initialize array to store sums
+		sum_of_utilities = zeros(number_of_periods)
+	
+		# function correcting!(x) 
+		# 	if isfinite(x)
+		# 		x = x
+		# 	else
+		# 		x = 0
+		# 	end
+		# end
+			
+		# Sum utilities across individuals for each time period
+		for t in 1:number_of_periods
+		    for i in 1:size(x, 1) # for all individuals				
+		        sum_of_utilities[t] += x[i,1][:utility_history][t]
+		    end
+			# correcting!(sum_of_utilities[t])
+		end
+	
+		# for t in 1:number_of_periods
+		# 	correcting!(sum_of_utilities[t])
+		# end
+		# correcting!.(sum_of_utilities)
+	
+		return sum_of_utilities
+		
+	end
+
+	agg_5 = aggregating(pop_choices_5)
+
+	Plots.plot(1:100,agg_5[1:100], legend = false)
+	Plots.plot!(xaxis = "Periods", yaxis = "Aggregate utility")
+	Plots.plot!(title = "Aggregate utility over time with p = 0.5")
+end
+
+# ╔═╡ c23fba1a-09ec-4b5f-ae73-bfb0cf0d7e39
+pop_choices_1 = aggregating(choice_sim_nosavings_population(50,0.1))
+
+# ╔═╡ ca3c4646-3a6d-4ae1-b294-600f0e251e71
+pop_choices_3 = aggregating(choice_sim_nosavings_population(50,0.3))
+	# pop_choices_5 = aggregating(choice_sim_nosavings_population(110,0.5))
+
+# ╔═╡ bbe9c2c6-c0de-469e-ac5c-0ef8e9d4fc33
+pop_choices_7 = aggregating(choice_sim_nosavings_population(50,0.7))
+
+# ╔═╡ fb08e0d2-32a8-4d6a-ba1e-c345742be6e6
+pop_choices_9 = aggregating(choice_sim_nosavings_population(50,0.9))
+
+# ╔═╡ 834e8cba-3424-4722-b4b8-3e80cab92240
+begin
+	Plots.plot(1:100,pop_choices_1[1:100],label = "0.1")
+	Plots.plot!(pop_choices_3, label = "0.3")
+	Plots.plot!(agg_5, label = "0.5")
+	Plots.plot!(pop_choices_7, label = "0.7")
+	Plots.plot!(pop_choices_9, label = "0.9")
+end
+
+# ╔═╡ e7293adc-8fea-4b9b-a688-83bb02292268
+pop_choices_full_normal = aggregating(choice_sim_nosavings_population(50,1))
+
+# ╔═╡ 68c687b6-f4e7-40de-af0e-0364c915eff6
+pop_choices_full_deviation = aggregating(choice_sim_nosavings_population(50,0))
+
+# ╔═╡ 1097ce2b-6c0e-4d84-ab73-54396afbaf1f
+begin
+	Plots.plot(1:100,pop_choices_full_normal, label = "1")
+		Plots.plot!(pop_choices_full_deviation, label = "0")
 end
 
 # ╔═╡ 1bcb39cf-0a2b-453e-845a-e22caa1bd23b
@@ -2558,6 +2716,7 @@ version = "1.4.1+2"
 # ╠═8eff2abf-254e-4336-b2b5-7d46a75279f3
 # ╠═dc128964-6f99-4695-8c39-4b688b6041d8
 # ╠═bb34b464-7e0f-4fe7-ae55-3aa8aff5940a
+# ╠═14ed8ce1-cd0c-4125-b8e5-18dc9beb9c15
 # ╟─13259939-4338-44c0-904f-2d2a73a25879
 # ╠═5439a417-bde0-4255-b310-09140dfe2eda
 # ╠═4d6ec0eb-f023-451f-80ba-14b6fb3f1e24
@@ -2598,6 +2757,8 @@ version = "1.4.1+2"
 # ╟─2acf58c3-3227-4ee6-a72e-1422accb1b98
 # ╟─2711fa92-9877-4441-8456-9c6c40e3fcad
 # ╟─e38e36a8-f410-4888-8fa9-eb907cacf127
+# ╠═da5119df-55af-4cc4-890b-963fe890e894
+# ╠═b8d9ee05-99b4-46b8-8898-46b859f8946a
 # ╠═7ecb1a5a-dc5c-4319-947f-adf4b2a766f0
 # ╠═9b81ad5f-5f30-438a-8761-120193034e67
 # ╠═aa2aa419-398f-4e36-aef6-4c7fb68e30bb
@@ -2605,6 +2766,22 @@ version = "1.4.1+2"
 # ╠═eeef3852-6da5-41d2-a80e-33ed0828e3a8
 # ╠═8c6effe5-2773-4e5b-b670-e3fd6da1a8ea
 # ╠═6eeab653-8f96-48db-abaf-e9e9f4932a5a
+# ╟─fe9b7ac6-305a-4fdf-9c21-b5fda8fa46d5
+# ╠═cf36d6c7-e4d4-418c-9fce-40479ff55898
+# ╠═09ea2e1d-ad4e-48ab-9afd-1732f77a4fa1
+# ╟─235c6844-1f7d-46b7-bb72-5fdd0a43b8eb
+# ╟─36716607-70b2-444f-88bb-6f8db70f542e
+# ╟─57681a33-f184-405d-8a27-c370a9bcb0ed
+# ╟─c23fba1a-09ec-4b5f-ae73-bfb0cf0d7e39
+# ╟─ca3c4646-3a6d-4ae1-b294-600f0e251e71
+# ╟─bbe9c2c6-c0de-469e-ac5c-0ef8e9d4fc33
+# ╠═fb08e0d2-32a8-4d6a-ba1e-c345742be6e6
+# ╠═e7293adc-8fea-4b9b-a688-83bb02292268
+# ╠═68c687b6-f4e7-40de-af0e-0364c915eff6
+# ╟─3cd20d71-cf21-489e-996e-7800f6e2ad99
+# ╟─834e8cba-3424-4722-b4b8-3e80cab92240
+# ╟─01b81ae5-eba8-450a-8519-bddb29476628
+# ╠═1097ce2b-6c0e-4d84-ab73-54396afbaf1f
 # ╟─2ff645d4-7fb8-43fb-84eb-8ee49eba5517
 # ╟─818eef3c-df89-403c-8596-ea001f36ccfa
 # ╠═d8218dde-6293-47a5-a6c9-b961c888eaf7
