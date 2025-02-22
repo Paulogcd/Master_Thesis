@@ -2,16 +2,35 @@
 title: "Models"
 ---
 
-This page is under construction.
-
-This webpage is dedicated to the presentation of the models I worked on within my Master Thesis.
+This page is under construction. It is dedicated to the presentation of the intermediary models I worked on and am working on within my Master Thesis.
 
 ## Framework model 1
 
-This model is currently under work. 
-Its aim is to be a simplified version of the general framework I want to use. 
+This model is finished, and its associaed notebook [can be found here](/resources/Framework_model_1.html).
 
-[It can be found here](/resources/Framework_model_1.html). 
+It aims to set a first simplified version of the general framework I want to use.
+
+In this context: 
+
+- health is binary (good or bad health status),
+- weather is binary (normal state or deviation state), 
+- weather does not affect the probability of dying.
+
+I manage to get a first idea of what my master thesis aims to look at, comparing societies with different probabilities of having a weather deviation state. 
+The two main plots I manage to obtain are the following:
+
+::: {layout-ncol=2}
+![Utility trajectories with extreme weather deviation probabilities](/resources/Framework_model_1plot1.png "Extreme values trajectories")
+
+![Aggregated intertemporal utilities in function of weather deviation probability](/resources/Framework_model_1plot2.png "Aggregated intertemporal utilities")
+::: 
+
+The first figure represents the aggregated utility of two societies, one in which there is no weather deviation at all (blue line),
+and the other where the weather is always in a deviation state (red line).
+Note that the general decreasing trend with period is due to the absence of individual reproduction in this model.
+
+The second figure represents the different levels of aggregated intertemporal utilities in function of the probability of the weather being normal.
+We see what seems to be a linear relationship between the aggregated intertemporal utility and the probability of the weather being normal.
 
 ## Framework model 2
 

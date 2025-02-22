@@ -39,6 +39,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -139,12 +142,43 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This page is under construction.</p>
-<p>This webpage is dedicated to the presentation of the models I worked on within my Master Thesis.</p>
+<p>This page is under construction. It is dedicated to the presentation of the intermediary models I worked on and am working on within my Master Thesis.</p>
 <section id="framework-model-1" class="level2">
 <h2 class="anchored" data-anchor-id="framework-model-1">Framework model 1</h2>
-<p>This model is currently under work. Its aim is to be a simplified version of the general framework I want to use.</p>
-<p><a href="./resources/Framework_model_1.html">It can be found here</a>.</p>
+<p>This model is finished, and its associaed notebook <a href="./resources/Framework_model_1.html">can be found here</a>.</p>
+<p>It aims to set a first simplified version of the general framework I want to use.</p>
+<p>In this context:</p>
+<ul>
+<li>health is binary (good or bad health status),</li>
+<li>weather is binary (normal state or deviation state),</li>
+<li>weather does not affect the probability of dying.</li>
+</ul>
+<p>I manage to get a first idea of what my master thesis aims to look at, comparing societies with different probabilities of having a weather deviation state. The two main plots I manage to obtain are the following:</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./resources/Framework_model_1plot1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Utility trajectories with extreme weather deviation probabilities"><img src="./resources/Framework_model_1plot1.png" title="Extreme values trajectories" class="img-fluid figure-img" alt="Utility trajectories with extreme weather deviation probabilities"></a></p>
+<figcaption>Utility trajectories with extreme weather deviation probabilities</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./resources/Framework_model_1plot2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Aggregated intertemporal utilities in function of weather deviation probability"><img src="./resources/Framework_model_1plot2.png" title="Aggregated intertemporal utilities" class="img-fluid figure-img" alt="Aggregated intertemporal utilities in function of weather deviation probability"></a></p>
+<figcaption>Aggregated intertemporal utilities in function of weather deviation probability</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>The first figure represents the aggregated utility of two societies, one in which there is no weather deviation at all (blue line), and the other where the weather is always in a deviation state (red line). Note that the general decreasing trend with period is due to the absence of individual reproduction in this model.</p>
+<p>The second figure represents the different levels of aggregated intertemporal utilities in function of the probability of the weather being normal. We see what seems to be a linear relationship between the aggregated intertemporal utility and the probability of the weather being normal.</p>
 </section>
 <section id="framework-model-2" class="level2">
 <h2 class="anchored" data-anchor-id="framework-model-2">Framework model 2</h2>
@@ -585,6 +619,38 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"openEffect":"zoom","descPosition":"bottom","closeEffect":"zoom"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 

@@ -24,3 +24,18 @@ title!("Flat Plane at z = 1")
 xlabel!("X")
 ylabel!("Y")
 zlabel!("Z")
+
+begin 
+	# Save the plot as interactive with plotly for the website:
+	
+	# Create a Plotly plot
+	p = Plotly.Plot(
+		[Plotly.scatter(x=1:100, y=pop_choices_full_normal, name="Perfectly normal weather"),
+		Plotly.scatter(x=1:100, y=pop_choices_full_deviation, name="Totally deviating weather")],
+		Layout(xaxis_title="Period", yaxis_title="Aggregated utility"))
+	
+	# Save the plot as an HTML file
+	open("./Framework_mode_1plot1.html", "w") do io
+		PlotlyBase.to_html(io, p)
+	end
+end

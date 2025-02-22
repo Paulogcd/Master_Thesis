@@ -22,8 +22,11 @@ begin
 	using PlutoUI
 	using Distributions
 	using PlotlyJS
+	using Plotly
 	using DataFrames
 	using Dates
+	using Random
+	# using WebIO
 end
 
 # ╔═╡ d532165b-d442-4114-a3b9-f866a281c67f
@@ -37,7 +40,10 @@ This model aims to set the basis for a further modelisation of the relationship 
 "
 
 # ╔═╡ ab992a5b-6a2c-4457-a651-c6818df8f5e2
-TableOfContents()
+begin
+	Random.seed!(1234)
+	TableOfContents()
+end
 
 # ╔═╡ 0ef87638-e32f-11ef-1ac0-094df082b41c
 md"# Summary
@@ -49,9 +55,6 @@ md"# Summary
 5. Maximization Programm 
 6. Other
 "
-
-# ╔═╡ 72256868-15ad-40d7-978b-16dfdd08f714
-plotlyjs()
 
 # ╔═╡ 4c2a0eb5-6bf6-4b8b-9c1d-51107af68743
 md"# 1. Health"
@@ -83,12 +86,6 @@ $$\pi=\begin{pmatrix} p(g|g) & p(b|g) \\ p(g|b) & p(b|b) \end{pmatrix}=\begin{pm
 # Probability of being in good health next period : 
 health_probability(h) = h == "g" ? α_1 : α_2
 
-# ╔═╡ 811aaa25-8e2b-4aea-8d2b-ec0a86432f7d
-health_probability("b")
-
-# ╔═╡ 85a3ac63-51c0-4908-99d2-7e827e7f5739
-health_probability("g")
-
 # ╔═╡ ea3e3f1f-6e07-470f-bd6c-bb7e12bb9ed8
 md" 
 Let us also define the following indicator functions : 
@@ -97,16 +94,8 @@ Let us also define the following indicator functions :
 # ╔═╡ 22220a91-4f5a-4fdc-bd84-f0d79f911034
 begin
 	indicator_function_bad_health(h) = h == "b" ? 1 : 0 
-	# indicator_function_bad_health("b")
 	indicator_function_weather_deviation(w) = w == "d" ? 1 : 0 
-	# indicator_function_weather_variation("n")
 end
-
-# ╔═╡ 78184c09-2a35-4041-8b9b-946ee07d6a90
-indicator_function_bad_health("b")
-
-# ╔═╡ 37dea02b-6d35-46b7-ba69-f3ba4bdd5e19
-indicator_function_weather_deviation("d")
 
 # ╔═╡ a65ab9ac-f91c-4c6c-a162-34a3fc3ced13
 md"
@@ -128,12 +117,6 @@ Let us suppose that it has probability $\alpha_3$ of being normal, and $1-\alpha
 begin
 	weather(p) = rand(Binomial(1,p)) == 1 ? "n" : "d"
 end
-
-# ╔═╡ bb34b464-7e0f-4fe7-ae55-3aa8aff5940a
-weather(α_3)
-
-# ╔═╡ 14ed8ce1-cd0c-4125-b8e5-18dc9beb9c15
-weather(1)
 
 # ╔═╡ 13259939-4338-44c0-904f-2d2a73a25879
 md" 
@@ -175,10 +158,11 @@ end
 # ╔═╡ 7c1b788b-9d94-4d3a-93ce-385bb8a3d3ae
 # Setting the Plots backend : 
 # plotlyjs()
-gr()
+# gr()
 
 # ╔═╡ edf27a0c-9e66-46f1-918b-b404e1b6dc7a
 begin
+	gr()
 	Plots.plot(18:100, skill.("g","n",18:100), label = "Good health in normal weather.")
 	Plots.plot!(18:100, skill.("b","n",18:100), label = "Bad health in normal weather.")
 	Plots.plot!(18:100, skill.("g","d",18:100), label = "Good health in deviation weather.")
@@ -188,6 +172,7 @@ end
 
 # ╔═╡ a79e4de7-ad33-4043-a416-2ce3952bbafa
 begin
+	gr()
 	Plots.plot(18:100, productivity.("g","n",18:100), label = "Good health in normal weather.")
 	Plots.plot!(18:100, productivity.("b","n",18:100), label = "Bad health in normal weather.")
 	Plots.plot!(18:100, productivity.("g","d",18:100), label = "Good health in deviation weather.")
@@ -244,6 +229,7 @@ $$f(x) =
 
 # ╔═╡ 1a578c44-650f-4b5c-8c5a-bbc47ad3a904
 begin
+	gr()
 	normalize(age) = (age-α_7)/α_8
 	Λ(age) = α_9/(exp(-α_10*age))
 	function contain!(x::Number)
@@ -397,6 +383,7 @@ end
 
 # ╔═╡ 5c105e50-d1b8-4af3-b510-588c1dbbc40e
 begin
+	plotlyjs()
 	pop_results[2]
 	pop_living_status = sum(pop_results[2][:])
 	Plots.plot(pop_living_status, label = "Current living population")
@@ -746,128 +733,82 @@ And that they work such that:
 $$l^{*}_{t}=z_{t}^{-1}\left(c^{*}_{t}\right)=z_{t}^{-1}\cdot\left(\frac{z_t}{\xi_t}\right)^{\frac{1}{\rho}}$$
 "
 
-# ╔═╡ da5119df-55af-4cc4-890b-963fe890e894
-md"First, let us define the function of the labor disutility : "
+# ╔═╡ ffe89f7c-e31d-4f07-8d01-c3de52feaed9
+md"The utility function and all its parameters are defined in Julia in the Appendix of the notebook."
 
 # ╔═╡ fe9b7ac6-305a-4fdf-9c21-b5fda8fa46d5
 md"### Aggregate simulation
 
-Let us now try to simulate the choices and utility of several agents, without savings."
+
+Let us now try to simulate the choices and utility of several agents, without savings. We have to be more careful this time: contrary to a population simulation focusing on survival, the consumption is affected by weather directly through productivity. In this sense, we need to have a common weather history for a given population in order to compare different populations. We need to reprogram a population simulation, and not just loop over the `choice_sim_nosavings()` function.
+"
 
 # ╔═╡ 235c6844-1f7d-46b7-bb72-5fdd0a43b8eb
-md"Within such a very simplisic model, we can run the simulations for different probability of weather deviation, and compare the outcomes in terms of aggregate utility. Here is an example with the aggregate uility of a society with a probability of he weather staying normal of 0.5.
+md"Within such a very simplisic model, we can run the simulations for different probability of weather deviation, and compare the outcomes in terms of aggregate utility. Here is an example with the aggregate uility of a society with a probability of he weather staying normal of 0.5."
 
-I only plot untill period 90, because very low consumption levels yield values too large to be handled correctly."
+# ╔═╡ c531f1c8-906a-434d-ad8f-3438ddb8a99d
+begin
+	# The syntax is such that : 
+	
+	# pop_choices_5[1] # will yield the weather history.
+	
+	# pop_choices_5[2] # will yield individuals data
+	# pop_choices_5[2][i] # will yield individuals i data
+	# pop_choices_5[2][1][:living_history] # will yield individuals i data
+	# pop_choices_5[2][1][:age] # will yield individuals i data of age of death
+	# length(pop_choices_5[2]) # will yield the number of individuals
+	# typeof(pop_choices[1,:])
+
+	# typeof(pop_choices[1,:]) # Is a vector of one tuple
+	# typeof(pop_choices[1,:][1]) # Is a tuple of 7 elements, coming from choice_sim_nosavings()
+	
+	# pop_choices[i,:][1] # will yield the same data of the i-th individual
+	# pop_choices[1,:][1][d] # will yield the d-th data of the i-th individual
+	# pop_choices[1,:][1][1] # age of death
+	# pop_choices[1,:][1][2] # living history
+	# pop_choices[1,:][1][3] # health history
+	# etc...
+end
 
 # ╔═╡ 57681a33-f184-405d-8a27-c370a9bcb0ed
-md"Now, comparing across societies, with different probabilities of weather deviation, we get:"
-
-# ╔═╡ 3cd20d71-cf21-489e-996e-7800f6e2ad99
-md"The different values correspond to the probability of the weather being normal."
+md"Now, comparing across societies, with different probabilities of weather being normal, we get:"
 
 # ╔═╡ 01b81ae5-eba8-450a-8519-bddb29476628
 md"With only the extreme values : " 
 
-# ╔═╡ 2ff645d4-7fb8-43fb-84eb-8ee49eba5517
-md"## Attempt of visualisation : Optimal choices 
+# ╔═╡ 91a32ee5-cf11-45c7-bef7-f3747610a2a8
+md"If we sum up all periods, to get the aggregated intertemporal utility, we obtain:"
 
-Let us now simulate what the lifetime-utility of these agents would be if they take these optimal decisions. 
+# ╔═╡ 33086f8a-3ce2-4e28-ba36-49b233b8c692
+md"We touch here the core of what my maser thesis will try to reach. Run a model with several meteorological parameters conditioning the probabiliy of a weather deviation, and seeing how it affects the economy.
 
-"
-
-# ╔═╡ 818eef3c-df89-403c-8596-ea001f36ccfa
-md"First, let us try to simulate one individual."
-
-# ╔═╡ d8218dde-6293-47a5-a6c9-b961c888eaf7
-# We set the initial endowments to 0
-@bind s_0 Slider(0.00:0.01:10, default=0)
-
-# ╔═╡ 08b1dff8-2d06-4c7a-8d65-764a14da3c82
-@bind ϕ_l Slider(0.00:0.01:1.00, default = 0.9)
-
-# ╔═╡ d0775972-5951-4e98-9eae-1cc7d96a10f7
-@bind ϕ_w Slider(0.00:0.01:1.00, default = 0.7)
-
-# ╔═╡ 228149ad-e230-4104-87e3-13484bfa8391
-@bind ϕ_h Slider(0.00:0.01:1.00, default = 0.9)
-
-# ╔═╡ b8d9ee05-99b4-46b8-8898-46b859f8946a
-ξ(w,h) = ϕ_l + ϕ_w * indicator_function_weather_deviation(w) + ϕ_h * indicator_function_bad_health(h)
-
-# ╔═╡ 8a95527e-7db3-448e-9047-09f661f41f33
-md"The relationship is positive and linear. This is intuitive : for a given amount of desired savings transferred to the next period, the agent has to work more if they want to consume optimally."
+In this simplified model, the weather is binary and does not affect the probability of dying. The productivity is only affected by the weather through a constant effect. Later, the weather will be modelised more in details. "
 
 # ╔═╡ 6f0c1138-61a2-48df-8c82-09de7533e28f
-md"# 6. Other"
+md"# 6. Appendix
 
-# ╔═╡ df9a5201-c5ff-4b32-a913-746bae1c691a
-md"We can define the utility function in Julia : "
+## Parameters
+
+Here can be found the utility function and its corresponding parameters of risk aversion and different penalty coefficients associated with labor disutility. 
+
+Changing them will affect the rest of the above simulations using the utility function. 
+"
 
 # ╔═╡ 23ecebf6-22ff-43a0-97a2-62718f5ebab5
 # Risk aversion :
 @bind ρ Slider(0.00:0.01:1, default=0.9)
 
-# ╔═╡ 16b59fce-f0d9-40bf-8594-4afa1a4f9d6c
-begin
-	
-	# We first draw the exogenous variables : 
-		# time period : 
-		t = 18
-		# health with a initial good health :
-		past_health = "g"
-		present_health = health_probability(past_health)
-		# weather : 
-		present_weather = weather(α_3)
-	
-	# Now, the variables that are determined by these variables : 
-	 # the productivity : 
-	present_productivity = productivity(present_health,present_weather,t)
-	 # the marginal disutility of labor : 
-	present_ξ = ξ(present_weather,present_health)
+# ╔═╡ 1bcb39cf-0a2b-453e-845a-e22caa1bd23b
+# Working penalty :
+@bind ϕ_l Slider(0.00:0.01:1, default=0.9)
 
-	# Now, where the agents decide : 
-	
-	 # We first define different level of savings for the next period : 
-	 ST1 = 0:100
-	 # the agent consumes optimally : 
-	 present_optimal_consumption = (present_productivity/present_ξ)^(1/ρ)
-	
-	 # To reach this level of consumption, they have to work, such that : 
-	 present_optimal_labor_supply(c,st1,s_0,z) = (c+st1-s_0)/z
-	 Plots.plot(ST1,present_optimal_labor_supply.(present_optimal_consumption,ST1,s_0,present_productivity))
-	 Plots.plot!(xaxis = "savings for the next period", yaxis = "optimal present labor")
-	
-	# ξ(w,h) = ϕ_l + ϕ_w * indicator_function_weather_deviation(present_weather) + ϕ_h * indicator_function_bad_health(present_labor_supply)
-end
+# ╔═╡ 27ec39f4-aca3-41da-a6ed-b6bb4a6b1035
+# Working with weather deviation penalty :
+@bind ϕ_w Slider(0.00:0.01:1, default=0.7)
 
-# ╔═╡ 745d1669-289b-4c8d-b18c-6e9c712da664
-begin
-	plotlyjs()
-	st1 = 0:100
-	lt = 0:100
-	zt = productivity("g","n",30)
-	ct(st1,lt) = lt*zt+0-st1
-	Plots.plot(lt,st1,ct, st = :surface)
-	Plots.plot!(xaxis = "labor", yaxis = "savings at next period", zaxis = "consumption")
-	
-	optimal_ct = zt/present_ξ
-	# Plots.plot!(lt,st1,optimal_ct)
-
-	x = 0.00:100
-	y = 0.00:100
-	# y = range(-2, 2, length=50)
-	X = repeat(reshape(x, :, 1), 1, length(y))
-	Y = repeat(reshape(y, 1, :), length(x), 1)
-	# Z = repeat(reshape[optimal_ct],size(X))
-
-	Z = repeat(reshape([optimal_ct], :, 1), 1, length(y))
-
-	Z = fill(optimal_ct, 100, 100)
-	
-	# repeat([optimal_ct],100)
-	
-	Plots.surface!(X,Y,Z)
-end
+# ╔═╡ e76cb128-d03e-465b-bbb4-9abee96d9249
+# Working in bad health penalty :
+@bind ϕ_h Slider(0.00:0.01:1, default=0.9)
 
 # ╔═╡ f1d6cd8a-1588-4b2a-b7d4-20dbc8b7dfe5
 begin
@@ -875,7 +816,9 @@ begin
 	indicator_function_work(l) = l > 0 ? 1 : 0
 
 	# Disutility function : 
-	ϕ(h,l,w) = ϕ_l * l + ϕ_w * l *indicator_function_weather_deviation(w) + ϕ_h * l * indicator_function_bad_health(h)
+	ξ(w,h) = ϕ_l + ϕ_w * indicator_function_weather_deviation(w) + ϕ_h * indicator_function_bad_health(h)
+	
+	ϕ(h,l,w) = l*ξ(w,h)	
 
 	# Utility function : 
 	u(c,h,l,w) = (c^(1-ρ))/(1-ρ) - ϕ(h,l,w)
@@ -899,14 +842,14 @@ begin
 	7. Their productivity for each period.
 	"""
 	function choice_sim_nosavings(p)
+		labor_history = zeros(100)
 		living_history = zeros(100)
-		health_history = Vector{String}(undef,100)
 		utility_history = zeros(100)
 		consumption_history = zeros(100)
-		health_history = Vector{String}(undef,100)
-		labor_history = zeros(100)
 		productivity_history = zeros(100)
-
+		
+		health_history = Vector{String}(undef,100)
+		
 		health_t_1 = String("g")
 	
 		for t in 1:100
@@ -939,8 +882,23 @@ begin
 			productivity_t = productivity(health_t,weather_t,age)
 			productivity_history[t] = productivity_t
 
+			# Disutiliy : 
+			ξ_t = ξ(weather_t,health_t)
+			
 			# Consumption : 
-			consumption_t = ((productivity_t)/(ξ(weather_t,health_t)))^(1/ρ)
+			# I detail the steps due to rounding error yielding complex numbers
+			# The error is due to float operations yielding c1 as negative. 
+			# I therefore use the abs() function to avoid it. 
+			c1 = productivity_t/ξ_t
+			c2 = 1/ρ
+			consumption_t = abs(c1)^c2
+				# consumption_t = ((productivity_t)/(ξ_t))^(1/ρ)
+				# println("Error, value of parameters : ")
+				# println("ξ = ", ξ_t)
+				# println("z = ", productivity_t)
+				# println("ρ = ", ρ)
+				# return(;ξ_t,productivity_t,ρ)
+				# break
 			consumption_history[t] = consumption_t
 
 			# Labor : 
@@ -975,41 +933,51 @@ choice_single = choice_sim_nosavings(0.5)
 
 # ╔═╡ aa2aa419-398f-4e36-aef6-4c7fb68e30bb
 begin
-	Plots.plot(1:100,choice_single[5], legend = false)
-	Plots.plot!(xaxis = "Age", yaxis = "Consumption")
-end
+	plotlyjs()
+	# Optimal consumption :
+	plot_51 = Plots.plot(18:100,
+		choice_single[5][18:100],
+		legend = false,
+		# xaxis = "Age",
+		yaxis = "Consumption")
 
-# ╔═╡ cffdb117-e983-4a3c-b197-35cab66f64b0
-begin
-	Plots.plot(1:100,choice_single[4], legend = false)
-	Plots.plot!(xaxis = "Age", yaxis = "Utility")
-end
+	# Utility :
+	plot_52 = Plots.plot(18:100,
+		choice_single[4][18:100],
+		legend = false,
+		# xaxis = "Age",
+		yaxis = "Utility")
 
-# ╔═╡ eeef3852-6da5-41d2-a80e-33ed0828e3a8
-begin
-	Plots.plot(1:100,choice_single[6], legend = false)
-	Plots.plot!(xaxis = "Age", yaxis = "Work supply")
-end
+	# Optimal work supply : 
+	plot_53 = Plots.plot(18:100,
+		choice_single[6][18:100],
+		legend = false,
+		xaxis = "Age",
+		yaxis = "Work supply")
 
-# ╔═╡ 8c6effe5-2773-4e5b-b670-e3fd6da1a8ea
-begin
-	Plots.plot(1:100,choice_single[7], legend = false)
-	Plots.plot!(xaxis = "Age", yaxis = "Productivity")
+	# Productivity :
+	plot_54 = Plots.plot(18:100,
+		choice_single[7][18:100],
+		legend = false,
+		xaxis = "Age",
+		yaxis = "Productivity")
+	
+	Plots.plot(plot_51, plot_52, plot_53, plot_54)
 end
 
 # ╔═╡ 6eeab653-8f96-48db-abaf-e9e9f4932a5a
 begin
-	Plots.plot(1:100,choice_single[5], label = "Consumption")
-	Plots.plot!(choice_single[4], label = "Utility")
-	Plots.plot!(choice_single[6], label = "Work supply")
-	# Plots.plot!(choice_single[7].*choice_single[6], label = "Labor income")
+	plotlyjs()
+	Plots.plot(18:100,choice_single[5][18:100], label = "Consumption")
+	Plots.plot!(18:100,choice_single[4][18:100], label = "Utility")
+	Plots.plot!(18:100,choice_single[6][18:100], label = "Work supply")
+	Plots.plot!(18:100,choice_single[7][18:100], label = "Productivity")
 	# Labor income is consumption here, since there is no savings. 
 	Plots.plot!(xaxis = "Age")
 end
 
 # ╔═╡ cf36d6c7-e4d4-418c-9fce-40479ff55898
 begin
-
 	"""
 	The function `choice_sim_nosavings_population(I::Integer,p::Number)` simulates the consumption and labor supply choices of `I` individuals within a world with a probabiliy `p` of the weather deviating.
 
@@ -1032,159 +1000,198 @@ begin
 	function choice_sim_nosavings_population(I::Integer,p::Number)
 
 		Population = Array{NamedTuple}(undef,I)
-		for i in 1:I
-			Population[i] = choice_sim_nosavings(p)
-		end
-		return Population
-	end
-end
 
-# ╔═╡ 09ea2e1d-ad4e-48ab-9afd-1732f77a4fa1
-pop_choices_5 = choice_sim_nosavings_population(50,0.5)
+		# Weather history common to the whole population 
+		weather_history = Array{String}(undef,100)
+		for t in 1:100
+			weather_history[t] = weather(p)
+		end
+
+		# Now we simulate all the individuals:
+		for i in 1:I
+
+			# Initialisation of the vectors: 
+			labor_history = zeros(100)
+			living_history = zeros(100)
+			utility_history = zeros(100)
+			consumption_history = zeros(100)
+			productivity_history = zeros(100)
+			
+			health_history = Vector{String}(undef,100)
+
+			# the initial health status is good: 
+			health_t_1 = String("g")
+
+			# They begin their choice at 18 years old:
+			for t in 18:100
+				
+			    # The age : 
+			    age = t
+			    
+			    # The weather comes from the common weather history :
+			    weather_t = weather_history[t]
+			    
+			    # The health status : 
+			    # probability of being in good health : 
+			    pgh = probability_good_health = health_probability(health_t_1)
+			    health_t = rand(Binomial(1,pgh)) == 1 ? "g" : "b"
+				health_history[t] = health_t
+				health_t_1 = health_t
+			
+			    # The living status : 
+			    pd = probability_dying = ζ(age,health_t)
+			    living_status = rand(Binomial(1,1-pd))
+			    living_history[t] = living_status
+	
+				# Choices : 
+	
+				# Productivity (exogenous)
+				productivity_t = productivity(health_t,weather_t,age)
+				productivity_history[t] = productivity_t
+	
+				# Disutiliy : 
+				ξ_t = ξ(weather_t,health_t)
+				
+				# Consumption : 
+				# I detail the steps due to rounding error yielding complex numbers
+				# The error is due to float operations yielding c1 as negative. 
+				# I therefore use the abs() function to avoid it. 
+				c1 = productivity_t/ξ_t
+				c2 = 1/ρ
+				consumption_t = abs(c1)^c2
+				consumption_history[t] = consumption_t
+	
+				# Labor : 
+				# Recall that we are in a no savings world.
+				labor_t = consumption_t/productivity_t
+				labor_history[t] = labor_t
+	
+				# Utility : 
+				u_t = u(consumption_t,health_t,labor_t,weather_t)
+				utility_history[t] = u_t
+	
+				# When death comes : 
+				if living_status == 0
+					# print("Agent died at ", t)
+					results_of_i = (;age,
+						living_history,
+						health_history,
+						utility_history,
+						consumption_history,
+						labor_history,
+						productivity_history)
+					Population[i] = results_of_i
+					break
+				end
+			end # End of time for individual i
+		end # End of individuals 
+		results = (;weather_history,Population)
+		return results
+	end # End of function 
+end	# End of block
 
 # ╔═╡ 36716607-70b2-444f-88bb-6f8db70f542e
 begin
-	# The syntax is such that : 
-	
-	# pop_choices[i,:] # will yield the data of the i-th individual. 
-	# pop_choices[1,:] 
-	# pop_choices[:,1] # will yield everything, since the object has one column
-	# typeof(pop_choices[1,:])
-
-	# typeof(pop_choices[1,:]) # Is a vector of one tuple
-	# typeof(pop_choices[1,:][1]) # Is a tuple of 7 elements, coming from choice_sim_nosavings()
-	
-	# pop_choices[i,:][1] # will yield the same data of the i-th individual
-	# pop_choices[1,:][1][d] # will yield the d-th data of the i-th individual
-	# pop_choices[1,:][1][1] # age of death
-	# pop_choices[1,:][1][2] # living history
-	# pop_choices[1,:][1][3] # health history
-	# etc...
+	plotlyjs()
 
 	# To sum up the utilities :
-	function aggregating(x)
-		# Get number of time periods
-		number_of_periods = length(x[1,1][:utility_history])
+	function aggregating(I::Integer,p::Number)
+
+		x = choice_sim_nosavings_population(I,p)
 		
-		# Initialize array to store sums
+		# Get the number of time periods
+		number_of_periods = length(x[2][1][:living_history])
+		
+		# Initialize an array to store sums
 		sum_of_utilities = zeros(number_of_periods)
-	
-		# function correcting!(x) 
-		# 	if isfinite(x)
-		# 		x = x
-		# 	else
-		# 		x = 0
-		# 	end
-		# end
 			
 		# Sum utilities across individuals for each time period
 		for t in 1:number_of_periods
-		    for i in 1:size(x, 1) # for all individuals				
-		        sum_of_utilities[t] += x[i,1][:utility_history][t]
+		    for i in 1:length(x[2]) # for all individuals	
+		        sum_of_utilities[t] += x[2][i][:utility_history][t]
 		    end
-			# correcting!(sum_of_utilities[t])
-		end
-	
-		# for t in 1:number_of_periods
-		# 	correcting!(sum_of_utilities[t])
-		# end
-		# correcting!.(sum_of_utilities)
-	
-		return sum_of_utilities
+		end	
 		
+		return sum_of_utilities
 	end
 
-	agg_5 = aggregating(pop_choices_5)
+	pop_choices_5 = aggregating(2000,0.5)
 
-	Plots.plot(1:100,agg_5[1:100], legend = false)
+	Plots.plot(1:100,pop_choices_5[1:100], legend = false)
 	Plots.plot!(xaxis = "Periods", yaxis = "Aggregate utility")
 	Plots.plot!(title = "Aggregate utility over time with p = 0.5")
 end
 
-# ╔═╡ c23fba1a-09ec-4b5f-ae73-bfb0cf0d7e39
-pop_choices_1 = aggregating(choice_sim_nosavings_population(50,0.1))
-
-# ╔═╡ ca3c4646-3a6d-4ae1-b294-600f0e251e71
-pop_choices_3 = aggregating(choice_sim_nosavings_population(50,0.3))
-	# pop_choices_5 = aggregating(choice_sim_nosavings_population(110,0.5))
-
-# ╔═╡ bbe9c2c6-c0de-469e-ac5c-0ef8e9d4fc33
-pop_choices_7 = aggregating(choice_sim_nosavings_population(50,0.7))
-
-# ╔═╡ fb08e0d2-32a8-4d6a-ba1e-c345742be6e6
-pop_choices_9 = aggregating(choice_sim_nosavings_population(50,0.9))
-
 # ╔═╡ 834e8cba-3424-4722-b4b8-3e80cab92240
 begin
-	Plots.plot(1:100,pop_choices_1[1:100],label = "0.1")
-	Plots.plot!(pop_choices_3, label = "0.3")
-	Plots.plot!(agg_5, label = "0.5")
-	Plots.plot!(pop_choices_7, label = "0.7")
-	Plots.plot!(pop_choices_9, label = "0.9")
+	# Generating data:
+	simulations = Array{Vector{Float64}}(undef, 11)
+	for (index,probability) in zip(1:1:11,0.00:0.10:1.00)
+		simulations[index] = aggregating(2000,probability)
+	end
+
+	# Plotting : 
+	plotlyjs()
+	plot_all = Plots.plot(1:100,simulations[1],label = "0.1")
+	for (index,probability) in zip(1:1:11,0.00:0.10:1.00)
+		Plots.plot!(simulations[index], label = probability)
+	end
+	plot_all
+end
+
+# ╔═╡ 91595a6c-39da-4190-8e6c-de462f6b1f60
+begin
+	Probabilities = [0.00:0.10:1.00]
+	Sum_Utilities = [sum(simulations[1]), 
+					sum(simulations[2]),
+					sum(simulations[3]),
+					sum(simulations[4]),
+					sum(simulations[5]),
+					sum(simulations[6]),
+					sum(simulations[7]),
+					sum(simulations[8]),
+					sum(simulations[9]),
+					sum(simulations[10]),
+					sum(simulations[11])]
+	exported_plot_2 = Plots.bar(Probabilities,Sum_Utilities, legend = false)
+	Plots.plot!(xaxis = "Probabiliy of weather being normal",
+	 			yaxis = "Aggregated intertemporal utility")
+	Plots.savefig("Framework_model_1plot2.png")
+	exported_plot_2
 end
 
 # ╔═╡ e7293adc-8fea-4b9b-a688-83bb02292268
-pop_choices_full_normal = aggregating(choice_sim_nosavings_population(50,1))
-
-# ╔═╡ 68c687b6-f4e7-40de-af0e-0364c915eff6
-pop_choices_full_deviation = aggregating(choice_sim_nosavings_population(50,0))
-
-# ╔═╡ 1097ce2b-6c0e-4d84-ab73-54396afbaf1f
-begin
-	Plots.plot(1:100,pop_choices_full_normal, label = "1")
-		Plots.plot!(pop_choices_full_deviation, label = "0")
+begin 
+	plotlyjs()
+	pop_choices_full_normal = aggregating(2000,1)
+	pop_choices_full_deviation = aggregating(2000,0)
+	exported_plot_1 = Plots.plot(1:100,pop_choices_full_normal, label = "Perfectly normal weather")
+	Plots.plot!(pop_choices_full_deviation, label = "Totally deviating weather")
+	Plots.plot!(xaxis = "Period", yaxis = "Aggregated utility")
+	Plots.savefig("Framework_model_1plot1.png")
+	exported_plot_1
 end
 
-# ╔═╡ 1bcb39cf-0a2b-453e-845a-e22caa1bd23b
-# ╠═╡ disabled = true
-#=╠═╡
-# Working penalty :
-@bind ϕ_l Slider(0.00:0.01:1, default=0.9)
-  ╠═╡ =#
+# ╔═╡ 1df2fc95-9b98-4e7f-95ef-42974f554c6a
+md"
+## One-individual discrepancies "
 
-# ╔═╡ 27ec39f4-aca3-41da-a6ed-b6bb4a6b1035
-# ╠═╡ disabled = true
-#=╠═╡
-# Working with weather deviation penalty :
-@bind ϕ_w Slider(0.00:0.01:1, default=0.7)
-  ╠═╡ =#
-
-# ╔═╡ e76cb128-d03e-465b-bbb4-9abee96d9249
-# ╠═╡ disabled = true
-#=╠═╡
-# Working in bad health penalty :
-@bind ϕ_h Slider(0.00:0.01:1, default=0.9)
-  ╠═╡ =#
+# ╔═╡ df9a5201-c5ff-4b32-a913-746bae1c691a
+md"In this last section, I include a visualisaion of the utility function for individuals differently affected by weather and health status. This allows to understand at a one-individual-level where the discrepancies observed in the aggregated version come from."
 
 # ╔═╡ a9e401d2-91ed-49b3-a4e7-318bc2119306
-md"Ploting the utility for good health and bad health agents, we get : "
-
-# ╔═╡ 4ed539e0-cac0-481d-88e1-bef8d3af60a9
-begin
-	# Plots.plot(u.(1:100,"g",1,"n"), label = "Good health, working, normal weather")
-	# Plots.plot!(u.(1:100,"g",1,"d"), label = "Good health, working, deviation weather")
-	# Plots.plot!(u.(1:100,"g",0,"d"), label = "Good health, not working, deviation weather")
-	# Plots.title!("Utility levels of good health agent.")
-	# Plots.xlabel!("Consumption")
-	# Plots.ylabel!("Utility")
-end
-
-# ╔═╡ af7fd14d-2b0a-4d9c-8899-1430e152bab4
-begin 
-	# Plots.plot(u.(1:100,"b",1,"n"), label = "Bad health, working, normal weather")
-	# Plots.plot!(u.(1:100,"b",1,"d"), label = "Bad health, working, deviation weather")
-	# Plots.plot!(u.(1:100,"b",0,"d"), label = "Bad health, not working, deviation weather")
-	# Plots.title!("Utility levels of bad health agent.")
-	# Plots.xlabel!("Consumption")
-	# Plots.ylabel!("Utility")
-end
+md"Plotting the utility for good health and bad health agents for a given value of labor supply, we get : "
 
 # ╔═╡ 264be045-c2fa-4cff-ab0a-3d8e79675875
 # Amount of work :
 @bind l Slider(0.00:0.01:10, default=0.5)
 
+# ╔═╡ aa596cad-807d-4317-a83e-4988cc6c4dcb
+md"When we vary the level of work, through the slider of the variable `l`, we see that individuals will obtain very different utility levels in function of these condiions."
+
 # ╔═╡ 2496b1d6-5738-4568-bf3d-c92468d7e900
 begin 
+	plotlyjs()
 	Plots.plot(u.(1:100,"g",l,"n"), label = "Good health, normal weather")
 	Plots.plot!(u.(1:100,"b",l,"n"), label = "Bad health, normal weather")
 	Plots.plot!(u.(1:100,"g",l,"d"), label = "Good health, deviation weather")
@@ -1192,6 +1199,7 @@ begin
 	Plots.title!("Utility levels of agents for the same amount of work.")
 	Plots.xlabel!("Consumption")
 	Plots.ylabel!("Utility")
+	Plots.plot!(legend=:bottomright)
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1200,13 +1208,16 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+Plotly = "58dd65bb-95f3-509e-9936-c39a10fdeae7"
 PlotlyJS = "f0f68f2c-4968-5e81-91da-67840de0976a"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
 DataFrames = "~1.7.0"
 Distributions = "~0.25.117"
+Plotly = "~0.4.1"
 PlotlyJS = "~0.18.15"
 Plots = "~1.40.9"
 PlutoUI = "~0.7.61"
@@ -1218,7 +1229,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "53f1a8203cb0341684b9efae29163d835c5d6acc"
+project_hash = "2df9e42c3f8e8b72868f8b54ab7bac43961c9aae"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1250,16 +1261,17 @@ version = "0.1.0"
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 version = "1.11.0"
 
-[[deps.BitFlags]]
-git-tree-sha1 = "0691e34b3bb8be9307330f88d1a3c3f25466c24d"
-uuid = "d1d4a3ce-64b1-5f1a-9ba4-7e7e69966f35"
-version = "0.1.9"
+[[deps.BinDeps]]
+deps = ["Libdl", "Pkg", "SHA", "URIParser", "Unicode"]
+git-tree-sha1 = "1289b57e8cf019aede076edab0587eb9644175bd"
+uuid = "9e28174c-4ba2-5203-b857-d8d62c4213ee"
+version = "1.0.2"
 
 [[deps.Blink]]
-deps = ["Base64", "Distributed", "HTTP", "JSExpr", "JSON", "Lazy", "Logging", "MacroTools", "Mustache", "Mux", "Pkg", "Reexport", "Sockets", "WebIO"]
-git-tree-sha1 = "bc93511973d1f949d45b0ea17878e6cb0ad484a1"
+deps = ["Base64", "BinDeps", "Distributed", "JSExpr", "JSON", "Lazy", "Logging", "MacroTools", "Mustache", "Mux", "Reexport", "Sockets", "WebIO", "WebSockets"]
+git-tree-sha1 = "08d0b679fd7caa49e2bca9214b131289e19808c0"
 uuid = "ad839575-38b3-5650-b840-f874b8c74a25"
-version = "0.12.9"
+version = "0.12.5"
 
 [[deps.Bzip2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1272,12 +1284,6 @@ deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jl
 git-tree-sha1 = "009060c9a6168704143100f36ab08f06c2af4642"
 uuid = "83423d85-b0ee-5818-9007-b63ccbeb887a"
 version = "1.18.2+1"
-
-[[deps.CodecZlib]]
-deps = ["TranscodingStreams", "Zlib_jll"]
-git-tree-sha1 = "962834c22b66e32aa10f7611c08c8ca4e20749a9"
-uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
-version = "0.7.8"
 
 [[deps.ColorSchemes]]
 deps = ["ColorTypes", "ColorVectorSpace", "Colors", "FixedPointNumbers", "PrecompileTools", "Random"]
@@ -1321,12 +1327,6 @@ weakdeps = ["Dates", "LinearAlgebra"]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
 version = "1.1.1+0"
-
-[[deps.ConcurrentUtilities]]
-deps = ["Serialization", "Sockets"]
-git-tree-sha1 = "d9d26935a0bcffc87d2613ce14c527c99fc543fd"
-uuid = "f0e56b4a-5159-44fe-b623-3e5288b988bb"
-version = "2.5.0"
 
 [[deps.Contour]]
 git-tree-sha1 = "439e35b0b36e2e5881738abc8857bd92ad6ff9a8"
@@ -1414,12 +1414,6 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "8a4be429317c42cfae6a7fc03c31bad1970c310d"
 uuid = "2702e6a9-849d-5ed8-8c21-79e8b8f9ee43"
 version = "0.0.20230411+1"
-
-[[deps.ExceptionUnwrapping]]
-deps = ["Test"]
-git-tree-sha1 = "d36f682e590a83d63d1c7dbd287573764682d12a"
-uuid = "460bff9d-24e4-43bc-9d9f-a8973cb893f4"
-version = "0.1.11"
 
 [[deps.Expat_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1537,10 +1531,10 @@ uuid = "42e2da0e-8278-4e71-bc24-59509adca0fe"
 version = "1.0.2"
 
 [[deps.HTTP]]
-deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "PrecompileTools", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
-git-tree-sha1 = "c67b33b085f6e2faf8bf79a61962e7339a81129c"
+deps = ["Base64", "Dates", "IniFile", "Logging", "MbedTLS", "NetworkOptions", "Sockets", "URIs"]
+git-tree-sha1 = "0fa77022fe4b511826b39c894c90daf5fce3334a"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "1.10.15"
+version = "0.9.17"
 
 [[deps.HarfBuzz_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "Graphite2_jll", "JLLWrappers", "Libdl", "Libffi_jll"]
@@ -1578,10 +1572,15 @@ git-tree-sha1 = "b6d6bfdd7ce25b0f9b2f6b3dd56b2673a66c8770"
 uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
 version = "0.2.5"
 
+[[deps.IniFile]]
+git-tree-sha1 = "f550e6e32074c939295eb5ea6de31849ac2c9625"
+uuid = "83e8ac13-25f8-5344-8a64-a9f2b223428f"
+version = "0.5.1"
+
 [[deps.InlineStrings]]
-git-tree-sha1 = "45521d31238e87ee9f9732561bfee12d4eebd52d"
+git-tree-sha1 = "6a9fde685a7ac1eb3495f8e812c5a7c3711c2d5e"
 uuid = "842dd82b-1e85-43dc-bf29-5d0ee9dffc48"
-version = "1.4.2"
+version = "1.4.3"
 
     [deps.InlineStrings.extensions]
     ArrowTypesExt = "ArrowTypes"
@@ -1800,12 +1799,6 @@ version = "0.3.29"
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 version = "1.11.0"
 
-[[deps.LoggingExtras]]
-deps = ["Dates", "Logging"]
-git-tree-sha1 = "f02b56007b064fbfddb4c9cd60161b6dd0f40df3"
-uuid = "e6f89c97-d47a-5376-807f-9c37f3926c36"
-version = "1.1.0"
-
 [[deps.MIMEs]]
 git-tree-sha1 = "1833212fd6f580c20d4291da9c1b4e8a655b128e"
 uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
@@ -1858,10 +1851,10 @@ uuid = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
 version = "1.0.20"
 
 [[deps.Mux]]
-deps = ["AssetRegistry", "Base64", "HTTP", "Hiccup", "MbedTLS", "Pkg", "Sockets"]
-git-tree-sha1 = "7295d849103ac4fcbe3b2e439f229c5cc77b9b69"
+deps = ["AssetRegistry", "Base64", "HTTP", "Hiccup", "Pkg", "Sockets", "WebSockets"]
+git-tree-sha1 = "82dfb2cead9895e10ee1b0ca37a01088456c4364"
 uuid = "a975b10e-0019-58db-a62f-e48ff68538c9"
-version = "1.0.2"
+version = "0.7.6"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
@@ -1893,12 +1886,6 @@ version = "0.3.27+1"
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
 version = "0.8.1+2"
-
-[[deps.OpenSSL]]
-deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
-git-tree-sha1 = "38cb508d080d21dc1128f7fb04f20387ed4c0af4"
-uuid = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
-version = "1.4.3"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1990,11 +1977,29 @@ git-tree-sha1 = "3ca9a356cd2e113c420f2c13bea19f8d3fb1cb18"
 uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
 version = "1.4.3"
 
+[[deps.Plotly]]
+deps = ["Base64", "DelimitedFiles", "HTTP", "JSON", "PlotlyJS", "Reexport"]
+git-tree-sha1 = "044a9194ae38a50cbdb34a05dc63bf68e4db95df"
+uuid = "58dd65bb-95f3-509e-9936-c39a10fdeae7"
+version = "0.4.1"
+
 [[deps.PlotlyBase]]
-deps = ["ColorSchemes", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Parameters", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
-git-tree-sha1 = "56baf69781fc5e61607c3e46227ab17f7040ffa2"
+deps = ["ColorSchemes", "Colors", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Parameters", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
+git-tree-sha1 = "90af5c9238c1b3b25421f1fdfffd1e8fca7a7133"
 uuid = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
-version = "0.8.19"
+version = "0.8.20"
+
+    [deps.PlotlyBase.extensions]
+    DataFramesExt = "DataFrames"
+    DistributionsExt = "Distributions"
+    IJuliaExt = "IJulia"
+    JSON3Ext = "JSON3"
+
+    [deps.PlotlyBase.weakdeps]
+    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+    Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+    IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
+    JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
 
 [[deps.PlotlyJS]]
 deps = ["Base64", "Blink", "DelimitedFiles", "JSExpr", "JSON", "Kaleido_jll", "Markdown", "Pkg", "PlotlyBase", "PlotlyKaleido", "REPL", "Reexport", "Requires", "WebIO"]
@@ -2193,11 +2198,6 @@ git-tree-sha1 = "91eddf657aca81df9ae6ceb20b959ae5653ad1de"
 uuid = "992d4aef-0814-514b-bc4d-f2e9a6c4116f"
 version = "1.0.3"
 
-[[deps.SimpleBufferStream]]
-git-tree-sha1 = "f305871d2f381d21527c770d4788c06c097c9bc1"
-uuid = "777ac1f9-54b0-4bf8-805c-2214025038e7"
-version = "1.2.0"
-
 [[deps.Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 version = "1.11.0"
@@ -2319,15 +2319,16 @@ deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 version = "1.11.0"
 
-[[deps.TranscodingStreams]]
-git-tree-sha1 = "0c45878dcfdcfa8480052b6ab162cdd138781742"
-uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
-version = "0.11.3"
-
 [[deps.Tricks]]
 git-tree-sha1 = "6cae795a5a9313bbb4f60683f7263318fc7d1505"
 uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
 version = "0.1.10"
+
+[[deps.URIParser]]
+deps = ["Unicode"]
+git-tree-sha1 = "53a9f49546b8d2dd2e688d216421d050c9a31d0d"
+uuid = "30578b45-9adc-5946-b283-645ec420af67"
+version = "0.4.1"
 
 [[deps.URIs]]
 git-tree-sha1 = "67db6cc7b3821e19ebe75791a9dd19c9b1188f2b"
@@ -2405,9 +2406,9 @@ version = "0.8.21"
 
 [[deps.WebSockets]]
 deps = ["Base64", "Dates", "HTTP", "Logging", "Sockets"]
-git-tree-sha1 = "4162e95e05e79922e44b9952ccbc262832e4ad07"
+git-tree-sha1 = "f91a602e25fe6b89afc93cf02a4ae18ee9384ce3"
 uuid = "104b5d7c-a370-577a-8038-80a2059c5097"
-version = "1.6.0"
+version = "1.5.9"
 
 [[deps.Widgets]]
 deps = ["Colors", "Dates", "Observables", "OrderedCollections"]
@@ -2699,33 +2700,26 @@ version = "1.4.1+2"
 # ╟─ab992a5b-6a2c-4457-a651-c6818df8f5e2
 # ╟─0ef87638-e32f-11ef-1ac0-094df082b41c
 # ╠═0d381a45-b8a7-4ce0-a904-b238fd26902d
-# ╠═72256868-15ad-40d7-978b-16dfdd08f714
 # ╟─4c2a0eb5-6bf6-4b8b-9c1d-51107af68743
 # ╟─1d30ee07-9993-4cdf-bea0-f318b5461079
 # ╠═33467e51-029b-4fc5-a889-ee8a6e108a7e
 # ╠═95d6c246-2773-4141-b53a-428364936b8a
 # ╠═f2dcf131-4c96-4259-85eb-c78f2ea1b700
 # ╠═9cce5faf-f860-494d-8de7-87f0c698e1b7
-# ╠═811aaa25-8e2b-4aea-8d2b-ec0a86432f7d
-# ╠═85a3ac63-51c0-4908-99d2-7e827e7f5739
 # ╟─ea3e3f1f-6e07-470f-bd6c-bb7e12bb9ed8
 # ╠═22220a91-4f5a-4fdc-bd84-f0d79f911034
-# ╠═78184c09-2a35-4041-8b9b-946ee07d6a90
-# ╠═37dea02b-6d35-46b7-ba69-f3ba4bdd5e19
 # ╟─a65ab9ac-f91c-4c6c-a162-34a3fc3ced13
 # ╠═8eff2abf-254e-4336-b2b5-7d46a75279f3
 # ╠═dc128964-6f99-4695-8c39-4b688b6041d8
-# ╠═bb34b464-7e0f-4fe7-ae55-3aa8aff5940a
-# ╠═14ed8ce1-cd0c-4125-b8e5-18dc9beb9c15
 # ╟─13259939-4338-44c0-904f-2d2a73a25879
 # ╠═5439a417-bde0-4255-b310-09140dfe2eda
 # ╠═4d6ec0eb-f023-451f-80ba-14b6fb3f1e24
 # ╠═4dec6012-eb5c-4db2-bb95-e67e29ef4532
 # ╠═156417da-bd77-425a-a41d-2f5ef31c339c
 # ╠═4748644a-e1ef-4e1d-9e43-b0e566a74d0a
-# ╟─7c1b788b-9d94-4d3a-93ce-385bb8a3d3ae
-# ╠═edf27a0c-9e66-46f1-918b-b404e1b6dc7a
-# ╠═a79e4de7-ad33-4043-a416-2ce3952bbafa
+# ╠═7c1b788b-9d94-4d3a-93ce-385bb8a3d3ae
+# ╟─edf27a0c-9e66-46f1-918b-b404e1b6dc7a
+# ╟─a79e4de7-ad33-4043-a416-2ce3952bbafa
 # ╟─6b7607e3-ced8-4549-9287-e4fc0d578908
 # ╠═4f550514-f478-4cce-9cea-2f846c668bcf
 # ╠═c54d7f45-46dd-4cc8-ac82-141427fccc3f
@@ -2757,51 +2751,34 @@ version = "1.4.1+2"
 # ╟─2acf58c3-3227-4ee6-a72e-1422accb1b98
 # ╟─2711fa92-9877-4441-8456-9c6c40e3fcad
 # ╟─e38e36a8-f410-4888-8fa9-eb907cacf127
-# ╠═da5119df-55af-4cc4-890b-963fe890e894
-# ╠═b8d9ee05-99b4-46b8-8898-46b859f8946a
+# ╟─ffe89f7c-e31d-4f07-8d01-c3de52feaed9
 # ╠═7ecb1a5a-dc5c-4319-947f-adf4b2a766f0
 # ╠═9b81ad5f-5f30-438a-8761-120193034e67
-# ╠═aa2aa419-398f-4e36-aef6-4c7fb68e30bb
-# ╠═cffdb117-e983-4a3c-b197-35cab66f64b0
-# ╠═eeef3852-6da5-41d2-a80e-33ed0828e3a8
-# ╠═8c6effe5-2773-4e5b-b670-e3fd6da1a8ea
+# ╟─aa2aa419-398f-4e36-aef6-4c7fb68e30bb
 # ╠═6eeab653-8f96-48db-abaf-e9e9f4932a5a
 # ╟─fe9b7ac6-305a-4fdf-9c21-b5fda8fa46d5
 # ╠═cf36d6c7-e4d4-418c-9fce-40479ff55898
-# ╠═09ea2e1d-ad4e-48ab-9afd-1732f77a4fa1
 # ╟─235c6844-1f7d-46b7-bb72-5fdd0a43b8eb
-# ╟─36716607-70b2-444f-88bb-6f8db70f542e
+# ╟─c531f1c8-906a-434d-ad8f-3438ddb8a99d
+# ╠═36716607-70b2-444f-88bb-6f8db70f542e
 # ╟─57681a33-f184-405d-8a27-c370a9bcb0ed
-# ╟─c23fba1a-09ec-4b5f-ae73-bfb0cf0d7e39
-# ╟─ca3c4646-3a6d-4ae1-b294-600f0e251e71
-# ╟─bbe9c2c6-c0de-469e-ac5c-0ef8e9d4fc33
-# ╠═fb08e0d2-32a8-4d6a-ba1e-c345742be6e6
-# ╠═e7293adc-8fea-4b9b-a688-83bb02292268
-# ╠═68c687b6-f4e7-40de-af0e-0364c915eff6
-# ╟─3cd20d71-cf21-489e-996e-7800f6e2ad99
-# ╟─834e8cba-3424-4722-b4b8-3e80cab92240
+# ╠═834e8cba-3424-4722-b4b8-3e80cab92240
 # ╟─01b81ae5-eba8-450a-8519-bddb29476628
-# ╠═1097ce2b-6c0e-4d84-ab73-54396afbaf1f
-# ╟─2ff645d4-7fb8-43fb-84eb-8ee49eba5517
-# ╟─818eef3c-df89-403c-8596-ea001f36ccfa
-# ╠═d8218dde-6293-47a5-a6c9-b961c888eaf7
-# ╠═16b59fce-f0d9-40bf-8594-4afa1a4f9d6c
-# ╠═08b1dff8-2d06-4c7a-8d65-764a14da3c82
-# ╠═d0775972-5951-4e98-9eae-1cc7d96a10f7
-# ╠═228149ad-e230-4104-87e3-13484bfa8391
-# ╟─8a95527e-7db3-448e-9047-09f661f41f33
-# ╠═745d1669-289b-4c8d-b18c-6e9c712da664
+# ╟─e7293adc-8fea-4b9b-a688-83bb02292268
+# ╟─91a32ee5-cf11-45c7-bef7-f3747610a2a8
+# ╟─91595a6c-39da-4190-8e6c-de462f6b1f60
+# ╟─33086f8a-3ce2-4e28-ba36-49b233b8c692
 # ╟─6f0c1138-61a2-48df-8c82-09de7533e28f
-# ╟─df9a5201-c5ff-4b32-a913-746bae1c691a
 # ╠═f1d6cd8a-1588-4b2a-b7d4-20dbc8b7dfe5
 # ╠═23ecebf6-22ff-43a0-97a2-62718f5ebab5
 # ╠═1bcb39cf-0a2b-453e-845a-e22caa1bd23b
 # ╠═27ec39f4-aca3-41da-a6ed-b6bb4a6b1035
 # ╠═e76cb128-d03e-465b-bbb4-9abee96d9249
+# ╟─1df2fc95-9b98-4e7f-95ef-42974f554c6a
+# ╟─df9a5201-c5ff-4b32-a913-746bae1c691a
 # ╟─a9e401d2-91ed-49b3-a4e7-318bc2119306
-# ╟─4ed539e0-cac0-481d-88e1-bef8d3af60a9
-# ╟─af7fd14d-2b0a-4d9c-8899-1430e152bab4
 # ╠═264be045-c2fa-4cff-ab0a-3d8e79675875
-# ╠═2496b1d6-5738-4568-bf3d-c92468d7e900
+# ╟─aa596cad-807d-4317-a83e-4988cc6c4dcb
+# ╟─2496b1d6-5738-4568-bf3d-c92468d7e900
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
