@@ -5,7 +5,7 @@ using PlutoSliderServer
 # Framework model 1 : 
 PlutoSliderServer.export_notebook("working_elements/Framework_model_1.jl"; ) # Export it in HTML 
 run(`mv working_elements/Framework_model_1.html website/resources/Framework_model_1.html`) # Move it to the resources folder
-# Does not work. Why...
+# Does work ! 
 run(`mv working_elements/Framework_model_1plot1.png website/resources/Framework_model_1plot1.png`) # Move the first illustrative plot
 run(`mv working_elements/Framework_model_1plot2.png website/resources/Framework_model_1plot2.png`) # Move the second illustrative plot
 

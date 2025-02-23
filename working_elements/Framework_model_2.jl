@@ -4,20 +4,160 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    #! format: off
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+    #! format: on
+end
+
 # ╔═╡ 47a0e567-688d-4de5-8840-929f122ab3f2
 begin 
 	using PlutoUI
 	using Distributions 
 	using Plots
+	using LaTeXStrings
 end
+
+# ╔═╡ a19b88db-3a13-4c80-aaaf-9a54cd167a57
+TableOfContents()
 
 # ╔═╡ d449cdac-eeaa-11ef-1bf7-d10086a2d62c
 md"# Framework model 2 
 
 In this second framework model, we are going to change the weather variable by the temperature variable. The use of the temperature implies a continuous variable for it."
 
-# ╔═╡ a19b88db-3a13-4c80-aaaf-9a54cd167a57
-TableOfContents()
+# ╔═╡ ab03b887-4a8b-4f36-8f60-7d8670c3a092
+md" # 1. Health status 
+
+Let health status be a binary random variable such that: 
+
+$$h\in H(\Omega)=\{\text{good},\text{bad}\}$$
+
+Let it not only be determined by the former health status, but also by the former ambient temperature.
+
+Let us define the probability disribution of health status in terms of previous health status and ambient temperature, such that:
+
+$$Prob(H=h_{t})\equiv\pi(h_{t}|h_{t-1},temp_{t-1}) = \frac{1}{2}\left[\pi_i(h_{t}|h_{t-1}) + \pi_i(h_t|h_{t-1},temp_{t-1})\right]$$
+
+With the subscript $i$ representing the intermediary characteristics of the measures $\pi_i$. We note that $\pi_i\in[0,2]$.
+
+-  $\pi_i(h_{t}|h_{t-1})$ the intermediary probability of being in health state $h$ at period $t$ given the previous health status $h_{t-1}$,
+-  $\pi_i(h_t|h_{t-1},temp_{t-1})$ the intermediary probability of being in good health taking into account the previous ambient temperature.
+
+First, the intermediary probability of being in a certain health status is given by a transition matrix such that:
+
+$$\pi_{i}(h_t|h_{t+1}) =
+\begin{pmatrix}
+	Pr_{i}(g|g) & Pr_{i}(g|b)\\
+	Pr_{i}(b|g) & Pr_{i}(b|b) 
+\end{pmatrix} = 
+\begin{pmatrix}
+	\pi_{igg} & \pi_{igb} \\
+	\pi_{ibg} & \pi_{ibb}
+\end{pmatrix}$$
+
+With $\pi_{ih'h}\in[0,2]$, $\forall (h,h')\in H(\Omega)$.
+
+Now, let us assume a linear effect of temperature deviation on the probability distribution of health status. Furthermore, let us assume that negative temperature variations have the same effect as positive ones.
+
+In this sense, the probability of being in a good health status at period $t$ is:
+
+$$\pi_i(b_t|h_{t-1},temp_{t-1}) = f \circ \left( \alpha_1 + \ |temp|\cdot\alpha_{2}\cdot\left(\mathbb{1}\{h_{t-1}=b\}+1\right)\right)$$
+
+And:
+
+$$\pi_i(g_t|h_{t-1},temp_{t-1})=2-\pi_i(b_t|h_{t-1},temp_{t-1})$$
+
+With $f$ being a function containing values between $0$ and $2$.
+
+"
+
+# ╔═╡ b3cfc787-08ad-4a0e-8c1e-663fd14e4a0a
+md"Plotting this second intermediate probabiliy, we get:"
+
+# ╔═╡ daada4ca-f0b4-4418-8a94-313faa283b81
+@bind α_1 Slider(0.00:0.001:2,default = 0.3)
+
+# ╔═╡ 71c55d05-f084-476d-ab04-c5702f2c6109
+@bind α_2 Slider(0.00:0.001:0.5,default = 0.1)
+
+# ╔═╡ ec119a8c-6ee8-4364-be5e-550bc0110b39
+begin
+	gr()
+	tt = -10:10
+	
+	function contain!(x::Number,max::Number,min::Number)
+	    if x > max
+	        return max
+	    elseif x < min
+	        return min
+	    else
+	        return x
+	    end
+	end
+
+	intermediate_probability_bad_health(h,x)=contain!(α_1+abs(x)*α_2*((h == "b" ? 1 : 0)+1),2,0)
+	
+	intermediate_probability_good_health(former_health_state,former_temperature) =
+	1-intermediate_probability_bad_health(former_health_state,former_temperature)
+	
+	Plots.plot(tt,intermediate_probability_bad_health.("g",tt), label = "Good health", ylim=(0,10))
+	Plots.plot!(tt,intermediate_probability_bad_health.("b",tt), label = "Bad health")
+	Plots.plot!(legend = :right)
+	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Inermediate probability \n of being in bad health")
+	Plots.plot!(title = "Intermediate probability of \n bad health with \n parameter α_1 = $α_1, and α_2 = $α_2")
+end
+
+# ╔═╡ 0d4396cf-bdd1-4369-9fe0-822f9492db56
+α_1,α_2
+
+# ╔═╡ 2356361f-20de-4f67-8003-72013b53cc42
+md"Defining the values of the parameters, the probability disribution of health status in function of temperature deviation can be therefore represented as such:"
+
+# ╔═╡ 4c9e6d59-262d-4135-a1d9-eb2d21f18f4a
+# Intermediate probability of being in good health given good health in previous period
+@bind π_igg Slider(0.00:0.001:2,default = 1.20)
+
+# ╔═╡ 8eced412-82f8-40e3-a223-342536f547fe
+# Intermediate probability of being in good health given bad health in previous period
+@bind π_igb Slider(0.00:0.001:2,default = 0.40)
+
+# ╔═╡ 01687156-8a6a-4e55-bac9-f43e82a09cb8
+(π_igg,π_igb)
+
+# ╔═╡ 6f96b707-5097-4ab8-9827-928045641371
+begin 
+	# probability of being in good health:
+	h = "b"
+	1(h == "g")
+
+	function intermediate_probability_good_health(former_health_state)
+		former_health_state == "g" ? π_igg : π_igb
+	end
+
+	# Final probability function: 
+	probability_good_health(former_health_state,former_temperature)=contain!(1/2*(intermediate_probability_good_health(former_health_state)+intermediate_probability_good_health(former_health_state,former_temperature)),1,0)
+
+	# Health status draw:
+	health(probability_good_health) = rand(Binomial(1,probability_good_health)) == 1 ? "g" : "b"
+end
+
+# ╔═╡ 1b108789-e159-4b2e-8bd1-44a339f1cda7
+begin
+	Plots.plot(tt,probability_good_health.("g",tt), label = "Good health")
+	Plots.plot!(tt,probability_good_health.("b",tt), label = "Bad health")
+	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Probability of being in good health")
+	Plots.plot!(title = "Probability of being in good health \n in function of temperature.")
+end
+
+# ╔═╡ 9cf5f273-3f89-4485-8213-c413f4ab9a32
+md"Note that this is NOT a probability density function."
 
 # ╔═╡ a97f9934-7529-46ca-96ef-852b2628721d
 md"# Productivity
@@ -48,9 +188,9 @@ begin
 end
 
 # ╔═╡ 027a380f-2adb-47be-8d98-29fb20be4a75
-md"# Health
+md"# Survival
 
-Now, the probability of dying is influenced by both age and temperature. 
+Now, the probability of dying is not only determined by age and health status, but also by temperature.
 
 "
 
@@ -1353,6 +1493,19 @@ version = "1.4.1+2"
 # ╟─a19b88db-3a13-4c80-aaaf-9a54cd167a57
 # ╟─d449cdac-eeaa-11ef-1bf7-d10086a2d62c
 # ╠═47a0e567-688d-4de5-8840-929f122ab3f2
+# ╟─ab03b887-4a8b-4f36-8f60-7d8670c3a092
+# ╟─b3cfc787-08ad-4a0e-8c1e-663fd14e4a0a
+# ╟─ec119a8c-6ee8-4364-be5e-550bc0110b39
+# ╠═daada4ca-f0b4-4418-8a94-313faa283b81
+# ╠═71c55d05-f084-476d-ab04-c5702f2c6109
+# ╠═0d4396cf-bdd1-4369-9fe0-822f9492db56
+# ╟─2356361f-20de-4f67-8003-72013b53cc42
+# ╠═4c9e6d59-262d-4135-a1d9-eb2d21f18f4a
+# ╠═8eced412-82f8-40e3-a223-342536f547fe
+# ╠═01687156-8a6a-4e55-bac9-f43e82a09cb8
+# ╠═6f96b707-5097-4ab8-9827-928045641371
+# ╟─1b108789-e159-4b2e-8bd1-44a339f1cda7
+# ╟─9cf5f273-3f89-4485-8213-c413f4ab9a32
 # ╟─a97f9934-7529-46ca-96ef-852b2628721d
 # ╠═aa0b334a-d394-4d20-9a39-e8d12c242426
 # ╠═f583dd2d-3db0-4f5d-954e-c82de5ed7c4e

@@ -25,7 +25,7 @@
     "href": "models.html#framework-model-2",
     "title": "Models",
     "section": "Framework model 2",
-    "text": "Framework model 2\nThis model is currently under work. Its aim is to add to the general framework a continuous variable for temperature.\nIt can be found here."
+    "text": "Framework model 2\nThis model is currently under work. It aims to add to the general framework a continuous variable for temperature.\nIn this context:\n\nhealth is binary (good or bad health status),\nweather is represented by a continuous temperature variable,\nthe temperature affects the probability of being in a given health status at the next period.\n\nIt can be found here."
   },
   {
     "objectID": "models.html#visualisation",

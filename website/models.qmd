@@ -35,7 +35,13 @@ We see what seems to be a linear relationship between the aggregated intertempor
 ## Framework model 2
 
 This model is currently under work. 
-Its aim is to add to the general framework a continuous variable for temperature. 
+It aims to add to the general framework a continuous variable for temperature. 
+
+In this context:
+
+- health is binary (good or bad health status),
+- weather is represented by a continuous temperature variable, 
+- the temperature affects the probability of being in a given health status at the next period.
 
 [It can be found here](/resources/Framework_model_2.html). 
 
