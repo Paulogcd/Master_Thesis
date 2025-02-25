@@ -22,6 +22,7 @@ begin
 	using Distributions 
 	using Plots
 	using LaTeXStrings
+	using PlotlyJS
 end
 
 # ╔═╡ a19b88db-3a13-4c80-aaaf-9a54cd167a57
@@ -43,12 +44,16 @@ Let it not only be determined by the former health status, but also by the forme
 
 Let us define the probability disribution of health status in terms of previous health status and ambient temperature, such that:
 
-$$Prob(H=h_{t})\equiv\pi(h_{t}|h_{t-1},temp_{t-1}) = \frac{1}{2}\left[\pi_i(h_{t}|h_{t-1}) + \pi_i(h_t|h_{t-1},temp_{t-1})\right]$$
+$$Prob(H=h_{t})\equiv\pi(h_{t}|h_{t-1},temp_{t-1}) = \frac{1}{2}\left[\alpha_{1}\cdot\pi_i(h_{t}|h_{t-1}) + \alpha_{2}\cdot\pi_i(h_t|h_{t-1},temp_{t-1})\right]$$
 
-With the subscript $i$ representing the intermediary characteristics of the measures $\pi_i$. We note that $\pi_i\in[0,2]$.
+With the subscript $i$ representing the intermediary characteristics of the measures $\pi_i$. We note that $\pi_i\in[0,1]$.
+
+The coefficients $\alpha_{1}$ and $\alpha_{2}$ are weights given to the importance of former health status and age in the probability of being in good health next period. They sum up to one.
 
 -  $\pi_i(h_{t}|h_{t-1})$ the intermediary probability of being in health state $h$ at period $t$ given the previous health status $h_{t-1}$,
 -  $\pi_i(h_t|h_{t-1},temp_{t-1})$ the intermediary probability of being in good health taking into account the previous ambient temperature.
+
+## Intermediate former health probability 
 
 First, the intermediary probability of being in a certain health status is given by a transition matrix such that:
 
@@ -62,35 +67,40 @@ $$\pi_{i}(h_t|h_{t+1}) =
 	\pi_{ibg} & \pi_{ibb}
 \end{pmatrix}$$
 
-With $\pi_{ih'h}\in[0,2]$, $\forall (h,h')\in H(\Omega)$.
+With $\pi_{ih'h}\in[0,1]$, $\forall (h,h')\in H(\Omega)$.
+"
+
+# ╔═╡ 92f06187-0fbe-4ee8-8912-f3460572181f
+md"
+
+## Intermediate temperature probability
 
 Now, let us assume a linear effect of temperature deviation on the probability distribution of health status. Furthermore, let us assume that negative temperature variations have the same effect as positive ones.
 
 In this sense, the probability of being in a good health status at period $t$ is:
 
-$$\pi_i(b_t|h_{t-1},temp_{t-1}) = f \circ \left( \alpha_1 + \ |temp|\cdot\alpha_{2}\cdot\left(\mathbb{1}\{h_{t-1}=b\}+1\right)\right)$$
+$$\pi_i(b_t|h_{t-1},temp_{t-1}) = f \circ \left( \alpha_3 + \ |temp|\cdot\alpha_{4}\cdot\left(\mathbb{1}\{h_{t-1}=b\}+1\right)\right)$$
 
 And:
 
-$$\pi_i(g_t|h_{t-1},temp_{t-1})=2-\pi_i(b_t|h_{t-1},temp_{t-1})$$
+$$\pi_i(g_t|h_{t-1},temp_{t-1})=1-\pi_i(b_t|h_{t-1},temp_{t-1})$$
 
-With $f$ being a function containing values between $0$ and $2$.
-
+With $f$ being a function containing values between $0$ and $1$.
 "
 
 # ╔═╡ b3cfc787-08ad-4a0e-8c1e-663fd14e4a0a
 md"Plotting this second intermediate probabiliy, we get:"
 
 # ╔═╡ daada4ca-f0b4-4418-8a94-313faa283b81
-@bind α_1 Slider(0.00:0.001:2,default = 0.3)
+@bind α_3 Slider(0.00:0.001:1,default = 0.3)
 
 # ╔═╡ 71c55d05-f084-476d-ab04-c5702f2c6109
-@bind α_2 Slider(0.00:0.001:0.5,default = 0.1)
+@bind α_4 Slider(0.00:0.001:0.5,default = 0.05)
 
 # ╔═╡ ec119a8c-6ee8-4364-be5e-550bc0110b39
 begin
 	gr()
-	tt = -10:10
+	td = temperature_deviation = -10:10
 	
 	function contain!(x::Number,max::Number,min::Number)
 	    if x > max
@@ -102,23 +112,26 @@ begin
 	    end
 	end
 
-	intermediate_probability_bad_health(h,x)=contain!(α_1+abs(x)*α_2*((h == "b" ? 1 : 0)+1),2,0)
+	intermediate_probability_bad_health(h,x)=contain!(α_3+abs(x)*α_4*((h == "b" ? 1 : 0)+1),1,0)
 	
 	intermediate_probability_good_health(former_health_state,former_temperature) =
 	1-intermediate_probability_bad_health(former_health_state,former_temperature)
 	
-	Plots.plot(tt,intermediate_probability_bad_health.("g",tt), label = "Good health", ylim=(0,10))
-	Plots.plot!(tt,intermediate_probability_bad_health.("b",tt), label = "Bad health")
+	Plots.plot(td,intermediate_probability_bad_health.("g",td), label = "Good health")#, ylim=(0,10))
+	Plots.plot!(td,intermediate_probability_bad_health.("b",td), label = "Bad health")
 	Plots.plot!(legend = :right)
-	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Inermediate probability \n of being in bad health")
-	Plots.plot!(title = "Intermediate probability of \n bad health with \n parameter α_1 = $α_1, and α_2 = $α_2")
+	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Intermediate probability \n of being in bad health")
+	Plots.plot!(title = "Intermediate probability of \n bad health with \n parameter α_3 = $α_3, and α_4 = $α_4")
 end
 
 # ╔═╡ 0d4396cf-bdd1-4369-9fe0-822f9492db56
-α_1,α_2
+α_3,α_4
+
+# ╔═╡ 3c03ad28-672a-45a8-850c-af7bf382c6b6
+md"## Final health status probability"
 
 # ╔═╡ 2356361f-20de-4f67-8003-72013b53cc42
-md"Defining the values of the parameters, the probability disribution of health status in function of temperature deviation can be therefore represented as such:"
+md"Defining the values of the parameters, the final probability distribution of health status in function of temperature deviation can be therefore represented as such:"
 
 # ╔═╡ 4c9e6d59-262d-4135-a1d9-eb2d21f18f4a
 # Intermediate probability of being in good health given good health in previous period
@@ -131,6 +144,10 @@ md"Defining the values of the parameters, the probability disribution of health 
 # ╔═╡ 01687156-8a6a-4e55-bac9-f43e82a09cb8
 (π_igg,π_igb)
 
+# ╔═╡ 58d61437-ef18-43be-97ac-75089d971b85
+# Relative importance of former health state compared to temperature
+@bind α_1 Slider(0.00:0.01:1.00, default = 0.5)
+
 # ╔═╡ 6f96b707-5097-4ab8-9827-928045641371
 begin 
 	# probability of being in good health:
@@ -142,7 +159,7 @@ begin
 	end
 
 	# Final probability function: 
-	probability_good_health(former_health_state,former_temperature)=contain!(1/2*(intermediate_probability_good_health(former_health_state)+intermediate_probability_good_health(former_health_state,former_temperature)),1,0)
+	probability_good_health(former_health_state,former_temperature)=contain!(1/2*(α_1*intermediate_probability_good_health(former_health_state)+(1-α_1)*intermediate_probability_good_health(former_health_state,former_temperature)),1,0)
 
 	# Health status draw:
 	health(probability_good_health) = rand(Binomial(1,probability_good_health)) == 1 ? "g" : "b"
@@ -150,8 +167,8 @@ end
 
 # ╔═╡ 1b108789-e159-4b2e-8bd1-44a339f1cda7
 begin
-	Plots.plot(tt,probability_good_health.("g",tt), label = "Good health")
-	Plots.plot!(tt,probability_good_health.("b",tt), label = "Bad health")
+	Plots.plot(td,probability_good_health.("g",td), label = "Good health")
+	Plots.plot!(td,probability_good_health.("b",td), label = "Bad health")
 	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Probability of being in good health")
 	Plots.plot!(title = "Probability of being in good health \n in function of temperature.")
 end
@@ -169,40 +186,54 @@ Now, let us assume that productivity is influenced by both age and ambient tempe
 md"
 Let us denote the productivit by $z$, such that :
 
-$$z(age, temperature) = \frac{1}{2}\left(z_i(age)+z_i(temperature)\right)$$
+$$z(age, temperature) = \frac{1}{2}\left(\alpha_5 \cdot z_i(age)+\alpha_6 \cdot z_i(temperature)\right)$$
 
 In this sense, the productivity is the function of two subfunctions of age and temperature."
+
+# ╔═╡ db73eae2-dd6c-4378-b07d-e85ed988895d
+md"## Intermediate age productivity"
 
 # ╔═╡ 049deb8e-f30f-45e2-b913-86469db8fb9c
 md"First, let us assume a concave intermediate age productivity function, such as:
 
-$$z_i(age) = age^{\alpha_3}-\alpha_4 \cdot age^2$$
+$$z_i(age) = age^{\alpha_7}-\alpha_8 \cdot age^2$$
 
 "
 
 # ╔═╡ a5ef1f86-5fb8-4087-a6b6-1781d3164bd8
-@bind α_3 Slider(0.00:0.01:1, default = 0.5)
+@bind α_7 Slider(0.00:0.01:1, default = 0.5)
 
 # ╔═╡ 7c8b46ba-4544-4fdd-a7cd-5c3fd75ae254
-@bind α_4 Slider(0.00:0.00001:0.001, default = 0.0005)
+@bind α_8 Slider(0.00:0.00001:0.001, default = 0.0005)
 
 # ╔═╡ f583dd2d-3db0-4f5d-954e-c82de5ed7c4e
 begin
-	intermediate_age_productivity(age) = age^(α_3)-(α_4)*(age^2)
-	Plots.plot(1:100,intermediate_age_productivity)
+	intermediate_age_productivity(age) = age^(α_7)-(α_8)*(age^2)
+	Plots.plot(18:100,intermediate_age_productivity)
 	Plots.plot!(xaxis = "Age", yaxis = "Intermediate age productivity", legend = false)
 end
+
+# ╔═╡ 64515cfd-1c3d-43d6-aa45-3a49b63c8e0c
+md"## Intermediate temperature productivity"
 
 # ╔═╡ 4c6a1ddb-4a0a-423c-9328-cefab2519dcb
 md"
 Second, let us assume that the intermediate temperature productivity has a relationship that is normal with temperature deviation. With $\Delta temp$ for temperature deviation, we have:
 
-$$z_i(\Delta temp;\mu,\sigma) = \frac{1}{\sqrt{2\sigma^2\pi}}\cdot \exp\left(-\frac{1}{2}\cdot \frac{\left(\Delta temp-\mu\right)^2}{\sigma^2}\right)$$
+$$z_i(\Delta temp;\mu,\sigma) = \alpha_9\cdot\frac{1}{\sqrt{2\cdot\sigma^2\cdot\pi}}\cdot \exp\left(-\frac{1}{2}\cdot \left(\frac{\Delta temp-\mu}{\sigma}\right)^2\right)$$
+
+With $\mu = 0$, and $\sigma$ being adjustale.
 "
+
+# ╔═╡ bb38dd81-28d1-4a64-94b7-2b7a202f93a3
+@bind α_9 Slider(1.00:1.00:1000, default = 150.00)
+
+# ╔═╡ e78b378a-8a15-4abd-adc6-01b85b9f2ccb
+α_9
 
 # ╔═╡ 824c94a4-8fe5-4024-9d3c-60ab2b03301f
 # sigma represents here the sensitivity of productivity to temperature
-@bind σ_td Slider(0.00:0.01:10, default = 5)
+@bind σ_td Slider(0.00:0.01:20, default = 9)
 
 # ╔═╡ aa0b334a-d394-4d20-9a39-e8d12c242426
 begin
@@ -212,51 +243,189 @@ begin
 	# pdf(d(15,9), 0.3)
 
 	
-	intermediate_temperature_productivity(temperature) = pdf(d(0,σ_td),temperature)
+	intermediate_temperature_productivity(temperature) = α_9*pdf(d(0,σ_td),temperature)
 
 	temperature_plotted = -10:10
 	# Plots.plot(-10:40,pdf.(d(15,9), temperature_plotted))
 
 	Plots.plot(-10:10,intermediate_temperature_productivity.(temperature_plotted), legend = false)
 	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Intermediate temperature productivity")
+	Plots.plot!(title = "Intermediate temperature productivity with σ = $σ_td")
 end
+
+# ╔═╡ a04b1036-bf4a-4a18-96f8-775e6a6692a4
+md" ## Final productivity function"
 
 # ╔═╡ c2634e76-4ae3-49bf-8341-cb3fe4797d4c
 md"Finally, we have the following productivity function:"
 
+# ╔═╡ 01d3cc7e-621d-49cf-81e9-51cd6d374ea1
+# α_5 is the relative importance of age compared to temperature deviation
+@bind α_5 Slider(0.00:0.01:1, default = 0.5)
+
 # ╔═╡ 7680d7bb-870f-4ea4-a185-78f638e8ac68
 begin
-	#productivity
-	#Plots.plot()
+	productivity(age,temperature_deviation) = 1/2*(α_5*intermediate_age_productivity(age)+(1-α_5)intermediate_temperature_productivity(temperature_deviation))
+
+	plotlyjs()
+	# consumption = 1:10
+	# labor = 1:5
+	# f(consumption,labor) = u.(consumption,"g",labor,"n")
+	# Plots.plot(consumption,labor,f,
+	#     st=:surface,
+	#     title = "Utility function",
+	#     label= "model",
+	#     xlabel ="consumption",
+	#     ylabel = "labor",
+	#     zlabel = "utility")
+	# Plotting : 
+	Plots.plot(18:100,td,productivity,
+		st=:surface,
+		title = "Productivity in function of health and temperature",
+		xlabel = "Age",
+		ylabel = "Temperature deviation",
+		zlabel = "Productivity")
 end
 
 # ╔═╡ 027a380f-2adb-47be-8d98-29fb20be4a75
-md"# Survival
+md"# 3. Survival
 
 Now, the probability of dying is not only determined by age and health status, but also by temperature.
 
+Let us define the probability of dying such as:
+
+$$\begin{equation}
+	\begin{split}
+		\zeta(age,h,temperature) = \frac{1}{3}[ & \alpha_{10}\cdot\zeta_{i,age}(age)+ 
+		\alpha_{11}\cdot\zeta_{i,h}(h,age)+ \\
+		& (1-\alpha_{10}-\alpha_{11})\cdot\zeta_{i,temperature}(temperature,age)]
+	\end{split}
+\end{equation}$$
+
+Meaning that the probability of survival is an average of three intermediate probability functions. Such that:
+
+-  $\zeta_{i,age}(age)$ being the intermediate death probability describing the pure effect of age, 
+
+
+-  $\zeta_{i,h}(h,age)$ being the intermediate death probability describing the effect of health status, that interacts with age,
+
+
+-  $\zeta_{i,h}(temperature,age)$ being the intermediate death probability describing the effect of temperature deviation, that interacts with age.
+
+We note that $(\alpha_{10},\alpha_{11})\in[0,1]^2$ and that the weights sum up to one.
+
 "
 
-# ╔═╡ bf1ac101-696b-4102-9133-ce454d859156
+# ╔═╡ 6c5309d4-b1f8-40cc-80b9-80cc3d2f6d26
+md"## Intermediate age death probability 
+
+Let us assume the following relationship between death probability and age: 
+
+$$\zeta_{i,age}=f \circ \Lambda \circ n(age)$$
+
+With:
+
+-  $f(\cdot)$ a function containing values between $0$ and $1$, 
+-  $\Lambda(\cdot)$ a logistic function with adjustable parameters:
+
+$$\Lambda(x) = \frac{\alpha_{12}}{1+\exp^{-\alpha_{13}\cdot(x-\alpha_{14})}}$$
+
+-  $n(\cdot)$ a normalisation function of age: 
+
+$$n(x) = \frac{x-\alpha_{15}}{\alpha_{16}}$$
+
+This yields, in function of some parameters:
+
+"
+
+# ╔═╡ bc5d16ee-c140-41cc-a5b8-66ca6a19e394
+# Supremum of logistic
+@bind α_12 Slider(0.00:0.01:2.00, default=1)
+
+# ╔═╡ 19b5af9f-b669-4e50-84eb-6d2db89cea1d
+# Growth rate of logistic
+@bind α_13 Slider(0.00:0.01:10.00, default=0.4)
+
+# ╔═╡ 3fb1f327-8176-4bf9-b6f8-019f266b4bcc
+# Midpoint
+@bind α_14 Slider(0.00:0.01:100.00,default = 50)
+
+# ╔═╡ 069a8d99-7499-478c-aef1-8a36f2e1d38d
+# Age 'mean'
+@bind α_15 Slider(0.00:0.01:100.00, default = 20)
+
+# ╔═╡ 911cfdef-6d74-40a1-bc25-adc6a0c5cbe0
+# Age 'sd'
+@bind α_16 Slider(0.00:0.01:10.00, default = 1)
+
+# ╔═╡ 0044609b-e718-424e-9d44-2f63a8f9a358
 begin
-	temperature = 1:100
-	age = 1:100
+	normalize(x) = (x-α_15)/α_16
+	Λ(x) = (α_12)/(1+exp(-α_13*(x-α_14)))
 	
-	mortality(t,a) = 1/(1+exp(a))+t
-	Plots.plot(temperature,age,mortality.(temperature,age))
+	# ζ the probabiliy of dying :
+	ζ_i_age(age) = Λ(normalize(age))
 end
+
+# ╔═╡ 110d4cd1-941e-47f2-9919-de6f4d16f36a
+begin
+	Plots.plot(1:100,ones(100).-ζ_i_age.(1:100), legend = false)
+	Plots.plot!(xaxis = "Age", yaxis = "Intermediate probability of survival", yformatter = :plain)
+	Plots.plot!(title = "Intermediate age probability of survival")
+end
+
+# ╔═╡ d52fc75d-6927-49b1-8104-b3bc38106b48
+ζ_i_age(100)
+
+# ╔═╡ bf1ac101-696b-4102-9133-ce454d859156
+md"## Intermediate health death probability 
+
+Let us assume the following relationship between death probability and health: 
+
+$$\zeta_{i,h}(h,age) = \Lambda(age\cdot(1+\alpha_{17}\cdot \mathbb{1}\{h=b\}))$$
+
+Therefore, the probability of survival is given by $1-\zeta_{i,h}(h,age)$
+"
+
+# ╔═╡ 89cd78ce-3861-401e-ba7c-4027fbc7d6f6
+@bind α_17 Slider(0.00:0.01:1.00, default=0.2)
+
+# ╔═╡ 9b65e3a5-a7ff-4821-be24-b24aa18ec4c9
+begin
+	ζ_i_h(h,age) = 1 - Λ(normalize(age)+α_17*age*1(h=="b"))
+	Plots.plot(1:100,ζ_i_h.("g",1:100), label = "Good health")
+	Plots.plot!(1:100,ζ_i_h.("b",1:100), label = "Bad health")
+	Plots.plot!(xaxis = "Age", yaxis = "Intermediate health death probability ")
+end
+
+# ╔═╡ f9230835-709e-4800-aa74-879ae6789e71
+ζ_i_h("g",100)
+
+# ╔═╡ defad04f-c859-47e2-a4cd-9f98f2168554
+md"## Intermediate temperature death probability 
+
+This is interesting.
+
+"
+
+# ╔═╡ 6c91f24a-7e05-4067-991d-65b65818a124
+md"## Final survival probability
+
+Finally, combining all these intermediate probabilities, we can plot:"
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+PlotlyJS = "f0f68f2c-4968-5e81-91da-67840de0976a"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
 Distributions = "~0.25.117"
 LaTeXStrings = "~1.4.0"
+PlotlyJS = "~0.18.15"
 Plots = "~1.40.9"
 PlutoUI = "~0.7.61"
 """
@@ -267,7 +436,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "595572ebca67e2cd285453d38441d6411f2d73f3"
+project_hash = "84ba8785732d2d4d916545078c5780e676e7c498"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -289,6 +458,12 @@ version = "1.1.2"
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 version = "1.11.0"
 
+[[deps.AssetRegistry]]
+deps = ["Distributed", "JSON", "Pidfile", "SHA", "Test"]
+git-tree-sha1 = "b25e88db7944f98789130d7b503276bc34bc098e"
+uuid = "bf4720bc-e11a-5d0c-854e-bdca1663c893"
+version = "0.1.0"
+
 [[deps.Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 version = "1.11.0"
@@ -297,6 +472,12 @@ version = "1.11.0"
 git-tree-sha1 = "0691e34b3bb8be9307330f88d1a3c3f25466c24d"
 uuid = "d1d4a3ce-64b1-5f1a-9ba4-7e7e69966f35"
 version = "0.1.9"
+
+[[deps.Blink]]
+deps = ["Base64", "Distributed", "HTTP", "JSExpr", "JSON", "Lazy", "Logging", "MacroTools", "Mustache", "Mux", "Pkg", "Reexport", "Sockets", "WebIO"]
+git-tree-sha1 = "bc93511973d1f949d45b0ea17878e6cb0ad484a1"
+uuid = "ad839575-38b3-5650-b840-f874b8c74a25"
+version = "0.12.9"
 
 [[deps.Bzip2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -381,6 +562,11 @@ git-tree-sha1 = "1d0a14036acb104d9e89698bd408f63ab58cdc82"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 version = "0.18.20"
 
+[[deps.DataValueInterfaces]]
+git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
+uuid = "e2d170a0-9d28-54be-80f0-106bbe20a464"
+version = "1.0.0"
+
 [[deps.Dates]]
 deps = ["Printf"]
 uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -397,6 +583,11 @@ deps = ["Mmap"]
 git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 version = "1.9.1"
+
+[[deps.Distributed]]
+deps = ["Random", "Serialization", "Sockets"]
+uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+version = "1.11.0"
 
 [[deps.Distributions]]
 deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
@@ -500,6 +691,12 @@ git-tree-sha1 = "846f7026a9decf3679419122b49f8a1fdb48d2d5"
 uuid = "559328eb-81f9-559d-9380-de523a88c83c"
 version = "1.0.16+0"
 
+[[deps.FunctionalCollections]]
+deps = ["Test"]
+git-tree-sha1 = "04cb9cfaa6ba5311973994fe3496ddec19b6292a"
+uuid = "de31a74c-ac4f-5751-b3fd-e18cd04993ca"
+version = "0.5.0"
+
 [[deps.GLFW_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Xorg_libXcursor_jll", "Xorg_libXi_jll", "Xorg_libXinerama_jll", "Xorg_libXrandr_jll", "libdecor_jll", "xkbcommon_jll"]
 git-tree-sha1 = "fcb0584ff34e25155876418979d4c8971243bb89"
@@ -553,6 +750,12 @@ git-tree-sha1 = "55c53be97790242c29031e5cd45e8ac296dadda3"
 uuid = "2e76f6c2-a576-52d4-95c1-20adfe4de566"
 version = "8.5.0+0"
 
+[[deps.Hiccup]]
+deps = ["MacroTools", "Test"]
+git-tree-sha1 = "6187bb2d5fcbb2007c39e7ac53308b0d371124bd"
+uuid = "9fb69e20-1954-56bb-a84f-559cc56a8ff7"
+version = "0.2.2"
+
 [[deps.HypergeometricFunctions]]
 deps = ["LinearAlgebra", "OpenLibm_jll", "SpecialFunctions"]
 git-tree-sha1 = "2bd56245074fab4015b9174f24ceba8293209053"
@@ -587,6 +790,11 @@ git-tree-sha1 = "e2222959fbc6c19554dc15174c81bf7bf3aa691c"
 uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
 version = "0.2.4"
 
+[[deps.IteratorInterfaceExtensions]]
+git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
+uuid = "82899510-4779-5014-852e-03e436cf321d"
+version = "1.0.0"
+
 [[deps.JLFzf]]
 deps = ["Pipe", "REPL", "Random", "fzf_jll"]
 git-tree-sha1 = "71b48d857e86bf7a1838c4736545699974ce79a2"
@@ -599,6 +807,12 @@ git-tree-sha1 = "a007feb38b422fbdab534406aeca1b86823cb4d6"
 uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
 version = "1.7.0"
 
+[[deps.JSExpr]]
+deps = ["JSON", "MacroTools", "Observables", "WebIO"]
+git-tree-sha1 = "b413a73785b98474d8af24fd4c8a975e31df3658"
+uuid = "97c1335a-c9c5-57fe-bc5d-ec35cebe8660"
+version = "0.5.4"
+
 [[deps.JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
 git-tree-sha1 = "31e996f0a15c7b280ba9f76636b3ff9e2ae58c9a"
@@ -610,6 +824,12 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "eac1206917768cb54957c65a615460d87b455fc1"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
 version = "3.1.1+0"
+
+[[deps.Kaleido_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "43032da5832754f58d14a91ffbe86d5f176acda9"
+uuid = "f7e6163d-2fa5-5f23-b69c-1db539e41963"
+version = "0.2.1+0"
 
 [[deps.LAME_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -655,6 +875,12 @@ version = "0.16.6"
     DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
     SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
     SymEngine = "123dc426-2d89-5057-bbad-38513e3affd8"
+
+[[deps.Lazy]]
+deps = ["MacroTools"]
+git-tree-sha1 = "1370f8202dac30758f3c345f9909b97f53d87d3f"
+uuid = "50d2b5c4-7a5e-59d5-8109-a42b560f39c0"
+version = "0.15.1"
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -809,6 +1035,18 @@ version = "1.11.0"
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2023.12.12"
 
+[[deps.Mustache]]
+deps = ["Printf", "Tables"]
+git-tree-sha1 = "3b2db451a872b20519ebb0cec759d3d81a1c6bcb"
+uuid = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
+version = "1.0.20"
+
+[[deps.Mux]]
+deps = ["AssetRegistry", "Base64", "HTTP", "Hiccup", "MbedTLS", "Pkg", "Sockets"]
+git-tree-sha1 = "7295d849103ac4fcbe3b2e439f229c5cc77b9b69"
+uuid = "a975b10e-0019-58db-a62f-e48ff68538c9"
+version = "1.0.2"
+
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
 git-tree-sha1 = "cc0a5deefdb12ab3a096f00a6d42133af4560d71"
@@ -818,6 +1056,11 @@ version = "1.1.2"
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
+
+[[deps.Observables]]
+git-tree-sha1 = "7438a59546cf62428fc9d1bc94729146d37a7225"
+uuid = "510215fc-4207-5dde-b226-833fc4488ee2"
+version = "0.5.5"
 
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -881,11 +1124,23 @@ git-tree-sha1 = "3b31172c032a1def20c98dae3f2cdc9d10e3b561"
 uuid = "36c8627f-9965-5494-a995-c6b170f724f3"
 version = "1.56.1+0"
 
+[[deps.Parameters]]
+deps = ["OrderedCollections", "UnPack"]
+git-tree-sha1 = "34c0e9ad262e5f7fc75b10a9952ca7692cfc5fbe"
+uuid = "d96e819e-fc66-5662-9728-84c9c7592b0a"
+version = "0.12.3"
+
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
 git-tree-sha1 = "8489905bcdbcfac64d1daa51ca07c0d8f0283821"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
 version = "2.8.1"
+
+[[deps.Pidfile]]
+deps = ["FileWatching", "Test"]
+git-tree-sha1 = "2d8aaf8ee10df53d0dfb9b8ee44ae7c04ced2b03"
+uuid = "fa939f87-e72e-5be4-a000-7fc836dbe307"
+version = "1.3.0"
 
 [[deps.Pipe]]
 git-tree-sha1 = "6842804e7867b115ca9de748a0cf6b364523c16d"
@@ -918,6 +1173,36 @@ deps = ["ColorSchemes", "Colors", "Dates", "PrecompileTools", "Printf", "Random"
 git-tree-sha1 = "3ca9a356cd2e113c420f2c13bea19f8d3fb1cb18"
 uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
 version = "1.4.3"
+
+[[deps.PlotlyBase]]
+deps = ["ColorSchemes", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Parameters", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
+git-tree-sha1 = "56baf69781fc5e61607c3e46227ab17f7040ffa2"
+uuid = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+version = "0.8.19"
+
+[[deps.PlotlyJS]]
+deps = ["Base64", "Blink", "DelimitedFiles", "JSExpr", "JSON", "Kaleido_jll", "Markdown", "Pkg", "PlotlyBase", "PlotlyKaleido", "REPL", "Reexport", "Requires", "WebIO"]
+git-tree-sha1 = "e415b25fdec06e57590a7d5ac8e0cf662fa317e2"
+uuid = "f0f68f2c-4968-5e81-91da-67840de0976a"
+version = "0.18.15"
+
+    [deps.PlotlyJS.extensions]
+    CSVExt = "CSV"
+    DataFramesExt = ["DataFrames", "CSV"]
+    IJuliaExt = "IJulia"
+    JSON3Ext = "JSON3"
+
+    [deps.PlotlyJS.weakdeps]
+    CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+    IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
+    JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+
+[[deps.PlotlyKaleido]]
+deps = ["Artifacts", "Base64", "JSON", "Kaleido_jll"]
+git-tree-sha1 = "ba551e47d7eac212864fdfea3bd07f30202b4a5b"
+uuid = "f2990250-8cf9-495f-b13a-cce12b45703c"
+version = "2.2.6"
 
 [[deps.Plots]]
 deps = ["Base64", "Contour", "Dates", "Downloads", "FFMPEG", "FixedPointNumbers", "GR", "JLFzf", "JSON", "LaTeXStrings", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "PrecompileTools", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "RelocatableFolders", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "TOML", "UUIDs", "UnicodeFun", "UnitfulLatexify", "Unzip"]
@@ -1166,6 +1451,18 @@ deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 version = "1.0.3"
 
+[[deps.TableTraits]]
+deps = ["IteratorInterfaceExtensions"]
+git-tree-sha1 = "c06b2f539df1c6efa794486abfb6ed2022561a39"
+uuid = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
+version = "1.0.1"
+
+[[deps.Tables]]
+deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "OrderedCollections", "TableTraits"]
+git-tree-sha1 = "598cd7c1f68d1e205689b1c2fe65a9f85846f297"
+uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
+version = "1.12.0"
+
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
@@ -1201,6 +1498,11 @@ version = "1.5.1"
 deps = ["Random", "SHA"]
 uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 version = "1.11.0"
+
+[[deps.UnPack]]
+git-tree-sha1 = "387c1f73762231e86e0c9c5443ce3b4a0a9a0c2b"
+uuid = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
+version = "1.0.2"
 
 [[deps.Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
@@ -1254,6 +1556,24 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "5db3e9d307d32baba7067b13fc7b5aa6edd4a19a"
 uuid = "2381bf8a-dfd0-557d-9999-79630e7b1b91"
 version = "1.36.0+0"
+
+[[deps.WebIO]]
+deps = ["AssetRegistry", "Base64", "Distributed", "FunctionalCollections", "JSON", "Logging", "Observables", "Pkg", "Random", "Requires", "Sockets", "UUIDs", "WebSockets", "Widgets"]
+git-tree-sha1 = "0eef0765186f7452e52236fa42ca8c9b3c11c6e3"
+uuid = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
+version = "0.8.21"
+
+[[deps.WebSockets]]
+deps = ["Base64", "Dates", "HTTP", "Logging", "Sockets"]
+git-tree-sha1 = "4162e95e05e79922e44b9952ccbc262832e4ad07"
+uuid = "104b5d7c-a370-577a-8038-80a2059c5097"
+version = "1.6.0"
+
+[[deps.Widgets]]
+deps = ["Colors", "Dates", "Observables", "OrderedCollections"]
+git-tree-sha1 = "e9aeb174f95385de31e70bd15fa066a505ea82b9"
+uuid = "cc8bc4a8-27d6-5769-a93b-9d913e69aa62"
+version = "0.6.7"
 
 [[deps.XML2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Zlib_jll"]
@@ -1539,30 +1859,53 @@ version = "1.4.1+2"
 # ╟─d449cdac-eeaa-11ef-1bf7-d10086a2d62c
 # ╠═47a0e567-688d-4de5-8840-929f122ab3f2
 # ╟─ab03b887-4a8b-4f36-8f60-7d8670c3a092
+# ╟─92f06187-0fbe-4ee8-8912-f3460572181f
 # ╟─b3cfc787-08ad-4a0e-8c1e-663fd14e4a0a
 # ╟─ec119a8c-6ee8-4364-be5e-550bc0110b39
 # ╠═daada4ca-f0b4-4418-8a94-313faa283b81
 # ╠═71c55d05-f084-476d-ab04-c5702f2c6109
 # ╠═0d4396cf-bdd1-4369-9fe0-822f9492db56
+# ╟─3c03ad28-672a-45a8-850c-af7bf382c6b6
 # ╟─2356361f-20de-4f67-8003-72013b53cc42
 # ╠═4c9e6d59-262d-4135-a1d9-eb2d21f18f4a
 # ╠═8eced412-82f8-40e3-a223-342536f547fe
 # ╠═01687156-8a6a-4e55-bac9-f43e82a09cb8
 # ╠═6f96b707-5097-4ab8-9827-928045641371
+# ╠═58d61437-ef18-43be-97ac-75089d971b85
 # ╟─1b108789-e159-4b2e-8bd1-44a339f1cda7
 # ╟─9cf5f273-3f89-4485-8213-c413f4ab9a32
 # ╟─a97f9934-7529-46ca-96ef-852b2628721d
 # ╟─f712d528-4fdf-4604-99f3-bf6bd331c511
+# ╟─db73eae2-dd6c-4378-b07d-e85ed988895d
 # ╟─049deb8e-f30f-45e2-b913-86469db8fb9c
 # ╠═a5ef1f86-5fb8-4087-a6b6-1781d3164bd8
 # ╠═7c8b46ba-4544-4fdd-a7cd-5c3fd75ae254
-# ╠═f583dd2d-3db0-4f5d-954e-c82de5ed7c4e
+# ╟─f583dd2d-3db0-4f5d-954e-c82de5ed7c4e
+# ╟─64515cfd-1c3d-43d6-aa45-3a49b63c8e0c
 # ╟─4c6a1ddb-4a0a-423c-9328-cefab2519dcb
+# ╠═bb38dd81-28d1-4a64-94b7-2b7a202f93a3
+# ╠═e78b378a-8a15-4abd-adc6-01b85b9f2ccb
 # ╠═824c94a4-8fe5-4024-9d3c-60ab2b03301f
-# ╠═aa0b334a-d394-4d20-9a39-e8d12c242426
+# ╟─aa0b334a-d394-4d20-9a39-e8d12c242426
+# ╟─a04b1036-bf4a-4a18-96f8-775e6a6692a4
 # ╟─c2634e76-4ae3-49bf-8341-cb3fe4797d4c
-# ╠═7680d7bb-870f-4ea4-a185-78f638e8ac68
-# ╠═027a380f-2adb-47be-8d98-29fb20be4a75
-# ╠═bf1ac101-696b-4102-9133-ce454d859156
+# ╠═01d3cc7e-621d-49cf-81e9-51cd6d374ea1
+# ╟─7680d7bb-870f-4ea4-a185-78f638e8ac68
+# ╟─027a380f-2adb-47be-8d98-29fb20be4a75
+# ╟─6c5309d4-b1f8-40cc-80b9-80cc3d2f6d26
+# ╠═0044609b-e718-424e-9d44-2f63a8f9a358
+# ╠═bc5d16ee-c140-41cc-a5b8-66ca6a19e394
+# ╠═19b5af9f-b669-4e50-84eb-6d2db89cea1d
+# ╠═3fb1f327-8176-4bf9-b6f8-019f266b4bcc
+# ╠═069a8d99-7499-478c-aef1-8a36f2e1d38d
+# ╠═911cfdef-6d74-40a1-bc25-adc6a0c5cbe0
+# ╠═110d4cd1-941e-47f2-9919-de6f4d16f36a
+# ╠═d52fc75d-6927-49b1-8104-b3bc38106b48
+# ╟─bf1ac101-696b-4102-9133-ce454d859156
+# ╠═89cd78ce-3861-401e-ba7c-4027fbc7d6f6
+# ╠═9b65e3a5-a7ff-4821-be24-b24aa18ec4c9
+# ╠═f9230835-709e-4800-aa74-879ae6789e71
+# ╠═defad04f-c859-47e2-a4cd-9f98f2168554
+# ╠═6c91f24a-7e05-4067-991d-65b65818a124
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
