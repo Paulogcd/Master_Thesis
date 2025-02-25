@@ -160,10 +160,49 @@ end
 md"Note that this is NOT a probability density function."
 
 # ╔═╡ a97f9934-7529-46ca-96ef-852b2628721d
-md"# Productivity
+md"# 2. Productivity
 
-Let us assume that the productivity has the following relationship with ambient temperature :
+Now, let us assume that productivity is influenced by both age and ambient temperature. In this model, we do not include education yet.
 "
+
+# ╔═╡ f712d528-4fdf-4604-99f3-bf6bd331c511
+md"
+Let us denote the productivit by $z$, such that :
+
+$$z(age, temperature) = \frac{1}{2}\left(z_i(age)+z_i(temperature)\right)$$
+
+In this sense, the productivity is the function of two subfunctions of age and temperature."
+
+# ╔═╡ 049deb8e-f30f-45e2-b913-86469db8fb9c
+md"First, let us assume a concave intermediate age productivity function, such as:
+
+$$z_i(age) = age^{\alpha_3}-\alpha_4 \cdot age^2$$
+
+"
+
+# ╔═╡ a5ef1f86-5fb8-4087-a6b6-1781d3164bd8
+@bind α_3 Slider(0.00:0.01:1, default = 0.5)
+
+# ╔═╡ 7c8b46ba-4544-4fdd-a7cd-5c3fd75ae254
+@bind α_4 Slider(0.00:0.00001:0.001, default = 0.0005)
+
+# ╔═╡ f583dd2d-3db0-4f5d-954e-c82de5ed7c4e
+begin
+	intermediate_age_productivity(age) = age^(α_3)-(α_4)*(age^2)
+	Plots.plot(1:100,intermediate_age_productivity)
+	Plots.plot!(xaxis = "Age", yaxis = "Intermediate age productivity", legend = false)
+end
+
+# ╔═╡ 4c6a1ddb-4a0a-423c-9328-cefab2519dcb
+md"
+Second, let us assume that the intermediate temperature productivity has a relationship that is normal with temperature deviation. With $\Delta temp$ for temperature deviation, we have:
+
+$$z_i(\Delta temp;\mu,\sigma) = \frac{1}{\sqrt{2\sigma^2\pi}}\cdot \exp\left(-\frac{1}{2}\cdot \frac{\left(\Delta temp-\mu\right)^2}{\sigma^2}\right)$$
+"
+
+# ╔═╡ 824c94a4-8fe5-4024-9d3c-60ab2b03301f
+# sigma represents here the sensitivity of productivity to temperature
+@bind σ_td Slider(0.00:0.01:10, default = 5)
 
 # ╔═╡ aa0b334a-d394-4d20-9a39-e8d12c242426
 begin
@@ -171,20 +210,24 @@ begin
 	
 	# Plots.plot(rand(Normal(15,9),100))
 	# pdf(d(15,9), 0.3)
-	
-	productivity_factor(temperature) = pdf(d(15,9),temperature)
 
-	temperature_plotted = -10:40
+	
+	intermediate_temperature_productivity(temperature) = pdf(d(0,σ_td),temperature)
+
+	temperature_plotted = -10:10
 	# Plots.plot(-10:40,pdf.(d(15,9), temperature_plotted))
 
-	Plots.plot(-10:40,productivity_factor.(temperature_plotted))
-	Plots.plot!(xaxis = "Temperature", yaxis = "Productivity factor")
+	Plots.plot(-10:10,intermediate_temperature_productivity.(temperature_plotted), legend = false)
+	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Intermediate temperature productivity")
 end
 
-# ╔═╡ f583dd2d-3db0-4f5d-954e-c82de5ed7c4e
+# ╔═╡ c2634e76-4ae3-49bf-8341-cb3fe4797d4c
+md"Finally, we have the following productivity function:"
+
+# ╔═╡ 7680d7bb-870f-4ea4-a185-78f638e8ac68
 begin
-	# skill(h,w,age) = age^(0.5)-age*0.6*indicator_function_bad_health(h)-age*0.4*
-	# productivity(h,w,age) = skill(h,w,age) + rand(Normal(0,0.3))
+	#productivity
+	#Plots.plot()
 end
 
 # ╔═╡ 027a380f-2adb-47be-8d98-29fb20be4a75
@@ -207,11 +250,13 @@ end
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
 Distributions = "~0.25.117"
+LaTeXStrings = "~1.4.0"
 Plots = "~1.40.9"
 PlutoUI = "~0.7.61"
 """
@@ -222,7 +267,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "3367618c9795b4a00f274fbee8e257a0935cb8ab"
+project_hash = "595572ebca67e2cd285453d38441d6411f2d73f3"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1507,8 +1552,16 @@ version = "1.4.1+2"
 # ╟─1b108789-e159-4b2e-8bd1-44a339f1cda7
 # ╟─9cf5f273-3f89-4485-8213-c413f4ab9a32
 # ╟─a97f9934-7529-46ca-96ef-852b2628721d
-# ╠═aa0b334a-d394-4d20-9a39-e8d12c242426
+# ╟─f712d528-4fdf-4604-99f3-bf6bd331c511
+# ╟─049deb8e-f30f-45e2-b913-86469db8fb9c
+# ╠═a5ef1f86-5fb8-4087-a6b6-1781d3164bd8
+# ╠═7c8b46ba-4544-4fdd-a7cd-5c3fd75ae254
 # ╠═f583dd2d-3db0-4f5d-954e-c82de5ed7c4e
+# ╟─4c6a1ddb-4a0a-423c-9328-cefab2519dcb
+# ╠═824c94a4-8fe5-4024-9d3c-60ab2b03301f
+# ╠═aa0b334a-d394-4d20-9a39-e8d12c242426
+# ╟─c2634e76-4ae3-49bf-8341-cb3fe4797d4c
+# ╠═7680d7bb-870f-4ea4-a185-78f638e8ac68
 # ╠═027a380f-2adb-47be-8d98-29fb20be4a75
 # ╠═bf1ac101-696b-4102-9133-ce454d859156
 # ╟─00000000-0000-0000-0000-000000000001
