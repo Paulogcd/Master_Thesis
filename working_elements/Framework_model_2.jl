@@ -524,16 +524,210 @@ begin
 		label = "Bad health")
 end
 
+# ╔═╡ ddde8453-beac-4a76-b772-bc3ced4d148a
+md"# 4. Weather
+
+As introduced earlier, the weather variable is here represented as a temperature deviation. 
+
+We are going to represent it as a normal centered around zero, such that:"
+
+# ╔═╡ 899aac27-193a-4b12-af5e-3b88d3076e53
+begin
+	support = range(start = -20, stop = 20, length = 100)
+	weather(μ,σ) = rand(d(μ,σ))
+
+	μ_temp = 0
+	σ_temp = 5
+	
+	Plots.plot(support,pdf.(d(μ_temp,σ_temp),support), legend = false)
+	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Probability")
+	Plots.plot!(title = "Temperature deviation with μ=$μ_temp and σ=$σ_temp")
+end
+
 # ╔═╡ 64b00a1e-2380-4db4-ad86-2d81829f1eb6
-md"# 4. Simulations
+md"# 5. Life simulations
 
 Let us now proceed to simulations.
 
 ## Individual simulations
+
+Let us program a function that simulates the life of an indvidual.
+
 "
 
+
+# ╔═╡ b2d0be20-655e-4f1d-885d-911476efddcd
+begin
+	"""
+	The function `individual_simulation(initial_health_status)` simulates the life of an individual
+	"""
+	function individual_simulation(initial_health_status::String,μ::Number,σ::Number)::Tuple
+		living_history = zeros(100)
+		health_history = Vector{String}(undef,100)
+	
+		for t in 1:100
+	    
+		   if t == 1
+			   global previous_health = initial_health_status
+		   end
+	    
+		    # The age : 
+		    age = t
+		    
+		    # The weather ("n" or "d") :
+		    weather_t = weather(μ,σ)
+		    
+		    # The health status :
+			# probability of being in good health: 
+			pgh = probability_good_health(previous_health,weather_t)
+			# Health status draw:
+			health_t = health(pgh)
+
+			health_history[t] = health_t
+			previous_health = health_t
+
+		    # The living status : 
+		    pd = probability_dying = ζ(age,weather_t,health_t)
+		    living_status = rand(Binomial(1,1-pd))
+		    global living_history[t] = living_status
+
+			# When death comes : 
+			if living_status == 0
+				# print("Agent died at ", t)
+				results = (age,living_history,health_history)
+				return(results)
+				break
+			else
+			end
+			
+		end
+	end
+end
+
+# ╔═╡ 91449d3c-2970-4da0-9481-c0389a61a0b1
+individual_simulation("g",0,5)
+
 # ╔═╡ 8606a79c-bc8b-4fa1-9dd0-615eecedd11a
-md" ## Population simulations"
+md" ## Population simulations
+
+Now, let us proceed to a demographic population simulation.
+
+"
+
+# ╔═╡ 79bc852e-6f16-4038-b484-4acfe8ae92d0
+begin
+	"""
+	Th function `population_simulation(N)` runs a simulation for `N` individuals. 
+	
+	It returns a 2 dimensions tuple with
+
+	- The weather history,
+	- Population information
+
+	The population information is an array containing:
+
+	- Their age of death 
+	- Their living status history 
+	- Their health history 
+	"""
+	function population_simulation(size::Number,periods::Number,μ::Number,σ::Number)::Tuple
+
+		# We initialise the array that will contain all the results:
+		collective_results = []
+		
+		# Initialise a common weather history for the population
+		weather_history = rand(Normal(μ,σ), periods)
+
+		# The first element of the array is the weather history
+		# push!(collective_results,weather_history)
+		
+		# For each individual
+		for i in 1:size
+			
+			# We initialise the array that will contain the individual results:
+			individual_results = []
+			
+			individual_living_history = zeros(100)
+			individual_health_history = Vector{String}(undef,100)
+	
+			for t in 1:periods # For each period 
+
+			   # Individuals are born in good health
+				if t == 1
+				   global individual_past_health = "g"
+				end
+		    
+			    # The age : 
+			    age = t
+			    
+			    # The weather comes from the weather history
+			    weather_t = weather_history[t]
+			    
+			    # The health status :
+					# probability of being in good health: 
+					individual_pgh = probability_good_health(individual_past_health,weather_t)
+					# Health status draw:
+					individual_health_t = health(individual_pgh)
+					# We add it to the history
+					individual_health_history[t] = individual_health_t
+					# The current health becomes the past one for next period
+					individual_past_health = individual_health_t
+	
+			    # The living status : 
+				    # Probability:
+					individual_pd = ζ(age,weather_t,individual_health_t)
+				    # realisation : 
+					individual_living_status = rand(Binomial(1,1-individual_pd))
+				    # Into its history :
+					global individual_living_history[t] = individual_living_status
+		
+				# When death comes : 
+				if individual_living_status == 0
+					push!(individual_results, age)
+				    push!(individual_results, individual_living_history)
+					push!(individual_results, individual_health_history)
+					break
+				end
+			end # End of loop over periods
+			
+			# We add the information of the last individual:
+			push!(collective_results,individual_results)
+			# We go to the next individual
+			
+		end # End of loop over individuals
+
+		results = (weather_history,collective_results)
+		# println("Life expectancy in this population: ", mean(AOD))
+		# population_results = (;age_of_death,living_history,health_history)
+		return(results)
+	end
+end
+
+# ╔═╡ dc0a4299-8f5f-4c18-ad3f-5f7322510be4
+population = population_simulation(200,100,0,2)
+
+# ╔═╡ e2149ba4-4496-40b8-ba5e-f3ecbbd2e984
+begin
+	plotlyjs()
+	Plots.plot(1:100,population[1], legend = false)
+	Plots.plot!(xaxis = "Period",yaxis = "Temperature deviation", title = "Temperature deviation over time.")
+end
+
+# ╔═╡ 47bc828f-d8d5-48ec-b36d-4682169e9240
+begin 
+	collective_living_status = []
+	for i in 1:200
+		tmp = population[2][i][2]
+		push!(collective_living_status,tmp)
+	end
+	collective_living_status
+end
+
+# ╔═╡ f53d0631-e72f-4bab-9279-ccfb5a5dd877
+begin
+	alive_counts = zeros(Float64, 100)
+	Plots.plot(sum(collective_living_status[:, 1]))
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2016,7 +2210,7 @@ version = "1.4.1+2"
 # ╠═01d3cc7e-621d-49cf-81e9-51cd6d374ea1
 # ╠═a8ed332e-1aab-4410-99ac-e697edaa7ed7
 # ╠═7680d7bb-870f-4ea4-a185-78f638e8ac68
-# ╠═659924d2-a2e3-480f-9022-199fd60acecc
+# ╟─659924d2-a2e3-480f-9022-199fd60acecc
 # ╟─027a380f-2adb-47be-8d98-29fb20be4a75
 # ╟─6c5309d4-b1f8-40cc-80b9-80cc3d2f6d26
 # ╠═0044609b-e718-424e-9d44-2f63a8f9a358
@@ -2041,7 +2235,16 @@ version = "1.4.1+2"
 # ╟─13a7f37e-786a-445c-82d8-04d1fd9627e7
 # ╠═41cbc828-ab0f-4946-b9df-4c97da50ada7
 # ╠═6e3b1a5f-78dc-4b9e-814d-d514b1aba8d2
-# ╠═64b00a1e-2380-4db4-ad86-2d81829f1eb6
-# ╠═8606a79c-bc8b-4fa1-9dd0-615eecedd11a
+# ╟─ddde8453-beac-4a76-b772-bc3ced4d148a
+# ╟─899aac27-193a-4b12-af5e-3b88d3076e53
+# ╟─64b00a1e-2380-4db4-ad86-2d81829f1eb6
+# ╠═b2d0be20-655e-4f1d-885d-911476efddcd
+# ╠═91449d3c-2970-4da0-9481-c0389a61a0b1
+# ╟─8606a79c-bc8b-4fa1-9dd0-615eecedd11a
+# ╠═79bc852e-6f16-4038-b484-4acfe8ae92d0
+# ╠═dc0a4299-8f5f-4c18-ad3f-5f7322510be4
+# ╟─e2149ba4-4496-40b8-ba5e-f3ecbbd2e984
+# ╟─47bc828f-d8d5-48ec-b36d-4682169e9240
+# ╠═f53d0631-e72f-4bab-9279-ccfb5a5dd877
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
