@@ -44,20 +44,25 @@ Let it not only be determined by the former health status, but also by the forme
 
 Let us define the probability disribution of health status in terms of previous health status and ambient temperature, such that:
 
-$$Prob(H=h_{t})\equiv\pi(h_{t}|h_{t-1},temp_{t-1}) = \frac{1}{2}\left[\alpha_{1}\cdot\pi_i(h_{t}|h_{t-1}) + \alpha_{2}\cdot\pi_i(h_t|h_{t-1},temp_{t-1})\right]$$
+$$\begin{split}
+Prob(H=h_{t})\equiv\pi(h_{t}|h_{t-1},temp_{t-1}) = & \frac{1}{2}[\alpha_{1}\cdot\pi_{i,h}(h_{t}|h_{t-1}) \\
+& + (1-\alpha_1)\cdot\pi_{i,h,temp}(h_t|h_{t-1},temp_{t-1})]
+\end{split}$$
 
-With the subscript $i$ representing the intermediary characteristics of the measures $\pi_i$. We note that $\pi_i\in[0,1]$.
+With the subscript $i$ representing the intermediary characteristic of the measures $\pi_i$. We note that $\pi_i\in[0,1]$.
 
 The coefficients $\alpha_{1}$ and $\alpha_{2}$ are weights given to the importance of former health status and age in the probability of being in good health next period. They sum up to one.
 
 -  $\pi_i(h_{t}|h_{t-1})$ the intermediary probability of being in health state $h$ at period $t$ given the previous health status $h_{t-1}$,
--  $\pi_i(h_t|h_{t-1},temp_{t-1})$ the intermediary probability of being in good health taking into account the previous ambient temperature.
+-  $\pi_i(h_t|h_{t-1},temp_{t-1})$ the intermediary probability of being in good health taking into account the previous ambient temperature."
 
+# ╔═╡ a8ee1157-8a9a-4a5b-93d0-d075838f08c3
+md"
 ## Intermediate former health probability 
 
 First, the intermediary probability of being in a certain health status is given by a transition matrix such that:
 
-$$\pi_{i}(h_t|h_{t+1}) =
+$$\pi_{i,h}(h_t|h_{t+1}) =
 \begin{pmatrix}
 	Pr_{i}(g|g) & Pr_{i}(g|b)\\
 	Pr_{i}(b|g) & Pr_{i}(b|b) 
@@ -91,8 +96,18 @@ With $f$ being a function containing values between $0$ and $1$.
 # ╔═╡ b3cfc787-08ad-4a0e-8c1e-663fd14e4a0a
 md"Plotting this second intermediate probabiliy, we get:"
 
+# ╔═╡ b626bfbc-db72-49a6-917f-6ba1df9a697a
+# begin
+# 	gr()
+# 	intermediate_good_health2(temperature_deviation,health) = pdf(d(0,3-1(health=="g")),temperature_deviation)
+# 	
+# 	Plots.plot(-10:10,intermediate_good_health2.(-10:10,"g"), label = "Good health")
+# 	Plots.plot!(-10:10,intermediate_good_health2.(-10:10,"b"), label = "Bad health")
+# 	Plots.plot!(xaxis = "Temperature deviation",yaxis = "Marginal temperature health probability", title = "Marginal probability of being in good health \n in function of health type.")
+# end
+
 # ╔═╡ daada4ca-f0b4-4418-8a94-313faa283b81
-@bind α_3 Slider(0.00:0.001:1,default = 0.3)
+@bind α_3 Slider(0.00:0.0001:1,default = 0.01)
 
 # ╔═╡ 71c55d05-f084-476d-ab04-c5702f2c6109
 @bind α_4 Slider(0.00:0.001:0.5,default = 0.05)
@@ -100,7 +115,7 @@ md"Plotting this second intermediate probabiliy, we get:"
 # ╔═╡ ec119a8c-6ee8-4364-be5e-550bc0110b39
 begin
 	gr()
-	td = temperature_deviation = -10:10
+	td = temperature_deviation = range(start = -10, stop = 10, length = 100)
 	
 	function contain!(x::Number,max::Number,min::Number)
 	    if x > max
@@ -112,7 +127,7 @@ begin
 	    end
 	end
 
-	intermediate_probability_bad_health(h,x)=contain!(α_3+abs(x)*α_4*((h == "b" ? 1 : 0)+1),1,0)
+	intermediate_probability_bad_health(h,x)=contain!(α_3+abs(x)*α_4*(1(h == "b")+1),1,0)
 	
 	intermediate_probability_good_health(former_health_state,former_temperature) =
 	1-intermediate_probability_bad_health(former_health_state,former_temperature)
@@ -135,7 +150,7 @@ md"Defining the values of the parameters, the final probability distribution of 
 
 # ╔═╡ 4c9e6d59-262d-4135-a1d9-eb2d21f18f4a
 # Intermediate probability of being in good health given good health in previous period
-@bind π_igg Slider(0.00:0.001:2,default = 1.20)
+@bind π_igg Slider(0.00:0.001:1,default = 0.90)
 
 # ╔═╡ 8eced412-82f8-40e3-a223-342536f547fe
 # Intermediate probability of being in good health given bad health in previous period
@@ -167,6 +182,7 @@ end
 
 # ╔═╡ 1b108789-e159-4b2e-8bd1-44a339f1cda7
 begin
+	gr()
 	Plots.plot(td,probability_good_health.("g",td), label = "Good health")
 	Plots.plot!(td,probability_good_health.("b",td), label = "Bad health")
 	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Probability of being in good health")
@@ -186,7 +202,7 @@ Now, let us assume that productivity is influenced by both age and ambient tempe
 md"
 Let us denote the productivit by $z$, such that :
 
-$$z(age, temperature) = \frac{1}{2}\left(\alpha_5 \cdot z_i(age)+\alpha_6 \cdot z_i(temperature)\right)$$
+$$z(age, temperature, h) = \frac{1}{2}\left(\alpha_5 \cdot z_i(age)+\alpha_6 \cdot z_i(temperature)-\alpha_{2}\cdot\mathbb{1}(h=b)\right)$$
 
 In this sense, the productivity is the function of two subfunctions of age and temperature."
 
@@ -208,9 +224,11 @@ $$z_i(age) = age^{\alpha_7}-\alpha_8 \cdot age^2$$
 
 # ╔═╡ f583dd2d-3db0-4f5d-954e-c82de5ed7c4e
 begin
+	gr()
 	intermediate_age_productivity(age) = age^(α_7)-(α_8)*(age^2)
 	Plots.plot(18:100,intermediate_age_productivity)
 	Plots.plot!(xaxis = "Age", yaxis = "Intermediate age productivity", legend = false)
+	Plots.plot!(title="Productivity in function of age")
 end
 
 # ╔═╡ 64515cfd-1c3d-43d6-aa45-3a49b63c8e0c
@@ -263,28 +281,45 @@ md"Finally, we have the following productivity function:"
 # α_5 is the relative importance of age compared to temperature deviation
 @bind α_5 Slider(0.00:0.01:1, default = 0.5)
 
+# ╔═╡ a8ed332e-1aab-4410-99ac-e697edaa7ed7
+# Penalty of bad health
+@bind α_2 Slider(0.00:0.01:1, default = 1)
+
 # ╔═╡ 7680d7bb-870f-4ea4-a185-78f638e8ac68
 begin
-	productivity(age,temperature_deviation) = 1/2*(α_5*intermediate_age_productivity(age)+(1-α_5)intermediate_temperature_productivity(temperature_deviation))
+	productivity(age,temperature_deviation,h) =(α_5*intermediate_age_productivity(age)
+		+(1-α_5)intermediate_temperature_productivity(temperature_deviation)
+		-1(h=="b"))
+end
 
+# ╔═╡ 659924d2-a2e3-480f-9022-199fd60acecc
+begin
 	plotlyjs()
-	# consumption = 1:10
-	# labor = 1:5
-	# f(consumption,labor) = u.(consumption,"g",labor,"n")
-	# Plots.plot(consumption,labor,f,
-	#     st=:surface,
-	#     title = "Utility function",
-	#     label= "model",
-	#     xlabel ="consumption",
-	#     ylabel = "labor",
-	#     zlabel = "utility")
-	# Plotting : 
-	Plots.plot(18:100,td,productivity,
-		st=:surface,
-		title = "Productivity in function of health and temperature",
-		xlabel = "Age",
-		ylabel = "Temperature deviation",
-		zlabel = "Productivity")
+
+	# Create coordinate grids
+	age_range = range(start = 1, stop = 100, length = 100)
+	temp_range = range(start = -10, stop = 10, length = 100)
+	age_grid = repeat(reshape(collect(age_range), :, 1), 1, length(temp_range))
+	temp_grid = repeat(reshape(collect(temp_range), 1, :), size(age_grid, 1), 1)
+	
+	# Calculate productivity values
+	productivity_values_good = productivity.(age_grid, temp_grid, "g")
+	productivity_values_bad = productivity.(age_grid, temp_grid, "b")
+	
+	# Plot the surface
+	Plots.surface(
+	    age_grid,
+	    temp_grid,
+	    productivity_values_good,
+	    # st=:surface,
+	    title = "Final productivity function",
+	    xlabel = "Age",
+	    ylabel = "Temperature deviation",
+	    zlabel = "Productivity",
+		label = "Good health"
+	)
+	Plots.surface!(age_grid,temp_grid,productivity_values_bad,
+		label = "Bad health")
 end
 
 # ╔═╡ 027a380f-2adb-47be-8d98-29fb20be4a75
@@ -321,7 +356,7 @@ md"## Intermediate age death probability
 
 Let us assume the following relationship between death probability and age: 
 
-$$\zeta_{i,age}=f \circ \Lambda \circ n(age)$$
+$$\zeta_{i,age}(age)=f \circ \Lambda \circ n(age)$$
 
 With:
 
@@ -356,7 +391,7 @@ This yields, in function of some parameters:
 
 # ╔═╡ 911cfdef-6d74-40a1-bc25-adc6a0c5cbe0
 # Age 'sd'
-@bind α_16 Slider(0.00:0.01:10.00, default = 1)
+@bind α_16 Slider(0.00:0.01:10.00, default = 1.1)
 
 # ╔═╡ 0044609b-e718-424e-9d44-2f63a8f9a358
 begin
@@ -392,10 +427,10 @@ Therefore, the probability of survival is given by $1-\zeta_{i,h}(h,age)$
 
 # ╔═╡ 9b65e3a5-a7ff-4821-be24-b24aa18ec4c9
 begin
-	ζ_i_h(h,age) = 1 - Λ(normalize(age)+α_17*age*1(h=="b"))
-	Plots.plot(1:100,ζ_i_h.("g",1:100), label = "Good health")
-	Plots.plot!(1:100,ζ_i_h.("b",1:100), label = "Bad health")
-	Plots.plot!(xaxis = "Age", yaxis = "Intermediate health death probability ")
+	ζ_i_h(h,age) = Λ(normalize(age)+α_17*age*1(h=="b"))
+	Plots.plot(1:100,ones(100).-ζ_i_h.("g",1:100), label = "Good health")
+	Plots.plot!(1:100,ones(100).-ζ_i_h.("b",1:100), label = "Bad health")
+	Plots.plot!(xaxis = "Age", yaxis = "Intermediate health survival probability ")
 end
 
 # ╔═╡ f9230835-709e-4800-aa74-879ae6789e71
@@ -405,13 +440,100 @@ end
 md"## Intermediate temperature death probability 
 
 This is interesting.
+The relationship between temperature and death probability is at the core of the modelling of the impacts of climate change on the economy through health. 
+
+There is an important literature on the topic. 
+
+To assume the following functional form, I am going to follow the results presented in the figure S10 of Gould et al., 2023, [available here](https://www.nber.org/system/files/working_papers/w32195/w32195.pdf). 
+
+The figure S10 shows that the relationship between mortality and temperature is convex with a minimum around 18-22 degrees. 
+
+Although imperfect, I will use this estimate to propose a functional form.
 
 "
+
+# ╔═╡ 2635c022-ba96-47c9-ae32-2ff100fd9d97
+md"Let us assume:
+
+$$\zeta_{i,temperature}(temperature) = f \circ \left(\left(\frac{age}{100}\right)^{\alpha_{18}}+ \frac{|temperature|^{\alpha_{19}}}{\alpha_{20}}\right)$$
+"
+
+# ╔═╡ e42fb642-e9fe-4f12-bac6-4d8702a0e0f8
+@bind α_18 Slider(1.00:0.01:2.00, default = 1.4)
+
+# ╔═╡ 085758d5-9b92-4c32-ac92-2468cbca7032
+@bind α_19 Slider(1.00:0.01:2.00, default = 1.4)
+
+# ╔═╡ 3045dacb-86c6-457f-9343-3bd1d9019ff8
+@bind α_20 Slider(1.00:0.01:100.00, default = 50)
+
+# ╔═╡ d478e273-992a-4289-b592-f6568b55670a
+begin 
+	ζ_i_temp(temperature,age) = contain!((age/100)^α_18+abs(temperature)^(α_19)/α_20,1,0)
+	Plots.plot(temp_grid,age_grid, ζ_i_temp.(temp_grid,age_grid), st =:surface,legend = false)
+	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Age", zaxis = "ζ")
+	Plots.plot!(title = "Intermediate temperature death probability")
+end
 
 # ╔═╡ 6c91f24a-7e05-4067-991d-65b65818a124
 md"## Final survival probability
 
 Finally, combining all these intermediate probabilities, we can plot:"
+
+# ╔═╡ 41cbc828-ab0f-4946-b9df-4c97da50ada7
+# Age penalty
+@bind α_10 Slider(0.00:0.01:3, default = 1)
+
+# ╔═╡ 6e3b1a5f-78dc-4b9e-814d-d514b1aba8d2
+# Health status penalty :
+@bind α_11 Slider(0.00:0.01:3, default = 1)
+
+# ╔═╡ 13a7f37e-786a-445c-82d8-04d1fd9627e7
+begin
+	plotlyjs()
+
+	function ζ(age,temperature,h)
+		# We set the maximum age to 100 : 
+		if age == 100 
+			return 1
+		else
+			return contain!((1/3)*
+			(α_10*ζ_i_age(age)
+			+α_11*ζ_i_h(h,age)
+			+(3-α_10-α_11)ζ_i_temp(temperature,age)),1,0)
+		end
+	end
+	
+	# Calculate death probability values
+	death_proba_values_good = ζ.(age_grid, temp_grid, "g")
+	death_proba_values_bad = ζ.(age_grid, temp_grid, "b")
+	# productivity_values_bad = productivity.(age_grid, temp_grid, "b")
+	
+	# Plot the surfaces
+	Plots.surface(
+	    age_grid,
+	    temp_grid,
+	    death_proba_values_good,
+	    st=:surface,
+	    title = "Final death probability",
+	    xlabel = "Age",
+	    ylabel = "Temperature deviation",
+	    zlabel = "Probability",
+		label = "Good health")
+	Plots.surface!(age_grid,temp_grid,death_proba_values_bad,
+		label = "Bad health")
+end
+
+# ╔═╡ 64b00a1e-2380-4db4-ad86-2d81829f1eb6
+md"# 4. Simulations
+
+Let us now proceed to simulations.
+
+## Individual simulations
+"
+
+# ╔═╡ 8606a79c-bc8b-4fa1-9dd0-615eecedd11a
+md" ## Population simulations"
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1859,8 +1981,10 @@ version = "1.4.1+2"
 # ╟─d449cdac-eeaa-11ef-1bf7-d10086a2d62c
 # ╠═47a0e567-688d-4de5-8840-929f122ab3f2
 # ╟─ab03b887-4a8b-4f36-8f60-7d8670c3a092
+# ╟─a8ee1157-8a9a-4a5b-93d0-d075838f08c3
 # ╟─92f06187-0fbe-4ee8-8912-f3460572181f
 # ╟─b3cfc787-08ad-4a0e-8c1e-663fd14e4a0a
+# ╟─b626bfbc-db72-49a6-917f-6ba1df9a697a
 # ╟─ec119a8c-6ee8-4364-be5e-550bc0110b39
 # ╠═daada4ca-f0b4-4418-8a94-313faa283b81
 # ╠═71c55d05-f084-476d-ab04-c5702f2c6109
@@ -1890,7 +2014,9 @@ version = "1.4.1+2"
 # ╟─a04b1036-bf4a-4a18-96f8-775e6a6692a4
 # ╟─c2634e76-4ae3-49bf-8341-cb3fe4797d4c
 # ╠═01d3cc7e-621d-49cf-81e9-51cd6d374ea1
-# ╟─7680d7bb-870f-4ea4-a185-78f638e8ac68
+# ╠═a8ed332e-1aab-4410-99ac-e697edaa7ed7
+# ╠═7680d7bb-870f-4ea4-a185-78f638e8ac68
+# ╠═659924d2-a2e3-480f-9022-199fd60acecc
 # ╟─027a380f-2adb-47be-8d98-29fb20be4a75
 # ╟─6c5309d4-b1f8-40cc-80b9-80cc3d2f6d26
 # ╠═0044609b-e718-424e-9d44-2f63a8f9a358
@@ -1903,9 +2029,19 @@ version = "1.4.1+2"
 # ╠═d52fc75d-6927-49b1-8104-b3bc38106b48
 # ╟─bf1ac101-696b-4102-9133-ce454d859156
 # ╠═89cd78ce-3861-401e-ba7c-4027fbc7d6f6
-# ╠═9b65e3a5-a7ff-4821-be24-b24aa18ec4c9
+# ╟─9b65e3a5-a7ff-4821-be24-b24aa18ec4c9
 # ╠═f9230835-709e-4800-aa74-879ae6789e71
-# ╠═defad04f-c859-47e2-a4cd-9f98f2168554
-# ╠═6c91f24a-7e05-4067-991d-65b65818a124
+# ╟─defad04f-c859-47e2-a4cd-9f98f2168554
+# ╟─2635c022-ba96-47c9-ae32-2ff100fd9d97
+# ╠═e42fb642-e9fe-4f12-bac6-4d8702a0e0f8
+# ╠═085758d5-9b92-4c32-ac92-2468cbca7032
+# ╠═3045dacb-86c6-457f-9343-3bd1d9019ff8
+# ╠═d478e273-992a-4289-b592-f6568b55670a
+# ╟─6c91f24a-7e05-4067-991d-65b65818a124
+# ╟─13a7f37e-786a-445c-82d8-04d1fd9627e7
+# ╠═41cbc828-ab0f-4946-b9df-4c97da50ada7
+# ╠═6e3b1a5f-78dc-4b9e-814d-d514b1aba8d2
+# ╠═64b00a1e-2380-4db4-ad86-2d81829f1eb6
+# ╠═8606a79c-bc8b-4fa1-9dd0-615eecedd11a
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
