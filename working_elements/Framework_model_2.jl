@@ -379,15 +379,18 @@ This yields, in function of some parameters:
 
 # ╔═╡ 19b5af9f-b669-4e50-84eb-6d2db89cea1d
 # Growth rate of logistic
-@bind α_13 Slider(0.00:0.01:10.00, default=0.4)
+@bind α_13 Slider(0.00:0.01:10.00, default=0.3)
 
 # ╔═╡ 3fb1f327-8176-4bf9-b6f8-019f266b4bcc
 # Midpoint
-@bind α_14 Slider(0.00:0.01:100.00,default = 50)
+@bind α_14 Slider(0.00:0.01:100.00,default = 70)
 
 # ╔═╡ 069a8d99-7499-478c-aef1-8a36f2e1d38d
 # Age 'mean'
-@bind α_15 Slider(0.00:0.01:100.00, default = 20)
+@bind α_15 Slider(0.00:0.01:100.00, default = 50)
+
+# ╔═╡ 499c1755-cabf-48c2-bb2b-14cd6e086540
+α_15
 
 # ╔═╡ 911cfdef-6d74-40a1-bc25-adc6a0c5cbe0
 # Age 'sd'
@@ -409,9 +412,6 @@ begin
 	Plots.plot!(title = "Intermediate age probability of survival")
 end
 
-# ╔═╡ d52fc75d-6927-49b1-8104-b3bc38106b48
-ζ_i_age(100)
-
 # ╔═╡ bf1ac101-696b-4102-9133-ce454d859156
 md"## Intermediate health death probability 
 
@@ -425,16 +425,20 @@ Therefore, the probability of survival is given by $1-\zeta_{i,h}(h,age)$
 # ╔═╡ 89cd78ce-3861-401e-ba7c-4027fbc7d6f6
 @bind α_17 Slider(0.00:0.01:1.00, default=0.2)
 
+# ╔═╡ 53402edd-0ab9-474b-82ca-b0220a3b0172
+α_17
+
 # ╔═╡ 9b65e3a5-a7ff-4821-be24-b24aa18ec4c9
 begin
+	gr()
 	ζ_i_h(h,age) = Λ(normalize(age)+α_17*age*1(h=="b"))
 	Plots.plot(1:100,ones(100).-ζ_i_h.("g",1:100), label = "Good health")
 	Plots.plot!(1:100,ones(100).-ζ_i_h.("b",1:100), label = "Bad health")
-	Plots.plot!(xaxis = "Age", yaxis = "Intermediate health survival probability ")
+	Plots.plot!(xaxis = "Age", yaxis = "Intermediate health survival probability", legend = :bottomleft)
 end
 
 # ╔═╡ f9230835-709e-4800-aa74-879ae6789e71
-ζ_i_h("g",100)
+ζ_i_h("g",95)
 
 # ╔═╡ defad04f-c859-47e2-a4cd-9f98f2168554
 md"## Intermediate temperature death probability 
@@ -459,18 +463,21 @@ $$\zeta_{i,temperature}(temperature) = f \circ \left(\left(\frac{age}{100}\right
 "
 
 # ╔═╡ e42fb642-e9fe-4f12-bac6-4d8702a0e0f8
-@bind α_18 Slider(1.00:0.01:2.00, default = 1.4)
+@bind α_18 Slider(1.00:0.01:100.00, default = 10)
 
 # ╔═╡ 085758d5-9b92-4c32-ac92-2468cbca7032
-@bind α_19 Slider(1.00:0.01:2.00, default = 1.4)
+@bind α_19 Slider(1.00:0.01:2.00, default = 1.05)
 
 # ╔═╡ 3045dacb-86c6-457f-9343-3bd1d9019ff8
-@bind α_20 Slider(1.00:0.01:100.00, default = 50)
+@bind α_20 Slider(1.00:0.01:1000.00, default = 90)
+
+# ╔═╡ e5cf7a8e-cb49-4200-af5a-c0e71efbf277
+α_20
 
 # ╔═╡ d478e273-992a-4289-b592-f6568b55670a
 begin 
 	ζ_i_temp(temperature,age) = contain!((age/100)^α_18+abs(temperature)^(α_19)/α_20,1,0)
-	Plots.plot(temp_grid,age_grid, ζ_i_temp.(temp_grid,age_grid), st =:surface,legend = false)
+	Plots.plot(temp_grid,age_grid, ζ_i_temp.(temp_grid,age_grid), st =:surface)
 	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Age", zaxis = "ζ")
 	Plots.plot!(title = "Intermediate temperature death probability")
 end
@@ -481,12 +488,18 @@ md"## Final survival probability
 Finally, combining all these intermediate probabilities, we can plot:"
 
 # ╔═╡ 41cbc828-ab0f-4946-b9df-4c97da50ada7
-# Age penalty
-@bind α_10 Slider(0.00:0.01:3, default = 1)
+# Age coefficient 
+@bind α_10 Slider(0.00:0.01:3, default = 0.8)
 
 # ╔═╡ 6e3b1a5f-78dc-4b9e-814d-d514b1aba8d2
-# Health status penalty :
-@bind α_11 Slider(0.00:0.01:3, default = 1)
+# Health status coefficient :
+@bind α_11 Slider(0.00:0.01:3, default = 2)
+
+# ╔═╡ 82c341a0-238c-4c93-b0f8-60d12076e35c
+α_11
+
+# ╔═╡ 3c366394-e9a8-4839-b423-5b658b0b0953
+@bind α_temperature_death Slider(0.00:0.01:3, default = 0.8)
 
 # ╔═╡ 13a7f37e-786a-445c-82d8-04d1fd9627e7
 begin
@@ -500,7 +513,7 @@ begin
 			return contain!((1/3)*
 			(α_10*ζ_i_age(age)
 			+α_11*ζ_i_h(h,age)
-			+(3-α_10-α_11)ζ_i_temp(temperature,age)),1,0)
+			+(α_temperature_death)*ζ_i_temp(temperature,age)),1,0)
 		end
 	end
 	
@@ -537,7 +550,7 @@ begin
 	weather(μ,σ) = rand(d(μ,σ))
 
 	μ_temp = 0
-	σ_temp = 5
+	σ_temp = 1.5
 	
 	Plots.plot(support,pdf.(d(μ_temp,σ_temp),support), legend = false)
 	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Probability")
@@ -559,7 +572,7 @@ Let us program a function that simulates the life of an indvidual.
 # ╔═╡ b2d0be20-655e-4f1d-885d-911476efddcd
 begin
 	"""
-	The function `individual_simulation(initial_health_status)` simulates the life of an individual
+	The function `individual_simulation(initial_health_status,μ,σ)` simulates the life of an individual
 	"""
 	function individual_simulation(initial_health_status::String,μ::Number,σ::Number)::Tuple
 		living_history = zeros(100)
@@ -604,9 +617,6 @@ begin
 	end
 end
 
-# ╔═╡ 91449d3c-2970-4da0-9481-c0389a61a0b1
-individual_simulation("g",0,5)
-
 # ╔═╡ 8606a79c-bc8b-4fa1-9dd0-615eecedd11a
 md" ## Population simulations
 
@@ -617,10 +627,8 @@ Now, let us proceed to a demographic population simulation.
 # ╔═╡ 79bc852e-6f16-4038-b484-4acfe8ae92d0
 begin
 	"""
-	Th function `population_simulation(N)` runs a simulation for `N` individuals. 
+	Th function `population_simulation(N,periods,μ,σ)` runs a simulation for `N` individuals. 
 	
-	It returns a 2 dimensions tuple with
-
 	- The weather history,
 	- Population information
 
@@ -630,10 +638,13 @@ begin
 	- Their living status history 
 	- Their health history 
 	"""
-	function population_simulation(size::Number,periods::Number,μ::Number,σ::Number)::Tuple
+	function population_simulation(size::Number,periods::Number,μ::Number,σ::Number)
 
 		# We initialise the array that will contain all the results:
 		collective_results = []
+		collective_age = []
+		collective_living_history = []
+		collective_health_history = []
 		
 		# Initialise a common weather history for the population
 		weather_history = rand(Normal(μ,σ), periods)
@@ -680,54 +691,59 @@ begin
 					individual_living_status = rand(Binomial(1,1-individual_pd))
 				    # Into its history :
 					global individual_living_history[t] = individual_living_status
-		
+
 				# When death comes : 
 				if individual_living_status == 0
-					push!(individual_results, age)
-				    push!(individual_results, individual_living_history)
-					push!(individual_results, individual_health_history)
+					push!(collective_age, age)
+				    push!(collective_living_history, individual_living_history)
+					push!(collective_health_history, individual_health_history)
 					break
 				end
+				
 			end # End of loop over periods
 			
-			# We add the information of the last individual:
-			push!(collective_results,individual_results)
+			# We add the information of the individual:
+			# push!(collective_results,individual_results)
 			# We go to the next individual
 			
 		end # End of loop over individuals
 
-		results = (weather_history,collective_results)
-		# println("Life expectancy in this population: ", mean(AOD))
+		results = (;weather_history,collective_age,collective_living_history,collective_health_history)
+		println("Life expectancy in this population: ", mean(collective_age))
 		# population_results = (;age_of_death,living_history,health_history)
 		return(results)
 	end
 end
 
 # ╔═╡ dc0a4299-8f5f-4c18-ad3f-5f7322510be4
-population = population_simulation(200,100,0,2)
+population = population_simulation(20000,100,0,σ_temp)
 
 # ╔═╡ e2149ba4-4496-40b8-ba5e-f3ecbbd2e984
 begin
 	plotlyjs()
-	Plots.plot(1:100,population[1], legend = false)
+	Plots.plot(1:length(population[:weather_history]),population[:weather_history], legend = false)
 	Plots.plot!(xaxis = "Period",yaxis = "Temperature deviation", title = "Temperature deviation over time.")
-end
-
-# ╔═╡ 47bc828f-d8d5-48ec-b36d-4682169e9240
-begin 
-	collective_living_status = []
-	for i in 1:200
-		tmp = population[2][i][2]
-		push!(collective_living_status,tmp)
-	end
-	collective_living_status
 end
 
 # ╔═╡ f53d0631-e72f-4bab-9279-ccfb5a5dd877
 begin
-	alive_counts = zeros(Float64, 100)
-	Plots.plot(sum(collective_living_status[:, 1]))
+	gr()
+	cls = []
+	for i in 1:length(population[:collective_living_history])
+		tmp = population[:collective_living_history][i]
+		push!(cls,tmp)
+	end
+
+	# alive_counts = zeros(Float64, 100)
+	# xvector = 1:length(population[:collective_living_history])
+	Plots.plot(1:100,sum(cls[:, 1]), legend = false)
+	Plots.plot!(xaxis = "Time", yaxis = "Population", title = "Evolution of population through time")
 end
+
+# ╔═╡ 059118aa-7037-4229-b0af-56360a19cf5f
+md" # 6. Maximisation program
+
+Let us now try to set up a maximisatio program for our agents."
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2210,41 +2226,44 @@ version = "1.4.1+2"
 # ╠═01d3cc7e-621d-49cf-81e9-51cd6d374ea1
 # ╠═a8ed332e-1aab-4410-99ac-e697edaa7ed7
 # ╠═7680d7bb-870f-4ea4-a185-78f638e8ac68
-# ╟─659924d2-a2e3-480f-9022-199fd60acecc
+# ╠═659924d2-a2e3-480f-9022-199fd60acecc
 # ╟─027a380f-2adb-47be-8d98-29fb20be4a75
 # ╟─6c5309d4-b1f8-40cc-80b9-80cc3d2f6d26
 # ╠═0044609b-e718-424e-9d44-2f63a8f9a358
 # ╠═bc5d16ee-c140-41cc-a5b8-66ca6a19e394
 # ╠═19b5af9f-b669-4e50-84eb-6d2db89cea1d
 # ╠═3fb1f327-8176-4bf9-b6f8-019f266b4bcc
+# ╠═499c1755-cabf-48c2-bb2b-14cd6e086540
 # ╠═069a8d99-7499-478c-aef1-8a36f2e1d38d
 # ╠═911cfdef-6d74-40a1-bc25-adc6a0c5cbe0
 # ╠═110d4cd1-941e-47f2-9919-de6f4d16f36a
-# ╠═d52fc75d-6927-49b1-8104-b3bc38106b48
 # ╟─bf1ac101-696b-4102-9133-ce454d859156
+# ╠═53402edd-0ab9-474b-82ca-b0220a3b0172
 # ╠═89cd78ce-3861-401e-ba7c-4027fbc7d6f6
-# ╟─9b65e3a5-a7ff-4821-be24-b24aa18ec4c9
+# ╠═9b65e3a5-a7ff-4821-be24-b24aa18ec4c9
 # ╠═f9230835-709e-4800-aa74-879ae6789e71
 # ╟─defad04f-c859-47e2-a4cd-9f98f2168554
 # ╟─2635c022-ba96-47c9-ae32-2ff100fd9d97
 # ╠═e42fb642-e9fe-4f12-bac6-4d8702a0e0f8
 # ╠═085758d5-9b92-4c32-ac92-2468cbca7032
+# ╠═e5cf7a8e-cb49-4200-af5a-c0e71efbf277
 # ╠═3045dacb-86c6-457f-9343-3bd1d9019ff8
 # ╠═d478e273-992a-4289-b592-f6568b55670a
 # ╟─6c91f24a-7e05-4067-991d-65b65818a124
 # ╟─13a7f37e-786a-445c-82d8-04d1fd9627e7
 # ╠═41cbc828-ab0f-4946-b9df-4c97da50ada7
 # ╠═6e3b1a5f-78dc-4b9e-814d-d514b1aba8d2
+# ╠═82c341a0-238c-4c93-b0f8-60d12076e35c
+# ╠═3c366394-e9a8-4839-b423-5b658b0b0953
 # ╟─ddde8453-beac-4a76-b772-bc3ced4d148a
 # ╟─899aac27-193a-4b12-af5e-3b88d3076e53
 # ╟─64b00a1e-2380-4db4-ad86-2d81829f1eb6
-# ╠═b2d0be20-655e-4f1d-885d-911476efddcd
-# ╠═91449d3c-2970-4da0-9481-c0389a61a0b1
+# ╟─b2d0be20-655e-4f1d-885d-911476efddcd
 # ╟─8606a79c-bc8b-4fa1-9dd0-615eecedd11a
-# ╠═79bc852e-6f16-4038-b484-4acfe8ae92d0
-# ╠═dc0a4299-8f5f-4c18-ad3f-5f7322510be4
-# ╟─e2149ba4-4496-40b8-ba5e-f3ecbbd2e984
-# ╟─47bc828f-d8d5-48ec-b36d-4682169e9240
-# ╠═f53d0631-e72f-4bab-9279-ccfb5a5dd877
+# ╟─79bc852e-6f16-4038-b484-4acfe8ae92d0
+# ╟─dc0a4299-8f5f-4c18-ad3f-5f7322510be4
+# ╠═e2149ba4-4496-40b8-ba5e-f3ecbbd2e984
+# ╟─f53d0631-e72f-4bab-9279-ccfb5a5dd877
+# ╟─059118aa-7037-4229-b0af-56360a19cf5f
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
