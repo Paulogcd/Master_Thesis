@@ -736,94 +736,6 @@ $$l^{*}_{t}=z_{t}^{-1}\left(c^{*}_{t}\right)=z_{t}^{-1}\cdot\left(\frac{z_t}{\xi
 # ╔═╡ ffe89f7c-e31d-4f07-8d01-c3de52feaed9
 md"The utility function and all its parameters are defined in Julia in the Appendix of the notebook."
 
-# ╔═╡ fe9b7ac6-305a-4fdf-9c21-b5fda8fa46d5
-md"### Aggregate simulation
-
-
-Let us now try to simulate the choices and utility of several agents, without savings. We have to be more careful this time: contrary to a population simulation focusing on survival, the consumption is affected by weather directly through productivity. In this sense, we need to have a common weather history for a given population in order to compare different populations. We need to reprogram a population simulation, and not just loop over the `choice_sim_nosavings()` function.
-"
-
-# ╔═╡ 235c6844-1f7d-46b7-bb72-5fdd0a43b8eb
-md"Within such a very simplisic model, we can run the simulations for different probability of weather deviation, and compare the outcomes in terms of aggregate utility. Here is an example with the aggregate uility of a society with a probability of he weather staying normal of 0.5."
-
-# ╔═╡ c531f1c8-906a-434d-ad8f-3438ddb8a99d
-begin
-	# The syntax is such that : 
-	
-	# pop_choices_5[1] # will yield the weather history.
-	
-	# pop_choices_5[2] # will yield individuals data
-	# pop_choices_5[2][i] # will yield individuals i data
-	# pop_choices_5[2][1][:living_history] # will yield individuals i data
-	# pop_choices_5[2][1][:age] # will yield individuals i data of age of death
-	# length(pop_choices_5[2]) # will yield the number of individuals
-	# typeof(pop_choices[1,:])
-
-	# typeof(pop_choices[1,:]) # Is a vector of one tuple
-	# typeof(pop_choices[1,:][1]) # Is a tuple of 7 elements, coming from choice_sim_nosavings()
-	
-	# pop_choices[i,:][1] # will yield the same data of the i-th individual
-	# pop_choices[1,:][1][d] # will yield the d-th data of the i-th individual
-	# pop_choices[1,:][1][1] # age of death
-	# pop_choices[1,:][1][2] # living history
-	# pop_choices[1,:][1][3] # health history
-	# etc...
-end
-
-# ╔═╡ 57681a33-f184-405d-8a27-c370a9bcb0ed
-md"Now, comparing across societies, with different probabilities of weather being normal, we get:"
-
-# ╔═╡ 01b81ae5-eba8-450a-8519-bddb29476628
-md"With only the extreme values : " 
-
-# ╔═╡ 91a32ee5-cf11-45c7-bef7-f3747610a2a8
-md"If we sum up all periods, to get the aggregated intertemporal utility, we obtain:"
-
-# ╔═╡ 33086f8a-3ce2-4e28-ba36-49b233b8c692
-md"We touch here the core of what my maser thesis will try to reach. Run a model with several meteorological parameters conditioning the probabiliy of a weather deviation, and seeing how it affects the economy.
-
-In this simplified model, the weather is binary and does not affect the probability of dying. The productivity is only affected by the weather through a constant effect. Later, the weather will be modelised more in details. "
-
-# ╔═╡ 6f0c1138-61a2-48df-8c82-09de7533e28f
-md"# 6. Appendix
-
-## Parameters
-
-Here can be found the utility function and its corresponding parameters of risk aversion and different penalty coefficients associated with labor disutility. 
-
-Changing them will affect the rest of the above simulations using the utility function. 
-"
-
-# ╔═╡ 23ecebf6-22ff-43a0-97a2-62718f5ebab5
-# Risk aversion :
-@bind ρ Slider(0.00:0.01:1, default=0.9)
-
-# ╔═╡ 1bcb39cf-0a2b-453e-845a-e22caa1bd23b
-# Working penalty :
-@bind ϕ_l Slider(0.00:0.01:1, default=0.9)
-
-# ╔═╡ 27ec39f4-aca3-41da-a6ed-b6bb4a6b1035
-# Working with weather deviation penalty :
-@bind ϕ_w Slider(0.00:0.01:1, default=0.7)
-
-# ╔═╡ e76cb128-d03e-465b-bbb4-9abee96d9249
-# Working in bad health penalty :
-@bind ϕ_h Slider(0.00:0.01:1, default=0.9)
-
-# ╔═╡ f1d6cd8a-1588-4b2a-b7d4-20dbc8b7dfe5
-begin
-	# Indicator function of working : 
-	indicator_function_work(l) = l > 0 ? 1 : 0
-
-	# Disutility function : 
-	ξ(w,h) = ϕ_l + ϕ_w * indicator_function_weather_deviation(w) + ϕ_h * indicator_function_bad_health(h)
-	
-	ϕ(h,l,w) = l*ξ(w,h)	
-
-	# Utility function : 
-	u(c,h,l,w) = (c^(1-ρ))/(1-ρ) - ϕ(h,l,w)
-end
-
 # ╔═╡ 7ecb1a5a-dc5c-4319-947f-adf4b2a766f0
 begin
 	"""
@@ -976,6 +888,13 @@ begin
 	Plots.plot!(xaxis = "Age")
 end
 
+# ╔═╡ fe9b7ac6-305a-4fdf-9c21-b5fda8fa46d5
+md"### Aggregate simulation
+
+
+Let us now try to simulate the choices and utility of several agents, without savings. We have to be more careful this time: contrary to a population simulation focusing on survival, the consumption is affected by weather directly through productivity. In this sense, we need to have a common weather history for a given population in order to compare different populations. We need to reprogram a population simulation, and not just loop over the `choice_sim_nosavings()` function.
+"
+
 # ╔═╡ cf36d6c7-e4d4-418c-9fce-40479ff55898
 begin
 	"""
@@ -1090,6 +1009,33 @@ begin
 	end # End of function 
 end	# End of block
 
+# ╔═╡ 235c6844-1f7d-46b7-bb72-5fdd0a43b8eb
+md"Within such a very simplisic model, we can run the simulations for different probability of weather deviation, and compare the outcomes in terms of aggregate utility. Here is an example with the aggregate uility of a society with a probability of he weather staying normal of 0.5."
+
+# ╔═╡ c531f1c8-906a-434d-ad8f-3438ddb8a99d
+begin
+	# The syntax is such that : 
+	
+	# pop_choices_5[1] # will yield the weather history.
+	
+	# pop_choices_5[2] # will yield individuals data
+	# pop_choices_5[2][i] # will yield individuals i data
+	# pop_choices_5[2][1][:living_history] # will yield individuals i data
+	# pop_choices_5[2][1][:age] # will yield individuals i data of age of death
+	# length(pop_choices_5[2]) # will yield the number of individuals
+	# typeof(pop_choices[1,:])
+
+	# typeof(pop_choices[1,:]) # Is a vector of one tuple
+	# typeof(pop_choices[1,:][1]) # Is a tuple of 7 elements, coming from choice_sim_nosavings()
+	
+	# pop_choices[i,:][1] # will yield the same data of the i-th individual
+	# pop_choices[1,:][1][d] # will yield the d-th data of the i-th individual
+	# pop_choices[1,:][1][1] # age of death
+	# pop_choices[1,:][1][2] # living history
+	# pop_choices[1,:][1][3] # health history
+	# etc...
+end
+
 # ╔═╡ 36716607-70b2-444f-88bb-6f8db70f542e
 begin
 	plotlyjs()
@@ -1122,6 +1068,9 @@ begin
 	Plots.plot!(title = "Aggregate utility over time with p = 0.5")
 end
 
+# ╔═╡ 57681a33-f184-405d-8a27-c370a9bcb0ed
+md"Now, comparing across societies, with different probabilities of weather being normal, we get:"
+
 # ╔═╡ 834e8cba-3424-4722-b4b8-3e80cab92240
 begin
 	# Generating data:
@@ -1138,6 +1087,24 @@ begin
 	end
 	plot_all
 end
+
+# ╔═╡ 01b81ae5-eba8-450a-8519-bddb29476628
+md"With only the extreme values : " 
+
+# ╔═╡ e7293adc-8fea-4b9b-a688-83bb02292268
+begin 
+	plotlyjs()
+	pop_choices_full_normal = aggregating(2000,1)
+	pop_choices_full_deviation = aggregating(2000,0)
+	exported_plot_1 = Plots.plot(1:100,pop_choices_full_normal, label = "Perfectly normal weather")
+	Plots.plot!(pop_choices_full_deviation, label = "Totally deviating weather")
+	Plots.plot!(xaxis = "Period", yaxis = "Aggregated utility")
+	Plots.savefig("Framework_model_1plot1.png")
+	exported_plot_1
+end
+
+# ╔═╡ 91a32ee5-cf11-45c7-bef7-f3747610a2a8
+md"If we sum up all periods, to get the aggregated intertemporal utility, we obtain:"
 
 # ╔═╡ 91595a6c-39da-4190-8e6c-de462f6b1f60
 begin
@@ -1160,16 +1127,49 @@ begin
 	exported_plot_2
 end
 
-# ╔═╡ e7293adc-8fea-4b9b-a688-83bb02292268
-begin 
-	plotlyjs()
-	pop_choices_full_normal = aggregating(2000,1)
-	pop_choices_full_deviation = aggregating(2000,0)
-	exported_plot_1 = Plots.plot(1:100,pop_choices_full_normal, label = "Perfectly normal weather")
-	Plots.plot!(pop_choices_full_deviation, label = "Totally deviating weather")
-	Plots.plot!(xaxis = "Period", yaxis = "Aggregated utility")
-	Plots.savefig("Framework_model_1plot1.png")
-	exported_plot_1
+# ╔═╡ 33086f8a-3ce2-4e28-ba36-49b233b8c692
+md"We touch here the core of what my maser thesis will try to reach. Run a model with several meteorological parameters conditioning the probabiliy of a weather deviation, and seeing how it affects the economy.
+
+In this simplified model, the weather is binary and does not affect the probability of dying. The productivity is only affected by the weather through a constant effect. Later, the weather will be modelised more in details. "
+
+# ╔═╡ 6f0c1138-61a2-48df-8c82-09de7533e28f
+md"# 6. Appendix
+
+## Parameters
+
+Here can be found the utility function and its corresponding parameters of risk aversion and different penalty coefficients associated with labor disutility. 
+
+Changing them will affect the rest of the above simulations using the utility function. 
+"
+
+# ╔═╡ 23ecebf6-22ff-43a0-97a2-62718f5ebab5
+# Risk aversion :
+@bind ρ Slider(0.00:0.01:1, default=0.9)
+
+# ╔═╡ 1bcb39cf-0a2b-453e-845a-e22caa1bd23b
+# Working penalty :
+@bind ϕ_l Slider(0.00:0.01:1, default=0.9)
+
+# ╔═╡ 27ec39f4-aca3-41da-a6ed-b6bb4a6b1035
+# Working with weather deviation penalty :
+@bind ϕ_w Slider(0.00:0.01:1, default=0.7)
+
+# ╔═╡ e76cb128-d03e-465b-bbb4-9abee96d9249
+# Working in bad health penalty :
+@bind ϕ_h Slider(0.00:0.01:1, default=0.9)
+
+# ╔═╡ f1d6cd8a-1588-4b2a-b7d4-20dbc8b7dfe5
+begin
+	# Indicator function of working : 
+	indicator_function_work(l) = l > 0 ? 1 : 0
+
+	# Disutility function : 
+	ξ(w,h) = ϕ_l + ϕ_w * indicator_function_weather_deviation(w) + ϕ_h * indicator_function_bad_health(h)
+	
+	ϕ(h,l,w) = l*ξ(w,h)	
+
+	# Utility function : 
+	u(c,h,l,w) = (c^(1-ρ))/(1-ρ) - ϕ(h,l,w)
 end
 
 # ╔═╡ 1df2fc95-9b98-4e7f-95ef-42974f554c6a
@@ -2740,16 +2740,16 @@ version = "1.4.1+2"
 # ╟─f73b41a5-01f5-4694-b34b-a4648d18fc91
 # ╟─3100a50b-f4f7-4cf9-8c74-edb2b5579779
 # ╟─49d95aaa-b5cf-469c-b235-c1eb1ce776b8
-# ╟─2d79fea9-af26-4ef9-b938-e40a868f5995
+# ╠═2d79fea9-af26-4ef9-b938-e40a868f5995
 # ╟─81ab2269-9a8d-4626-9f1f-4a193f4e7fb3
 # ╟─b7e9a54c-a813-4864-bcf7-8437c4c6d69b
 # ╟─16f8acf3-c913-4a06-85b6-3111e18a7494
-# ╟─182d2fe5-14f8-4262-b8cf-672f8a1c6f9b
+# ╠═182d2fe5-14f8-4262-b8cf-672f8a1c6f9b
 # ╟─76a99e4f-1287-4fb6-9873-1ffc5db9d88e
-# ╟─496514b8-bcaa-4c06-844e-082eb4dfdbca
-# ╟─4219f0fe-bd6a-45c2-9ae9-2113a65d9e9e
+# ╠═496514b8-bcaa-4c06-844e-082eb4dfdbca
+# ╠═4219f0fe-bd6a-45c2-9ae9-2113a65d9e9e
 # ╟─2acf58c3-3227-4ee6-a72e-1422accb1b98
-# ╟─2711fa92-9877-4441-8456-9c6c40e3fcad
+# ╠═2711fa92-9877-4441-8456-9c6c40e3fcad
 # ╟─e38e36a8-f410-4888-8fa9-eb907cacf127
 # ╟─ffe89f7c-e31d-4f07-8d01-c3de52feaed9
 # ╠═7ecb1a5a-dc5c-4319-947f-adf4b2a766f0
