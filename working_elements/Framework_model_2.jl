@@ -1012,7 +1012,109 @@ findmax(utility_values_15)
 # ╔═╡ 281f9459-f9ef-4ca7-acdd-b66c565aeb21
 md"If we work with loops, and try to find the maximum, we get:"
 
+# ╔═╡ 28406d71-3b9a-47e9-8dff-5b183388893a
+md"Something is wrong here..."
+
+# ╔═╡ c5fb1de4-ae7a-42f1-a4f6-6ac523e5dcc3
+md"Attempt of Dynamic programming"
+
+# ╔═╡ 21123b21-f237-4acc-8865-b0a1a07a6c6f
+begin
+	plotlyjs()
+	Plots.plot(iteration_range,
+				consumption_range2,
+				V[:,:,1],
+				st=:surface,
+				label = "s1=1")
+	Plots.plot!(xaxis = "Labor supply", # bug ? : x and y axis should be inverted
+				yaxis = "Consumption",
+				zaxis = "Value function")
+	Plots.plot!(iteration_range,consumption_range2,V[:,:,2], st=:surface, label = "2")
+	# Plots.plot!(iteration_range,iteration_range,V[:,:,3], st=:surface, label = "3")
+	# Plots.plot!(iteration_range,iteration_range,V[:,:,4], st=:surface, label = "4")
+	# Plots.plot!(1:11,1:11,V[:,:,3], st=:surface, label = "3")
+	# Plots.plot!(1:11,1:11,V[:,:,4], st=:surface, label = "4")
+end
+
+# ╔═╡ 7cc24267-070b-4bdb-a5b2-4d67f0971b8b
+AA = Array{Array}(undef, 2, 3)
+
+# ╔═╡ d9690b0b-57b6-43c9-85b3-5faaaff2e1b2
+begin 
+	AAA = [1 2 10]
+	AAA[end:-1:1]
+end
+
+# ╔═╡ 6a2a7cec-8eb3-4fd9-ae94-3ad3b7807396
+begin
+	last_period = 2
+	iteration_time = 1:last_period
+
+	# V()
+
+	@time begin
+
+	s,z = 10,1
+	consumption,labor_supply,sprime = 0,0,0
+	
+	choice_variables = [consumption,labor_supply,sprime]
+	state_variables = [s,z]
+	
+	budget(choice_variables,state_variables) = choice_variables[2]*state_variables[2]+state_variables[1]-choice_variables[1]-choice_variables[3]
+
+	u(choice_variables,state_variables) = (abs(choice_variables[1])^(1-ρ))/(1-ρ) - choice_variables[2]*state_variables[2]
+	
+	iteration_max = 100
+	iteration_points = 100
+	iteration_range = range(start = 0.00, stop = iteration_max, length = iteration_points)
+	consumption_range2 = range(start = 0.00, stop = 10, length = iteration_points)
+	# V = zeros(iteration_points,iteration_points,iteration_points)
+
+	V = Array{Array}(undef,last_period)
+		# A = Array{Float64,2}(undef, 2, 3)
+		
+	for time in iteration_time[end:-1:1]
+
+		V[time] = zeros(iteration_points,iteration_points,iteration_points)
+		
+		if time == last_period
+			for (index_consumption, consumption) in enumerate(consumption_range2)
+				for (index_labor_supply,labor_supply) in enumerate(iteration_range)
+					for (index_sprime,sprime) in enumerate(iteration_range)
+						if budget([consumption,labor_supply,sprime],state_variables) < 0
+							V[time][index_consumption,index_labor_supply,index_sprime] = -Inf
+						else 
+							V[time][index_consumption,index_labor_supply,index_sprime] = u([consumption,labor_supply,sprime],state_variables)
+						end
+					end
+				end
+			end
+			# maxvalue, maxindex = findmax(V[time])
+			# And then we send this optimal decision to the next one...
+		end
+		
+		
+		for (index_consumption, consumption) in enumerate(consumption_range2)
+			for (index_labor_supply,labor_supply) in enumerate(iteration_range)
+				for (index_sprime,sprime) in enumerate(iteration_range)
+					if budget([consumption,labor_supply,sprime],state_variables) < 0
+						V[time][index_consumption,index_labor_supply,index_sprime] = -Inf
+					else 
+						V[time][index_consumption,index_labor_supply,index_sprime] = u([consumption,labor_supply,sprime],state_variables)
+					end
+				end
+			end
+		end
+	end
+	#findmax(V)
+	V
+end
+
+end
+
 # ╔═╡ 6cc2d180-9b56-4e19-8a86-22cbb9e70b40
+# ╠═╡ disabled = true
+#=╠═╡
 @time begin
 
 	s,z = 10,1
@@ -1045,27 +1147,7 @@ md"If we work with loops, and try to find the maximum, we get:"
 	findmax(V)
 	# V
 end
-
-# ╔═╡ 21123b21-f237-4acc-8865-b0a1a07a6c6f
-begin
-	plotlyjs()
-	Plots.plot(iteration_range,
-				consumption_range2,
-				V[:,:,1],
-				st=:surface,
-				label = "s1=1")
-	Plots.plot!(xaxis = "Labor supply", # bug ? : x and y axis should be inverted
-				yaxis = "Consumption",
-				zaxis = "Value function")
-	Plots.plot!(iteration_range,consumption_range2,V[:,:,2], st=:surface, label = "2")
-	# Plots.plot!(iteration_range,iteration_range,V[:,:,3], st=:surface, label = "3")
-	# Plots.plot!(iteration_range,iteration_range,V[:,:,4], st=:surface, label = "4")
-	# Plots.plot!(1:11,1:11,V[:,:,3], st=:surface, label = "3")
-	# Plots.plot!(1:11,1:11,V[:,:,4], st=:surface, label = "4")
-end
-
-# ╔═╡ 28406d71-3b9a-47e9-8dff-5b183388893a
-md"Something is wrong here..."
+  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2600,8 +2682,12 @@ version = "1.4.1+2"
 # ╟─8a6bd08f-b18b-4601-b096-1ad5ec150b31
 # ╠═51bbc76f-61d4-471e-bacb-43a462a233cd
 # ╟─281f9459-f9ef-4ca7-acdd-b66c565aeb21
-# ╟─6cc2d180-9b56-4e19-8a86-22cbb9e70b40
+# ╠═6cc2d180-9b56-4e19-8a86-22cbb9e70b40
 # ╟─21123b21-f237-4acc-8865-b0a1a07a6c6f
 # ╟─28406d71-3b9a-47e9-8dff-5b183388893a
+# ╟─c5fb1de4-ae7a-42f1-a4f6-6ac523e5dcc3
+# ╠═6a2a7cec-8eb3-4fd9-ae94-3ad3b7807396
+# ╠═7cc24267-070b-4bdb-a5b2-4d67f0971b8b
+# ╠═d9690b0b-57b6-43c9-85b3-5faaaff2e1b2
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
