@@ -16,7 +16,7 @@ macro bind(def, element)
     #! format: on
 end
 
-# ╔═╡] 47a0e567-688d-4de5-8840-929f122ab3f2
+# ╔═╡ bb79b34e-7a6f-4376-9692-00d5a32e8b61
 begin 
 	using PlutoUI
 	using Distributions 
@@ -405,14 +405,15 @@ begin
 	ζ_i_age(age) = Λ(normalize(age))
 end
 
-# ╔═╡ eed2d025-5cdf-4a1a-b49c-33963832a418
-
-
 # ╔═╡ 110d4cd1-941e-47f2-9919-de6f4d16f36a
 begin
 	max_period = 110
-	Plots.plot(1:max_period,ones(max_period).-ζ_i_age.(1:max_period), legend = false)
-	Plots.plot!(xaxis = "Age", yaxis = "Intermediate probability of survival", yformatter = :plain)
+	Plots.plot(1:max_period,
+				ones(max_period).-ζ_i_age.(1:max_period), 
+				legend = false)
+	Plots.plot!(xaxis = "Age",
+				yaxis = "Intermediate probability of survival",
+				yformatter = :plain)
 	Plots.plot!(title = "Intermediate age probability of survival")
 end
 
@@ -948,11 +949,14 @@ We will now try to solve $s'$ and $l$ numerically.
 "
 
 # ╔═╡ 1d8251f2-255b-44f6-b84d-cc68fad3e650
-md"## Numerical methods
+md"# 7. Numerical methods
 
 This section is dedicated to attempting to solve this maximisation program numerically.
 
 "
+
+# ╔═╡ fe7df25c-3f30-4f3b-9539-9cdf7b07c32b
+md"## Simple visualisation"
 
 # ╔═╡ b7725fc9-0659-4e01-8f65-509fa5fa4109
 md"First, let us have a look at the shape of the utility function for different values of temperature deviation:"
@@ -1009,145 +1013,268 @@ end
 # ╔═╡ 51bbc76f-61d4-471e-bacb-43a462a233cd
 findmax(utility_values_15)
 
-# ╔═╡ 281f9459-f9ef-4ca7-acdd-b66c565aeb21
-md"If we work with loops, and try to find the maximum, we get:"
+# ╔═╡ e58e5bb5-eeed-400d-bc9b-1ef4143ad9f1
+md"## Grid method with one period
 
-# ╔═╡ 28406d71-3b9a-47e9-8dff-5b183388893a
-md"Something is wrong here..."
+First, let us try to compute the value function for one period, with several combinations of choice variables."
 
-# ╔═╡ c5fb1de4-ae7a-42f1-a4f6-6ac523e5dcc3
-md"Attempt of Dynamic programming"
+# ╔═╡ 4041a303-7e5f-4fd5-b7e5-fa8eb7072d1e
+# Initial endowment:
+@bind s Slider(0.00:0.01:10.00,default = 0)
 
-# ╔═╡ 21123b21-f237-4acc-8865-b0a1a07a6c6f
+# ╔═╡ 98db1986-8628-4564-a595-70b75ac075f9
+# Productivity
+@bind z Slider(0.00:0.01:10.00,default = 1)
+
+# ╔═╡ 6a2a7cec-8eb3-4fd9-ae94-3ad3b7807396
+begin
+
+	# `op_` stands for "one period"
+	@time begin
+
+		# Initialising time iteration:
+		op_last_period = 1
+		op_iteration_time = 1:op_last_period
+	
+		# choice and state variables:
+		op_consumption,op_labor_supply,op_sprime = 0,0,0
+	
+		op_choice_variables = [op_consumption,op_labor_supply,op_sprime]
+		op_state_variables = [s,z,ξ("g",0)]
+	
+		# Budget function
+		op_budget(op_choice_variables,op_state_variables) = op_choice_variables[2]*op_state_variables[2]+op_state_variables[1]-op_choice_variables[1]-op_choice_variables[3]
+	
+		# Utility function
+		op_u(op_choice_variables,op_state_variables) = (abs(op_choice_variables[1])^(1-ρ))/(1-ρ) - op_choice_variables[2]*op_state_variables[3]
+	
+		# Defining range parameters
+		op_iteration_max = 100
+		op_iteration_points = 100 ### Define the precision of the solution !!!
+		op_iteration_range = range(start = 0.00, 
+									stop = op_iteration_max, 
+									length = op_iteration_points)
+		op_consumption_range2 = range(start = 0.00, 
+										stop = 10, 
+										length = op_iteration_points)
+	
+		# Initialisation of an empty value function array
+		op_V = zeros(op_iteration_points,op_iteration_points,op_iteration_points)
+		
+		for (index_consumption, consumption) in enumerate(op_consumption_range2)
+			for (index_labor_supply,labor_supply) in enumerate(op_iteration_range)
+				for (index_sprime,sprime) in enumerate(op_iteration_range)
+					if op_budget([consumption,labor_supply,sprime],op_state_variables) < 0
+						op_V[index_consumption,index_labor_supply,index_sprime] = -Inf
+					else 
+						op_V[index_consumption,index_labor_supply,index_sprime] = op_u([consumption,labor_supply,sprime],op_state_variables)
+					end
+				end
+			end
+		end
+		
+	end # end @time
+	
+	#findmax(V)
+	op_V
+
+end
+
+# ╔═╡ 999f7961-c248-49f1-917b-ca2e6493df28
+md"Now that we saved the grid of the value function values, let us save the optimum, the value function at this point, and the optimal choice variables."
+
+# ╔═╡ cdf2f1b8-54da-4d50-8423-542da692a8ac
+begin 
+	op_optimum = findmax(op_V)
+
+	op_optimal_consumption = op_consumption_range2[op_optimum[2][1]] # 1.0...
+	op_optimal_labor_supply = op_iteration_range[op_optimum[2][2]] # 1.0...
+	op_optimal_savings = op_iteration_range[op_optimum[2][3]] # 0
+
+	optimal_choices = [op_optimal_consumption,
+						op_optimal_labor_supply,
+						op_optimal_savings]	
+end
+
+# ╔═╡ 811beda7-c2e0-4fc5-94fb-471059ba4517
+md"## Comparison with theoretical results
+
+This section is dedicated to the comparison of the results obtained from the grid method with those we are supposed to obtain in theory.
+
+In a one period context, we had for consumption:
+
+$$c^{*}=\left(\frac{\xi}{z}\right)^{-\frac{1}{\rho}}$$
+
+We had for labor supply: 
+
+$$\left(\frac{\xi}{z}\right)^{-\frac{1}{\rho}}+s'=l^{*}\cdot z+s^{*}$$
+$$\iff$$
+$$l^{*} = \frac{1}{z}\left(c^{*}+s'-s\right)$$
+"
+
+# ╔═╡ 732cf73a-3f9a-41de-a141-34983bf6148e
+begin 
+	op_theoretical_cstar = abs(ξ("g",0)/z)^(-1/ρ)
+	op_theoretical_lstar = (op_theoretical_cstar+op_sprime-s)/z
+	op_theoretical_optimum = [op_theoretical_cstar, op_theoretical_lstar]
+end
+
+# ╔═╡ 3e59b22b-d7cb-41b9-a12a-923313764d49
+md"For one period, we obtain very close results. The determining factor of precision is the length of the range, i.e. the number of points of it. In the previous code snippet, the `iteration_points` variable is the one determining it."
+
+# ╔═╡ 9319947f-6777-4e9c-b50e-8a9510c299f0
+md" ## Plotting 
+
+Plotting the value function, we obtain: "
+
+# ╔═╡ 3e96f06d-b02a-47c5-b93c-d9bbccbb940c
 begin
 	plotlyjs()
-	Plots.plot(iteration_range,
-				consumption_range2,
-				V[:,:,1],
+	Plots.plot(op_iteration_range,
+				op_consumption_range2,
+				op_V[:,:,1],
 				st=:surface,
-				label = "s1=1")
+				label = "s1=0")
 	Plots.plot!(xaxis = "Labor supply", # bug ? : x and y axis should be inverted
 				yaxis = "Consumption",
 				zaxis = "Value function")
-	Plots.plot!(iteration_range,consumption_range2,V[:,:,2], st=:surface, label = "2")
+	 Plots.plot!(op_iteration_range,
+	 			op_consumption_range2,
+	 			op_V[:,:,2], 
+	 			st=:surface, 
+	 			label = "2")
 	# Plots.plot!(iteration_range,iteration_range,V[:,:,3], st=:surface, label = "3")
 	# Plots.plot!(iteration_range,iteration_range,V[:,:,4], st=:surface, label = "4")
 	# Plots.plot!(1:11,1:11,V[:,:,3], st=:surface, label = "3")
 	# Plots.plot!(1:11,1:11,V[:,:,4], st=:surface, label = "4")
 end
 
-# ╔═╡ 7cc24267-070b-4bdb-a5b2-4d67f0971b8b
-AA = Array{Array}(undef, 2, 3)
+# ╔═╡ 1bb36bdd-5a6f-49b2-95cd-b55476e77ac8
+md"## Grid method with two periods
 
-# ╔═╡ d9690b0b-57b6-43c9-85b3-5faaaff2e1b2
-begin 
-	AAA = [1 2 10]
-	AAA[end:-1:1]
-end
+Let us now try to compute the grid of the value function for a combination of choice variables in a two periods context.
+"
 
-# ╔═╡ 6a2a7cec-8eb3-4fd9-ae94-3ad3b7807396
+# ╔═╡ 474933b9-dcef-4390-a587-80e868772634
+@bind β Slider(0.00:0.01:1.00, default = 0.90)
+
+# ╔═╡ 178d91d0-4b48-4124-aa34-4662528e8214
 begin
-	last_period = 2
-	iteration_time = 1:last_period
 
-	# V()
-
-	@time begin
-
-	s,z = 10,1
-	consumption,labor_supply,sprime = 0,0,0
-	
-	choice_variables = [consumption,labor_supply,sprime]
-	state_variables = [s,z]
-	
+	# Budget function
 	budget(choice_variables,state_variables) = choice_variables[2]*state_variables[2]+state_variables[1]-choice_variables[1]-choice_variables[3]
 
-	u(choice_variables,state_variables) = (abs(choice_variables[1])^(1-ρ))/(1-ρ) - choice_variables[2]*state_variables[2]
+	# Utility function
+	u(choice_variables,state_variables) = (abs(choice_variables[1])^(1-ρ))/(1-ρ) - choice_variables[2]*state_variables[3]
+
+	"""
+	The `value_function_grid(last_period, iteration_max, iteration_points)` function takes in the last period, the size of the iteration (usually 100), and the number of iteration points determining the precision of the results (100 does not take too much time). 
+
+	This function returns the three dimension grid `V[:,:,:]` of the value function values, with:
+
+	- The first dimension being the consumption,
+	- The second dimension being the labor supply,
+	- The third dimension being the saving for next period.
+	"""
+	function value_function_grid(last_period,
+								iteration_max,
+								iteration_points)
+
+		# Initialising time iteration:
+		# last_period = 2
+		iteration_time = 1:last_period
 	
-	iteration_max = 100
-	iteration_points = 100
-	iteration_range = range(start = 0.00, stop = iteration_max, length = iteration_points)
-	consumption_range2 = range(start = 0.00, stop = 10, length = iteration_points)
-	# V = zeros(iteration_points,iteration_points,iteration_points)
+		# choice and state variables:
+		consumption,labor_supply,sprime = 0,0,0
+	
+		choice_variables = [consumption,labor_supply,sprime]
+		state_variables = [s,z,ξ("g",0)]
+	
+		# Defining range parameters
+		# iteration_max = 100
+		# iteration_points = 100 ### Define the precision of the solution !!!
+		iteration_range = range(start = 0.00, stop = iteration_max, length = iteration_points)
+		consumption_range = range(start = 0.00, stop = 10, length = iteration_points)
+	
+		# Initialisation of an empty value function array
+		V = Array{Array}(undef,last_period)
 
-	V = Array{Array}(undef,last_period)
-		# A = Array{Float64,2}(undef, 2, 3)
-		
-	for time in iteration_time[end:-1:1]
+		last_period_optimum  		= 0.00
+		last_period_consumption 	= 0.00
+		last_period_labor_supply 	= 0.00
+		last_period_sprime 			= 0.00
+		last_period_utility 		= 0.00
+			
+		for time in iteration_time[end:-1:1]
+	
+			# Create an empty array for each period
+			V[time] = zeros(iteration_points,iteration_points,iteration_points)
+	
+			# At last period, there is no next period
+			if time == last_period
+				for (index_consumption, consumption) in enumerate(consumption_range)
+					for (index_labor_supply,labor_supply) in enumerate(iteration_range)
+						for (index_sprime,sprime) in enumerate(iteration_range)
+							if budget([consumption,labor_supply,sprime],state_variables) < 0
+								V[time][index_consumption,index_labor_supply,index_sprime] = -Inf
+							else 
+								V[time][index_consumption,index_labor_supply,index_sprime] = u([consumption,labor_supply,sprime],state_variables)
+							end
+						end # end sprime
+					end # end labor supply
+				end # end consumption
 
-		V[time] = zeros(iteration_points,iteration_points,iteration_points)
-		
-		if time == last_period
-			for (index_consumption, consumption) in enumerate(consumption_range2)
-				for (index_labor_supply,labor_supply) in enumerate(iteration_range)
-					for (index_sprime,sprime) in enumerate(iteration_range)
-						if budget([consumption,labor_supply,sprime],state_variables) < 0
-							V[time][index_consumption,index_labor_supply,index_sprime] = -Inf
-						else 
-							V[time][index_consumption,index_labor_supply,index_sprime] = u([consumption,labor_supply,sprime],state_variables)
+				# We save the optimum choices: 
+				
+				last_period_optimum  		= findmax(V[time])
+				last_period_consumption 	= last_period_optimum[2][1]
+				last_period_labor_supply 	= last_period_optimum[2][2]
+				last_period_sprime 			= last_period_optimum[2][3]
+				last_period_utility 		= last_period_optimum[1]
+
+			else # for the other periods: 
+				for (index_consumption, consumption) in enumerate(consumption_range)
+					for (index_labor_supply,labor_supply) in enumerate(iteration_range)
+						for (index_sprime,sprime) in enumerate(iteration_range)
+							if budget([consumption,labor_supply,sprime],state_variables) < 0
+								V[time][index_consumption,index_labor_supply,index_sprime] = -Inf
+							else 
+								V[time][index_consumption,index_labor_supply,index_sprime] = u([consumption,labor_supply,sprime],state_variables)+β*last_period_utility
+							end
 						end
 					end
 				end
-			end
-			# maxvalue, maxindex = findmax(V[time])
-			# And then we send this optimal decision to the next one...
-		end
-		
-		
-		for (index_consumption, consumption) in enumerate(consumption_range2)
-			for (index_labor_supply,labor_supply) in enumerate(iteration_range)
-				for (index_sprime,sprime) in enumerate(iteration_range)
-					if budget([consumption,labor_supply,sprime],state_variables) < 0
-						V[time][index_consumption,index_labor_supply,index_sprime] = -Inf
-					else 
-						V[time][index_consumption,index_labor_supply,index_sprime] = u([consumption,labor_supply,sprime],state_variables)
-					end
-				end
+				
+				last_period_optimum  		= findmax(V[time])
+				last_period_consumption 	= last_period_optimum[2][1]
+				last_period_labor_supply 	= last_period_optimum[2][2]
+				last_period_sprime 			= last_period_optimum[2][3]
+				last_period_utility 		= last_period_optimum[1]
+				
 			end
 		end
+		#findmax(V) 
+		return V
 	end
-	#findmax(V)
-	V
-end
 
 end
 
-# ╔═╡ 6cc2d180-9b56-4e19-8a86-22cbb9e70b40
-# ╠═╡ disabled = true
-#=╠═╡
-@time begin
+# ╔═╡ 86647d28-bbc5-4e65-964f-c0d4b9920ab8
+@bind max_period_grid Slider(0:1:100, default = 4)
 
-	s,z = 10,1
-	consumption,labor_supply,sprime = 0,0,0
-	
-	choice_variables = [consumption,labor_supply,sprime]
-	state_variables = [s,z]
-	
-	budget(choice_variables,state_variables) = choice_variables[2]*state_variables[2]+state_variables[1]-choice_variables[1]-choice_variables[3]
+# ╔═╡ d5492f3c-61a6-4f6e-b1cf-e96f89c049d0
+V = value_function_grid(max_period_grid,100,100)
 
-	u(choice_variables,state_variables) = (abs(choice_variables[1])^(1-ρ))/(1-ρ) - choice_variables[2]*state_variables[2]
-	
-	iteration_max = 100
-	iteration_points = 100
-	iteration_range = range(start = 0.00, stop = iteration_max, length = iteration_points)
-	consumption_range2 = range(start = 0.00, stop = 10, length = iteration_points)
-	V = zeros(iteration_points,iteration_points,iteration_points)
-
-	for (index_consumption, consumption) in enumerate(consumption_range2)
-		for (index_labor_supply,labor_supply) in enumerate(iteration_range)
-			for (index_sprime,sprime) in enumerate(iteration_range)
-				if budget([consumption,labor_supply,sprime],state_variables) < 0
-					V[index_consumption,index_labor_supply,index_sprime] = -Inf
-				else 
-					V[index_consumption,index_labor_supply,index_sprime] = u([consumption,labor_supply,sprime],state_variables)
-				end
-			end
-		end
+# ╔═╡ a260e6a8-2c2a-405d-87b6-75478b00d535
+begin 
+	optimum = Array{Tuple}(undef,max_period_grid)
+	for t in 1:max_period_grid
+		optimum[t] = findmax(V[t])
 	end
-	findmax(V)
-	# V
 end
-  ╠═╡ =#
+
+# ╔═╡ f815a3a6-9aa6-4810-b0c8-20dad4451a06
+optimum
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2591,9 +2718,9 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
+# ╠═bb79b34e-7a6f-4376-9692-00d5a32e8b61
 # ╟─a19b88db-3a13-4c80-aaaf-9a54cd167a57
 # ╟─d449cdac-eeaa-11ef-1bf7-d10086a2d62c
-# ╠═47a0e567-688d-4de5-8840-929f122ab3f2
 # ╟─ab03b887-4a8b-4f36-8f60-7d8670c3a092
 # ╟─a8ee1157-8a9a-4a5b-93d0-d075838f08c3
 # ╟─92f06187-0fbe-4ee8-8912-f3460572181f
@@ -2640,7 +2767,6 @@ version = "1.4.1+2"
 # ╠═069a8d99-7499-478c-aef1-8a36f2e1d38d
 # ╠═bf32ce4d-d08c-460a-a5d4-d490c922619a
 # ╠═911cfdef-6d74-40a1-bc25-adc6a0c5cbe0
-# ╠═eed2d025-5cdf-4a1a-b49c-33963832a418
 # ╠═110d4cd1-941e-47f2-9919-de6f4d16f36a
 # ╟─bf1ac101-696b-4102-9133-ce454d859156
 # ╠═53402edd-0ab9-474b-82ca-b0220a3b0172
@@ -2674,20 +2800,31 @@ version = "1.4.1+2"
 # ╟─62dcb298-c475-4320-b563-f5bc638bbc31
 # ╟─ec241093-9dde-43fb-bcd7-95562d24cd19
 # ╟─fbc18816-1f6f-4b31-a1ac-f39b4429861b
-# ╟─661d02d7-ba42-4154-86ca-50579af33e09
+# ╠═661d02d7-ba42-4154-86ca-50579af33e09
 # ╟─ed0e689e-c9b5-487b-9c51-8f1d80d90ba7
 # ╟─5de589aa-2b8e-4efc-99ae-1a2b85ac66ac
-# ╟─1d8251f2-255b-44f6-b84d-cc68fad3e650
+# ╠═1d8251f2-255b-44f6-b84d-cc68fad3e650
+# ╠═fe7df25c-3f30-4f3b-9539-9cdf7b07c32b
 # ╟─b7725fc9-0659-4e01-8f65-509fa5fa4109
 # ╟─8a6bd08f-b18b-4601-b096-1ad5ec150b31
 # ╠═51bbc76f-61d4-471e-bacb-43a462a233cd
-# ╟─281f9459-f9ef-4ca7-acdd-b66c565aeb21
-# ╠═6cc2d180-9b56-4e19-8a86-22cbb9e70b40
-# ╟─21123b21-f237-4acc-8865-b0a1a07a6c6f
-# ╟─28406d71-3b9a-47e9-8dff-5b183388893a
-# ╟─c5fb1de4-ae7a-42f1-a4f6-6ac523e5dcc3
+# ╟─e58e5bb5-eeed-400d-bc9b-1ef4143ad9f1
+# ╠═4041a303-7e5f-4fd5-b7e5-fa8eb7072d1e
+# ╠═98db1986-8628-4564-a595-70b75ac075f9
 # ╠═6a2a7cec-8eb3-4fd9-ae94-3ad3b7807396
-# ╠═7cc24267-070b-4bdb-a5b2-4d67f0971b8b
-# ╠═d9690b0b-57b6-43c9-85b3-5faaaff2e1b2
+# ╟─999f7961-c248-49f1-917b-ca2e6493df28
+# ╠═cdf2f1b8-54da-4d50-8423-542da692a8ac
+# ╟─811beda7-c2e0-4fc5-94fb-471059ba4517
+# ╠═732cf73a-3f9a-41de-a141-34983bf6148e
+# ╟─3e59b22b-d7cb-41b9-a12a-923313764d49
+# ╟─9319947f-6777-4e9c-b50e-8a9510c299f0
+# ╠═3e96f06d-b02a-47c5-b93c-d9bbccbb940c
+# ╟─1bb36bdd-5a6f-49b2-95cd-b55476e77ac8
+# ╠═178d91d0-4b48-4124-aa34-4662528e8214
+# ╠═474933b9-dcef-4390-a587-80e868772634
+# ╠═86647d28-bbc5-4e65-964f-c0d4b9920ab8
+# ╠═d5492f3c-61a6-4f6e-b1cf-e96f89c049d0
+# ╠═a260e6a8-2c2a-405d-87b6-75478b00d535
+# ╠═f815a3a6-9aa6-4810-b0c8-20dad4451a06
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
