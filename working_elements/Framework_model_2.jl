@@ -630,18 +630,16 @@ Now, let us proceed to a demographic population simulation.
 # ╔═╡ 79bc852e-6f16-4038-b484-4acfe8ae92d0
 begin
 	"""
-	Th function `population_simulation(N,periods,μ,σ)` runs a simulation for `N` individuals. 
+	Th function `population_simulation(N,periods,μ,σ)` runs a simulation for `N` individuals, over `T` periods, for a temperature deviation following a normal distribution centered around `μ` and with standard deviation `σ`. 
 	
-	- The weather history,
-	- Population information
-
-	The population information is an array containing:
-
-	- Their age of death 
-	- Their living status history 
-	- Their health history 
+	It returns a named tuple containing: 
+	
+	- The element `weather_history`, a `T`-sized vector containing temperature deviation for each period,
+	- The element `collective_age`, a `N`-sized vector containing the age of death of each individual,
+	- The element `collective_living_history`, a `N`-sized vector of `T`-sized vectors containing the living status of each individual at each period,
+	- The element `collective_health_history`, a `N`-sized vector of `T`-sized vectors containing the health status of each individual at each period.
 	"""
-	function population_simulation(size::Number,periods::Number,μ::Number,σ::Number)
+	function population_simulation(N::Number,T::Number,μ::Number,σ::Number)
 
 		# We initialise the array that will contain all the results:
 		collective_results = []
@@ -650,21 +648,21 @@ begin
 		collective_health_history = []
 		
 		# Initialise a common weather history for the population
-		weather_history = rand(Normal(μ,σ), periods)
+		weather_history = rand(Normal(μ,σ), T)
 
 		# The first element of the array is the weather history
 		# push!(collective_results,weather_history)
 		
 		# For each individual
-		for i in 1:size
+		for i in 1:N
 			
 			# We initialise the array that will contain the individual results:
 			individual_results = []
 			
-			individual_living_history = zeros(periods)
-			individual_health_history = Vector{String}(undef,periods)
+			individual_living_history = zeros(T)
+			individual_health_history = Vector{String}(undef,T)
 	
-			for t in 1:periods # For each period 
+			for t in 1:T # For each period 
 
 			   # Individuals are born in good health
 				if t == 1
@@ -956,10 +954,9 @@ This section is dedicated to attempting to solve this maximisation program numer
 "
 
 # ╔═╡ fe7df25c-3f30-4f3b-9539-9cdf7b07c32b
-md"## Simple visualisation"
+md"## Simple visualisation 
 
-# ╔═╡ b7725fc9-0659-4e01-8f65-509fa5fa4109
-md"First, let us have a look at the shape of the utility function for different values of temperature deviation:"
+First, let us have a look at the shape of the utility function for different values of temperature deviation:"
 
 # ╔═╡ 8a6bd08f-b18b-4601-b096-1ad5ec150b31
 @time begin
@@ -1150,27 +1147,54 @@ begin
 end
 
 # ╔═╡ 1bb36bdd-5a6f-49b2-95cd-b55476e77ac8
-md"## Grid method with two periods
+md"## Grid method with multiple periods
 
 Let us now try to compute the grid of the value function for a combination of choice variables in a two periods context.
+
+Here, I first define some functions:
+
+- `budget surplus`, 
+- `utility function`
+- `value_function_grid` 
+
+and then use them with different sets parameters and plot the result.
 "
+
+# ╔═╡ d0ea23fa-add4-4374-82ae-a52f93722586
+begin
+		
+	"""
+	The `budget(choice_variables,state_variables)` function yields the budget surplus based on the choice and state variables chosen. 
+	It is equal to:
+	
+	\$b\\ (c,l,s';z,s)=l \\cdot z+s-c-s'\$
+	
+	"""
+	budget(choice_variables,state_variables) = choice_variables[2]*state_variables[2]+state_variables[1]-choice_variables[1]-choice_variables[3]
+end
+
+# ╔═╡ 5a2b2c61-0972-4161-808c-1aec801a4a71
+begin 
+	"""
+	The `u(choice_variables,state_variables)` function computes the utiliy level for given vectors of choice and state variables.
+
+	It computes: 
+
+	\$u(c,l,h,w) = \\frac{c^{1-\\rho}}{1-\\rho}-l\\cdot\\xi\$
+	
+	"""
+	u(choice_variables,state_variables) = (abs(choice_variables[1])^(1-ρ))/(1-ρ) - choice_variables[2]*state_variables[3]
+end
 
 # ╔═╡ 474933b9-dcef-4390-a587-80e868772634
 @bind β Slider(0.00:0.01:1.00, default = 0.90)
 
 # ╔═╡ 178d91d0-4b48-4124-aa34-4662528e8214
 begin
-
-	# Budget function
-	budget(choice_variables,state_variables) = choice_variables[2]*state_variables[2]+state_variables[1]-choice_variables[1]-choice_variables[3]
-
-	# Utility function
-	u(choice_variables,state_variables) = (abs(choice_variables[1])^(1-ρ))/(1-ρ) - choice_variables[2]*state_variables[3]
-
 	"""
 	The `value_function_grid(last_period, iteration_max, iteration_points)` function takes in the last period, the size of the iteration (usually 100), and the number of iteration points determining the precision of the results (100 does not take too much time). 
 
-	This function returns the three dimension grid `V[:,:,:]` of the value function values, with:
+	This function returns the three dimension array `V[:,:,:]` of the value function values, with:
 
 	- The first dimension being the consumption,
 	- The second dimension being the labor supply,
@@ -1182,23 +1206,24 @@ begin
 
 		# Initialising time iteration:
 		# last_period = 2
-		iteration_time = 1:last_period
+		iteration_time 		= 1:last_period
 	
 		# choice and state variables:
 		consumption,labor_supply,sprime = 0,0,0
 	
-		choice_variables = [consumption,labor_supply,sprime]
-		state_variables = [s,z,ξ("g",0)]
+		choice_variables 	= [consumption,labor_supply,sprime]
+		state_variables 	= [s,z,ξ("g",0)]
 	
 		# Defining range parameters
 		# iteration_max = 100
 		# iteration_points = 100 ### Define the precision of the solution !!!
-		iteration_range = range(start = 0.00, stop = iteration_max, length = iteration_points)
-		consumption_range = range(start = 0.00, stop = 10, length = iteration_points)
+		iteration_range 	= range(start = 0.00, stop = iteration_max, length = iteration_points)
+		consumption_range 	= range(start = 0.00, stop = 10, length = iteration_points)
 	
 		# Initialisation of an empty value function array
 		V = Array{Array}(undef,last_period)
 
+		# Initialise zero valued values for the optimum.
 		last_period_optimum  		= 0.00
 		last_period_consumption 	= 0.00
 		last_period_labor_supply 	= 0.00
@@ -1241,9 +1266,9 @@ begin
 							else 
 								V[time][index_consumption,index_labor_supply,index_sprime] = u([consumption,labor_supply,sprime],state_variables)+β*last_period_utility
 							end
-						end
-					end
-				end
+						end # end sprime
+					end # end labor supply
+				end # end consumption
 				
 				last_period_optimum  		= findmax(V[time])
 				last_period_consumption 	= last_period_optimum[2][1]
@@ -1252,7 +1277,7 @@ begin
 				last_period_utility 		= last_period_optimum[1]
 				
 			end
-		end
+		end # end time 
 		#findmax(V) 
 		return V
 	end
@@ -1274,7 +1299,40 @@ begin
 end
 
 # ╔═╡ f815a3a6-9aa6-4810-b0c8-20dad4451a06
-optimum
+begin
+	# Values of value function at different periods of time: 
+	opt_value_f = Array{Float64}(undef, max_period_grid)
+
+	# Optimal choice at each period:
+	opt_choices 		= Array{CartesianIndex{3}}(undef, max_period_grid)
+	opt_consumption 	= Array{Float64}(undef, max_period_grid)
+	opt_labor 			= Array{Float64}(undef, max_period_grid)
+	opt_sprime 			= Array{Float64}(undef, max_period_grid)
+	
+	
+	for index in 1:max_period_grid
+		opt_value_f[index] 		= optimum[index][1]
+		opt_choices[index] 		= optimum[index][2]
+		
+		opt_consumption[index] 	= op_consumption_range2[opt_choices[index][1]]
+		opt_labor[index]		= op_iteration_range[opt_choices[index][2]]
+		opt_sprime[index] 		= op_iteration_range[opt_choices[index][3]]
+	end
+	
+	println("The value function in function of the period is: ", opt_value_f)
+	println("The optimal consumption path is: ", opt_consumption)
+	println("The optimal labor supply path is: ", opt_labor)
+	println("The optimal labor savings path is: ", opt_sprime)
+
+	Plots.plot(1:max_period_grid,
+					opt_value_f,
+					legend = false)
+	Plots.plot!(xaxis = "Period", 
+				yaxis = "Value of the value function")
+
+	
+	# Plots.plot(1:max_period_grid,opt_plot)
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2800,12 +2858,11 @@ version = "1.4.1+2"
 # ╟─62dcb298-c475-4320-b563-f5bc638bbc31
 # ╟─ec241093-9dde-43fb-bcd7-95562d24cd19
 # ╟─fbc18816-1f6f-4b31-a1ac-f39b4429861b
-# ╠═661d02d7-ba42-4154-86ca-50579af33e09
+# ╟─661d02d7-ba42-4154-86ca-50579af33e09
 # ╟─ed0e689e-c9b5-487b-9c51-8f1d80d90ba7
 # ╟─5de589aa-2b8e-4efc-99ae-1a2b85ac66ac
-# ╠═1d8251f2-255b-44f6-b84d-cc68fad3e650
-# ╠═fe7df25c-3f30-4f3b-9539-9cdf7b07c32b
-# ╟─b7725fc9-0659-4e01-8f65-509fa5fa4109
+# ╟─1d8251f2-255b-44f6-b84d-cc68fad3e650
+# ╟─fe7df25c-3f30-4f3b-9539-9cdf7b07c32b
 # ╟─8a6bd08f-b18b-4601-b096-1ad5ec150b31
 # ╠═51bbc76f-61d4-471e-bacb-43a462a233cd
 # ╟─e58e5bb5-eeed-400d-bc9b-1ef4143ad9f1
@@ -2820,11 +2877,13 @@ version = "1.4.1+2"
 # ╟─9319947f-6777-4e9c-b50e-8a9510c299f0
 # ╠═3e96f06d-b02a-47c5-b93c-d9bbccbb940c
 # ╟─1bb36bdd-5a6f-49b2-95cd-b55476e77ac8
-# ╠═178d91d0-4b48-4124-aa34-4662528e8214
+# ╟─d0ea23fa-add4-4374-82ae-a52f93722586
+# ╟─5a2b2c61-0972-4161-808c-1aec801a4a71
+# ╟─178d91d0-4b48-4124-aa34-4662528e8214
 # ╠═474933b9-dcef-4390-a587-80e868772634
 # ╠═86647d28-bbc5-4e65-964f-c0d4b9920ab8
 # ╠═d5492f3c-61a6-4f6e-b1cf-e96f89c049d0
 # ╠═a260e6a8-2c2a-405d-87b6-75478b00d535
-# ╠═f815a3a6-9aa6-4810-b0c8-20dad4451a06
+# ╟─f815a3a6-9aa6-4810-b0c8-20dad4451a06
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
