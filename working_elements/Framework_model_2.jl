@@ -16,7 +16,7 @@ macro bind(def, element)
     #! format: on
 end
 
-# ╔═╡ 47a0e567-688d-4de5-8840-929f122ab3f2
+# ╔═╡] 47a0e567-688d-4de5-8840-929f122ab3f2
 begin 
 	using PlutoUI
 	using Distributions 
