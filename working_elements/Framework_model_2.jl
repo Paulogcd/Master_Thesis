@@ -1355,13 +1355,21 @@ begin
 	"""
 	Given ranges, and the value function of the next period, gives back 
 	the value function and its optimal choices given choice variables.
+
+	`my_Bellman(s_range::UnitRange,
+						sprime_range::UnitRange,
+						consumption_range::UnitRange,
+						labor_range::UnitRange,
+						value_function_nextperiod::Array`
 	"""
-	function my_Bellman(s_range,
-						sprime_range,
-						consumption_range,
-						labor_range,
-						value_function_nextperiod;
-						β=0.9, z = 1)
+	function my_Bellman(s_range::UnitRange,
+						sprime_range::UnitRange,
+						consumption_range::UnitRange,
+						labor_range::UnitRange,
+						value_function_nextperiod::Array;
+						β=0.9, z = 1)::NamedTuple
+
+		@assert length(value_function_nextperiod) == length(s_range) "The value function of the next period has the wrong length."
 
 		# Initialise a grid of the value function for all possible 
 		# combinations of choice and state variables:
@@ -1404,7 +1412,7 @@ begin
 											index_labor, 
 											index_sprime,
 											index_s] =
-								u([consumption, labor, sprime], [s,z,ξ("g",0)])+β*value_function_nextperiod
+								u([consumption, labor, sprime], [s,z,ξ("g",0)])+β*value_function_nextperiod[index_s]
 						end
 						
 					end # end of sprime loop
@@ -1427,8 +1435,10 @@ end
 
 # ╔═╡ 043c6b1c-9db2-403f-83a4-134dc6926258
 begin 
-	optimal_Bellman =  my_Bellman(0:10,0:10,0:10,0:10,0)
-	optimal_Bellman[2]
+	length(0:10)
+	optimal_Bellman =  my_Bellman(0:10,0:10,0:10,0:10,zeros(11))
+	# optimal_Bellman[2]
+	# typeof(optimal_Bellman)
 end
 
 # ╔═╡ 7e3e9714-6166-43ee-8f32-be370e147e43
@@ -1448,6 +1458,38 @@ begin
 				label = "s,s'=3,0")
 end
 
+# ╔═╡ 0036b3f8-91fa-4b9c-95c9-c89b2547dcf4
+md"""
+Plotting for different levels of value of the value function at next period, we get: 
+"""
+
+# ╔═╡ 6d6ebb51-707d-48fc-b6a9-b114ab02c0d7
+begin 
+	optimal_Bellman_1 =  my_Bellman(0:10,0:10,0:10,0:10,ones(11))
+	optimal_Bellman_2 =  my_Bellman(0:10,0:10,0:10,0:10,2 .* ones(11))
+	optimal_Bellman_10 =  my_Bellman(0:10,0:10,0:10,0:10,10 .* ones(11))
+
+		Plots.plot(0:10,
+				0:10,
+				optimal_Bellman_1[1][:,:,1,3],
+				st=:surface,
+				label = "s=1")
+		Plots.plot!(0:10,
+				0:10,
+				optimal_Bellman_2[1][:,:,1,3],
+				st=:surface,
+				label = "s=2")
+		Plots.plot!(0:10,
+				0:10,
+				optimal_Bellman_10[1][:,:,1,3],
+				st=:surface,
+				label = "s=10")
+
+	Plots.plot!(xaxis = "Labor",
+				yaxis = "Consumption", 
+				zaxis = "Value function")
+end
+
 # ╔═╡ 25ca739d-fde0-4eb1-bc5d-b95ae14797e6
 md"""
 Normally, with this function, I should be able to plot the different value function values for different periods. 
@@ -1460,18 +1502,25 @@ point = size(Array{Number}(undef,length(consumption_range),
 															length(consumption_range)))
 
 # ╔═╡ 221c8bef-d7df-4cd5-bfb8-d135ce34b440
-zeros(point[1])
+# zeros(point[1])
 
 # ╔═╡ 366f51ad-25a6-43fe-8019-d77128cd2e64
 begin
 	"""
-	The `backwards()` function allows to solve the value function from backward. 
+	The `backwards()` function allows to solve the value function from backwards. 
+
+	For now, it returns: 
+
+	- `V[time,s,consumption,labor supply, sprime]` the grid of the value function for all the posibilities at a given time. 
+	- `Vstar[time,s,consumption, labor supply, sprime]` the grid of the value function at the optimum.
+	- `c` an empty grid that should be containing the optimal choice variables values. 
+
 	"""
-	function backwards(s_range,
-				sprime_range,
-				consumption_range,
-				labor_range,
-				nperiods;
+	function backwards(s_range::UnitRange,
+				sprime_range::UnitRange,
+				consumption_range::UnitRange,
+				labor_range::UnitRange,
+				nperiods::Number;
 				z = 1)
 
 		# choice_variables = [consumption,labor_supply,sprime]
@@ -1484,47 +1533,54 @@ begin
 		points = size(grid_of_value_function)
 		Vstar = zeros(nperiods,points[1],points[2],points[3],points[4])
 		V = zeros(nperiods,points[1],points[2],points[3],points[4])
-		c = zeros(nperiods,points[1],points[2],points[3],points[4])
+		c = Array{Vector}(undef, points) # nperiods,points[1],points[2],points[3],points[4])
+
+		last_Bellman = my_Bellman(s_range,
+									sprime_range,
+									consumption_range,
+									labor_range,
+									zeros(length(s_range)))
+
 		
-		V[end,:,:,:,:] = my_Bellman(s_range,
-				sprime_range,
-				consumption_range,
-				labor_range,0)
+		V[end,:,:,:,:] .= last_Bellman[1]
+		Vstar[end,:,:,:,:] .= last_Bellman[2]
+		# c[end,:,:,:,:] .= last_Bellman[3]
 	
 		# c[end,:] = collect(grid_of_value_function)
 	
 		for it in ((nperiods-1):-1:1)
 			
-			x = my_Bellman(s_range,
-				sprime_range,
-				consumption_range,
-				labor_range,
-				V[it+1,:][2])
+			# x = my_Bellman(s_range,
+			# 	sprime_range,
+			# 	consumption_range,
+			# 	labor_range,
+			# 	V[it+1,:,:,:,:])
+			# 
+			# V[it,:,:,:,:] = x[1]
+			# Vstar[it,:,:,:,:] = x[2]
+			# c[it,:,:,:,:] = x[3]
 
-			V[it,:,:,:,:] = x[1]
-			Vstar[it,:,:,:,:] = x[2]
-			c[it,:,:,:,:] = x[3]
+			V[it+1,:,:,:,:]
+			
+		end
+		
 		return (;V,Vstar,c)
-	end
 	end
 end
 
-# ╔═╡ 292381da-068c-44f8-bb4d-1c2586db88ee
-begin 
-	nperiods = 10
-	grid_of_value_function = Array{Number}(undef,length(consumption_range),
-															length(consumption_range),
-															length(labor_range),
-															length(consumption_range))
-		points = size(grid_of_value_function)
-		Vstar = zeros(nperiods,points[1],points[2],points[3],points[4])
-		# VV = zeros(nperiods,points[1],points[2],points[3],points[4])
-		# cc = zeros(nperiods,points[1],points[2],points[3],points[4])
+# ╔═╡ e3d7a3d5-dd68-49bc-ab7d-83bd3fc54256
+begin
+	VVV = zeros(2,50,50,50,50)
+	typeof(VVV)
 end
 
 # ╔═╡ 3d4fa5e5-b0db-4339-ada0-5504c5640cba
-backwards(0:10,0:10,0:10,0:10,optimal_Bellman)
-# optimal_Bellman =  my_Bellman(0:10,0:10,0:10,0:10,100)
+begin 
+	b = 0:3
+	results_backwards = backwards(b,b,b,b,2)
+	# optimal_Bellman =  my_Bellman(0:10,0:10,0:10,0:10,100)
+	1
+end
 
 # ╔═╡ cb70d0ea-e12b-454b-9dfb-7320cc94362b
 begin 
@@ -1561,14 +1617,6 @@ begin
 		return (Vt, at)
 	end
 end
-
-# ╔═╡ 5bac248f-23ae-426b-9776-9c64feee3e11
-for (i,j) in enumerate(op_iteration_range)
-	print(i,j,"\n")
-end
-
-# ╔═╡ 432267c9-6bbc-4868-8149-5cac37f7f446
-Bellman()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3125,14 +3173,14 @@ version = "1.4.1+2"
 # ╠═70408109-4e86-4938-bb95-1b73c7cac44f
 # ╠═043c6b1c-9db2-403f-83a4-134dc6926258
 # ╠═7e3e9714-6166-43ee-8f32-be370e147e43
+# ╟─0036b3f8-91fa-4b9c-95c9-c89b2547dcf4
+# ╠═6d6ebb51-707d-48fc-b6a9-b114ab02c0d7
 # ╟─25ca739d-fde0-4eb1-bc5d-b95ae14797e6
 # ╠═f3b80429-dc01-4142-a601-db967cb52f0a
 # ╠═221c8bef-d7df-4cd5-bfb8-d135ce34b440
 # ╠═366f51ad-25a6-43fe-8019-d77128cd2e64
-# ╠═292381da-068c-44f8-bb4d-1c2586db88ee
+# ╠═e3d7a3d5-dd68-49bc-ab7d-83bd3fc54256
 # ╠═3d4fa5e5-b0db-4339-ada0-5504c5640cba
 # ╠═cb70d0ea-e12b-454b-9dfb-7320cc94362b
-# ╠═5bac248f-23ae-426b-9776-9c64feee3e11
-# ╠═432267c9-6bbc-4868-8149-5cac37f7f446
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
