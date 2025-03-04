@@ -1011,7 +1011,7 @@ end
 findmax(utility_values_15)
 
 # ╔═╡ e58e5bb5-eeed-400d-bc9b-1ef4143ad9f1
-md"## Grid method with one period
+md"## Grid with one period
 
 First, let us try to compute the value function for one period, with several combinations of choice variables."
 
@@ -1147,7 +1147,7 @@ begin
 end
 
 # ╔═╡ 1bb36bdd-5a6f-49b2-95cd-b55476e77ac8
-md"## Grid method with multiple periods
+md"# 8. Grid with multiple periods
 
 Let us now try to compute the grid of the value function for a combination of choice variables in a two periods context.
 
@@ -1333,6 +1333,242 @@ begin
 	
 	# Plots.plot(1:max_period_grid,opt_plot)
 end
+
+# ╔═╡ e402ffb7-2ad4-4146-b295-ebee3b6ad047
+md"## Bellman equation
+
+We could here proceed in the same fashion as in [the class of Florian Oswald about Dynamic Programming](https://raw.githack.com/floswald/NumericalMethods/master/notebooks/week6/dp2.jl.html).
+
+For now, we are going to proceed to a Value Function Iteration (although not optimal, as indicated in the class). This process for the resolution of dynamic programming resides in: 
+
+1. Defining a Bellman function, taking among other a grid of possible values and a vplus with the value of the Bellman equation at the next period. This function returns the value of the function and the optimal choice associated with it. 
+
+
+2. Defining a `backwards` function, taking among other a grid of possible values and the number of periods we want to iterate upon. This function returns the value of the Bellman function at each period, and the associated choice. 
+
+For now, we are also going to exclude any source of randomness, and are going to fix the health at good, and the temperature deviation at $0$. In this sense, there is no expectation in the Bellman equation, but only a fixed discount factor $\beta$.
+
+"
+
+# ╔═╡ 70408109-4e86-4938-bb95-1b73c7cac44f
+begin 
+	"""
+	Given ranges, and the value function of the next period, gives back 
+	the value function and its optimal choices given choice variables.
+	"""
+	function my_Bellman(s_range,
+						sprime_range,
+						consumption_range,
+						labor_range,
+						value_function_nextperiod;
+						β=0.9, z = 1)
+
+		# Initialise a grid of the value function for all possible 
+		# combinations of choice and state variables:
+		grid_of_value_function = Array{Number}(undef,length(s_range),
+															length(consumption_range),
+															length(labor_range),
+															length(sprime_range))
+
+		# choice_variables = [consumption,labor_supply,sprime]
+		# state_variables = [s,z,ξ("g",0)]
+
+		# Initialise empty array that will store the optimal utility and choice:
+		Vstar = zeros(length(s_range))
+		index_optimal_choice = Array{CartesianIndex}(undef,length(s_range))
+
+		# for all levels of endowment
+		for (index_s,s) in enumerate(s_range)
+			# for all levels of consumption
+			for (index_consumption,consumption) in enumerate(consumption_range) 
+				# for all levels of labor
+				for (index_labor,labor) in enumerate(labor_range)
+					# for all levels of savings
+					for (index_sprime,sprime) in enumerate(sprime_range)
+
+						# If the budget constraint is violated,
+						# set the value function to minus infinity : 
+						
+						if budget([consumption,labor,sprime], [z,s]) < 0 
+							grid_of_value_function[
+											index_consumption,
+											index_labor, 
+											index_sprime,
+											index_s] = -Inf
+						
+						# else, set it to the utility plus the value function at 
+						# the next period : 
+						else 
+							grid_of_value_function[
+											index_consumption,
+											index_labor, 
+											index_sprime,
+											index_s] =
+								u([consumption, labor, sprime], [s,z,ξ("g",0)])+β*value_function_nextperiod
+						end
+						
+					end # end of sprime loop
+				end # end of labor loop
+			end # end of consumption loop
+
+			# For a given level of initial endowment, 
+			# find the maximum of the value function 
+			# and the associated optimal choice
+			
+			Vstar[index_s],
+			index_optimal_choice[index_s] =
+				findmax(grid_of_value_function[:,:,:,index_s])
+			
+		end # end of s
+
+		return (;grid_of_value_function,Vstar,index_optimal_choice)
+	end
+end
+
+# ╔═╡ 043c6b1c-9db2-403f-83a4-134dc6926258
+begin 
+	optimal_Bellman =  my_Bellman(0:10,0:10,0:10,0:10,0)
+	optimal_Bellman[2]
+end
+
+# ╔═╡ 7e3e9714-6166-43ee-8f32-be370e147e43
+begin
+	Plots.plot(0:10,
+				0:10,
+				optimal_Bellman[1][:,:,1,1],
+				st=:surface,
+				label = "s,s'=0,0")
+	Plots.plot!(xaxis = "Labor",
+				yaxis = "Consumption", 
+				zaxis = "Utility")
+	Plots.plot!(0:10,
+				0:10,
+				optimal_Bellman[1][:,:,1,3],
+				st=:surface,
+				label = "s,s'=3,0")
+end
+
+# ╔═╡ 25ca739d-fde0-4eb1-bc5d-b95ae14797e6
+md"""
+Normally, with this function, I should be able to plot the different value function values for different periods. 
+"""
+
+# ╔═╡ f3b80429-dc01-4142-a601-db967cb52f0a
+point = size(Array{Number}(undef,length(consumption_range),
+															length(consumption_range),
+															length(labor_range),
+															length(consumption_range)))
+
+# ╔═╡ 221c8bef-d7df-4cd5-bfb8-d135ce34b440
+zeros(point[1])
+
+# ╔═╡ 366f51ad-25a6-43fe-8019-d77128cd2e64
+begin
+	"""
+	The `backwards()` function allows to solve the value function from backward. 
+	"""
+	function backwards(s_range,
+				sprime_range,
+				consumption_range,
+				labor_range,
+				nperiods;
+				z = 1)
+
+		# choice_variables = [consumption,labor_supply,sprime]
+		# state_variables = [s,z,ξ("g",0)]
+
+		grid_of_value_function = Array{Number}(undef,length(s_range),
+															length(consumption_range),
+															length(labor_range),
+															length(sprime_range))
+		points = size(grid_of_value_function)
+		Vstar = zeros(nperiods,points[1],points[2],points[3],points[4])
+		V = zeros(nperiods,points[1],points[2],points[3],points[4])
+		c = zeros(nperiods,points[1],points[2],points[3],points[4])
+		
+		V[end,:,:,:,:] = my_Bellman(s_range,
+				sprime_range,
+				consumption_range,
+				labor_range,0)
+	
+		# c[end,:] = collect(grid_of_value_function)
+	
+		for it in ((nperiods-1):-1:1)
+			
+			x = my_Bellman(s_range,
+				sprime_range,
+				consumption_range,
+				labor_range,
+				V[it+1,:][2])
+
+			V[it,:,:,:,:] = x[1]
+			Vstar[it,:,:,:,:] = x[2]
+			c[it,:,:,:,:] = x[3]
+		return (;V,Vstar,c)
+	end
+	end
+end
+
+# ╔═╡ 292381da-068c-44f8-bb4d-1c2586db88ee
+begin 
+	nperiods = 10
+	grid_of_value_function = Array{Number}(undef,length(consumption_range),
+															length(consumption_range),
+															length(labor_range),
+															length(consumption_range))
+		points = size(grid_of_value_function)
+		Vstar = zeros(nperiods,points[1],points[2],points[3],points[4])
+		# VV = zeros(nperiods,points[1],points[2],points[3],points[4])
+		# cc = zeros(nperiods,points[1],points[2],points[3],points[4])
+end
+
+# ╔═╡ 3d4fa5e5-b0db-4339-ada0-5504c5640cba
+backwards(0:10,0:10,0:10,0:10,optimal_Bellman)
+# optimal_Bellman =  my_Bellman(0:10,0:10,0:10,0:10,100)
+
+# ╔═╡ cb70d0ea-e12b-454b-9dfb-7320cc94362b
+begin 
+	"""	
+	`FO_Bellman(grid::Vector,vplus::Vector,π::Float64,yvec::Vector)`
+
+	Given a grid and a next period value function `vplus`, and a probability distribution calculate current period optimal value and actions.
+	"""
+	function FO_Bellman(grid::Vector,vplus::Vector,β::Float64)
+		
+		points = length(grid) 
+		w = zeros(points) # temporary vector for each choice or R'
+		Vt = zeros(points) # optimal value in T-1 at each state of R
+		ix = 0 # optimal action index in T-1 at each state of R
+		at = zeros(points) # optimal action in T-1 at each state of R
+	
+		for (ir,r) in enumerate(grid) # for all possible R-values
+			# loop over all possible action choices
+			for (ia,achoice) in enumerate(grid)
+				if budget([],[])   # check whether that choice is feasible
+					w[ia] = -Inf
+				else
+					rlow = r - achoice + yvec[1] # tomorrow's R if y is low
+					rhigh  = r - achoice + yvec[2] # tomorrow's R if y is high
+					jlow = argmin(abs.(grid .- rlow))  # index of that value in Rspace
+					jhigh = argmin(abs.(grid .- rhigh))  # index of that value in Rspace
+					w[ia] = u([c,l,"g",0][]) + β * vplus[jlow] # value of that achoice
+				end
+			end
+			# find best action
+			Vt[ir], ix = findmax(w) # stores Value und policy (index of optimal choice)
+			at[ir] = grid[ix]  # record optimal action level
+		end
+		return (Vt, at)
+	end
+end
+
+# ╔═╡ 5bac248f-23ae-426b-9776-9c64feee3e11
+for (i,j) in enumerate(op_iteration_range)
+	print(i,j,"\n")
+end
+
+# ╔═╡ 432267c9-6bbc-4868-8149-5cac37f7f446
+Bellman()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2878,12 +3114,25 @@ version = "1.4.1+2"
 # ╠═3e96f06d-b02a-47c5-b93c-d9bbccbb940c
 # ╟─1bb36bdd-5a6f-49b2-95cd-b55476e77ac8
 # ╟─d0ea23fa-add4-4374-82ae-a52f93722586
-# ╟─5a2b2c61-0972-4161-808c-1aec801a4a71
+# ╠═5a2b2c61-0972-4161-808c-1aec801a4a71
 # ╟─178d91d0-4b48-4124-aa34-4662528e8214
 # ╠═474933b9-dcef-4390-a587-80e868772634
 # ╠═86647d28-bbc5-4e65-964f-c0d4b9920ab8
 # ╠═d5492f3c-61a6-4f6e-b1cf-e96f89c049d0
 # ╠═a260e6a8-2c2a-405d-87b6-75478b00d535
 # ╟─f815a3a6-9aa6-4810-b0c8-20dad4451a06
+# ╟─e402ffb7-2ad4-4146-b295-ebee3b6ad047
+# ╠═70408109-4e86-4938-bb95-1b73c7cac44f
+# ╠═043c6b1c-9db2-403f-83a4-134dc6926258
+# ╠═7e3e9714-6166-43ee-8f32-be370e147e43
+# ╟─25ca739d-fde0-4eb1-bc5d-b95ae14797e6
+# ╠═f3b80429-dc01-4142-a601-db967cb52f0a
+# ╠═221c8bef-d7df-4cd5-bfb8-d135ce34b440
+# ╠═366f51ad-25a6-43fe-8019-d77128cd2e64
+# ╠═292381da-068c-44f8-bb4d-1c2586db88ee
+# ╠═3d4fa5e5-b0db-4339-ada0-5504c5640cba
+# ╠═cb70d0ea-e12b-454b-9dfb-7320cc94362b
+# ╠═5bac248f-23ae-426b-9776-9c64feee3e11
+# ╠═432267c9-6bbc-4868-8149-5cac37f7f446
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
