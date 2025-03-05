@@ -1654,18 +1654,18 @@ begin
 
 	test2[4]
 	
-	# ndims(test2[4])
-	# test2[:optimal_choices]
-	# test2[4]# [:]
+	# (test2[4])
+	test2[:optimal_choices]
+	test2[4] # [:]
 
-	Plots.plot(same_range,test2[4][1])#, st=:surface)
+	# Plots.plot(same_range,test2[4][1])#, st=:surface)
 
-	for time in 1:time_period
-		Plots.plot!(same_range,same_range, test2[4][time][1:11][1],st=:surface)
-	end
+	# for time in 1:time_period
+	# 	Plots.plot!(same_range,same_range, test2[4][time][1:11][1],st=:surface)
+	# end
 			
-	Plots.plot!(xaxis = "Initial endowment", 
-					yaxis = "Optimal consumption")
+	# Plots.plot!(xaxis = "Initial endowment", 
+		# 			yaxis = "Optimal consumption")
 
 	# test2[4]
 	
