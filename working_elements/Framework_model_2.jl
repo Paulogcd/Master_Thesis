@@ -1170,8 +1170,11 @@ begin
 	\$b\\ (c,l,s';z,s)=l \\cdot z+s-c-s'\$
 	
 	"""
-	budget(choice_variables,state_variables) = choice_variables[2]*state_variables[2]+state_variables[1]-choice_variables[1]-choice_variables[3]
+	budget(choice_variables,state_variables) = choice_variables[2]*state_variables[1]+state_variables[2]-choice_variables[1]-choice_variables[3]
 end
+
+# ╔═╡ 916e42f3-630f-4b49-8feb-5f11c2513c0c
+budget([1,0,0],[1,0])
 
 # ╔═╡ 5a2b2c61-0972-4161-808c-1aec801a4a71
 begin 
@@ -1361,6 +1364,13 @@ begin
 						consumption_range::UnitRange,
 						labor_range::UnitRange,
 						value_function_nextperiod::Array`
+
+	It returns a named tuple with:
+	
+	1. The array `grid_of_value_function`, being a grid of values of the value function, with dimension `[c,l,s',s]`.
+	2. The array `Vstar`, with `s` rows and one column being a grid of maximal values of the value function at each level of `s`.
+	3. The array `index_optimal_choice`, with `s` rows and one column being the array of indices of optimal choices of choice variables for each level of `s`. Here, the indices of optimal choices is indicated with an object of type `CartesianIndex{3}`, the first element corresponding to `c`, the second to `l`, and the third to `s'.`
+
 	"""
 	function my_Bellman(s_range::UnitRange,
 						sprime_range::UnitRange,
@@ -1384,6 +1394,7 @@ begin
 		# Initialise empty array that will store the optimal utility and choice:
 		Vstar = zeros(length(s_range))
 		index_optimal_choice = Array{CartesianIndex}(undef,length(s_range))
+		optimal_choice = Array{Vector}(undef,length(s_range))
 
 		# for all levels of endowment
 		for (index_s,s) in enumerate(s_range)
@@ -1398,21 +1409,27 @@ begin
 						# set the value function to minus infinity : 
 						
 						if budget([consumption,labor,sprime], [z,s]) < 0 
+							
 							grid_of_value_function[
 											index_consumption,
 											index_labor, 
 											index_sprime,
 											index_s] = -Inf
-						
-						# else, set it to the utility plus the value function at 
-						# the next period : 
-						else 
+
+							
+						# If the budget constraint is not violated,
+						# set the value function to the utility plus the value 
+						# function at the next period : 
+							
+						else
+							
 							grid_of_value_function[
 											index_consumption,
 											index_labor, 
 											index_sprime,
 											index_s] =
 								u([consumption, labor, sprime], [s,z,ξ("g",0)])+β*value_function_nextperiod[index_s]
+							
 						end
 						
 					end # end of sprime loop
@@ -1427,63 +1444,57 @@ begin
 			index_optimal_choice[index_s] =
 				findmax(grid_of_value_function[:,:,:,index_s])
 			
+			optimal_choice[index_s] = [consumption_range[index_optimal_choice[index_s][1]],
+										labor_range[index_optimal_choice[index_s][2]],
+										sprime_range[index_optimal_choice[index_s][3]]]
+			
 		end # end of s
 
-		return (;grid_of_value_function,Vstar,index_optimal_choice)
+		return (;grid_of_value_function,Vstar,index_optimal_choice,optimal_choice)
 	end
 end
 
-# ╔═╡ 043c6b1c-9db2-403f-83a4-134dc6926258
-begin 
-	length(0:10)
-	optimal_Bellman =  my_Bellman(0:10,0:10,0:10,0:10,zeros(11))
-	# optimal_Bellman[2]
-	# typeof(optimal_Bellman)
-end
+# ╔═╡ 0dea5d73-462a-4b1a-bd9c-15fbe3962e10
+b = 0:10
 
-# ╔═╡ 7e3e9714-6166-43ee-8f32-be370e147e43
+# ╔═╡ 478eae77-e6af-4cca-ae7f-2d0e51bc8b4c
 begin
-	Plots.plot(0:10,
-				0:10,
-				optimal_Bellman[1][:,:,1,1],
-				st=:surface,
-				label = "s,s'=0,0")
-	Plots.plot!(xaxis = "Labor",
-				yaxis = "Consumption", 
-				zaxis = "Utility")
-	Plots.plot!(0:10,
-				0:10,
-				optimal_Bellman[1][:,:,1,3],
-				st=:surface,
-				label = "s,s'=3,0")
+	test =  my_Bellman(b,b,b,b,zeros(length(b)))
+	test[4]
 end
 
 # ╔═╡ 0036b3f8-91fa-4b9c-95c9-c89b2547dcf4
 md"""
-Plotting for different levels of value of the value function at next period, we get: 
+Plotting for different levels of value of the value function at next period, with minimal savings for next period ($s'=0$) and maximum initial endowment, we get: 
 """
 
 # ╔═╡ 6d6ebb51-707d-48fc-b6a9-b114ab02c0d7
 begin 
+	optimal_Bellman_0 =  my_Bellman(0:10,0:10,0:10,0:10,zeros(11))
 	optimal_Bellman_1 =  my_Bellman(0:10,0:10,0:10,0:10,ones(11))
 	optimal_Bellman_2 =  my_Bellman(0:10,0:10,0:10,0:10,2 .* ones(11))
 	optimal_Bellman_10 =  my_Bellman(0:10,0:10,0:10,0:10,10 .* ones(11))
 
-		Plots.plot(0:10,
-				0:10,
-				optimal_Bellman_1[1][:,:,1,3],
-				st=:surface,
-				label = "s=1")
-		Plots.plot!(0:10,
-				0:10,
-				optimal_Bellman_2[1][:,:,1,3],
-				st=:surface,
-				label = "s=2")
-		Plots.plot!(0:10,
-				0:10,
-				optimal_Bellman_10[1][:,:,1,3],
-				st=:surface,
-				label = "s=10")
+	Plots.plot(0:10,
+		0:10,
+		optimal_Bellman_0[1][:,:,begin,end],
+		st=:surface,
+		label = "Vt+1=0")	
+	Plots.plot!(0:10,
+		0:10,
+		optimal_Bellman_1[1][:,:,1,end],
+		st=:surface,
+		label = "Vt+1=1")
+	Plots.plot!(0:10,
+		0:10,
+		optimal_Bellman_2[1][:,:,1,end],
+		st=:surface,
+		label = "Vt+1=2")
+	Plots.plot!(0:10,
+		0:10,
+		optimal_Bellman_10[1][:,:,1,end],
+		st=:surface,
+		label = "Vt+1=10")
 
 	Plots.plot!(xaxis = "Labor",
 				yaxis = "Consumption", 
@@ -1492,28 +1503,25 @@ end
 
 # ╔═╡ 25ca739d-fde0-4eb1-bc5d-b95ae14797e6
 md"""
-Normally, with this function, I should be able to plot the different value function values for different periods. 
+Now that we have a Bellman function that can take into account the value of the value function at next period, we should be able to perform a backward resolution.
 """
-
-# ╔═╡ f3b80429-dc01-4142-a601-db967cb52f0a
-point = size(Array{Number}(undef,length(consumption_range),
-															length(consumption_range),
-															length(labor_range),
-															length(consumption_range)))
-
-# ╔═╡ 221c8bef-d7df-4cd5-bfb8-d135ce34b440
-# zeros(point[1])
 
 # ╔═╡ 366f51ad-25a6-43fe-8019-d77128cd2e64
 begin
 	"""
-	The `backwards()` function allows to solve the value function from backwards. 
+	The `backwards(s_range::UnitRange,
+				sprime_range::UnitRange,
+				consumption_range::UnitRange,
+				labor_range::UnitRange,
+				nperiods::Number)` function allows to solve the value function from backwards. 
 
 	For now, it returns: 
 
 	- `V[time,s,consumption,labor supply, sprime]` the grid of the value function for all the posibilities at a given time. 
 	- `Vstar[time,s,consumption, labor supply, sprime]` the grid of the value function at the optimum.
-	- `c` an empty grid that should be containing the optimal choice variables values. 
+	- `index_optimal_choices[index_time]` an array containing the indexes of the optimal choices for each level of s.
+	- `optimal_choices[index_time][index_s]` an array containing the optimal choice variables values. 
+
 
 	"""
 	function backwards(s_range::UnitRange,
@@ -1526,60 +1534,152 @@ begin
 		# choice_variables = [consumption,labor_supply,sprime]
 		# state_variables = [s,z,ξ("g",0)]
 
+		# From the given ranges, construct a grid of all possible values, 
+		# And save its size: 
 		grid_of_value_function = Array{Number}(undef,length(s_range),
 															length(consumption_range),
 															length(labor_range),
 															length(sprime_range))
 		points = size(grid_of_value_function)
-		Vstar = zeros(nperiods,points[1],points[2],points[3],points[4])
-		V = zeros(nperiods,points[1],points[2],points[3],points[4])
-		c = Array{Vector}(undef, points) # nperiods,points[1],points[2],points[3],points[4])
+		
 
+		# Initialize empty arrays that will:
+		# contain the values of the value function (V): 
+		V = zeros(nperiods,points[1],points[2],points[3],points[4])
+
+		# the values at optimum (Vstar), 
+		Vstar = zeros(nperiods,points[1])
+		
+		# the indices of optimal choice (index_optimal_choices),
+		# previous version:
+		# index_optimal_choices = Array{CartesianIndex{3}}(undef, points[1])
+		# index_optimal_choices = Array{CartesianIndex{3}}(undef, points[1])
+		index_optimal_choices = Array{Array{CartesianIndex{3}}}(undef,nperiods)
+
+		
+		# and the values of choice variables at the optimum (optimal_choices): 
+		# optimal_choices = []
+		# optimal_choice = Array{Vector}(undef,nperiods,length(s_range))
+		# optimal_choice = Array{Vector{CartesianIndex}}(undef,nperiods)
+		optimal_choices = Array{Vector}(undef,nperiods)
+		# optimal_choices = Array(undef,nperiods)
+
+		# First, we solve for the last period, in which the value function of next period is 0: 
 		last_Bellman = my_Bellman(s_range,
 									sprime_range,
 									consumption_range,
 									labor_range,
+									# Note the zero vector here:
 									zeros(length(s_range)))
 
 		
-		V[end,:,:,:,:] .= last_Bellman[1]
-		Vstar[end,:,:,:,:] .= last_Bellman[2]
-		# c[end,:,:,:,:] .= last_Bellman[3]
-	
-		# c[end,:] = collect(grid_of_value_function)
-	
-		for it in ((nperiods-1):-1:1)
-			
-			# x = my_Bellman(s_range,
-			# 	sprime_range,
-			# 	consumption_range,
-			# 	labor_range,
-			# 	V[it+1,:,:,:,:])
-			# 
-			# V[it,:,:,:,:] = x[1]
-			# Vstar[it,:,:,:,:] = x[2]
-			# c[it,:,:,:,:] = x[3]
+		# Value of the value function: 
+		V[end,:,:,:,:] 						= last_Bellman[1]
+		
+		# Values at the optimum:
+		Vstar[end,:] 						.= last_Bellman[2] 	 
+		
+		# Index of optimal choice:
+		index_optimal_choices[end] 			= last_Bellman[3] 	# no PROBLEM anymore
+		
+		optimal_choices[end]				= last_Bellman[4] # NO problem...
 
-			V[it+1,:,:,:,:]
+		# Values of the choice variables at optimum:
+		# optimal_choice[end,:] = collect(grid_of_value_function)
+	
+		for index_time in ((nperiods-1):-1:1)
+			
+			x = my_Bellman(s_range,
+				sprime_range,
+				consumption_range,
+				labor_range,
+				Vstar[index_time+1,:])
+			
+			V[index_time,:,:,:,:] 					= x[1]
+			Vstar[index_time,:] 					= x[2]
+			index_optimal_choices[index_time] 		= x[3]
+			optimal_choices[index_time] 			= x[4]
 			
 		end
 		
-		return (;V,Vstar,c)
+		return (;V,Vstar,index_optimal_choices,optimal_choices)
 	end
 end
 
-# ╔═╡ e3d7a3d5-dd68-49bc-ab7d-83bd3fc54256
-begin
-	VVV = zeros(2,50,50,50,50)
-	typeof(VVV)
-end
+# ╔═╡ 669080f6-91de-42f5-9d1c-11c96c8fde94
+md"""
+Plotting the value function values for different period, at maximum initial endowment and minimum savings $(s=\bar{s},s'=0)$, we obtain:
+"""
 
 # ╔═╡ 3d4fa5e5-b0db-4339-ada0-5504c5640cba
 begin 
-	b = 0:3
-	results_backwards = backwards(b,b,b,b,2)
+	# b = 0:2 # b = 0:100 takes two minutes to run.
+	results_backwards = backwards(b,b,b,b,10)
 	# optimal_Bellman =  my_Bellman(0:10,0:10,0:10,0:10,100)
-	1
+	# results_backwards[1]
+	Plots.plot(b,
+		b,
+		results_backwards[1][1,:,:,begin,end],
+		st = :surface,
+	label = "t=1")
+	Plots.plot!(b,
+		b,
+		results_backwards[1][2,:,:,begin,end],
+		st = :surface,
+	label = "t=2")
+
+	Plots.plot!(xaxis = "Labor supply", 
+		yaxis = "Consumption", 
+		zaxis = "Value function")
+end
+
+# ╔═╡ 23be86d8-3ff0-4192-867f-072734b6e671
+results_backwards[4]
+
+# ╔═╡ dc82ca91-ffff-4bb4-ab44-6d1bdc123251
+md"""
+Now, we have an approximation for our backward solving function, in a context for which we do not have uncertainty about the temperature deviation and the health status.
+
+If we try to plot the value function, we get: 
+"""
+
+# ╔═╡ 2b7b4256-c76d-4c97-b557-c0ec2f71ca31
+begin
+	same_range = 0:10
+	time_period = 10
+	
+	# bV,bVstar,bindex_c,b_c = 
+	
+	test2 = backwards(same_range,same_range,same_range,same_range,time_period)
+
+	test2[4]
+	
+	# ndims(test2[4])
+	# test2[:optimal_choices]
+	# test2[4]# [:]
+
+	Plots.plot(same_range,test2[4][1])#, st=:surface)
+
+	for time in 1:time_period
+		Plots.plot!(same_range,same_range, test2[4][time][1:11][1],st=:surface)
+	end
+			
+	Plots.plot!(xaxis = "Initial endowment", 
+					yaxis = "Optimal consumption")
+
+	# test2[4]
+	
+	# bVstar
+
+
+	# begin
+	# 	test =  my_Bellman(b,b,b,b,zeros(length(b)))
+	# 	test[4]
+	# end
+	# Syntax: 
+	# b_c[time]
+	# b_c[time][s]
+	# b_c[time][s][c,l,s']
 end
 
 # ╔═╡ cb70d0ea-e12b-454b-9dfb-7320cc94362b
@@ -3161,8 +3261,9 @@ version = "1.4.1+2"
 # ╟─9319947f-6777-4e9c-b50e-8a9510c299f0
 # ╠═3e96f06d-b02a-47c5-b93c-d9bbccbb940c
 # ╟─1bb36bdd-5a6f-49b2-95cd-b55476e77ac8
-# ╟─d0ea23fa-add4-4374-82ae-a52f93722586
-# ╠═5a2b2c61-0972-4161-808c-1aec801a4a71
+# ╠═d0ea23fa-add4-4374-82ae-a52f93722586
+# ╠═916e42f3-630f-4b49-8feb-5f11c2513c0c
+# ╟─5a2b2c61-0972-4161-808c-1aec801a4a71
 # ╟─178d91d0-4b48-4124-aa34-4662528e8214
 # ╠═474933b9-dcef-4390-a587-80e868772634
 # ╠═86647d28-bbc5-4e65-964f-c0d4b9920ab8
@@ -3171,16 +3272,17 @@ version = "1.4.1+2"
 # ╟─f815a3a6-9aa6-4810-b0c8-20dad4451a06
 # ╟─e402ffb7-2ad4-4146-b295-ebee3b6ad047
 # ╠═70408109-4e86-4938-bb95-1b73c7cac44f
-# ╠═043c6b1c-9db2-403f-83a4-134dc6926258
-# ╠═7e3e9714-6166-43ee-8f32-be370e147e43
+# ╠═0dea5d73-462a-4b1a-bd9c-15fbe3962e10
+# ╠═478eae77-e6af-4cca-ae7f-2d0e51bc8b4c
 # ╟─0036b3f8-91fa-4b9c-95c9-c89b2547dcf4
 # ╠═6d6ebb51-707d-48fc-b6a9-b114ab02c0d7
 # ╟─25ca739d-fde0-4eb1-bc5d-b95ae14797e6
-# ╠═f3b80429-dc01-4142-a601-db967cb52f0a
-# ╠═221c8bef-d7df-4cd5-bfb8-d135ce34b440
 # ╠═366f51ad-25a6-43fe-8019-d77128cd2e64
-# ╠═e3d7a3d5-dd68-49bc-ab7d-83bd3fc54256
+# ╟─669080f6-91de-42f5-9d1c-11c96c8fde94
 # ╠═3d4fa5e5-b0db-4339-ada0-5504c5640cba
+# ╠═23be86d8-3ff0-4192-867f-072734b6e671
+# ╟─dc82ca91-ffff-4bb4-ab44-6d1bdc123251
+# ╠═2b7b4256-c76d-4c97-b557-c0ec2f71ca31
 # ╠═cb70d0ea-e12b-454b-9dfb-7320cc94362b
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
