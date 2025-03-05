@@ -1356,14 +1356,16 @@ For now, we are also going to exclude any source of randomness, and are going to
 # ╔═╡ 70408109-4e86-4938-bb95-1b73c7cac44f
 begin 
 	"""
-	Given ranges, and the value function of the next period, gives back 
-	the value function and its optimal choices given choice variables.
 
-	`my_Bellman(s_range::UnitRange,
+		my_Bellman(s_range::UnitRange,
 						sprime_range::UnitRange,
 						consumption_range::UnitRange,
 						labor_range::UnitRange,
-						value_function_nextperiod::Array`
+						value_function_nextperiod::Array;
+						β=0.9, z = 1)::NamedTuple
+	
+	Given ranges, and the value function of the next period, gives back 
+	the value function and its optimal choices given choice variables.
 
 	It returns a named tuple with:
 	
@@ -1398,6 +1400,7 @@ begin
 
 		# for all levels of endowment
 		for (index_s,s) in enumerate(s_range)
+			
 			# for all levels of consumption
 			for (index_consumption,consumption) in enumerate(consumption_range) 
 				# for all levels of labor
@@ -1509,11 +1512,13 @@ Now that we have a Bellman function that can take into account the value of the 
 # ╔═╡ 366f51ad-25a6-43fe-8019-d77128cd2e64
 begin
 	"""
-	The `backwards(s_range::UnitRange,
+		backwards(s_range::UnitRange,
 				sprime_range::UnitRange,
 				consumption_range::UnitRange,
 				labor_range::UnitRange,
-				nperiods::Number)` function allows to solve the value function from backwards. 
+				nperiods::Number)
+	
+	This function allows to solve the value function from backwards. 
 
 	For now, it returns: 
 
@@ -1634,7 +1639,7 @@ begin
 end
 
 # ╔═╡ 23be86d8-3ff0-4192-867f-072734b6e671
-results_backwards[4]
+results_backwards
 
 # ╔═╡ dc82ca91-ffff-4bb4-ab44-6d1bdc123251
 md"""
@@ -1643,29 +1648,41 @@ Now, we have an approximation for our backward solving function, in a context fo
 If we try to plot the value function, we get: 
 """
 
-# ╔═╡ 2b7b4256-c76d-4c97-b557-c0ec2f71ca31
+# ╔═╡ 09c1f9f1-45f4-4109-a8f2-7dfb40825ed0
+md"The problem is that at any period, the agent consumes everything."
+
+# ╔═╡ 42b9fb07-6cd6-4f14-b99f-a96fa49dcad5
 begin
 	same_range = 0:10
 	time_period = 10
-	
-	# bV,bVstar,bindex_c,b_c = 
-	
 	test2 = backwards(same_range,same_range,same_range,same_range,time_period)
+	optimal_choices_2 = test2[4]
+	last_period_optimal_choices_2 = optimal_choices_2[end]
+	s_max_last_period_optimal_choices_2 = last_period_optimal_choices_2[end]
+	optimal_consumption_s_max_last_period_optimal_choices_2 = s_max_last_period_optimal_choices_2[1]
+	# Plots.plot(10,optimal_consumption_s_max_last_period_optimal_choices_2)
+end
 
-	test2[4]
-	
+# ╔═╡ 2b7b4256-c76d-4c97-b557-c0ec2f71ca31
+begin	
+	# bV,bVstar,bindex_c,b_c = 
+		
 	# (test2[4])
 	test2[:optimal_choices]
 	test2[4] # [:]
 
-	# Plots.plot(same_range,test2[4][1])#, st=:surface)
+	# Plots.plot(test2[4][:][1])#, st=:surface)
+	
+	for time in 1:time_period
+	 	Plots.plot!(same_range,same_range,test2[4][time][1:11][1])#,st=:surface)
+	end
 
-	# for time in 1:time_period
-	# 	Plots.plot!(same_range,same_range, test2[4][time][1:11][1],st=:surface)
-	# end
-			
+	Plots.plot()
+	Plots.plot!(same_range,same_range,test2[4][1][1:11][1])
+	Plots.plot!(same_range,same_range,test2[4][2][1:11][1])
+	
 	# Plots.plot!(xaxis = "Initial endowment", 
-		# 			yaxis = "Optimal consumption")
+	#	 			yaxis = "Optimal consumption")
 
 	# test2[4]
 	
@@ -1673,13 +1690,21 @@ begin
 
 
 	# begin
-	# 	test =  my_Bellman(b,b,b,b,zeros(length(b)))
-	# 	test[4]
+	 	# test3 =  my_Bellman(b,b,b,b,zeros(length(b)))
+	 	# test3[:optimal_choices]
 	# end
 	# Syntax: 
 	# b_c[time]
 	# b_c[time][s]
 	# b_c[time][s][c,l,s']
+end
+
+# ╔═╡ ed407ae3-f1e5-4366-8ccf-5f16f9e98aed
+begin 
+	oc = backwards(same_range,same_range,same_range,same_range,time_period)[4]
+	for (is,s) in enumerate(same_range)
+		print(oc[:][is])
+	end
 end
 
 # ╔═╡ cb70d0ea-e12b-454b-9dfb-7320cc94362b
@@ -3282,7 +3307,10 @@ version = "1.4.1+2"
 # ╠═3d4fa5e5-b0db-4339-ada0-5504c5640cba
 # ╠═23be86d8-3ff0-4192-867f-072734b6e671
 # ╟─dc82ca91-ffff-4bb4-ab44-6d1bdc123251
-# ╠═2b7b4256-c76d-4c97-b557-c0ec2f71ca31
+# ╟─2b7b4256-c76d-4c97-b557-c0ec2f71ca31
+# ╟─09c1f9f1-45f4-4109-a8f2-7dfb40825ed0
+# ╠═42b9fb07-6cd6-4f14-b99f-a96fa49dcad5
+# ╠═ed407ae3-f1e5-4366-8ccf-5f16f9e98aed
 # ╠═cb70d0ea-e12b-454b-9dfb-7320cc94362b
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
