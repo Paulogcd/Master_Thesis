@@ -8,7 +8,7 @@ begin
 	using Roots
 	using LaTeXStrings
 	using Plots
-	using Optim
+	# using Optim
 end
 
 Pkg.add("Interpolations")
