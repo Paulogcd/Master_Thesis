@@ -28,6 +28,13 @@
     "text": "Framework model 2\nThis model is finished. Its associated notebook can be found here. It aims to add to the general framework a continuous variable for temperature.\nIn this context:\n\nhealth is binary (good or bad health status),\nweather is represented by a continuous temperature variable,\nthe temperature affects the probability of being in a given health status, and survive, at the next period,\nthe probabilities of health status and survival are of higher dimension,\nI tried implementing the first version of numerical method resolution.\n\nTo illustrate this model, two plots can be displayed here, corresponding to two functions of the model: - Productivity function - Survival function\n\nProductivity function\nThe first one is about the productivity in function of the age and of temperature deviation. In this plot, we can see that there are two different surfaces. They correspond to the two different health status. If an agent goes from good health to bad health, they suffer a productivity shock, making them go from the higher surface to the lower one.\n    \n    \n\n\n\nSurvival function\nThe plot is about the final survival probability, which is function of several intermediary probability funtions. In this plot, we can see that there are two surfaces, that differ starting a certain age. Here again, the two surfaces correspond to two different health status. This is consistent is the data, that seems to indicate that individual with worse health type or worse health status have a higher death probability at a relatively advanced age, even if they are disadvantaged on other levels earlier on."
   },
   {
+    "objectID": "models.html#framework-model-3",
+    "href": "models.html#framework-model-3",
+    "title": "Models",
+    "section": "Framework model 3",
+    "text": "Framework model 3\nThis model is currently under constructin.\nIt changes the fonctional forms of the utility function, and try to solve numerically the model.\nIts associated notebook is available here."
+  },
+  {
     "objectID": "models.html#visualisation",
     "href": "models.html#visualisation",
     "title": "Models",

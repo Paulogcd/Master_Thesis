@@ -71,6 +71,15 @@ This is consistent is the data, that seems to indicate that individual with wors
 ```{=html}
 {{< include ./resources/Framework_model_2_plot_2.html >}}
 ```
+
+## Framework model 3
+
+This model is currently under constructin.
+
+It changes the fonctional forms of the utility function, and try to solve numerically the model.
+
+Its [associated notebook is available here](./resources/Framework_model_3.html).
+
 ## Visualisation 
 
 I am also working on some model visualisation.

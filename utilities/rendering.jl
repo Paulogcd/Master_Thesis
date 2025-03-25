@@ -19,7 +19,7 @@ run(`mv working_elements/Framework_model_2_plot_2.html website/resources/Framewo
 
 # Framework model 3:
 PlutoSliderServer.export_notebook("working_elements/Framework_model_3.jl"; )
-run(`mv working_elements/Framework_model_2.html website/resources/Framework_model_3.html`)
+run(`mv working_elements/Framework_model_3.html website/resources/Framework_model_3.html`)
 
 # Visualisation notebook : 
 PlutoSliderServer.export_notebook("working_elements/Visualisation.jl"; )

@@ -17,8 +17,10 @@ website:
     background-color: "#454545"
     title: false
     left:
+      - href: ../
+        text: Paulogcd
       - href: index.qmd
-        text: Home
+        text: Master Thesis
       - models.qmd
       - about.qmd
 
