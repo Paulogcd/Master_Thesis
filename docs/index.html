@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.40">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -35,10 +35,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6bd9cfa162949bde0a231f530c97869d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -66,6 +66,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="styles.css">
@@ -131,9 +134,59 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This website is currently under construction.</p>
-<p>This is the website of my Master Thesis.</p>
-<p>You can find my working models in the <a href="./models.html">Models</a> page.</p>
+<p>Hello, I am Paulo Gugelmo Cavalheiro Dias, a student in the Master of Research in Economics at Sciences Po, and this webpage is dedicated to my Master Thesis.</p>
+<p>I would like to study the economic effect of temperature variations induced by climate change on health.</p>
+<p>Schematically, I would like to inquire about the red links in the following diagram:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+  A[Climate change] --&gt; B[Temperature distribution]
+  B --&gt; C[Other variables]
+  B --&gt; D[Health of individuals] 
+  D --&gt; E[Economic production]
+  C --&gt; E
+
+linkStyle default stroke:black
+linkStyle 2 stroke:red
+linkStyle 3 stroke:red
+style D color:red
+
+classDef linkLabel fill:none,stroke:none;
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>A rich literature has identified several channels through which temperature can affect economy, among which we can mention:</p>
+<ul>
+<li>Mortality
+<ul>
+<li>Potential heatwaves could increase the mortality rates, especially for very young or elderly populations.</li>
+</ul></li>
+<li>Morbidity
+<ul>
+<li>Temperature shifts could affect the quality of live through a degraded health status.</li>
+</ul></li>
+<li>Labor productivity
+<ul>
+<li>Higher or more varying temperatures could reduce the labor productivity for blue and white collars.</li>
+</ul></li>
+<li>Areas liveability
+<ul>
+<li>Some regions will become too hot to live in and will cause migration.</li>
+</ul></li>
+<li>Capital productivity
+<ul>
+<li>Certain equipements and machines require some temperature to be useable.</li>
+</ul></li>
+</ul>
+<p>In this context, the potential effect of temperature shifts on health is of particular importance. Indeed, not only does it affect the general quality of people’s life, imply new public policy trade-off in the health sector, but it also has several impacts at the individual level. From an economic perspective, expected changes in temperature distribution could lead not only to aggregated utility shocks through a change in global life conditions, but could also lead to different individual choices in terms of labor supply and savings. Given the existing findings, it is also very important to take into consideration the potential interaction effects of these temperature deviation with variable creating heterogeneity in the population, such as base health types, initial income and/or wealth, etc.</p>
+<p>For now, you can find my working models in the <a href="./models.html">Models</a> page.</p>
+<p>More will come soon!</p>
 
 
 
@@ -220,8 +273,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -337,7 +388,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
