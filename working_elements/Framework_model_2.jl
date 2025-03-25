@@ -307,7 +307,7 @@ begin
 	productivity_values_bad = productivity.(age_grid, temp_grid, "b")
 	
 	# Plot the surface
-	Plots.surface(
+	plot_1 = Plots.surface(
 	    age_grid,
 	    temp_grid,
 	    productivity_values_good,
@@ -320,6 +320,8 @@ begin
 	)
 	Plots.surface!(age_grid,temp_grid,productivity_values_bad,
 		label = "Bad health")
+	Plots.savefig("Framework_model_2_plot_1.html")
+	plot_1
 end
 
 # ╔═╡ 027a380f-2adb-47be-8d98-29fb20be4a75
@@ -526,7 +528,7 @@ begin
 	# productivity_values_bad = productivity.(age_grid, temp_grid, "b")
 	
 	# Plot the surfaces
-	Plots.surface(
+	plot_2 = Plots.surface(
 	    age_grid,
 	    temp_grid,
 	    death_proba_values_good,
@@ -538,6 +540,8 @@ begin
 		label = "Good health")
 	Plots.surface!(age_grid,temp_grid,death_proba_values_bad,
 		label = "Bad health")
+	Plots.savefig("Framework_model_2_plot_2.html")
+	plot_2
 end
 
 # ╔═╡ ddde8453-beac-4a76-b772-bc3ced4d148a
@@ -1699,49 +1703,13 @@ begin
 	# b_c[time][s][c,l,s']
 end
 
-# ╔═╡ ed407ae3-f1e5-4366-8ccf-5f16f9e98aed
-begin 
-	oc = backwards(same_range,same_range,same_range,same_range,time_period)[4]
-	for (is,s) in enumerate(same_range)
-		print(oc[:][is])
-	end
-end
+# ╔═╡ 05aa7038-72b2-4a36-b4b2-4099ec71b5af
+md"""
+The problem is due to the specification of the productivity.
+Since it is increasing until more than the 50th period, agents do not have incentives to save, since the only risk they face is death, and cannot be avoided by investing in health or by exposing themselves less to extreme temperatures.
 
-# ╔═╡ cb70d0ea-e12b-454b-9dfb-7320cc94362b
-begin 
-	"""	
-	`FO_Bellman(grid::Vector,vplus::Vector,π::Float64,yvec::Vector)`
-
-	Given a grid and a next period value function `vplus`, and a probability distribution calculate current period optimal value and actions.
-	"""
-	function FO_Bellman(grid::Vector,vplus::Vector,β::Float64)
-		
-		points = length(grid) 
-		w = zeros(points) # temporary vector for each choice or R'
-		Vt = zeros(points) # optimal value in T-1 at each state of R
-		ix = 0 # optimal action index in T-1 at each state of R
-		at = zeros(points) # optimal action in T-1 at each state of R
-	
-		for (ir,r) in enumerate(grid) # for all possible R-values
-			# loop over all possible action choices
-			for (ia,achoice) in enumerate(grid)
-				if budget([],[])   # check whether that choice is feasible
-					w[ia] = -Inf
-				else
-					rlow = r - achoice + yvec[1] # tomorrow's R if y is low
-					rhigh  = r - achoice + yvec[2] # tomorrow's R if y is high
-					jlow = argmin(abs.(grid .- rlow))  # index of that value in Rspace
-					jhigh = argmin(abs.(grid .- rhigh))  # index of that value in Rspace
-					w[ia] = u([c,l,"g",0][]) + β * vplus[jlow] # value of that achoice
-				end
-			end
-			# find best action
-			Vt[ir], ix = findmax(w) # stores Value und policy (index of optimal choice)
-			at[ir] = grid[ix]  # record optimal action level
-		end
-		return (Vt, at)
-	end
-end
+This problem should be dealt with in the next framework model.
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1764,7 +1732,7 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.3"
+julia_version = "1.11.4"
 manifest_format = "2.0"
 project_hash = "84ba8785732d2d4d916545078c5780e676e7c498"
 
@@ -2406,7 +2374,7 @@ version = "0.3.27+1"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+2"
+version = "0.8.1+4"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -3310,7 +3278,6 @@ version = "1.4.1+2"
 # ╟─2b7b4256-c76d-4c97-b557-c0ec2f71ca31
 # ╟─09c1f9f1-45f4-4109-a8f2-7dfb40825ed0
 # ╠═42b9fb07-6cd6-4f14-b99f-a96fa49dcad5
-# ╠═ed407ae3-f1e5-4366-8ccf-5f16f9e98aed
-# ╠═cb70d0ea-e12b-454b-9dfb-7320cc94362b
+# ╟─05aa7038-72b2-4a36-b4b2-4099ec71b5af
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

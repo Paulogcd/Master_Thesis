@@ -1,8 +1,0 @@
-julia rendering.jl
-echo "Notebooks rendered !"
-cd website 
-quarto render 
-echo "Website rendered !"
-cd ..
-echo "Here is the git status:"
-git status

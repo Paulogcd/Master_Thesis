@@ -2,11 +2,11 @@
 title: "Models"
 ---
 
-This page is under construction. It is dedicated to the presentation of the intermediary models I worked on and am working on within my Master Thesis.
+This page is dedicated to the presentation of the intermediary models I worked and am working on within my Master Thesis.
 
 ## Framework model 1
 
-This model is finished, and its associaed notebook [can be found here](/resources/Framework_model_1.html).
+This model is finished, and its associated notebook [can be found here](/resources/Framework_model_1.html).
 
 It aims to set a first simplified version of the general framework I want to use.
 
@@ -34,17 +34,43 @@ We see what seems to be a linear relationship between the aggregated intertempor
 
 ## Framework model 2
 
-This model is currently under work. 
+This model is finished. [Its associated notebook can be found here](/resources/Framework_model_2.html). 
 It aims to add to the general framework a continuous variable for temperature. 
 
 In this context:
 
 - health is binary (good or bad health status),
 - weather is represented by a continuous temperature variable, 
-- the temperature affects the probability of being in a given health status at the next period.
+- the temperature affects the probability of being in a given health status, and survive, at the next period, 
+- the probabilities of health status and survival are of higher dimension,
+- I tried implementing the first version of numerical method resolution.
 
-[It can be found here](/resources/Framework_model_2.html). 
+To illustrate this model, two plots can be displayed here, corresponding to two functions of the model:
+    - Productivity function
+    - Survival function
 
+### Productivity function
+
+The first one is about the productivity in function of the age and of temperature deviation.
+In this plot, we can see that there are two different surfaces.
+They correspond to the two different health status. 
+If an agent goes from good health to bad health, they suffer a productivity shock, making them go from the higher surface to the lower one.
+
+
+```{=html}
+{{< include ./resources/Framework_model_2_plot_1.html >}}
+```
+
+### Survival function
+
+The plot  is about the final survival probability, which is function of several intermediary probability funtions.
+In this plot, we can see that there are two surfaces, that differ starting a certain age.
+Here again, the two surfaces correspond to two different health status.
+This is consistent is the data, that seems to indicate that individual with worse health type or worse health status have a higher death probability at a relatively advanced age, even if they are disadvantaged on other levels earlier on.
+
+```{=html}
+{{< include ./resources/Framework_model_2_plot_2.html >}}
+```
 ## Visualisation 
 
 I am also working on some model visualisation.
