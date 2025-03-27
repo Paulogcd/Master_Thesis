@@ -1193,9 +1193,6 @@ begin
 	u(choice_variables,state_variables) = (abs(choice_variables[1])^(1-ρ))/(1-ρ) - choice_variables[2]*state_variables[3]
 end
 
-# ╔═╡ 474933b9-dcef-4390-a587-80e868772634
-@bind β Slider(0.00:0.01:1.00, default = 0.90)
-
 # ╔═╡ 178d91d0-4b48-4124-aa34-4662528e8214
 begin
 	"""
@@ -1290,6 +1287,9 @@ begin
 	end
 
 end
+
+# ╔═╡ 474933b9-dcef-4390-a587-80e868772634
+@bind β Slider(0.00:0.01:1.00, default = 0.90)
 
 # ╔═╡ 86647d28-bbc5-4e65-964f-c0d4b9920ab8
 @bind max_period_grid Slider(0:1:100, default = 4)

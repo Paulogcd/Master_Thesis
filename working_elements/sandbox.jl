@@ -182,3 +182,29 @@ begin
 		return(population_results)
 	end
 end
+
+
+logistic_1(;K,a,r,t,ζ_3,h) = K./(1 .+ a .* exp.(-r.*(t.-ζ_3).*(1 .+1(h=="b"))))
+probability_of_dying(age,h,w) = 1/2*()
+
+age = 0:1:100
+Plots.plot(logistic_1.(K = 1, a = 1, r = 1,t = age,ζ_3 = 50, h = "b"))
+
+logistic_2(;K,a,r,t,ζ_4,w) = K./(1 .+ a .* exp.(-r.*(t.-ζ_4).+abs.(w)))
+
+weather = range(start = -5, stop = 5, length = length(age)) # -5:1:5
+
+abs.(weather)
+
+age_range = range(start = 1, stop = 100, length = 100)
+temp_range = range(start = -10, stop = 10, length = 100)
+age_grid = repeat(reshape(collect(age_range), :, 1), 1, length(temp_range))
+temp_grid = repeat(reshape(collect(temp_range), 1, :), size(age_grid, 1), 1)
+
+plotly()
+Plots.plot(age_grid,
+			temp_grid,
+			logistic_2.(K = 1, a = 1, r = 1,t = age_grid,ζ_4 = 50, w = temp_grid),
+			st=:surface)
+
+logistic_2.(K = 1, a = 1, r = 1,t = x,ζ_4 = 50, w = weather)
