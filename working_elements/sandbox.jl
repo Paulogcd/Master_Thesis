@@ -208,3 +208,77 @@ Plots.plot(age_grid,
 			st=:surface)
 
 logistic_2.(K = 1, a = 1, r = 1,t = x,ζ_4 = 50, w = weather)
+
+
+using Integrals
+
+begin
+	"""
+	The logistic_1 function is the first intermediary death probability.
+	
+	`logistic_1(;K,a,r,t,E1,h) = K./(1 .+ (1+1(h=="g")).*a .* exp.(-r.*(t.-E1)))`
+	
+	"""
+	logistic_1(;K,a,r,t,E1,h,Δh) = (K./(1 .+ (1+Δh*1(h=="g")).*a .* exp.(-r.*(t.-E1))))
+end
+
+begin 
+	"""
+	The logistic_2 function is the second intermediary death probability.
+		
+	`logistic_2(;K,a,r,t,E2,w) = K./(1 .+ a .* exp.(-r.*(t.-E2).-abs.(w)))`
+
+	"""
+	logistic_2(;K,a,r,t,E2,w) = K./(1 .+ a .* exp.(-r.*(t.-E2).-abs.(w)))
+end
+
+begin 
+	"""
+	ζ is the death probability function. It takes this syntax form: 
+
+		ζ(;a1,a2,t,h,w,E1,E2,ζ1,r, Δh)
+	
+	"""
+	ζ(;a1,a2,t,h,w,E1,E2,ζ1,r,Δh) = 
+		1/2 * (ζ1*logistic_1.(K = 1, a = a1, r = r, t = t, E1 = E1, h = h, Δh = Δh) 	
+			.+ 
+			(1-ζ1) * logistic_2.(K=1,a = a2, r = r, t = t, E2 = E2, w = w))
+end
+
+# Redefine ζ_integral to match Integrals.jl's expected format
+function ζ_integral(u, p)
+    t, w = u  # Unpack integration variables
+    (; h, a1, a2, E1, E2, ζ1, r, Δh) = p  # Unpack parameters
+    
+    # Call your original ζ function
+    return ζ(; a1, a2, t, h, w, E1, E2, ζ1, r, Δh)
+end
+
+# Set up integration
+tmin, tmax = 0, Inf
+wmin, wmax = -Inf, Inf
+a1_final = 1
+a2_final = 20
+E = 82
+r_final = 0.1
+Δh_final = 20
+
+# Define parameters (including h)
+test_parameters = (
+    h = "good",  # Include h in parameters
+    a1 = a1_final,
+    a2 = a2_final,
+    E1 = E,
+    E2 = E,
+    ζ1 = 0.5,
+    r = r_final,
+    Δh = Δh_final
+)
+
+# Create integration problem
+domain = ([tmin, wmin], [tmax, wmax])
+prob = IntegralProblem(ζ_integral, domain..., test_parameters)  # Note the ... for domain
+
+# Solve
+sol = solve(prob, HCubatureJL(); reltol=1e-3, abstol=1e-3)
+integral_value = sol.u

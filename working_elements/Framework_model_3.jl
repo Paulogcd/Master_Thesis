@@ -21,6 +21,10 @@ begin
 	using PlutoUI
 	using Base.Threads
 	using Plots
+	using PlotlyBase
+	# using HypertextLiteral
+	using Distributions
+	# using Integrals
 end
 
 # ╔═╡ f9b82879-6183-4919-8d67-6739c56eeecc
@@ -28,8 +32,45 @@ md"""
 # Framework model 3
 """
 
+# ╔═╡ aa6c15ba-3727-4faa-85f2-0f9247c583b9
+# begin 
+# 	@bind screenWidth HypertextLiteral.@htl("""
+# 		<div>
+# 		<script>
+# 			var div = currentScript.parentElement
+# 			div.value = screen.width
+# 		</script>
+# 		</div>
+# 	""")
+# end
+
 # ╔═╡ 0ae6ed85-e426-4afc-8d3e-2584f4d54c8b
+# begin
+# 	cellWidth= min(1000, screenWidth*0.9)
+# 	@htl("""
+# 		<style>
+# 			pluto-notebook {
+# 				margin: auto;
+# 				width: $(cellWidth)px;
+# 			}
+# 		</style>
+# 	""")
+# end
+
+# ╔═╡ df69c121-0055-43c7-b492-230b9e131fec
 TableOfContents()
+
+# ╔═╡ a96a19dc-899c-4207-adbb-838f93378029
+html"""
+<style>
+	main {
+		margin: 0 auto;
+		max-width: 2000px;
+    	padding-left: max(160px, 10%);
+    	padding-right: max(160px, 10%);
+	}
+</style>
+"""
 
 # ╔═╡ 59cc68ca-bff1-4b24-ac79-cdd8fd2d9ba3
 md"""
@@ -42,12 +83,120 @@ Weather is assimilated to temperature deviation. Temperature deviation is normal
 $$w_{t}\sim \mathcal{N}(0,\sigma^2)$$
 """
 
-# ╔═╡ 9b70fa6b-8b34-4d88-8711-9e033bc4ce49
+# ╔═╡ 46667e45-959d-498e-b3d9-6cccd39fb63c
+md"""
+## Health status
+
+Let us define the random variable representing health: 
+
+$h_t\in H_t(\Omega)=\{good, bad\}$
+
+Let us say it is function of the former age, and of the current temperature.
+
+It can be assimilated to a Bernoulli-distributed variable, such that: 
+
+$$H_t\sim\mathcal{B}(\Xi)$$
+
+With $\Xi$ being the probability of good health, given the previous health and current temperature. 
+
+We want three properties for this probability: 
+
+- Being in good health must increase the probability of being in good health at the next period, no matter the temperature,
+- The absolute value of temperature deviation must decrease the probability of being in good health,
+- Being in good health must make the marginal effect of temperature deviation less strong.
+
+The normal distribution probability density function has all those properties. 
+Therefore, let us define the probability of being in good health as:
+
+$$\begin{split}
+\Xi & = Pr(H_t=good|h_{t-1},w_t;\sigma_0,p_0,\Delta p_h,\Delta \sigma_h) \\
+& = p_0+\Delta p_h\cdot\mathbb{1}\{h_{t-1}=g\}+\frac{1}{\sqrt{2\pi(\sigma_0+\mathbb{1}\{h_{t-1}=g\}\cdot \Delta \sigma_h)^2}}\cdot\exp\left(-\frac{w_t^2}{2\cdot(\sigma_0+\mathbb{1}\{h_{t-1}=g\}\cdot \Delta \sigma_h)^2}\right)
+\end{split}$$
+
+We can divide the parameters in two categories: 
+
+**Common parameters**
+
+- The common $p_0$ probability translates how resilient the individuals are, no matter the health state,
+- The common $\sigma$ standard deviation translates the strength of the temperature deviation effect,
+
+**Bad health parameters**
+
+- The additional probability $\Delta p_h$ translates how much being in good health helps in staying in good health, no matter the temperature deviation,
+- The additional standard deviation $\Delta \sigma_h$ translates the relative effect of being in good health on resisting the temperature deviation effect.
+
+"""
+
+# ╔═╡ ae53739f-366d-4bcb-8b6d-8b4e017f623a
+begin 
+	"""
+	The `probability_good_health` function returns the probability of being in good health at the next period, given weather, past health status, and several parameters.
+
+	Its syntax is: 
+
+		probability_good_health(w,htm1;σ0,p0,Δph,Δσh)
+	"""
+	function probability_good_health(w,htm1;σ0,p0,Δph,Δσh)
+		σ = σ0+1(htm1=="g")*Δσh
+		
+		return p0 + Δph*1(htm1 == "g") + (1/(sqrt(2*π*(σ^2))) *exp(-((w^2)/(2*(σ^2)))))
+	end
+end
+
+# ╔═╡ 15756c6a-174a-45a9-89cd-00b0650a280d
+md""" Graphically, we have:"""
+
+# ╔═╡ f58a2812-3fd4-4931-a1de-985d38a1edeb
+@bind σ Slider(0.00:0.01:5.00, default = 3)
+
+# ╔═╡ 839cb3c5-13f1-45a3-986a-836a7603d61e
+@bind Δσh Slider(0.00:0.1:1.00, default = 1)
+
+# ╔═╡ 65b040ba-54f3-40bb-ba9f-3b989c589c39
+@bind p0 Slider(0.00:0.01:1, default = 0.5)
+
+# ╔═╡ 3fb1e0e7-4902-4af7-8611-8e061802eda9
+@bind Δph Slider(0.00:0.01:1.00, default = 0.1)
+
+# ╔═╡ 75ca9a5d-2779-470f-a2fd-60f91311ba4f
+begin 
+	gr()
+	x = -10:0.001:10
+	Plots.plot(x,probability_good_health.(x,"g";σ0=σ,p0=p0,Δph=Δph,Δσh=Δσh), label = "Good health")
+	Plots.plot!(x,probability_good_health.(x,"b";σ0=σ,p0=p0,Δph=Δph,Δσh=Δσh), label = "Bad health")
+	Plots.plot!(xaxis = "Temperature deviation", yaxis = "Probability of being in good health")
+end
+
+# ╔═╡ d9027de5-1c42-4626-927c-7390ee058dfc
+begin 
+	"""
+	The function `s_probability_good_health` is a simplified version of the 
+	`probability_good_health` function, in which the parameters values are fixed.
+
+	In this case, its syntax is: 
+
+		s_probability_good_health(current_weather::Float64,past_health::AbstractString)
+	"""
+	function s_probability_good_health(current_weather::Float64,past_health::AbstractString)
+		return probability_good_health(current_weather,past_health;σ0=3,p0=0.5,Δph=0.1,Δσh=1)
+	end
+end
+
+# ╔═╡ d036f964-19bc-4082-a9f5-261d129314e5
 md"""## Survival
 
-Survival is function of age, health, weather.
+Let us define $L_t$ the living status of an individual at period $t$, following a Bernoulli distribution such that: 
 
-The probability of dying is the average of two logistic functions $\Lambda_1$, and $\Lambda_2$:
+$$L_t \sim \mathcal{B}(1-\zeta_t)$$
+
+The parameter $\zeta_t$ is the probability of dying at $t$, so $1-\zeta_t$ is the probability of living at $t$.
+
+We define the probability function $\zeta_t$ as a function of age, health, weather.
+"""
+
+# ╔═╡ 9b70fa6b-8b34-4d88-8711-9e033bc4ce49
+md"""
+Let us define the probability of dying as the average of two logistic functions $\Lambda_1$, and $\Lambda_2$:
 
 $$\zeta_{t}(t,h_t,w_t)=\frac{1}{2}\cdot \left(\zeta_1\cdot\Lambda_1+(1-\zeta_1)\cdot\Lambda_2\right)$$
 
@@ -58,20 +207,17 @@ $$\Lambda(t;K,a,r)=\frac{K}{1+a\cdot e^{-r\cdot t}}$$
 Where: 
 -  $K$ will be the maximum (since we are dealing with probabilities, it will be $1$),
 -  $r$ represents the strength of the threshold, 
--  $a$ represents a shift of the threshold:
--  $$\Lambda(t = 0, a = 1) = 0.5$$
--  $$\Lambda(t = 0, a = 2) \approx 0.7$$
--  $$\Lambda(t = 0, a = 3) \approx 1.1$$
+-  $a$ represents a shift of the threshold.
 
 We can already note that we will have to scale the values of the periods.
 Also, to model the role of health, we are interested in varying the $a$ value.
 If we want to adjust the slope of the probability at the threshold, we will have to adjust the $r$, but it has to be the same value for both good and bad health. 
 
-Graphically:
+Graphically, we have:
 """
 
 # ╔═╡ 427d4aa5-c976-4d09-b423-a00367b4ea18
-@bind a_logistic Slider(0.001:0.01:100, default = 1)
+@bind a_logistic Slider(1:0.01:100, default = 2)
 
 # ╔═╡ 26a6a3e8-4c9e-46c7-93fb-fa9cf1eac492
 @bind r_logistic Slider(0:0.01:1, default = 0.1)
@@ -80,28 +226,60 @@ Graphically:
 begin 
 	gr()
 	logistic(;K,a,r,t) = K./(1 .+ a .* exp.(-r.*t)) 
-	Plots.plot(logistic.(K = 1, a = a_logistic, r = r_logistic, t = -100:1:100), label = "a = $a_logistic, r = $r_logistic")
-	Plots.plot!(logistic.(K = 1, a = 1, r = 0.1, t = -100:1:100), label = "a = r = 1")
+	Plots.plot(-100:1:100,logistic.(K = 1, a = a_logistic, r = r_logistic, t = -100:1:100), label = "a = $a_logistic, r = $r_logistic")
+	Plots.plot!(-100:1:100,logistic.(K = 1, a = 1, r = r_logistic, t = -100:1:100), label = "a = 1, r = 0.1")
 	Plots.plot!(ylim = (0,1), title = "Logistic function", xaxis = "period", yaxis = "Probability")
 end
 
-# ╔═╡ f0589647-a205-455a-8585-e463b028acdc
-@bind a_logistic_1 Slider(1:0.01:10, default = 1)
+# ╔═╡ 4ab6a4e8-ae11-4eaf-84ec-c1ed2a05408f
+md"""
+
+### Logistic 1: health survival
+
+Let us define the first logistic function such that: 
+
+$$\Lambda_1(t;K = 1,a_1,r) = \frac{1}{1+(1+\mathbb{1}\{h=b\})\cdot a_1 \cdot\exp(-r\cdot (t-E_1))}$$
+
+Note the main differences with a classic logistic function: 
+
+- We have $K = 1$,
+- We multiply the term at the denominator by $(1+\mathbb{1}\{h=b\})$,
+- We normalise the time period by $E_1$.
+
+"""
 
 # ╔═╡ 561e63a8-2898-44a9-a6a9-13809e781027
 begin
-	
-	# Defining the logistic functions:
 	"""
 	The logistic_1 function is the first intermediary death probability.
+	
+	`logistic_1(;K,a,r,t,E1,h) = K./(1 .+ (1+1(h=="g")).*a .* exp.(-r.*(t.-E1)))`
+	
 	"""
-	logistic_1(;K,a,r,t,ζ_3,h) = K./(1 .+ (1+1(h=="g")).*a .* exp.(-r.*(t.-ζ_3)))
+	logistic_1(;K,a,r,t,E1,h,Δah,ΔKh,Δrh) = (K*(1+ΔKh*1(h=="b"))./
+	(1 .+ (1 .+Δah*1(h=="g")) .*a .* exp.(-r*(1+Δrh*1(h=="b")).*(t.-E1))))
+end
 
-	"""
-	The logistic_2 function is the second intermediary death probability.
-	"""
-	logistic_2(;K,a,r,t,ζ_4,w) = K./(1 .+ a .* exp.(-r.*(t.-ζ_4).-abs.(w)))
+# ╔═╡ 3c4953a4-6cb9-4edf-b79f-93c578550f6d
+md"""Graphically, we have:"""
 
+# ╔═╡ f0589647-a205-455a-8585-e463b028acdc
+@bind a_logistic_1 Slider(1:0.1:10, default = 1)
+
+# ╔═╡ edd58d3c-88d1-4b4a-b111-4751e886d32e
+@bind E_logistic_1 Slider(50:1:100, default = 82)
+
+# ╔═╡ 8f79d80c-6175-42fa-9951-fb6c1a5e5015
+@bind ΔKh_logistic_1 Slider(0.00:0.01:1.00, default = 0.1)
+
+# ╔═╡ 6d2380f4-d5f4-4670-8d71-24e2cf2c6559
+@bind Δah_1 Slider(1:10, default=2)
+
+# ╔═╡ 11fa8c4d-a67e-4164-a5ed-955e0755bbc7
+@bind Δrh_1 Slider(0.01:1, default=0.1)
+
+# ╔═╡ a8e27d35-ff19-4741-bb4b-ece5bb1ef27c
+begin
 	# Define the supports: 
 	age_range = range(start = 1, stop = 100, length = 100)
 	temp_range = range(start = -10, stop = 10, length = 100)
@@ -110,37 +288,314 @@ begin
 
 	# Making a plot for the first one: 
 	gr()
-	plot_logistic_1 = Plots.plot(logistic_1.(K = 1, a = 1, r = 0.1,t = age_range,ζ_3 = 50, h = "b"), label = "Bad health")
-	Plots.plot!(logistic_1.(K = 1, a = a_logistic_1, r = 0.1,t = age_range,ζ_3 = 50, h = "g"), label = "Good health")
-	Plots.plot!(title = "Logistic 1 : death probability in function of age and health.")
-	Plots.plot!(xtitle = "age", yaxis = "death probability" )
-
-	# The second one: 
-	plotly()
-	plot_logistic_2 = Plots.plot(age_grid,temp_grid,
-			logistic_2.(K = 1, a = 1, r = 1,t = age_grid,ζ_4 = 50, w = temp_grid),
-			st=:surface)
-	Plots.plot!(title = "Logistic 2 : death probability in function of age and temperature.")
-	Plots.plot!(xaxis = "age", yaxis = "temperature", zaxis = "death probability")
-
-	md"""
-	Now, we define the death probability in Julia.
-	"""
-	
+	# bad health:
+	plot_logistic_1 = Plots.plot(logistic_1.(K = 1, ΔKh = ΔKh_logistic_1, a = a_logistic_1, r = 0.05,t = age_range,E1 = E_logistic_1, h = "b", Δah = Δah_1, Δrh = Δrh_1), label = "Bad health")
+	# good health: 
+	Plots.plot!(logistic_1.(K = 1, ΔKh = ΔKh_logistic_1, a = a_logistic_1, r = 0.05,t = age_range,E1 = E_logistic_1, h = "g", Δah = Δah_1, Δrh = Δrh_1), label = "Good health")
+	# title and axis
+	Plots.plot!(title = "Logistic 1 : death probability \n in function of age and health, E = $E_logistic_1", xaxis = "age", yaxis = "death probability")
 end
 
-# ╔═╡ f196174b-8889-4303-b919-cc7118507ee0
-plot_logistic_1
+# ╔═╡ 11894f8d-f71c-4814-bfcc-97f25dd1f8df
+md"""
+### Logistic 2: temperature survival
 
-# ╔═╡ 362c5d53-bc64-4d4e-845c-5dd1b6cf94b7
-plot_logistic_2
+The second logistic function is such that: 
+
+$$\Lambda_2(t;K=1,a_2,r) = \frac{1}{1+a_2\cdot \exp(-r\cdot (t-E_2)-|w_t|)}$$
+
+The main differences with a classic logistic function are: 
+
+- We have, once again $K=1$, 
+- We normalise the age by $E_2$, 
+- We add the weather variable, $w_t$, in the denominator.
+
+"""
+
+# ╔═╡ 14d7c0b7-828b-4bf6-96c7-9fcb43fe2d05
+begin 
+	"""
+	The logistic_2 function is the second intermediary death probability.
+		
+	`logistic_2(;K,a,r,t,E2,w) = K./(1 .+ a .* exp.(-r.*(t.-E2).-abs.(w)))`
+
+	"""
+	logistic_2(;K,a,r,t,E2,w) = K./(1 .+ a .* exp.(-r.*(t.-E2).-abs.(w)))
+end
+
+# ╔═╡ 4e4cef27-ea71-4647-a613-1ad8eb45072b
+@bind r_logistic_2 Slider(0.001:0.01:1, default = 0.2)
 
 # ╔═╡ 6f83d853-1b25-4cba-a33b-19e5111b8035
 md"""
+
+### Final survival function
+
 Now, the final probability of dying is such that:
 
-$$\zeta_{t}(t,h_t,w_t) = \frac{1}{2}\cdot\left(\frac{\zeta_{1}}{1+(1+\mathbb{1}\{h_t=b\})\cdot\exp\left(\zeta_2\cdot(t-\zeta_3)\right)}+\frac{1-\zeta_1}{1+\exp\left((t-\zeta_4)+|w_t|\right)}\right)$$
+$$\zeta_{t}(X_t;\theta) = \zeta_1\cdot\Lambda_1(X_t,\theta)+(1-\zeta_1)\cdot\Lambda_2(X_t,\theta)$$
+
+With: 
+
+-  $X_t$ the input variables,
+-  $\theta$ the parameters,
+
+Writing explicitly the expression, we have: 
+
+$$\zeta_{t}(t,h_t,w_t,\zeta_1;a,E) = \zeta_1 \cdot 
+\frac{1}{1+(1+\mathbb{1}\{h=b\})\cdot a_1 \cdot\exp(-r\cdot (t-E_1))}
++(1-\zeta_1)\cdot\frac{1}{1+a_2\cdot \exp(-r\cdot (t-E_2)-|w_t|)}$$
+
+Graphically, we have:
 """
+
+# ╔═╡ e4086a46-d059-4470-987d-a02fe2518b4c
+@bind E Slider(50:1:100, default = 82)
+
+# ╔═╡ f196174b-8889-4303-b919-cc7118507ee0
+begin
+		plotly()
+		plot_logistic_2 = Plots.plot(age_grid,temp_grid,
+				logistic_2.(K = 1, a = 1, r = r_logistic_2,t = age_grid,E2 = E, w = temp_grid),
+				st=:surface)
+		Plots.plot!(title = "Logistic 2 : death probability in function of age and temperature.")
+		Plots.plot!(xaxis = "age", yaxis = "temperature", zaxis = "death probability")
+end
+
+# ╔═╡ fadabd05-e67d-4a64-9d88-c43405bc4bc6
+@bind a1_final Slider(0.01:1:10, default = 1)
+
+# ╔═╡ 543ee2e9-7a3a-411a-903c-23b9401ebb38
+@bind a2_final Slider(0.01:1:100, default = 20)
+
+# ╔═╡ d60e1ec1-c98c-4aab-b9b0-38fa813ca132
+@bind r_final Slider(0.001:0.1:1, default = 0.5)
+
+# ╔═╡ d6fdad51-7faa-4860-9fe9-1a36bc61dfc3
+@bind ζ_1 Slider(0.001:0.1:1, default = 0.5)
+
+# ╔═╡ 3c2ba9b2-ce66-4a11-903f-7ed82b072fa1
+begin 
+	"""
+	ζ is the death probability function. 
+	Its syntax is:
+
+		ζ(;a1,a2,t,h,w,E1,E2,ζ1,r, Δh)
+
+	Due to possible rounding error in the computations with very small values, it is recommended to convert possible negative values into 0, like: 
+
+		ζ(;a1,a2,t,h,w,E1,E2,ζ1,r, Δh) >= 0 ? ζ(;a1,a2,t,h,w,E1,E2,ζ1,r, Δh) : 0
+	
+	"""
+	function ζ(;a1,a2,t,h,w,E1,E2,ζ1,r,Δah,ΔKh, Δrh)
+		return (ζ_1.*logistic_1.(K = 1, a = a1, r = r, t = t, E1 = E1, h = h, Δah =Δah, ΔKh = ΔKh, Δrh = Δrh) .+ (1-ζ1) .* logistic_2.(K=1,a = a2, r = r, t = t, E2 = E2, w = w))
+	end
+end
+
+# ╔═╡ 31f9594c-40db-47bc-a410-62046d6b674c
+@bind Δah_final Slider(0.01:1:100, default = 50)
+
+# ╔═╡ 6c735ae8-b0f8-4d95-b312-ffceafd5ca8f
+@bind ΔKh_final Slider(0.01:1:100, default = 0.1)
+
+# ╔═╡ e493a0b2-4979-405c-88cc-2be2cc26e43c
+@bind Δrh_final Slider(0.001:0.00001:1, default = 0.001)
+
+# ╔═╡ 362c5d53-bc64-4d4e-845c-5dd1b6cf94b7
+begin 
+	# Plot:
+	plotly()
+	# Good health:
+	Plots.plot(age_grid, temp_grid, 
+		ζ.(;a1 = a1_final, a2 = a2_final, ΔKh = ΔKh_final, t = age_grid, h = "g", w = temp_grid, E1 = E, E2 = E, ζ1 = ζ_1, r = r_final, Δah = Δah_final, Δrh = Δrh_final), st=:surface, label = "good health")
+
+	# Bad health:
+	Plots.plot!(age_grid, temp_grid, 
+		ζ.(;a1 = a1_final, a2 = a2_final, ΔKh = ΔKh_final, t = age_grid, h = "b", w = temp_grid, E1 = E, E2 = E, ζ1 = ζ_1, r = r_final, Δah = Δah_final, Δrh = Δrh_final), 
+		st=:surface, label = "bad health")
+	
+	Plots.plot!(xaxis = "age", yaxis = "temperature", zaxis = "probability", title = "Final death probability")
+end
+
+# ╔═╡ f2cc6731-dca5-4ded-8f98-6c2130e298c5
+begin 
+	"""
+	The `s_ζ` function is a simplified version of the `ζ` function, in which the values of the parameters are already fixed.
+	It returns the probability of death.
+	
+	In this case, its syntax is: 
+
+		s_ζ(t,h,w)
+
+	To avoid possible errors due to negative values being returned because of very small numbers, we proceed to a rounding process.
+	"""
+	function s_ζ(t::Integer,h::AbstractString,w::Float64;minimum = 0.005)::Float64
+		ζ(;a1=1,a2=20,t=t,h=h,w=w,E1=82,E2=82,ζ1=0.5,r=0.5, Δah=50, ΔKh = 0.1, Δrh = 0.001) >= minimum ? ζ(;a1=1,a2=20,t=t,h=h,w=w,E1=82,E2=82,ζ1=0.5,r=0.5, Δah=50, ΔKh = 0.1, Δrh = 0.001) : minimum
+
+		# return ζ(;a1=1,a2=20,t=t,h=h,w=w,E1=82,E2=82,ζ1=0.5,r=0.5, Δh=50)
+	end
+end
+
+# ╔═╡ f9932fb4-35f1-41d5-99bd-959fbf27a8f7
+md"""
+Note that with this probability function, the expectation of the living status is such that: 
+
+$$\mathbb{E}[L_t] = \int_{t\in\mathbb{N}}\int_{w\in\mathbb{R}} \sum_{h\in\{good,bad\}}\zeta_t(t,w,h)\ dw\ dt$$
+
+To solve this, we could try using the [Integrals.jl](https://docs.sciml.ai/Integrals/stable/) package in Julia. 
+We can also try performing simulations.
+
+"""
+
+# ╔═╡ d9bcfb81-10eb-4407-812c-d818a2ff34d1
+begin
+	"""
+	Th function `population_simulation(N,periods,σ)` runs a simulation for `N` individuals, over `T` periods, for a temperature deviation following a normal distribution centered around `μ` and with standard deviation `σ`. 
+	
+	It returns a named tuple containing: 
+	
+	- The element `weather_history`, a `T`-sized vector containing temperature deviation for each period,
+	- The element `collective_age`, a `N`-sized vector containing the age of death of each individual,
+	- The element `collective_living_history`, a `N`-sized vector of `T`-sized vectors containing the living status of each individual at each period,
+	- The element `collective_health_history`, a `N`-sized vector of `T`-sized vectors containing the health status of each individual at each period.
+	"""
+	function population_simulation(;N::Integer,T::Integer,σ::Number,μ::Number)
+
+		# We initialise the array that will contain all the results:
+		collective_results 			= []
+		collective_age 				= []
+		collective_living_history 	= []
+		collective_health_history 	= []
+		
+		# Initialise a common weather history for the population
+		weather_history = rand(Normal(μ,σ), T)
+
+		# The first element of the array is the weather history
+		# push!(collective_results,weather_history)
+		
+		# For each individual
+		for i in 1:N
+			
+			# We initialise the array that will contain the individual results:
+			individual_results 			= []
+			
+			individual_living_history 	= zeros(T)
+			individual_health_history 	= Vector{String}(undef,T)
+	
+			for t in 1:T # For each period 
+
+			   # Individuals are born in good health
+				if t == 1
+				   global individual_past_health = "g"
+				end
+		    
+			    # The age : 
+			    age = t
+			    
+			    # The weather comes from the weather history
+			    weather_t = weather_history[t]
+			    
+			    # The health status :
+					# probability of being in good health: 
+					individual_pgh = s_probability_good_health(weather_t,individual_past_health)
+					# Health status draw:
+					individual_health_t = rand(Binomial(1,individual_pgh)) == 1 ? "good" : "bad"
+					# We add it to the history
+					individual_health_history[t] = individual_health_t
+					# The current health becomes the past one for next period
+					individual_past_health = individual_health_t
+	
+			    # The living status : 
+				    # Probability of dying:
+					individual_pd = s_ζ(age,individual_health_t,weather_t)
+					# We contain the probability value:
+					individual_pd > 1 ? individual_pd = 1 : individual_pd = individual_pd 
+					individual_pd < 0 ? individual_pd = 0 : individual_pd = individual_pd 
+				    # realisation : 
+					individual_living_status = rand(Binomial(1,1-individual_pd))
+				    # Into its history :
+					global individual_living_history[t] = individual_living_status
+
+				# When death comes : 
+				if individual_living_status == 0
+					push!(collective_age, age)
+				    push!(collective_living_history, individual_living_history)
+					push!(collective_health_history, individual_health_history)
+					break
+				end
+				
+			end # End of loop over periods
+			
+			# We add the information of the individual:
+			# push!(collective_results,individual_results)
+			# We go to the next individual
+			
+		end # End of loop over individuals
+
+		results = (;weather_history,collective_age,collective_living_history,collective_health_history)
+		println("Life expectancy in this population: ", mean(collective_age))
+		# population_results = (;age_of_death,living_history,health_history)
+		return(results)
+	end
+end
+
+# ╔═╡ 30fbfaf3-9911-450f-88a0-fdef8868d9c6
+begin 	
+	common_population = 10_00
+	# Simulating a population with a weather standard deviation of 1.5:
+	population_1 = population_simulation(N = common_population, T = 120,μ = 0, σ = 1.5)
+
+	# Setting the backend:
+	# plotly()
+	gr()
+
+	# Saving the weather:
+	weather_1 = Plots.plot(1:length(population_1[:weather_history]),
+		population_1[:weather_history], legend = false, ylim = (-20,20))
+	Plots.plot!(# xaxis = "Period",
+		yaxis = "Temperature deviation",
+		title = "Temperature deviation")
+	# Collecting information about current living people:
+	cls = []
+	for i in 1:length(population_1[:collective_living_history])
+		tmp = population_1[:collective_living_history][i]
+		push!(cls,tmp)
+	end
+	# Plotting it:
+	pop_1 = Plots.plot(1:120,sum(cls[:, 1]), legend = false)
+	Plots.plot!(xaxis = "Time",
+		yaxis = "Population",
+		title = "Evolution of population")
+	nothing
+
+	# Simulating a population with a weather standard deviation of 10:
+	population_1 = population_simulation(N = common_population, T = 120,μ = 0, σ = 10)
+
+	# Setting the backend:
+	# gr()
+
+	# Saving the weather:
+	weather_2 = Plots.plot(1:length(population_1[:weather_history]),
+		population_1[:weather_history], legend = false, ylim = (-20,20))
+	Plots.plot!(# xaxis = "Period",
+		yaxis = "Temperature deviation",
+		title = "Temperature deviation")
+	# Collecting information about current living people:
+	cls = []
+	for i in 1:length(population_1[:collective_living_history])
+		tmp = population_1[:collective_living_history][i]
+		push!(cls,tmp)
+	end
+	# Plotting it:
+	pop_2 = Plots.plot(1:120,sum(cls[:, 1]), legend = false)
+	Plots.plot!(xaxis = "Time",
+		yaxis = "Population",
+		title = "Evolution of population")
+	nothing
+end
+
+# ╔═╡ 24dd513c-3518-49e6-b164-a95b924d260e
+Plots.plot(weather_1,weather_2,pop_1,pop_2,layout=(2,2))
 
 # ╔═╡ e98cf3cf-a549-4c44-9994-f882014da4af
 md"""
@@ -191,7 +646,7 @@ Setting up the Lagrangien, we have:
 
 $$\begin{split}
 \mathcal{L}(c_{t},l_{t},s_{t+1};\lambda_t) & = \mathbb{E}\Biggr[\sum_{t=18}^{100} \beta^{t-18}\cdot ((\frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot\frac{l_{t}^{1-\varphi}}{1-\varphi}) \\
- & +\lambda_{t}\cdot \left(l_{t}\cdot z_{t}+s_{t}\cdot (1+r)-c_{t}-s{t+1}\right))\Biggr]
+ & +\lambda_{t}\cdot \left(l_{t}\cdot z_{t}+s_{t}\cdot (1+r)-c_{t}-s_{t+1}\right))\Biggr]
 \end{split}$$
 
 The F.O.C.s are: 
@@ -207,6 +662,11 @@ With respect to the labor supply $l_{t}$:
 With respect to the savings/loan $s_{t+1}$:
 -  $\lambda_{t}\cdot s_{t+1} = \beta^{t}\cdot\left(\lambda_{t+1}+(1+r)\right)$
 
+"""
+
+# ╔═╡ ae7e4d2a-2e28-425b-85a3-608c05657796
+md"""
+# Numerical methods
 """
 
 # ╔═╡ 7beca4ea-2d9f-448c-be28-530d39cfdabf
@@ -231,11 +691,6 @@ z_{t} \\
 w_{t} \\
 h_{t}
 \end{pmatrix} = \left(s_{t},z_{t},w_{t},h_{t}\right)^{\text{T}}$$
-"""
-
-# ╔═╡ ae7e4d2a-2e28-425b-85a3-608c05657796
-md"""
-## Numerical methods
 """
 
 # ╔═╡ 60d41349-aff9-4eaa-b5bf-44d28d14756b
@@ -413,10 +868,14 @@ Threads.nthreads()
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
+Distributions = "~0.25.118"
+PlotlyBase = "~0.8.20"
 Plots = "~1.40.11"
 PlutoUI = "~0.7.61"
 """
@@ -427,7 +886,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.4"
 manifest_format = "2.0"
-project_hash = "abce29d9d56ce4a67455cc4860baeb34c6ed0758"
+project_hash = "bc86ab7e8ae85bf8999101c0784d733117ee1fbc"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -493,12 +952,10 @@ deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "Requires", "Statist
 git-tree-sha1 = "a1f44953f2382ebb937d60dafbe2deea4bd23249"
 uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
 version = "0.10.0"
+weakdeps = ["SpecialFunctions"]
 
     [deps.ColorVectorSpace.extensions]
     SpecialFunctionsExt = "SpecialFunctions"
-
-    [deps.ColorVectorSpace.weakdeps]
-    SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [[deps.Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
@@ -560,6 +1017,22 @@ git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 version = "1.9.1"
 
+[[deps.Distributions]]
+deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
+git-tree-sha1 = "0b4190661e8a4e51a842070e7dd4fae440ddb7f4"
+uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
+version = "0.25.118"
+
+    [deps.Distributions.extensions]
+    DistributionsChainRulesCoreExt = "ChainRulesCore"
+    DistributionsDensityInterfaceExt = "DensityInterface"
+    DistributionsTestExt = "Test"
+
+    [deps.Distributions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    DensityInterface = "b429d917-457f-4dbc-8f4c-0cc954292b1d"
+    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
 git-tree-sha1 = "2fb1e02f2b635d0845df5d7c167fec4dd739b00d"
@@ -604,6 +1077,18 @@ version = "4.4.4+1"
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 version = "1.11.0"
+
+[[deps.FillArrays]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "6a70198746448456524cb442b8af316927ff3e1a"
+uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
+version = "1.13.0"
+weakdeps = ["PDMats", "SparseArrays", "Statistics"]
+
+    [deps.FillArrays.extensions]
+    FillArraysPDMatsExt = "PDMats"
+    FillArraysSparseArraysExt = "SparseArrays"
+    FillArraysStatisticsExt = "Statistics"
 
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
@@ -686,6 +1171,12 @@ deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll",
 git-tree-sha1 = "55c53be97790242c29031e5cd45e8ac296dadda3"
 uuid = "2e76f6c2-a576-52d4-95c1-20adfe4de566"
 version = "8.5.0+0"
+
+[[deps.HypergeometricFunctions]]
+deps = ["LinearAlgebra", "OpenLibm_jll", "SpecialFunctions"]
+git-tree-sha1 = "68c173f4f449de5b438ee67ed0c9c748dc31a2ec"
+uuid = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
+version = "0.3.28"
 
 [[deps.Hyperscript]]
 deps = ["Test"]
@@ -975,6 +1466,12 @@ git-tree-sha1 = "a9697f1d06cc3eb3fb3ad49cc67f2cfabaac31ea"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
 version = "3.0.16+0"
 
+[[deps.OpenSpecFun_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "1346c9208249809840c91b26703912dff463d335"
+uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
+version = "0.5.6+0"
+
 [[deps.Opus_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "6703a85cb3781bd5909d48730a67205f3f31a575"
@@ -991,11 +1488,23 @@ deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
 version = "10.42.0+1"
 
+[[deps.PDMats]]
+deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
+git-tree-sha1 = "966b85253e959ea89c53a9abebbf2e964fbf593b"
+uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
+version = "0.11.32"
+
 [[deps.Pango_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "FriBidi_jll", "Glib_jll", "HarfBuzz_jll", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "3b31172c032a1def20c98dae3f2cdc9d10e3b561"
 uuid = "36c8627f-9965-5494-a995-c6b170f724f3"
 version = "1.56.1+0"
+
+[[deps.Parameters]]
+deps = ["OrderedCollections", "UnPack"]
+git-tree-sha1 = "34c0e9ad262e5f7fc75b10a9952ca7692cfc5fbe"
+uuid = "d96e819e-fc66-5662-9728-84c9c7592b0a"
+version = "0.12.3"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
@@ -1029,6 +1538,24 @@ deps = ["ColorSchemes", "Colors", "Dates", "PrecompileTools", "Printf", "Random"
 git-tree-sha1 = "3ca9a356cd2e113c420f2c13bea19f8d3fb1cb18"
 uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
 version = "1.4.3"
+
+[[deps.PlotlyBase]]
+deps = ["ColorSchemes", "Colors", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Parameters", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
+git-tree-sha1 = "90af5c9238c1b3b25421f1fdfffd1e8fca7a7133"
+uuid = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+version = "0.8.20"
+
+    [deps.PlotlyBase.extensions]
+    DataFramesExt = "DataFrames"
+    DistributionsExt = "Distributions"
+    IJuliaExt = "IJulia"
+    JSON3Ext = "JSON3"
+
+    [deps.PlotlyBase.weakdeps]
+    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+    Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+    IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
+    JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
 
 [[deps.Plots]]
 deps = ["Base64", "Contour", "Dates", "Downloads", "FFMPEG", "FixedPointNumbers", "GR", "JLFzf", "JSON", "LaTeXStrings", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "PrecompileTools", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "RelocatableFolders", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "TOML", "UUIDs", "UnicodeFun", "UnitfulLatexify", "Unzip"]
@@ -1102,6 +1629,18 @@ git-tree-sha1 = "729927532d48cf79f49070341e1d918a65aba6b0"
 uuid = "e99dba38-086e-5de3-a5b1-6e4c66e897c3"
 version = "6.7.1+1"
 
+[[deps.QuadGK]]
+deps = ["DataStructures", "LinearAlgebra"]
+git-tree-sha1 = "9da16da70037ba9d701192e27befedefb91ec284"
+uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
+version = "2.11.2"
+
+    [deps.QuadGK.extensions]
+    QuadGKEnzymeExt = "Enzyme"
+
+    [deps.QuadGK.weakdeps]
+    Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
+
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "StyledStrings", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
@@ -1140,6 +1679,18 @@ deps = ["UUIDs"]
 git-tree-sha1 = "62389eeff14780bfe55195b7204c0d8738436d64"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.3.1"
+
+[[deps.Rmath]]
+deps = ["Random", "Rmath_jll"]
+git-tree-sha1 = "852bd0f55565a9e973fcfee83a84413270224dc4"
+uuid = "79098fc4-a85e-5d69-aa6a-4863f24498fa"
+version = "0.8.0"
+
+[[deps.Rmath_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "58cdd8fb2201a6267e1db87ff148dd6c1dbd8ad8"
+uuid = "f50d1b31-88e8-58de-be2c-1cc44531875f"
+version = "0.5.1+0"
 
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
@@ -1181,6 +1732,18 @@ deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 version = "1.11.0"
 
+[[deps.SpecialFunctions]]
+deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
+git-tree-sha1 = "64cca0c26b4f31ba18f13f6c12af7c85f478cfde"
+uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
+version = "2.5.0"
+
+    [deps.SpecialFunctions.extensions]
+    SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
+
+    [deps.SpecialFunctions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+
 [[deps.StableRNGs]]
 deps = ["Random"]
 git-tree-sha1 = "83e6cce8324d49dfaf9ef059227f91ed4441a8e5"
@@ -1209,9 +1772,27 @@ git-tree-sha1 = "29321314c920c26684834965ec2ce0dacc9cf8e5"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.34.4"
 
+[[deps.StatsFuns]]
+deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
+git-tree-sha1 = "b423576adc27097764a90e163157bcfc9acf0f46"
+uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
+version = "1.3.2"
+
+    [deps.StatsFuns.extensions]
+    StatsFunsChainRulesCoreExt = "ChainRulesCore"
+    StatsFunsInverseFunctionsExt = "InverseFunctions"
+
+    [deps.StatsFuns.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
+
 [[deps.StyledStrings]]
 uuid = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
 version = "1.11.0"
+
+[[deps.SuiteSparse]]
+deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
+uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
@@ -1258,6 +1839,11 @@ version = "1.5.1"
 deps = ["Random", "SHA"]
 uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 version = "1.11.0"
+
+[[deps.UnPack]]
+git-tree-sha1 = "387c1f73762231e86e0c9c5443ce3b4a0a9a0c2b"
+uuid = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
+version = "1.0.2"
 
 [[deps.Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
@@ -1594,22 +2180,59 @@ version = "1.4.1+2"
 # ╔═╡ Cell order:
 # ╟─f9b82879-6183-4919-8d67-6739c56eeecc
 # ╠═9491f8c9-1cd5-4571-9716-87f2ebcf78ef
-# ╠═0ae6ed85-e426-4afc-8d3e-2584f4d54c8b
+# ╟─aa6c15ba-3727-4faa-85f2-0f9247c583b9
+# ╟─0ae6ed85-e426-4afc-8d3e-2584f4d54c8b
+# ╟─df69c121-0055-43c7-b492-230b9e131fec
+# ╟─a96a19dc-899c-4207-adbb-838f93378029
 # ╟─59cc68ca-bff1-4b24-ac79-cdd8fd2d9ba3
+# ╟─46667e45-959d-498e-b3d9-6cccd39fb63c
+# ╟─ae53739f-366d-4bcb-8b6d-8b4e017f623a
+# ╟─15756c6a-174a-45a9-89cd-00b0650a280d
+# ╠═75ca9a5d-2779-470f-a2fd-60f91311ba4f
+# ╠═f58a2812-3fd4-4931-a1de-985d38a1edeb
+# ╠═839cb3c5-13f1-45a3-986a-836a7603d61e
+# ╠═65b040ba-54f3-40bb-ba9f-3b989c589c39
+# ╠═3fb1e0e7-4902-4af7-8611-8e061802eda9
+# ╟─d9027de5-1c42-4626-927c-7390ee058dfc
+# ╟─d036f964-19bc-4082-a9f5-261d129314e5
 # ╟─9b70fa6b-8b34-4d88-8711-9e033bc4ce49
-# ╠═17b859e8-beae-49e6-a5b4-2742383d2599
+# ╟─17b859e8-beae-49e6-a5b4-2742383d2599
 # ╠═427d4aa5-c976-4d09-b423-a00367b4ea18
 # ╠═26a6a3e8-4c9e-46c7-93fb-fa9cf1eac492
+# ╟─4ab6a4e8-ae11-4eaf-84ec-c1ed2a05408f
 # ╠═561e63a8-2898-44a9-a6a9-13809e781027
+# ╟─3c4953a4-6cb9-4edf-b79f-93c578550f6d
 # ╠═f0589647-a205-455a-8585-e463b028acdc
+# ╠═edd58d3c-88d1-4b4a-b111-4751e886d32e
+# ╠═8f79d80c-6175-42fa-9951-fb6c1a5e5015
+# ╠═6d2380f4-d5f4-4670-8d71-24e2cf2c6559
+# ╠═11fa8c4d-a67e-4164-a5ed-955e0755bbc7
+# ╠═a8e27d35-ff19-4741-bb4b-ece5bb1ef27c
+# ╟─11894f8d-f71c-4814-bfcc-97f25dd1f8df
+# ╟─14d7c0b7-828b-4bf6-96c7-9fcb43fe2d05
+# ╠═4e4cef27-ea71-4647-a613-1ad8eb45072b
 # ╠═f196174b-8889-4303-b919-cc7118507ee0
+# ╟─6f83d853-1b25-4cba-a33b-19e5111b8035
+# ╠═3c2ba9b2-ce66-4a11-903f-7ed82b072fa1
+# ╠═e4086a46-d059-4470-987d-a02fe2518b4c
+# ╠═fadabd05-e67d-4a64-9d88-c43405bc4bc6
+# ╠═543ee2e9-7a3a-411a-903c-23b9401ebb38
+# ╠═d60e1ec1-c98c-4aab-b9b0-38fa813ca132
+# ╠═d6fdad51-7faa-4860-9fe9-1a36bc61dfc3
+# ╠═31f9594c-40db-47bc-a410-62046d6b674c
+# ╠═6c735ae8-b0f8-4d95-b312-ffceafd5ca8f
+# ╠═e493a0b2-4979-405c-88cc-2be2cc26e43c
 # ╠═362c5d53-bc64-4d4e-845c-5dd1b6cf94b7
-# ╠═6f83d853-1b25-4cba-a33b-19e5111b8035
+# ╠═f2cc6731-dca5-4ded-8f98-6c2130e298c5
+# ╟─f9932fb4-35f1-41d5-99bd-959fbf27a8f7
+# ╟─d9bcfb81-10eb-4407-812c-d818a2ff34d1
+# ╟─30fbfaf3-9911-450f-88a0-fdef8868d9c6
+# ╟─24dd513c-3518-49e6-b164-a95b924d260e
 # ╟─e98cf3cf-a549-4c44-9994-f882014da4af
-# ╠═8e6232d8-09ae-11f0-1ee1-e71c2444c45c
+# ╟─8e6232d8-09ae-11f0-1ee1-e71c2444c45c
 # ╟─50440502-c6bf-485f-9a62-8547c2f4575a
-# ╟─7beca4ea-2d9f-448c-be28-530d39cfdabf
 # ╟─ae7e4d2a-2e28-425b-85a3-608c05657796
+# ╟─7beca4ea-2d9f-448c-be28-530d39cfdabf
 # ╠═60d41349-aff9-4eaa-b5bf-44d28d14756b
 # ╠═3278b901-e553-45ff-81b6-9fb7dab90c2c
 # ╠═52c68e97-af56-4117-9a98-67da78ec1deb
