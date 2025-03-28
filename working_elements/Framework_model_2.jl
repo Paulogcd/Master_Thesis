@@ -1193,6 +1193,9 @@ begin
 	u(choice_variables,state_variables) = (abs(choice_variables[1])^(1-ρ))/(1-ρ) - choice_variables[2]*state_variables[3]
 end
 
+# ╔═╡ 474933b9-dcef-4390-a587-80e868772634
+@bind β Slider(0.00:0.01:1.00, default = 0.90)
+
 # ╔═╡ 178d91d0-4b48-4124-aa34-4662528e8214
 begin
 	"""
@@ -1287,9 +1290,6 @@ begin
 	end
 
 end
-
-# ╔═╡ 474933b9-dcef-4390-a587-80e868772634
-@bind β Slider(0.00:0.01:1.00, default = 0.90)
 
 # ╔═╡ 86647d28-bbc5-4e65-964f-c0d4b9920ab8
 @bind max_period_grid Slider(0:1:100, default = 4)
@@ -3275,7 +3275,7 @@ version = "1.4.1+2"
 # ╠═3d4fa5e5-b0db-4339-ada0-5504c5640cba
 # ╠═23be86d8-3ff0-4192-867f-072734b6e671
 # ╟─dc82ca91-ffff-4bb4-ab44-6d1bdc123251
-# ╟─2b7b4256-c76d-4c97-b557-c0ec2f71ca31
+# ╠═2b7b4256-c76d-4c97-b557-c0ec2f71ca31
 # ╟─09c1f9f1-45f4-4109-a8f2-7dfb40825ed0
 # ╠═42b9fb07-6cd6-4f14-b99f-a96fa49dcad5
 # ╟─05aa7038-72b2-4a36-b4b2-4099ec71b5af

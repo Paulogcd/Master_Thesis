@@ -25,6 +25,7 @@ begin
 	# using HypertextLiteral
 	using Distributions
 	# using Integrals
+	using Test
 end
 
 # ╔═╡ f9b82879-6183-4919-8d67-6739c56eeecc
@@ -698,13 +699,45 @@ h_{t}
 
 # ╔═╡ 2077ad58-019d-4aa7-adfd-eb2ceee4e4e3
 begin 
-	"""The main logic of our..."""
+	md"""The main logic of the numerical resolution I use here is as follows. 
+	
+	1. I define a `Bellman equation` function, which calculates the value function for each value of the choice variables at times `t+1`. This function takes in the parameters, and the `value_next_period` argument, which is the value of the Bellman function at the next period. It returns the choice variables associated with the optimum, and the value of the value function.
+	
+	
+	2. I define a `value_last_period` value for the Bellman equation at the last period.
+
+	
+	3. I create a `backwards` function, that starts from the last period until the first one. For each of the period, it computes the Bellman for the period before.	
+	"""
 end
 
 # ╔═╡ 12c450b1-90eb-44eb-9041-8a1a96d1242b
 md"""
-Also, let us define the main functions of our problem:
+## Bellman equation function 
+
+First, let us define the components of the Bellman equation function. 
 """
+
+# ╔═╡ e700d656-04c1-45ee-80e5-9a8eb2210c86
+begin 
+	"""
+	The `budget_surplus` function computes the budget states for certain levels of consumption, labor supply, productivity, and savings.
+
+	Its syntax is:
+		
+		budget_surplus(;c,l,sprime,s,z,r=0.02) 
+
+	"""
+	function budget_surplus(;c,l,sprime,s,z,r=0.02) 
+		return l*z + s*(1+r) - c - sprime
+	end
+end
+
+# ╔═╡ d2490100-8508-4b35-8546-7c84d94ed3bc
+md""" Verifying that the function yields correct values:"""
+
+# ╔═╡ 09875213-c82b-4f3f-8e9d-6b7d788a92a8
+@test budget_surplus(c = 10, l = 0, sprime = 10, s = 0, z = 0, r = 0) < 0
 
 # ╔═╡ 139fef8a-e1b5-420e-bc67-c4395e66b68c
 begin
@@ -712,12 +745,18 @@ begin
 	We also define a two-vector method for the `budget surplus` function.
 	In this case, its syntax is: 
 
-		budget_surplus(choice_variables,state_variables;r=0.02) 
+		budget_surplus_vector(;choice_variables,state_variables,r=0.02) 
 	"""
-	function budget_surplus(choice_variables::Array,state_variables::Array;r=0.02) 
+	function budget_surplus_vector(;choice_variables::Array,state_variables::Array,r=0.02) 
 		return choice_variables[2]*state_variables[2] + state_variables[1]*(1+r) - choice_variables[1] - choice_variables[3]
 	end
 end
+
+# ╔═╡ 0630a80a-cbf9-48b2-a223-e30063f31a1d
+md""" Verifying that both functions yield same results:"""
+
+# ╔═╡ ddfd80bf-f6a3-4f60-a8f5-33cc2e343a64
+@test budget_surplus_vector(choice_variables=[10,0,10], state_variables=[0,1,0,"g"]) == budget_surplus(c=10,l=0,sprime=10,z=1,s = 0, r=0)
 
 # ╔═╡ cd9a4d26-776e-4ef5-b680-118dd034c9c5
 begin 
@@ -735,62 +774,18 @@ begin
 	ξ(w,h) = abs(w)*(1+1(h=="bad"))
 end
 
-# ╔═╡ 2e56f8fa-939e-4a9c-9f96-5dd06c315242
-md"""
-We then initialise the ranges we are interested in.
-"""
+# ╔═╡ 803df0e9-3729-4acc-87d9-4600e1c2282b
+md"""Testing:"""
 
-# ╔═╡ 58b849ae-d09a-4946-ac2a-10ef7e004472
-begin 
-	# Initialisation of ranges:
-	# State variables:
-	s_t_range = -2:1:2
-	z_range = 0.5:1:1.5
-	w_range = -5:1:5
-	h_range = ["good","bad"]
-	# Choice variables:
-	consumption_range = 0:1:2
-	labor_range = 0:1:5
-	s_t_1_range = -2:1:2
-	nothing
-end
-
-# ╔═╡ 11a8f4a6-5241-41c7-8736-826005e44295
-md"""
-We set up some other values:
-"""
-
-# ╔═╡ cff26e5f-0a90-4840-9621-18a8ef9d9ed2
-@bind r Slider(0.01:0.01:1, default=0.02)
-
-# ╔═╡ e700d656-04c1-45ee-80e5-9a8eb2210c86
-begin 
-	"""
-	The `budget_surplus` function computes the budget states for certain levels of consumption, labor supply, productivity, and savings.
-
-	Two methods exist: 
-		
-		budget_surplus(c_t,l_t,s_t_1,s_t,z_t,;r=r) 
-
-	or
-
-		budget_surplus(choice_variables,state_variables;r=0.02) 
-	"""
-	function budget_surplus(c_t,l_t,s_t_1,s_t,z_t,;r=r) 
-		return l_t*z_t + s_t*(1+r) - c_t - s_t_1
-	end
-end
-
-# ╔═╡ 44121ca6-2018-4ba5-a0b8-e5088626a529
-# Let us say:
-ρ = φ = 0.1
+# ╔═╡ 6cd0d377-4f5a-4e30-a5aa-be91b0bd2737
+@test ξ(1,"bad") == 2
 
 # ╔═╡ 3da89744-6235-4902-ba92-0fde5ee26524
 begin 
 	"""
 	The `utility` function is defined such that its syntax is:
 	
-		utility(c,l,z,w,h)
+		utility(;c,l,z,w,h,ρ=0.1,φ=0.1)
 	
 	It returns:
 
@@ -798,9 +793,326 @@ begin
 
 	
 	"""
-	function utility(c,l,z,w,h)
+	function utility(;c,l,z,w,h,ρ=0.1,φ=0.1)
 		return (abs(c)^(1-ρ))/(1-ρ) - ξ(w,h).*((abs(l)^(1-φ)/(1-φ)))
 	end
+end
+
+# ╔═╡ ef9bcdca-8fca-4c72-a470-24f4a854e78c
+md""" Defining some parameters:"""
+
+# ╔═╡ cff26e5f-0a90-4840-9621-18a8ef9d9ed2
+# @bind r Slider(0.01:0.01:1, default=0.02)
+
+# ╔═╡ 107909eb-546e-4caf-81c5-cef5ff130efb
+begin 
+	 """
+	 
+		 	Bellman(;s_range::UnitRange,
+						sprime_range::UnitRange,
+						consumption_range::UnitRange,
+						labor_range::UnitRange,
+						value_function_nextperiod::Array,
+						β=0.9, z = 1)::NamedTuple
+
+	 
+	 Given ranges, and the value function of the next period, gives back 
+	 the value function and its optimal choices given choice variables.
+
+	 It returns a named tuple with:
+	 
+	 1. The array `grid_of_value_function`, being a grid of values of the value function, with dimension `[c,l,s',s]`.
+	 2. The array `Vstar`, with `s` rows and one column being a grid of maximal values of the value function at each level of `s`.
+	 3. The array `index_optimal_choice`, with `s` rows and one column being the array of indices of optimal choices of choice variables for each level of `s`. Here, the indices of optimal choices is indicated with an object of type `CartesianIndex{3}`, the first element corresponding to `c`, the second to `l`, and the third to `s'.`
+
+	 For example: 
+
+			my_Bellman(;s_range = (-10:10)::UnitRange,
+		 					sprime_range = (-10:10)::UnitRange,
+		 					consumption_range = (0:10)::UnitRange,
+		 					labor_range = (0:10)::UnitRange,
+		 					value_function_nextperiod = zeros(length(-10:10))::Array,
+		 					β=0.9, z = 1)::NamedTuple
+		 
+
+	 """
+	function Bellman(;s_range::UnitRange,
+						sprime_range::UnitRange,
+						consumption_range::UnitRange,
+						labor_range::UnitRange,
+						value_function_nextperiod::Array,
+						β=0.9, z = 1)::NamedTuple
+
+		@assert length(value_function_nextperiod) == length(s_range) "The value function of the next period has the wrong length."
+
+		# Initialise a grid of the value function for all possible 
+		# combinations of choice and state variables:
+		grid_of_value_function = Array{Number}(undef,length(s_range),
+															length(consumption_range),
+															length(labor_range),
+															length(sprime_range))
+
+		# choice_variables = [consumption,labor_supply,sprime]
+		# state_variables = [s,z,ξ("g",0)]
+
+		# Initialise empty array that will store the optimal utility and choice:
+		Vstar = zeros(length(s_range))
+		index_optimal_choice = Array{CartesianIndex}(undef,length(s_range))
+		optimal_choice = Array{Vector}(undef,length(s_range))
+
+		# for all levels of endowment
+		for (index_s,s) in enumerate(s_range)
+			# for all levels of consumption
+			for (index_consumption,consumption) in enumerate(consumption_range) 
+				# for all levels of labor
+				for (index_labor,labor) in enumerate(labor_range)
+					# for all levels of savings
+					for (index_sprime,sprime) in enumerate(sprime_range)
+
+						# If the budget constraint is violated,
+						# set the value function to minus infinity : 
+						
+						if budget_surplus(c = consumption, l = labor, sprime = sprime, s = s, z = z) < 0 
+							
+							grid_of_value_function[index_s,
+											index_consumption,
+											index_labor, 
+											index_sprime] = -Inf
+
+						# If the budget constraint is not violated,
+						# set the value function to the utility plus the value 
+						# function at the next period : 
+							
+						else
+							
+							grid_of_value_function[index_s,
+											index_consumption,
+											index_labor, 
+											index_sprime] =
+								utility(;c=consumption, l=labor, z=z, w=0, h="good")+β*value_function_nextperiod[index_s]
+							
+						end
+						
+					end # end of sprime loop
+				end # end of labor loop
+			end # end of consumption loop
+
+			# For a given level of initial endowment, 
+			# find the maximum of the value function 
+			# and the associated optimal choice
+			
+			Vstar[index_s],
+			index_optimal_choice[index_s] =
+				findmax(grid_of_value_function[index_s,:,:,:])
+			
+			optimal_choice[index_s] = [consumption_range[index_optimal_choice[index_s][1]],
+										labor_range[index_optimal_choice[index_s][2]],
+										sprime_range[index_optimal_choice[index_s][3]]]
+			
+		end # end of s
+
+		return (;grid_of_value_function,Vstar,index_optimal_choice,optimal_choice)
+	end
+end
+
+# ╔═╡ 6f32804a-624a-4fa9-8dc8-0d5be5e690f7
+Bellman(;s_range = (-10:10)::UnitRange,
+	 					sprime_range = (-10:10)::UnitRange,
+	 					consumption_range = (0:10)::UnitRange,
+	 					labor_range = (0:10)::UnitRange,
+	 					value_function_nextperiod = zeros(length(-10:10))::Array,
+	 					β=0.9, z = 1)::NamedTuple
+
+# ╔═╡ 16fbc49a-4391-4b55-bba7-3d0b218d4f88
+md"""
+## The last period value function
+"""
+
+# ╔═╡ c1154ad5-39c1-4d1d-b20e-e33e1f1ebe9f
+md"""Now, we can define the value function at next period at 0, such that: """
+
+# ╔═╡ 69396c7f-8c93-4f04-b480-405e6811e15e
+begin 
+	"""
+	The `value_last_period` function is a function that takes a set of choice and state variables range, and calls the `Bellman` function with an argument `value_function_nextperiod` as an array filled with zeros.
+	"""
+	function value_last_period(;s_range::UnitRange,
+	 					sprime_range::UnitRange,
+	 					consumption_range::UnitRange,
+	 					labor_range::UnitRange,
+	 					β=0.9, z = 1)::NamedTuple
+	
+	return Bellman(;s_range = s_range,
+	 					sprime_range = sprime_range,
+	 					consumption_range = consumption_range,
+	 					labor_range = labor_range,
+	 					value_function_nextperiod = zeros(length(s_range)),
+	 					β=β, z = z)::NamedTuple
+	end
+end
+
+# ╔═╡ b05928f8-fe2b-4c41-9e28-70131caad173
+value_last_period(s_range = (-10:10)::UnitRange,
+	 					sprime_range = (-10:10)::UnitRange,
+	 					consumption_range = (0:10)::UnitRange,
+	 					labor_range = (0:10)::UnitRange,
+	 					β=0.9, z = 1)::NamedTuple
+
+# ╔═╡ 0b152561-bd6f-4f11-9fc1-661ae84b325f
+md"""
+## The backwards resolution function
+"""
+
+# ╔═╡ 3fb0609e-b1ed-4603-a438-e25ecc9c9776
+begin 
+	"""
+		backwards(;s_range::UnitRange,
+				sprime_range::UnitRange,
+				consumption_range::UnitRange,
+				labor_range::UnitRange,
+				nperiods::Number)
+	
+	This function allows to solve the value function from backwards. 
+
+	For now, it returns: 
+
+	- `V[time,s,consumption,labor supply, sprime]` the grid of the value function for all the posibilities at a given time. 
+	- `Vstar[time,s,consumption, labor supply, sprime]` the grid of the value function at the optimum.
+	- `index_optimal_choices[index_time]` an array containing the indexes of the optimal choices for each level of s.
+	- `optimal_choices[index_time][index_s]` an array containing the optimal choice variables values. 
+
+
+	"""
+	function backwards(;s_range::UnitRange,
+				sprime_range::UnitRange,
+				consumption_range::UnitRange,
+				labor_range::UnitRange,
+				nperiods::Number,
+				z = 1)::NamedTuple
+
+		# Initialisation: 
+		
+		# choice_variables = [consumption,labor_supply,sprime]
+		# state_variables = [s,z,ξ("g",0)]
+
+		# From the given ranges, construct a grid of all possible values, 
+		# And save its size: 
+		grid_of_value_function = Array{Number}(undef,length(s_range),
+															length(consumption_range),
+															length(labor_range),
+															length(sprime_range))
+		points = size(grid_of_value_function)
+		
+		# Initialize empty arrays that will:
+		# contain the values of the value function (V): 
+		V = zeros(nperiods,points[1],points[2],points[3],points[4])
+
+		# the values at optimum (Vstar), 
+		Vstar = zeros(nperiods,points[1])
+		
+		# The indices of optimal choice (index_optimal_choices),
+		index_optimal_choices = Array{Array{CartesianIndex{3}}}(undef,nperiods)
+
+		
+		# and the values of choice variables at the optimum (optimal_choices): 
+		optimal_choices = Array{Vector}(undef,nperiods)
+
+		# First, we solve for the last period, in which the value function of next period is 0: 
+		last_Bellman = value_last_period(s_range = s_range::UnitRange,
+	 					sprime_range = sprime_range::UnitRange,
+	 					consumption_range = consumption_range::UnitRange,
+	 					labor_range = labor_range::UnitRange,
+	 					β=0.9, z = 1)::NamedTuple
+
+		
+		# Value of the value function: 
+		V[end,:,:,:,:] 						= last_Bellman[1]
+		
+		# Values at the optimum:
+		Vstar[end,:] 						.= last_Bellman[2] 	 
+		
+		# Index of optimal choice:
+		index_optimal_choices[end] 			= last_Bellman[3] 	# no PROBLEM anymore
+		
+		optimal_choices[end]				= last_Bellman[4] # NO problem...
+
+		# Values of the choice variables at optimum:
+		# optimal_choice[end,:] = collect(grid_of_value_function)
+		
+		for index_time in ((nperiods-1):-1:1)
+			
+			tmp = Bellman(s_range=s_range,
+					sprime_range=sprime_range,
+					consumption_range=consumption_range,
+					labor_range=labor_range,
+					value_function_nextperiod=last_Bellman[2])
+			
+			V[index_time,:,:,:,:] 					= tmp[1]
+			Vstar[index_time,:] 					= tmp[2]
+			index_optimal_choices[index_time] 		= tmp[3]
+			optimal_choices[index_time] 			= tmp[4]
+
+			last_Bellman = tmp
+			
+		end
+		
+		return (;V,Vstar,index_optimal_choices,optimal_choices)
+	end
+end
+
+# ╔═╡ aa64899b-b738-44e9-964f-e272c1df01d3
+solution = backwards(s_range = (-100:100)::UnitRange,
+			sprime_range = (-100:100)::UnitRange,
+			consumption_range = (0:10)::UnitRange,
+			labor_range = (0:10)::UnitRange,
+			nperiods = 100)::NamedTuple
+
+# ╔═╡ 4543c9ae-3dca-49b5-b72e-0177231f26db
+md"""
+The syntax is: 
+
+	solution = backwards(s_range = (-10:10)::UnitRange,
+				sprime_range = (-10:10)::UnitRange,
+				consumption_range = (0:10)::UnitRange,
+				labor_range = (0:10)::UnitRange,
+				nperiods = 10)::NamedTuple
+
+It yields a NamedTupled with keys: 
+
+- `V`
+- `Vstar`
+- `index_optimal_choices`
+- `optimal_choices`
+
+We can interpret them as: 
+
+- V is a grid of values
+- Vstar is a `nperiods-row` matrix, with the value function at optimal
+- index_optimal_choices
+
+"""
+
+# ╔═╡ 6403de51-b02e-4bc3-baf7-f001520a8435
+keys(solution)
+
+# ╔═╡ 025db95c-2f37-4cca-8832-56b670569c2b
+solution[:Vstar]
+
+# ╔═╡ b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
+begin
+	# (test2[4])
+	solution[:optimal_choices]
+	solution[4] # [:]
+
+	# Plots.plot(test2[4][:][1])#, st=:surface)
+	
+	# for time in 1:time_period
+	#  	Plots.plot!(same_range,same_range,solution[4][time][1:11][1])#,st=:surface)
+	# end
+# 
+	# Plots.plot()
+	# Plots.plot!(same_range,same_range,solution[4][1][1:11][1])
+	# Plots.plot!(same_range,same_range,solution[4][2][1:11][1])
 end
 
 # ╔═╡ 60d41349-aff9-4eaa-b5bf-44d28d14756b
@@ -949,6 +1261,7 @@ Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 Distributions = "~0.25.118"
@@ -963,7 +1276,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.4"
 manifest_format = "2.0"
-project_hash = "bc86ab7e8ae85bf8999101c0784d733117ee1fbc"
+project_hash = "ed403ad658294dec24a7259b7dd3be495ca082e5"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -2311,17 +2624,33 @@ version = "1.4.1+2"
 # ╟─50440502-c6bf-485f-9a62-8547c2f4575a
 # ╟─ae7e4d2a-2e28-425b-85a3-608c05657796
 # ╟─7beca4ea-2d9f-448c-be28-530d39cfdabf
-# ╠═2077ad58-019d-4aa7-adfd-eb2ceee4e4e3
+# ╟─2077ad58-019d-4aa7-adfd-eb2ceee4e4e3
 # ╟─12c450b1-90eb-44eb-9041-8a1a96d1242b
 # ╟─e700d656-04c1-45ee-80e5-9a8eb2210c86
+# ╟─d2490100-8508-4b35-8546-7c84d94ed3bc
+# ╟─09875213-c82b-4f3f-8e9d-6b7d788a92a8
 # ╟─139fef8a-e1b5-420e-bc67-c4395e66b68c
+# ╟─0630a80a-cbf9-48b2-a223-e30063f31a1d
+# ╟─ddfd80bf-f6a3-4f60-a8f5-33cc2e343a64
 # ╟─cd9a4d26-776e-4ef5-b680-118dd034c9c5
+# ╟─803df0e9-3729-4acc-87d9-4600e1c2282b
+# ╟─6cd0d377-4f5a-4e30-a5aa-be91b0bd2737
 # ╟─3da89744-6235-4902-ba92-0fde5ee26524
-# ╟─2e56f8fa-939e-4a9c-9f96-5dd06c315242
-# ╠═58b849ae-d09a-4946-ac2a-10ef7e004472
-# ╟─11a8f4a6-5241-41c7-8736-826005e44295
+# ╟─ef9bcdca-8fca-4c72-a470-24f4a854e78c
 # ╠═cff26e5f-0a90-4840-9621-18a8ef9d9ed2
-# ╠═44121ca6-2018-4ba5-a0b8-e5088626a529
+# ╟─107909eb-546e-4caf-81c5-cef5ff130efb
+# ╠═6f32804a-624a-4fa9-8dc8-0d5be5e690f7
+# ╟─16fbc49a-4391-4b55-bba7-3d0b218d4f88
+# ╟─c1154ad5-39c1-4d1d-b20e-e33e1f1ebe9f
+# ╟─69396c7f-8c93-4f04-b480-405e6811e15e
+# ╠═b05928f8-fe2b-4c41-9e28-70131caad173
+# ╟─0b152561-bd6f-4f11-9fc1-661ae84b325f
+# ╟─3fb0609e-b1ed-4603-a438-e25ecc9c9776
+# ╠═aa64899b-b738-44e9-964f-e272c1df01d3
+# ╠═4543c9ae-3dca-49b5-b72e-0177231f26db
+# ╠═6403de51-b02e-4bc3-baf7-f001520a8435
+# ╠═025db95c-2f37-4cca-8832-56b670569c2b
+# ╠═b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
 # ╠═60d41349-aff9-4eaa-b5bf-44d28d14756b
 # ╠═3278b901-e553-45ff-81b6-9fb7dab90c2c
 # ╠═52c68e97-af56-4117-9a98-67da78ec1deb
