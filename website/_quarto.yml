@@ -22,6 +22,7 @@ website:
       - href: index.qmd
         text: Master Thesis
       - models.qmd
+      - references.qmd
       - about.qmd
 
 format:

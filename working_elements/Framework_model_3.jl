@@ -222,12 +222,15 @@ Graphically, we have:
 # ╔═╡ 26a6a3e8-4c9e-46c7-93fb-fa9cf1eac492
 @bind r_logistic Slider(0:0.01:1, default = 0.1)
 
+# ╔═╡ 0692832c-b672-4a73-9a65-18f567edb4a2
+@bind K_logistic Slider(0.5:0.1:2, default= 1)
+
 # ╔═╡ 17b859e8-beae-49e6-a5b4-2742383d2599
 begin 
 	gr()
 	logistic(;K,a,r,t) = K./(1 .+ a .* exp.(-r.*t)) 
-	Plots.plot(-100:1:100,logistic.(K = 1, a = a_logistic, r = r_logistic, t = -100:1:100), label = "a = $a_logistic, r = $r_logistic")
-	Plots.plot!(-100:1:100,logistic.(K = 1, a = 1, r = r_logistic, t = -100:1:100), label = "a = 1, r = 0.1")
+	Plots.plot(-100:1:100,logistic.(K = K_logistic, a = a_logistic, r = r_logistic, t = -100:1:100), label = "a = $a_logistic, r = $r_logistic")
+	Plots.plot!(-100:1:100,logistic.(K = 1, a = 1, r = r_logistic, t = -100:1:100), label = "a = 1, r = 0.1, K = 1")
 	Plots.plot!(ylim = (0,1), title = "Logistic function", xaxis = "period", yaxis = "Probability")
 end
 
@@ -238,12 +241,12 @@ md"""
 
 Let us define the first logistic function such that: 
 
-$$\Lambda_1(t;K = 1,a_1,r) = \frac{1}{1+(1+\mathbb{1}\{h=b\})\cdot a_1 \cdot\exp(-r\cdot (t-E_1))}$$
+$$\Lambda_1(t;K = 1,a_1,r) = \frac{1+\Delta K_h\cdot\mathbb{1}\{h=b\}}{1+(1+\mathbb{1}\{h=b\})\cdot a_1 \cdot(1+\Delta a_h\cdot\mathbb{1}\{h=b\}) \cdot\exp(-r\cdot\Delta r_h\mathbb{1}\{h=b\}\cdot (t-E_1))}$$
 
 Note the main differences with a classic logistic function: 
 
 - We have $K = 1$,
-- We multiply the term at the denominator by $(1+\mathbb{1}\{h=b\})$,
+- We multiply the terms by $(1+\mathbb{1}\{h=b\})$,
 - We normalise the time period by $E_1$.
 
 """
@@ -252,8 +255,10 @@ Note the main differences with a classic logistic function:
 begin
 	"""
 	The logistic_1 function is the first intermediary death probability.
+
+	It returns the following value:
 	
-	`logistic_1(;K,a,r,t,E1,h) = K./(1 .+ (1+1(h=="g")).*a .* exp.(-r.*(t.-E1)))`
+	`(K*(1+ΔKh*1(h=="b")) ./ (1 .+ (1 .+Δah*1(h=="g")) .* a .* exp.(-r*(1+Δrh*1(h=="b")).*(t.-E1))))`
 	
 	"""
 	logistic_1(;K,a,r,t,E1,h,Δah,ΔKh,Δrh) = (K*(1+ΔKh*1(h=="b"))./
@@ -369,7 +374,7 @@ end
 @bind a2_final Slider(0.01:1:100, default = 20)
 
 # ╔═╡ d60e1ec1-c98c-4aab-b9b0-38fa813ca132
-@bind r_final Slider(0.001:0.1:1, default = 0.5)
+@bind r_final Slider(0.001:0.1:1, default = 0.3)
 
 # ╔═╡ d6fdad51-7faa-4860-9fe9-1a36bc61dfc3
 @bind ζ_1 Slider(0.001:0.1:1, default = 0.5)
@@ -382,9 +387,7 @@ begin
 
 		ζ(;a1,a2,t,h,w,E1,E2,ζ1,r, Δh)
 
-	Due to possible rounding error in the computations with very small values, it is recommended to convert possible negative values into 0, like: 
-
-		ζ(;a1,a2,t,h,w,E1,E2,ζ1,r, Δh) >= 0 ? ζ(;a1,a2,t,h,w,E1,E2,ζ1,r, Δh) : 0
+	Due to possible rounding error in the computations with very small values, it is recommended to use the simplified version of this functin, `s_ζ`convert possible negative values into the specified minimum.
 	
 	"""
 	function ζ(;a1,a2,t,h,w,E1,E2,ζ1,r,Δah,ΔKh, Δrh)
@@ -421,16 +424,16 @@ end
 begin 
 	"""
 	The `s_ζ` function is a simplified version of the `ζ` function, in which the values of the parameters are already fixed.
-	It returns the probability of death.
+	It returns the probability of death. 
 	
 	In this case, its syntax is: 
 
-		s_ζ(t,h,w)
-
-	To avoid possible errors due to negative values being returned because of very small numbers, we proceed to a rounding process.
+		s_ζ(t,h,w; minimum)
+	
+	Where the value `minimum` is used to avoid possible errors due to negative values being returned because of very small numbers.
 	"""
 	function s_ζ(t::Integer,h::AbstractString,w::Float64;minimum = 0.005)::Float64
-		ζ(;a1=1,a2=20,t=t,h=h,w=w,E1=82,E2=82,ζ1=0.5,r=0.5, Δah=50, ΔKh = 0.1, Δrh = 0.001) >= minimum ? ζ(;a1=1,a2=20,t=t,h=h,w=w,E1=82,E2=82,ζ1=0.5,r=0.5, Δah=50, ΔKh = 0.1, Δrh = 0.001) : minimum
+		ζ(;a1=1,a2=20,t=t,h=h,w=w,E1=82,E2=82,ζ1=0.5,r=0.3, Δah=50, ΔKh = 0.1, Δrh = 0.001) >= minimum ? ζ(;a1=1,a2=20,t=t,h=h,w=w,E1=82,E2=82,ζ1=0.5,r=0.3, Δah=50, ΔKh = 0.1, Δrh = 0.001) : minimum
 
 		# return ζ(;a1=1,a2=20,t=t,h=h,w=w,E1=82,E2=82,ζ1=0.5,r=0.5, Δh=50)
 	end
@@ -569,7 +572,7 @@ begin
 	nothing
 
 	# Simulating a population with a weather standard deviation of 10:
-	population_1 = population_simulation(N = common_population, T = 120,μ = 0, σ = 10)
+	population_1 = population_simulation(N = common_population, T = 120,μ = 0, σ = 5)
 
 	# Setting the backend:
 	# gr()
@@ -693,41 +696,115 @@ h_{t}
 \end{pmatrix} = \left(s_{t},z_{t},w_{t},h_{t}\right)^{\text{T}}$$
 """
 
+# ╔═╡ 2077ad58-019d-4aa7-adfd-eb2ceee4e4e3
+begin 
+	"""The main logic of our..."""
+end
+
+# ╔═╡ 12c450b1-90eb-44eb-9041-8a1a96d1242b
+md"""
+Also, let us define the main functions of our problem:
+"""
+
+# ╔═╡ 139fef8a-e1b5-420e-bc67-c4395e66b68c
+begin
+	"""
+	We also define a two-vector method for the `budget surplus` function.
+	In this case, its syntax is: 
+
+		budget_surplus(choice_variables,state_variables;r=0.02) 
+	"""
+	function budget_surplus(choice_variables::Array,state_variables::Array;r=0.02) 
+		return choice_variables[2]*state_variables[2] + state_variables[1]*(1+r) - choice_variables[1] - choice_variables[3]
+	end
+end
+
+# ╔═╡ cd9a4d26-776e-4ef5-b680-118dd034c9c5
+begin 
+	""" 
+	The `ξ` function returns the disutility of work in the utility function.
+
+	Its syntax is: 
+		
+		ξ(w,h)
+
+	It returns: 
+
+		abs(w)*(1+1(h=="bad"))
+	"""
+	ξ(w,h) = abs(w)*(1+1(h=="bad"))
+end
+
+# ╔═╡ 2e56f8fa-939e-4a9c-9f96-5dd06c315242
+md"""
+We then initialise the ranges we are interested in.
+"""
+
+# ╔═╡ 58b849ae-d09a-4946-ac2a-10ef7e004472
+begin 
+	# Initialisation of ranges:
+	# State variables:
+	s_t_range = -2:1:2
+	z_range = 0.5:1:1.5
+	w_range = -5:1:5
+	h_range = ["good","bad"]
+	# Choice variables:
+	consumption_range = 0:1:2
+	labor_range = 0:1:5
+	s_t_1_range = -2:1:2
+	nothing
+end
+
+# ╔═╡ 11a8f4a6-5241-41c7-8736-826005e44295
+md"""
+We set up some other values:
+"""
+
+# ╔═╡ cff26e5f-0a90-4840-9621-18a8ef9d9ed2
+@bind r Slider(0.01:0.01:1, default=0.02)
+
+# ╔═╡ e700d656-04c1-45ee-80e5-9a8eb2210c86
+begin 
+	"""
+	The `budget_surplus` function computes the budget states for certain levels of consumption, labor supply, productivity, and savings.
+
+	Two methods exist: 
+		
+		budget_surplus(c_t,l_t,s_t_1,s_t,z_t,;r=r) 
+
+	or
+
+		budget_surplus(choice_variables,state_variables;r=0.02) 
+	"""
+	function budget_surplus(c_t,l_t,s_t_1,s_t,z_t,;r=r) 
+		return l_t*z_t + s_t*(1+r) - c_t - s_t_1
+	end
+end
+
+# ╔═╡ 44121ca6-2018-4ba5-a0b8-e5088626a529
+# Let us say:
+ρ = φ = 0.1
+
+# ╔═╡ 3da89744-6235-4902-ba92-0fde5ee26524
+begin 
+	"""
+	The `utility` function is defined such that its syntax is:
+	
+		utility(c,l,z,w,h)
+	
+	It returns:
+
+		(abs(c)^(1-ρ))/(1-ρ) - ξ(w,h).*((abs(l)^(1-φ)/(1-φ)))
+
+	
+	"""
+	function utility(c,l,z,w,h)
+		return (abs(c)^(1-ρ))/(1-ρ) - ξ(w,h).*((abs(l)^(1-φ)/(1-φ)))
+	end
+end
+
 # ╔═╡ 60d41349-aff9-4eaa-b5bf-44d28d14756b
 begin
-	# Initialisation of ranges:
-		# State variables:
-		s_t_range = -2:1:2
-		z_range = 0.5:1:1.5
-		w_range = -5:1:5
-		h_range = ["good","bad"]
-		# Choice variables:
-		consumption_range = 0:1:2
-		labor_range = 0:1:5
-		s_t_1_range = -2:1:2
-
-	# We define the interest rate:
-	r = 0.02
-	
-	# We define the budget surplus function, with different methods:
-		
-		# With each variable:
-		function budget_surplus(c_t,l_t,s_t_1,s_t,z_t,w_t,h_t;r=r) 
-			return l_t*z_t + s_t*(1+r) - c_t - s_t_1
-		end
-	
-		# With two vectors:
-		function budget_surplus(choice_variables,state_variables;r=0.02) 
-			return choice_variables[2]*state_variables[2] + state_variables[1]*(1+r) - choice_variables[1] - choice_variables[3]
-		end
-
-	# We define the utility function:
-	utility(c,l,z,w,h) = (abs(c)^(1-ρ))/(1-ρ) - ξ(w,h).*((abs(l)^(1-φ)/(1-φ)))
-	# Let us say:
-	ρ = φ = 0.1
-
-	# Disutility of work:
-	ξ(w,h) = abs(w)*(1+1(h=="bad"))
 
 	# We define an empty array that will store the utility values:
 	utility_vector = Array{Float16}(undef,
@@ -742,7 +819,7 @@ begin
 	# We define a function that computes the utility if the budget is respected:
 	function utility_attribution(consumption,labor,s_t_1,s_t,z,w,h)
 		# We check if it respects the budget constraint:
-		if budget_surplus(consumption,labor,s_t_1,s_t,z,w,h) < 0
+		if budget_surplus(consumption,labor,s_t_1,s_t,z) < 0
 			# If not, we set the utility at -Inf
 			return -Inf
 		else
@@ -2199,8 +2276,9 @@ version = "1.4.1+2"
 # ╟─17b859e8-beae-49e6-a5b4-2742383d2599
 # ╠═427d4aa5-c976-4d09-b423-a00367b4ea18
 # ╠═26a6a3e8-4c9e-46c7-93fb-fa9cf1eac492
+# ╠═0692832c-b672-4a73-9a65-18f567edb4a2
 # ╟─4ab6a4e8-ae11-4eaf-84ec-c1ed2a05408f
-# ╠═561e63a8-2898-44a9-a6a9-13809e781027
+# ╟─561e63a8-2898-44a9-a6a9-13809e781027
 # ╟─3c4953a4-6cb9-4edf-b79f-93c578550f6d
 # ╠═f0589647-a205-455a-8585-e463b028acdc
 # ╠═edd58d3c-88d1-4b4a-b111-4751e886d32e
@@ -2211,9 +2289,9 @@ version = "1.4.1+2"
 # ╟─11894f8d-f71c-4814-bfcc-97f25dd1f8df
 # ╟─14d7c0b7-828b-4bf6-96c7-9fcb43fe2d05
 # ╠═4e4cef27-ea71-4647-a613-1ad8eb45072b
-# ╠═f196174b-8889-4303-b919-cc7118507ee0
+# ╟─f196174b-8889-4303-b919-cc7118507ee0
 # ╟─6f83d853-1b25-4cba-a33b-19e5111b8035
-# ╠═3c2ba9b2-ce66-4a11-903f-7ed82b072fa1
+# ╟─3c2ba9b2-ce66-4a11-903f-7ed82b072fa1
 # ╠═e4086a46-d059-4470-987d-a02fe2518b4c
 # ╠═fadabd05-e67d-4a64-9d88-c43405bc4bc6
 # ╠═543ee2e9-7a3a-411a-903c-23b9401ebb38
@@ -2222,8 +2300,8 @@ version = "1.4.1+2"
 # ╠═31f9594c-40db-47bc-a410-62046d6b674c
 # ╠═6c735ae8-b0f8-4d95-b312-ffceafd5ca8f
 # ╠═e493a0b2-4979-405c-88cc-2be2cc26e43c
-# ╠═362c5d53-bc64-4d4e-845c-5dd1b6cf94b7
-# ╠═f2cc6731-dca5-4ded-8f98-6c2130e298c5
+# ╟─362c5d53-bc64-4d4e-845c-5dd1b6cf94b7
+# ╟─f2cc6731-dca5-4ded-8f98-6c2130e298c5
 # ╟─f9932fb4-35f1-41d5-99bd-959fbf27a8f7
 # ╟─d9bcfb81-10eb-4407-812c-d818a2ff34d1
 # ╟─30fbfaf3-9911-450f-88a0-fdef8868d9c6
@@ -2233,6 +2311,17 @@ version = "1.4.1+2"
 # ╟─50440502-c6bf-485f-9a62-8547c2f4575a
 # ╟─ae7e4d2a-2e28-425b-85a3-608c05657796
 # ╟─7beca4ea-2d9f-448c-be28-530d39cfdabf
+# ╠═2077ad58-019d-4aa7-adfd-eb2ceee4e4e3
+# ╟─12c450b1-90eb-44eb-9041-8a1a96d1242b
+# ╟─e700d656-04c1-45ee-80e5-9a8eb2210c86
+# ╟─139fef8a-e1b5-420e-bc67-c4395e66b68c
+# ╟─cd9a4d26-776e-4ef5-b680-118dd034c9c5
+# ╟─3da89744-6235-4902-ba92-0fde5ee26524
+# ╟─2e56f8fa-939e-4a9c-9f96-5dd06c315242
+# ╠═58b849ae-d09a-4946-ac2a-10ef7e004472
+# ╟─11a8f4a6-5241-41c7-8736-826005e44295
+# ╠═cff26e5f-0a90-4840-9621-18a8ef9d9ed2
+# ╠═44121ca6-2018-4ba5-a0b8-e5088626a529
 # ╠═60d41349-aff9-4eaa-b5bf-44d28d14756b
 # ╠═3278b901-e553-45ff-81b6-9fb7dab90c2c
 # ╠═52c68e97-af56-4117-9a98-67da78ec1deb

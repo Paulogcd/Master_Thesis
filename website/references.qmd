@@ -1,0 +1,22 @@
+---
+title: "References"
+---
+
+Here are some of the important bibliographical references I use in the development of my conceptual framework:
+
+- **De Nardi et al., 2024: _The Lifetime Costs of Bad Health_, The Review of Economic Studies**.
+The authors use PSID data to identify different "health types", that can predict most of the health history through the life of an individual.
+They point out that a Markov process of order 1 is not enough to capture the change of health status, although using higher orders is resources demanding.
+THey include a structural model in which they study economic choices of agents, and include several features such as medical insurance and retirement.
+[The article is available here.](https://doi.org/10.1093/restud/rdae080)
+
+- **Carleton et al., 2022: _Valuing the Global Mortality Consequences of Climate Change Accounting for Adaptation Costs and Benefits_, The Quarterly Journal of Economics**. 
+The authors include the income as a parameter in the mortality-temperature function, which seems necessary, and develop a conceptual framework to take into account adaptation. 
+[The article is available here.](https://doi.org/10.1093/qje/qjac020)
+
+- **Gould et al., 2024, _Temperature extremes impact mortality and morbidity differently_, NBER Working Papers**.
+The authors use a Californian dataset including visits at emergency departments to study the response of health to temperature. 
+They also try to differentiate between morbidity, understood as the general state of health, and mortality, associated to the death rate. 
+They point out that the morbidity, for which they use non fatal events leading to an emergency department visit, react differently than mortality.
+[The article is available here.](https://doi.org/10.3386/w32195)
+
