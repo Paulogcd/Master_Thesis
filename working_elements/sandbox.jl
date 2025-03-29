@@ -1,6 +1,7 @@
 using Pkg
 Pkg.activate(".")
 using Plots
+using NamedArrays
 
 begin
 	using PlutoUI
@@ -9,6 +10,7 @@ begin
 	using LaTeXStrings
 	using Plots
 	# using Optim
+	
 end
 
 Pkg.add("Interpolations")
@@ -282,3 +284,38 @@ prob = IntegralProblem(ζ_integral, domain..., test_parameters)  # Note the ... 
 # Solve
 sol = solve(prob, HCubatureJL(); reltol=1e-3, abstol=1e-3)
 integral_value = sol.u
+
+a = rand(10)
+
+b = rand(10)
+
+
+
+c = NamedArray(zeros(10,10,10,10))
+
+names(c)
+
+Array{Number}(undef,length(1:10))
+
+#[1] = ["First name"]
+
+?NamedArray
+
+# Assuming solution[:V] is your 21×201×201×21 Array{Number, 4}
+
+V = Array{Number, 4}(undef,21,201,201,21)
+
+V = zeros(21,201,201,21)
+nothing
+
+V = solution[:V]
+
+# Define the dimension names
+param1_names = ["Time period $i" for i in 1:21]
+param2_names = ["Consumption_index_$i" for i in 1:201]
+param3_names = ["Labor_supply_index_$i" for i in 1:201]
+param4_names = ["Savings_next_period_index_$i" for i in 1:21]
+
+using NamedArrays
+# Create the named array
+named_V = NamedArray(V, (param1_names, param2_names, param3_names, param4_names))

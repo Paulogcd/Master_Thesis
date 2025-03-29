@@ -26,6 +26,8 @@ begin
 	using Distributions
 	# using Integrals
 	using Test
+	using NamedArrays
+	using DataFrames
 end
 
 # ╔═╡ f9b82879-6183-4919-8d67-6739c56eeecc
@@ -619,7 +621,7 @@ $$u_{t}=\frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot\frac{l_{t}^{1-\varphi}}{1-\va
 
 With $\xi_{t}$ is the factor of work disutility, such that: 
 
-$$\xi_{t} = |w_{t}|\cdot\left(\xi_{1}+\xi_{2}\cdot \mathbb{1}\{h_t = b\}\right)$$
+$$\xi_{t} = \left(1+|w_{t}|\right)\cdot\left(1+\mathbb{1}\{h_t = b\}\right)$$
 With:
 -  $w_{t}$ being the weather variable (i.e. temperature deviation) and
 -  $h_{t}$ the health status variable at $t$.
@@ -769,16 +771,16 @@ begin
 
 	It returns: 
 
-		abs(w)*(1+1(h=="bad"))
+		(1+abs(w))*(1+1(h=="bad"))
 	"""
-	ξ(w,h) = abs(w)*(1+1(h=="bad"))
+	ξ(w,h) = (1+abs(w))*(1+1(h=="bad"))
 end
 
 # ╔═╡ 803df0e9-3729-4acc-87d9-4600e1c2282b
 md"""Testing:"""
 
 # ╔═╡ 6cd0d377-4f5a-4e30-a5aa-be91b0bd2737
-@test ξ(1,"bad") == 2
+@test ξ(0,"good") == 1
 
 # ╔═╡ 3da89744-6235-4902-ba92-0fde5ee26524
 begin 
@@ -794,15 +796,62 @@ begin
 	
 	"""
 	function utility(;c,l,z,w,h,ρ=0.1,φ=0.1)
-		return (abs(c)^(1-ρ))/(1-ρ) - ξ(w,h).*((abs(l)^(1-φ)/(1-φ)))
+		return (((abs.(c)).^(1-ρ))/(1-ρ)) - ξ.(w,h).*(((abs.(l)).^(1-φ)/(1-φ)))
 	end
 end
 
-# ╔═╡ ef9bcdca-8fca-4c72-a470-24f4a854e78c
-md""" Defining some parameters:"""
+# ╔═╡ d5d2dfd7-09de-49f0-aa78-e787aa502872
+md"""
+Graphically, we have, for a baseline level, with fixed parameters, and an adjustable level, wih changeable parameters:
+"""
 
-# ╔═╡ cff26e5f-0a90-4840-9621-18a8ef9d9ed2
-# @bind r Slider(0.01:0.01:1, default=0.02)
+# ╔═╡ e9ba4465-220b-4fb1-9b4e-28e4bee0f25a
+@bind z_utility_plot Slider(0.001:0.01:10, default = 1)
+
+# ╔═╡ ee3d3aee-a6dd-4fb6-9358-e15b7b5902aa
+@bind φ_utility_plot Slider(0.001:0.01:1, default = 0.3)
+
+# ╔═╡ b04ba029-9be8-4dc1-8f50-04d58e19bfaa
+@bind ρ_utility_plot Slider(0.001:0.01:1, default = 0.3)
+
+# ╔═╡ b27fb6f1-40f2-4386-ae7c-d614abadfc41
+@bind w_utility_plot Slider(-5:0.1:5, default = 1)
+
+# ╔═╡ 309e4576-1f5f-4617-8e07-a494802a2860
+begin 
+	
+	# Setting the ploting backend:
+	plotly()
+	
+	# Defining the grid: 
+	c_range = 1:100
+	l_range = 1:100
+	c_grid = repeat(c_range', length(l_range), 1)
+	l_grid = repeat(l_range, 1, length(c_range))
+
+	# Defining two gradients to make the surfaces more distinguishable: 
+	color_gradient_1 = cgrad([:white,:green])
+	color_gradient_2 = cgrad([:blue,:red])
+	
+	# The plot:
+		fixed_value = 0.3
+		# The reference, with z = w = 1, and φ = ρ = 0.3, the health being good:
+		utility_values_baseline = utility(c=c_grid, l=l_grid, z=1, w=0, h="good", ρ = fixed_value, φ = fixed_value)
+		# The comparison, with adjustable parameters:
+		utility_values = utility(c=c_grid, l=l_grid, z=z_utility_plot, w=w_utility_plot, h="good",ρ = ρ_utility_plot, φ = φ_utility_plot)
+		# Plotting the values:	
+		Plots.plot(c_grid, l_grid, utility_values_baseline, st=:surface,  label = "No deviation", c = color_gradient_1)
+		Plots.plot!(c_grid, l_grid, utility_values, st=:surface, label = "Adjustable", c = color_gradient_2)
+		Plots.plot!(title="Utility Function", xlabel="Consumption", yaxis="Labor", zaxis="Utility")	
+	
+	# utility_values = utility.(c = (1:10),l = (1:10), z = 1 ./(1:10), w = 0, h = "good")
+	# Plots.plot([1:10],[1:10],utility.(c = (1:10),l = (1:10), z = 1, w = 0, h = "good"), st=:surface)
+	# Plots.plot(1:10,1:10,utility_values)
+	# Plots.plot!(xaxis = "Consumption", yaxis = "Labor", zaxis = "Utility")
+end
+
+# ╔═╡ 7f4ac1cf-1a2c-45b3-aa0b-d140bd5d7ba3
+(;z_utility_plot,φ_utility_plot,ρ_utility_plot,w_utility_plot)
 
 # ╔═╡ 107909eb-546e-4caf-81c5-cef5ff130efb
 begin 
@@ -821,10 +870,13 @@ begin
 
 	 It returns a named tuple with:
 	 
-	 1. The array `grid_of_value_function`, being a grid of values of the value function, with dimension `[c,l,s',s]`.
-	 2. The array `Vstar`, with `s` rows and one column being a grid of maximal values of the value function at each level of `s`.
-	 3. The array `index_optimal_choice`, with `s` rows and one column being the array of indices of optimal choices of choice variables for each level of `s`. Here, the indices of optimal choices is indicated with an object of type `CartesianIndex{3}`, the first element corresponding to `c`, the second to `l`, and the third to `s'.`
-
+	 1. The array `grid_of_value_function`, being a grid of values of the value function, with dimension `[index_s,index_c,index_l,index_s']`.
+	 
+	 2. The vector `Vstar`, with `s` dimensions, being a grid of maximal values of the value function at each level of `s` in the range.
+	 
+	 3. The vector `index_optimal_choice`, with `s` rows is the array of indices of optimal choices of choice variables for each level of `s`. 
+	 Here, the indices of optimal choices is indicated with an object of type `CartesianIndex{3}`, the first element corresponding to `c`, the second to `l`, and the third to `s'`.
+	 
 	 For example: 
 
 			my_Bellman(;s_range = (-10:10)::UnitRange,
@@ -834,14 +886,14 @@ begin
 		 					value_function_nextperiod = zeros(length(-10:10))::Array,
 		 					β=0.9, z = 1)::NamedTuple
 		 
-
+	This function is not to be used alone, but is used by the `backwards()` function.
 	 """
 	function Bellman(;s_range::UnitRange,
 						sprime_range::UnitRange,
 						consumption_range::UnitRange,
 						labor_range::UnitRange,
 						value_function_nextperiod::Array,
-						β=0.9, z = 1)::NamedTuple
+						β=0.9, z = 1,ρ = 0.1,φ = 0.1,)::NamedTuple
 
 		@assert length(value_function_nextperiod) == length(s_range) "The value function of the next period has the wrong length."
 
@@ -854,7 +906,7 @@ begin
 
 		# choice_variables = [consumption,labor_supply,sprime]
 		# state_variables = [s,z,ξ("g",0)]
-
+		
 		# Initialise empty array that will store the optimal utility and choice:
 		Vstar = zeros(length(s_range))
 		index_optimal_choice = Array{CartesianIndex}(undef,length(s_range))
@@ -889,7 +941,7 @@ begin
 											index_consumption,
 											index_labor, 
 											index_sprime] =
-								utility(;c=consumption, l=labor, z=z, w=0, h="good")+β*value_function_nextperiod[index_s]
+								utility(;c=consumption, l=labor, z=z, w=0, h="good",ρ = ρ,φ = φ)+β*value_function_nextperiod[index_s]
 							
 						end
 						
@@ -911,17 +963,66 @@ begin
 			
 		end # end of s
 
+		# Formatting the output for better readability:
+
+		# Vstar is the one that seems the most readable. 
+		# Alternatives could be (not optimal like that)
+		# Vstar = DataFrame(Optimal_value_function = Vstar)
+		
+		# Transforming the grid_of_value_function array into a Named Array:
+		# param1_names = ["Time period $i" for i in 1:21]
+		param1_names = ["s_i$i" for i in 1:length(s_range)]
+		param2_names = ["c_i$i" for i in 1:length(consumption_range)]
+		param3_names = ["l_i$i" for i in 1:length(labor_range)]
+		param4_names = ["sprime_i$i" for i in 1:length(sprime_range)]
+		
+		grid_of_value_function = NamedArray(grid_of_value_function, (param1_names, param2_names, param3_names, param4_names))
+
+
 		return (;grid_of_value_function,Vstar,index_optimal_choice,optimal_choice)
 	end
 end
 
 # ╔═╡ 6f32804a-624a-4fa9-8dc8-0d5be5e690f7
-Bellman(;s_range = (-10:10)::UnitRange,
+result_of_Bellman = Bellman(;s_range = (-10:10)::UnitRange,
 	 					sprime_range = (-10:10)::UnitRange,
-	 					consumption_range = (0:10)::UnitRange,
-	 					labor_range = (0:10)::UnitRange,
+	 					consumption_range = (0:200)::UnitRange,
+	 					labor_range = (0:200)::UnitRange,
 	 					value_function_nextperiod = zeros(length(-10:10))::Array,
 	 					β=0.9, z = 1)::NamedTuple
+
+# ╔═╡ a94a5543-4191-429f-8e9d-948f5a70f20d
+keys(result_of_Bellman) # (:grid_of_value_function, :Vstar, :index_optimal_choice, :optimal_choice)
+
+# ╔═╡ c0d772b1-9561-4bec-9571-c4fbcff1fb7e
+result_of_Bellman[:grid_of_value_function]
+# yields the grid of the values of the function with the different combinations of state and choice variables:
+# The dimensions are:	
+# s,c,l,s'
+
+# ╔═╡ 5aeccf07-7f32-4501-aa25-73044a1e4f3b
+md"""
+With this output being a Named Array, its main inconvenient is that the names do not allow for an optimal display. 
+Instead, we can use the `display` function:
+"""
+
+# ╔═╡ bec574bb-d9a1-457a-aacd-c6704a0f608d
+display(result_of_Bellman[:grid_of_value_function][1:10,1:10,1,1])
+
+# ╔═╡ 6d943848-cd25-4d2d-819b-fd96e173a14b
+result_of_Bellman[:Vstar]
+# yields the value of the V function (at the optimum) for all possible levels of s.
+# If the range of consumption is too small, these results will be distorted, so be sure to check if increasing the maximum of consumption range does not change it!
+
+# ╔═╡ 699325df-2754-46a7-ab2b-98f88d5bf8f7
+result_of_Bellman[:index_optimal_choice]
+# Gives the INDEX optimal choices of the agent, that maximize the V function. 
+# The Cartesian indexes are for consumpion, labor, and sprime.
+# For φ = 0.1, the disutility is very low, and the agent still works almost at the maximum
+
+# ╔═╡ 889e7804-1b1b-4d42-872c-485263e543ad
+result_of_Bellman[:optimal_choice]
+# Yields the true value of the choice variables.
 
 # ╔═╡ 16fbc49a-4391-4b55-bba7-3d0b218d4f88
 md"""
@@ -957,6 +1058,15 @@ value_last_period(s_range = (-10:10)::UnitRange,
 	 					consumption_range = (0:10)::UnitRange,
 	 					labor_range = (0:10)::UnitRange,
 	 					β=0.9, z = 1)::NamedTuple
+
+# ╔═╡ f14c79f4-b786-468b-888a-8b256bf12b4e
+begin 
+	
+	n = NamedArray(rand(2,2,4,4))
+
+	# setnames!(n, ["First row", "Second row"], ["First colummn","Second colummn","Third colummn", "Fourth column"],1)
+	T  = tuple()
+end 
 
 # ╔═╡ 0b152561-bd6f-4f11-9fc1-661ae84b325f
 md"""
@@ -1026,15 +1136,15 @@ begin
 
 		
 		# Value of the value function: 
-		V[end,:,:,:,:] 						= last_Bellman[1]
+		V[end,:,:,:,:] 						= last_Bellman[:grid_of_value_function] # last_Bellman[1]
 		
 		# Values at the optimum:
-		Vstar[end,:] 						.= last_Bellman[2] 	 
+		Vstar[end,:] 						.= last_Bellman[:Vstar] # 2 	 
 		
 		# Index of optimal choice:
-		index_optimal_choices[end] 			= last_Bellman[3] 	# no PROBLEM anymore
+		index_optimal_choices[end] 			= last_Bellman[:index_optimal_choice]# 3] # no PROBLEM anymore
 		
-		optimal_choices[end]				= last_Bellman[4] # NO problem...
+		optimal_choices[end]				= last_Bellman[:optimal_choice] # NO problem...
 
 		# Values of the choice variables at optimum:
 		# optimal_choice[end,:] = collect(grid_of_value_function)
@@ -1054,15 +1164,28 @@ begin
 
 			last_Bellman = tmp
 			
-		end
+		end # end of time
+
+		# Transforming the grid_of_value_function array into a Named Array:
+		# param1_names = ["Time period $i" for i in 1:21]
+		param1_names = ["t_$i" for i in 1:nperiods]
+		param2_names = ["s_$i" for i in 1:length(s_range)]
+		param3_names = ["c_i$i" for i in 1:length(consumption_range)]
+		param4_names = ["l_i$i" for i in 1:length(labor_range)]
+		param5_names = ["sprime_i$i" for i in 1:length(sprime_range)]
+
+		V = NamedArray(V, (param1_names, param2_names, param3_names, param4_names, param5_names))
+
+		Vstar = NamedArray(Vstar, (param1_names,param2_names)) # = tmp[2]
+
 		
 		return (;V,Vstar,index_optimal_choices,optimal_choices)
 	end
 end
 
 # ╔═╡ aa64899b-b738-44e9-964f-e272c1df01d3
-solution = backwards(s_range = (-100:100)::UnitRange,
-			sprime_range = (-100:100)::UnitRange,
+solution = backwards(s_range = (-10:10)::UnitRange,
+			sprime_range = (-10:10)::UnitRange,
 			consumption_range = (0:10)::UnitRange,
 			labor_range = (0:10)::UnitRange,
 			nperiods = 100)::NamedTuple
@@ -1077,7 +1200,7 @@ The syntax is:
 				labor_range = (0:10)::UnitRange,
 				nperiods = 10)::NamedTuple
 
-It yields a NamedTupled with keys: 
+It yields a NamedTuple with keys: 
 
 - `V`
 - `Vstar`
@@ -1088,7 +1211,7 @@ We can interpret them as:
 
 - V is a grid of values
 - Vstar is a `nperiods-row` matrix, with the value function at optimal
-- index_optimal_choices
+- `index_optimal_choices`
 
 """
 
@@ -1096,6 +1219,14 @@ We can interpret them as:
 keys(solution)
 
 # ╔═╡ 025db95c-2f37-4cca-8832-56b670569c2b
+solution[:V]
+# Yields the grid of values of the value function. 
+# The dimensions are : time, consumption, labor supply, savings next period.
+
+# ╔═╡ 71fc0640-1420-4c6f-8733-d6593b3c4d08
+display(solution[:V][1:10,1:10,1,1,1])
+
+# ╔═╡ ee89ffb9-0ed7-4b76-bd98-33114bc2cbf1
 solution[:Vstar]
 
 # ╔═╡ b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
@@ -1104,11 +1235,11 @@ begin
 	solution[:optimal_choices]
 	solution[4] # [:]
 
-	# Plots.plot(test2[4][:][1])#, st=:surface)
+	Plots.plot(solution[4][1])#, st=:surface)
 	
-	# for time in 1:time_period
-	#  	Plots.plot!(same_range,same_range,solution[4][time][1:11][1])#,st=:surface)
-	# end
+	 # for time in 1:time_period
+	 #  	Plots.plot!(same_range,same_range,solution[4][time][1:11][1])#,st=:surface)
+	 # end
 # 
 	# Plots.plot()
 	# Plots.plot!(same_range,same_range,solution[4][1][1:11][1])
@@ -1257,14 +1388,18 @@ Threads.nthreads()
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
+DataFrames = "~1.7.0"
 Distributions = "~0.25.118"
+NamedArrays = "~0.10.3"
 PlotlyBase = "~0.8.20"
 Plots = "~1.40.11"
 PlutoUI = "~0.7.61"
@@ -1274,9 +1409,9 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.4"
+julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "ed403ad658294dec24a7259b7dd3be495ca082e5"
+project_hash = "27c2fb7e79227d14516477bbafb25589102a617b"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1353,6 +1488,11 @@ git-tree-sha1 = "64e15186f0aa277e174aa81798f7eb8598e0157e"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.13.0"
 
+[[deps.Combinatorics]]
+git-tree-sha1 = "08c8b6831dc00bfea825826be0bc8336fc369860"
+uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
+version = "1.0.2"
+
 [[deps.Compat]]
 deps = ["TOML", "UUIDs"]
 git-tree-sha1 = "8ae8d32e09f0dcf42a36b90d4e17f5dd2e4c4215"
@@ -1379,16 +1519,32 @@ git-tree-sha1 = "439e35b0b36e2e5881738abc8857bd92ad6ff9a8"
 uuid = "d38c429a-6771-53c6-b99e-75d170b6e991"
 version = "0.6.3"
 
+[[deps.Crayons]]
+git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
+uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
+version = "4.1.1"
+
 [[deps.DataAPI]]
 git-tree-sha1 = "abe83f3a2f1b857aac70ef8b269080af17764bbe"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
 version = "1.16.0"
+
+[[deps.DataFrames]]
+deps = ["Compat", "DataAPI", "DataStructures", "Future", "InlineStrings", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrecompileTools", "PrettyTables", "Printf", "Random", "Reexport", "SentinelArrays", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
+git-tree-sha1 = "fb61b4812c49343d7ef0b533ba982c46021938a6"
+uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+version = "1.7.0"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
 git-tree-sha1 = "4e1fe97fdaed23e9dc21d4d664bea76b65fc50a0"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 version = "0.18.22"
+
+[[deps.DataValueInterfaces]]
+git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
+uuid = "e2d170a0-9d28-54be-80f0-106bbe20a464"
+version = "1.0.0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -1509,6 +1665,11 @@ git-tree-sha1 = "846f7026a9decf3679419122b49f8a1fdb48d2d5"
 uuid = "559328eb-81f9-559d-9380-de523a88c83c"
 version = "1.0.16+0"
 
+[[deps.Future]]
+deps = ["Random"]
+uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
+version = "1.11.0"
+
 [[deps.GLFW_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Xorg_libXcursor_jll", "Xorg_libXi_jll", "Xorg_libXinerama_jll", "Xorg_libXrandr_jll", "libdecor_jll", "xkbcommon_jll"]
 git-tree-sha1 = "fcb0584ff34e25155876418979d4c8971243bb89"
@@ -1586,15 +1747,38 @@ git-tree-sha1 = "b6d6bfdd7ce25b0f9b2f6b3dd56b2673a66c8770"
 uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
 version = "0.2.5"
 
+[[deps.InlineStrings]]
+git-tree-sha1 = "6a9fde685a7ac1eb3495f8e812c5a7c3711c2d5e"
+uuid = "842dd82b-1e85-43dc-bf29-5d0ee9dffc48"
+version = "1.4.3"
+
+    [deps.InlineStrings.extensions]
+    ArrowTypesExt = "ArrowTypes"
+    ParsersExt = "Parsers"
+
+    [deps.InlineStrings.weakdeps]
+    ArrowTypes = "31f734f8-188a-4ce0-8406-c8a06bd891cd"
+    Parsers = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
+
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 version = "1.11.0"
 
+[[deps.InvertedIndices]]
+git-tree-sha1 = "6da3c4316095de0f5ee2ebd875df8721e7e0bdbe"
+uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
+version = "1.3.1"
+
 [[deps.IrrationalConstants]]
 git-tree-sha1 = "e2222959fbc6c19554dc15174c81bf7bf3aa691c"
 uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
 version = "0.2.4"
+
+[[deps.IteratorInterfaceExtensions]]
+git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
+uuid = "82899510-4779-5014-852e-03e436cf321d"
+version = "1.0.0"
 
 [[deps.JLFzf]]
 deps = ["REPL", "Random", "fzf_jll"]
@@ -1824,6 +2008,12 @@ git-tree-sha1 = "cc0a5deefdb12ab3a096f00a6d42133af4560d71"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 version = "1.1.2"
 
+[[deps.NamedArrays]]
+deps = ["Combinatorics", "DataStructures", "DelimitedFiles", "InvertedIndices", "LinearAlgebra", "Random", "Requires", "SparseArrays", "Statistics"]
+git-tree-sha1 = "58e317b3b956b8aaddfd33ff4c3e33199cd8efce"
+uuid = "86f7a689-2022-50b4-a561-43c23ac3c673"
+version = "0.10.3"
+
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
@@ -1842,7 +2032,7 @@ version = "0.3.27+1"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+4"
+version = "0.8.1+2"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -1973,6 +2163,12 @@ git-tree-sha1 = "7e71a55b87222942f0f9337be62e26b1f103d3e4"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 version = "0.7.61"
 
+[[deps.PooledArrays]]
+deps = ["DataAPI", "Future"]
+git-tree-sha1 = "36d8b4b899628fb92c2749eb488d884a926614d3"
+uuid = "2dfb63ee-cc39-5dd5-95bd-886bf059d720"
+version = "1.4.3"
+
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
 git-tree-sha1 = "5aa36f7049a63a1528fe8f7c3f2113413ffd4e1f"
@@ -1984,6 +2180,12 @@ deps = ["TOML"]
 git-tree-sha1 = "9306f6085165d270f7e3db02af26a400d580f5c6"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
 version = "1.4.3"
+
+[[deps.PrettyTables]]
+deps = ["Crayons", "LaTeXStrings", "Markdown", "PrecompileTools", "Printf", "Reexport", "StringManipulation", "Tables"]
+git-tree-sha1 = "1101cd475833706e4d0e7b122218257178f48f34"
+uuid = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
+version = "2.4.0"
 
 [[deps.Printf]]
 deps = ["Unicode"]
@@ -2092,6 +2294,12 @@ git-tree-sha1 = "3bac05bc7e74a75fd9cba4295cde4045d9fe2386"
 uuid = "6c6a2e73-6563-6170-7368-637461726353"
 version = "1.2.1"
 
+[[deps.SentinelArrays]]
+deps = ["Dates", "Random"]
+git-tree-sha1 = "712fb0231ee6f9120e005ccd56297abbc053e7e0"
+uuid = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
+version = "1.4.8"
+
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 version = "1.11.0"
@@ -2176,6 +2384,12 @@ version = "1.3.2"
     ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
     InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
 
+[[deps.StringManipulation]]
+deps = ["PrecompileTools"]
+git-tree-sha1 = "725421ae8e530ec29bcbdddbe91ff8053421d023"
+uuid = "892a3eda-7b42-436c-8928-eab12a02cf0e"
+version = "0.4.1"
+
 [[deps.StyledStrings]]
 uuid = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
 version = "1.11.0"
@@ -2193,6 +2407,18 @@ version = "7.7.0+0"
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 version = "1.0.3"
+
+[[deps.TableTraits]]
+deps = ["IteratorInterfaceExtensions"]
+git-tree-sha1 = "c06b2f539df1c6efa794486abfb6ed2022561a39"
+uuid = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
+version = "1.0.1"
+
+[[deps.Tables]]
+deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "OrderedCollections", "TableTraits"]
+git-tree-sha1 = "598cd7c1f68d1e205689b1c2fe65a9f85846f297"
+uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
+version = "1.12.0"
 
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
@@ -2636,20 +2862,35 @@ version = "1.4.1+2"
 # ╟─803df0e9-3729-4acc-87d9-4600e1c2282b
 # ╟─6cd0d377-4f5a-4e30-a5aa-be91b0bd2737
 # ╟─3da89744-6235-4902-ba92-0fde5ee26524
-# ╟─ef9bcdca-8fca-4c72-a470-24f4a854e78c
-# ╠═cff26e5f-0a90-4840-9621-18a8ef9d9ed2
-# ╟─107909eb-546e-4caf-81c5-cef5ff130efb
+# ╟─d5d2dfd7-09de-49f0-aa78-e787aa502872
+# ╟─309e4576-1f5f-4617-8e07-a494802a2860
+# ╠═e9ba4465-220b-4fb1-9b4e-28e4bee0f25a
+# ╠═ee3d3aee-a6dd-4fb6-9358-e15b7b5902aa
+# ╠═b04ba029-9be8-4dc1-8f50-04d58e19bfaa
+# ╠═b27fb6f1-40f2-4386-ae7c-d614abadfc41
+# ╟─7f4ac1cf-1a2c-45b3-aa0b-d140bd5d7ba3
+# ╠═107909eb-546e-4caf-81c5-cef5ff130efb
 # ╠═6f32804a-624a-4fa9-8dc8-0d5be5e690f7
+# ╠═a94a5543-4191-429f-8e9d-948f5a70f20d
+# ╠═c0d772b1-9561-4bec-9571-c4fbcff1fb7e
+# ╟─5aeccf07-7f32-4501-aa25-73044a1e4f3b
+# ╠═bec574bb-d9a1-457a-aacd-c6704a0f608d
+# ╠═6d943848-cd25-4d2d-819b-fd96e173a14b
+# ╠═699325df-2754-46a7-ab2b-98f88d5bf8f7
+# ╠═889e7804-1b1b-4d42-872c-485263e543ad
 # ╟─16fbc49a-4391-4b55-bba7-3d0b218d4f88
 # ╟─c1154ad5-39c1-4d1d-b20e-e33e1f1ebe9f
 # ╟─69396c7f-8c93-4f04-b480-405e6811e15e
 # ╠═b05928f8-fe2b-4c41-9e28-70131caad173
+# ╠═f14c79f4-b786-468b-888a-8b256bf12b4e
 # ╟─0b152561-bd6f-4f11-9fc1-661ae84b325f
-# ╟─3fb0609e-b1ed-4603-a438-e25ecc9c9776
+# ╠═3fb0609e-b1ed-4603-a438-e25ecc9c9776
 # ╠═aa64899b-b738-44e9-964f-e272c1df01d3
-# ╠═4543c9ae-3dca-49b5-b72e-0177231f26db
+# ╟─4543c9ae-3dca-49b5-b72e-0177231f26db
 # ╠═6403de51-b02e-4bc3-baf7-f001520a8435
 # ╠═025db95c-2f37-4cca-8832-56b670569c2b
+# ╠═71fc0640-1420-4c6f-8733-d6593b3c4d08
+# ╠═ee89ffb9-0ed7-4b76-bd98-33114bc2cbf1
 # ╠═b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
 # ╠═60d41349-aff9-4eaa-b5bf-44d28d14756b
 # ╠═3278b901-e553-45ff-81b6-9fb7dab90c2c
