@@ -830,7 +830,7 @@ begin
 	l_grid = repeat(l_range, 1, length(c_range))
 
 	# Defining two gradients to make the surfaces more distinguishable: 
-	color_gradient_1 = cgrad([:white,:green])
+	color_gradient_1 = cgrad([:green,:yellow])
 	color_gradient_2 = cgrad([:blue,:red])
 	
 	# The plot:
@@ -910,7 +910,7 @@ begin
 		# Initialise empty array that will store the optimal utility and choice:
 		Vstar = zeros(length(s_range))
 		index_optimal_choice = Array{CartesianIndex}(undef,length(s_range))
-		optimal_choice = Array{Vector}(undef,length(s_range))
+		optimal_choice = Array{Array}(undef,length(s_range))
 
 		# for all levels of endowment
 		for (index_s,s) in enumerate(s_range)
@@ -960,14 +960,14 @@ begin
 			optimal_choice[index_s] = [consumption_range[index_optimal_choice[index_s][1]],
 										labor_range[index_optimal_choice[index_s][2]],
 										sprime_range[index_optimal_choice[index_s][3]]]
+
+			# optimal_choice[index_s] = NamedArray(optimal_choice[index_s], [["c_i$i" for i in 1:length(consumption_range)],
+			# 																							["l_i$i" for i in 1:length(labor_range)],
+			# 																							["sprime_i$i" for i in 1:length(sprime_range)]])
 			
 		end # end of s
 
 		# Formatting the output for better readability:
-
-		# Vstar is the one that seems the most readable. 
-		# Alternatives could be (not optimal like that)
-		# Vstar = DataFrame(Optimal_value_function = Vstar)
 		
 		# Transforming the grid_of_value_function array into a Named Array:
 		# param1_names = ["Time period $i" for i in 1:21]
@@ -978,6 +978,14 @@ begin
 		
 		grid_of_value_function = NamedArray(grid_of_value_function, (param1_names, param2_names, param3_names, param4_names))
 
+		# Vstar is the one that seems the most readable. 
+		# Alternatives could be (not optimal like that)
+		# Vstar = DataFrame(Optimal_value_function = Vstar)
+
+		# index_optimal_choice
+
+		# Does not work the way I want.
+		# optimal_choice = NamedArray(optimal_choice, (param1_names, param2_names, param3_names, param4_names))
 
 		return (;grid_of_value_function,Vstar,index_optimal_choice,optimal_choice)
 	end
@@ -992,7 +1000,8 @@ result_of_Bellman = Bellman(;s_range = (-10:10)::UnitRange,
 	 					β=0.9, z = 1)::NamedTuple
 
 # ╔═╡ a94a5543-4191-429f-8e9d-948f5a70f20d
-keys(result_of_Bellman) # (:grid_of_value_function, :Vstar, :index_optimal_choice, :optimal_choice)
+keys(result_of_Bellman) 
+# (:grid_of_value_function, :Vstar, :index_optimal_choice, :optimal_choice)
 
 # ╔═╡ c0d772b1-9561-4bec-9571-c4fbcff1fb7e
 result_of_Bellman[:grid_of_value_function]
@@ -1157,10 +1166,10 @@ begin
 					labor_range=labor_range,
 					value_function_nextperiod=last_Bellman[2])
 			
-			V[index_time,:,:,:,:] 					= tmp[1]
-			Vstar[index_time,:] 					= tmp[2]
-			index_optimal_choices[index_time] 		= tmp[3]
-			optimal_choices[index_time] 			= tmp[4]
+			V[index_time,:,:,:,:] 					= tmp[:grid_of_value_function]  #1
+			Vstar[index_time,:] 					= tmp[:Vstar] 					#2
+			index_optimal_choices[index_time] 		= tmp[:index_optimal_choice] 	#3
+			optimal_choices[index_time] 			= tmp[:optimal_choice] 			#4
 
 			last_Bellman = tmp
 			
@@ -1178,17 +1187,11 @@ begin
 
 		Vstar = NamedArray(Vstar, (param1_names,param2_names)) # = tmp[2]
 
-		
+		# optimal_choices = NamedArray(optimal_choices, param1_names)
+
 		return (;V,Vstar,index_optimal_choices,optimal_choices)
 	end
 end
-
-# ╔═╡ aa64899b-b738-44e9-964f-e272c1df01d3
-solution = backwards(s_range = (-10:10)::UnitRange,
-			sprime_range = (-10:10)::UnitRange,
-			consumption_range = (0:10)::UnitRange,
-			labor_range = (0:10)::UnitRange,
-			nperiods = 100)::NamedTuple
 
 # ╔═╡ 4543c9ae-3dca-49b5-b72e-0177231f26db
 md"""
@@ -1215,6 +1218,13 @@ We can interpret them as:
 
 """
 
+# ╔═╡ aa64899b-b738-44e9-964f-e272c1df01d3
+solution = backwards(s_range = (-10:10)::UnitRange,
+			sprime_range = (-10:10)::UnitRange,
+			consumption_range = (0:10)::UnitRange,
+			labor_range = (0:10)::UnitRange,
+			nperiods = 100)::NamedTuple
+
 # ╔═╡ 6403de51-b02e-4bc3-baf7-f001520a8435
 keys(solution)
 
@@ -1228,16 +1238,120 @@ display(solution[:V][1:10,1:10,1,1,1])
 
 # ╔═╡ ee89ffb9-0ed7-4b76-bd98-33114bc2cbf1
 solution[:Vstar]
+# Yields a Named Matrix expressing the optimal value of the Bellman function in function of the time period and the initial savings.
+
+# ╔═╡ d657f9d0-40e8-4b18-acb8-408dff531563
+solution[:index_optimal_choices] 
+# Yields a nperiods array containing arrays of s_range-dimension, with the index of the optimal choices for each level of savings.
+
+# ╔═╡ d5c35c68-fff0-48e6-8916-f2965798573c
+solution[:optimal_choices]
+# Yields the values of the optimal choices at each period, for each level of initial savings.
+# Is the value-equivalent of ":index_optimal_choices"
+
+# ╔═╡ 0e79a3e3-19c5-4b6f-915f-025096353e7f
+begin 
+	"""
+	The `make_grid` function allows for a grid to 3D plot, based on two ranges representing the x and y axis.
+		`make_grid(x_range,y_range)`
+
+	It returns a tuple of the x and y grids, such that: 
+
+		x_grid = repeat(x_range', length(y_range), 1)
+		y_grid = repeat(y_range, 1, length(x_range))
+
+	"""
+	function make_grid(x_range,y_range)
+
+		x_grid = repeat(x_range', length(y_range), 1)
+		y_grid = repeat(y_range, 1, length(x_range))
+
+		return (;x_grid,y_grid)
+	end
+end
+
+# ╔═╡ 651ccc19-c04c-4260-ac48-f70fb7ba5a44
+md""" Let us try to visualize the solution."""
+
+# ╔═╡ 11921370-73c6-4b04-987c-1547016c67a2
+md"""
+First, we generate a solution:
+"""
+
+# ╔═╡ 9c3da758-55a4-4177-8960-c7051d41ce8a
+begin 
+	s_range_Vstar = -50:50
+	solution_plot_Vstar = backwards(;s_range	= s_range_Vstar,
+							sprime_range		= s_range_Vstar,
+							consumption_range 	=0:100, # Increasing the maximum of the consumption range shifts the threshold (to the right) from which the value function stays stagnant. This is due to the fact that the agents being able to consume more, having more initial savings is more valuable.
+							labor_range			=0:1,
+							nperiods 			=100)
+end
+
+# ╔═╡ 499c927c-4f1a-4dd5-9593-7d59d7b703ef
+md"""
+The value function in function of the initial savings:
+"""
+
+# ╔═╡ 8f82649c-7e03-4f28-80d9-52a77d7d68a5
+begin 	
+	# solution_plot_Vstar[:Vstar]
+
+	# solution_plot_Vstar[:Vstar][1,:]
+	plot_Vstar = Plots.plot(s_range_Vstar,solution_plot_Vstar[:Vstar][1,:], label = "Period: 1")
+	
+	for t in 2:100
+		Plots.plot!(s_range_Vstar,solution_plot_Vstar[:Vstar][t,:], label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings" , yaxis = "Value function")
+
+	Plots.plot!(legend = false, title = "Value function in function of the initial savings.")
+
+	plot_Vstar
+		
+		
+	# grids_vstar = make_grid(1:100,-10:10)
+	# Plots.plot(grids_vstar[:x_grid], grids_vstar[:y_grid],solution[:Vstar][1:100,1:21], st =:surface)
+	# Plots.plot!(xaxis = "Time", yaxis = "Savings", zaxis = "Value function")
+	# solution[:Vstar][1,1]
+end
+
+# ╔═╡ e45513cb-eb3a-4408-9c01-e3790ad21ac8
+md"""
+The optimal choice in function of the initial savings:
+"""
 
 # ╔═╡ b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
 begin
 	# (test2[4])
-	solution[:optimal_choices]
-	solution[4] # [:]
+	period = 1
+	s = 1
+	# Plots.plot(-50:50,solution_plot_Vstar[:optimal_choices][period][:] )
+	solution_plot_Vstar[:optimal_choices]#[period][s]
+	# keys(solution_plot_Vstar[:optimal_choices][period][s])
+	# solution_plot_Vstar[:optimal_choices][period][101][:consumption]
 
-	Plots.plot(solution[4][1])#, st=:surface)
+	# Plots.plot(s_range_Vstar,solution_plot_Vstar[:optimal_choices][period][1:101][:consumption])
+	# for t in 1:10
+	# end
 	
-	 # for time in 1:time_period
+	Plots.plot(solution_plot_Vstar[4][1], legend=false) # [:]
+	# This is in fact: 
+		# - consumption (x = 1, y = consumption), 
+		# - labor (x = 2, y = consumption)
+		# - sprime (x = 3, y = savings (always -10 here.))
+
+	# solution_plot_Vstar[4] # Value of optimal choices (c,l,s) for each period, each level of s.
+	# solution_plot_Vstar[4][1] # Value of optimal choices (c,l,s) for period 1, each level of s.
+	# solution_plot_Vstar[4][1][1] # Value of optimal choices (c,l,s) for period 1, for s = -50.
+	
+	# solution_plot_Vstar[4]
+	#plot_Vstar_optimal_choices = Plots.plot(solution_plot_Vstar[:optimal_choices])
+
+	# Plots.plot(solution[4][1], legend = false)#, st=:surface)
+	
+	 # for time in 1:100
 	 #  	Plots.plot!(same_range,same_range,solution[4][time][1:11][1])#,st=:surface)
 	 # end
 # 
@@ -1245,145 +1359,6 @@ begin
 	# Plots.plot!(same_range,same_range,solution[4][1][1:11][1])
 	# Plots.plot!(same_range,same_range,solution[4][2][1:11][1])
 end
-
-# ╔═╡ 60d41349-aff9-4eaa-b5bf-44d28d14756b
-begin
-
-	# We define an empty array that will store the utility values:
-	utility_vector = Array{Float16}(undef,
-					length(s_t_range),
-					length(z_range),
-					length(w_range),
-					length(h_range),
-					length(consumption_range),
-					length(s_t_1_range),
-					length(labor_range))
-
-	# We define a function that computes the utility if the budget is respected:
-	function utility_attribution(consumption,labor,s_t_1,s_t,z,w,h)
-		# We check if it respects the budget constraint:
-		if budget_surplus(consumption,labor,s_t_1,s_t,z) < 0
-			# If not, we set the utility at -Inf
-			return -Inf
-		else
-			# If it respects it, it is equal to the utility:
-			 return utility(consumption,labor,z,w,h)
-		end
-	end
-	
-	# We compute the utility, for all possible combinations
-	
-	# State variables loop:
-	for (index_s_t,s_t) in enumerate(s_t_range)
-		for (index_z,z) in enumerate(z_range)
-			for (index_w,w) in enumerate(w_range)
-				for (index_h,h) in enumerate(h_range)
-		
-	# Choice variables loop:
-	for (index_consumption,consumption) in enumerate(consumption_range)
-		for (index_s_t_1, s_t_1) in enumerate(s_t_1_range)
-			for (index_labor, labor) in enumerate(labor_range)
-
-				utility_vector[index_s_t,
-									index_z,
-									index_w, 
-									index_h,
-									index_consumption,
-									index_s_t_1,
-									index_labor] =
-					utility_attribution(consumption,labor,s_t_1,s_t,z,w,h)
-	
-	# End of choice variables loop			
-			end
-		end
-	end
-	
-	# End of state variables loop:
-				end
-			end
-		end
-	end
-end
-
-# ╔═╡ 3278b901-e553-45ff-81b6-9fb7dab90c2c
-utility_vector
-
-# ╔═╡ 52c68e97-af56-4117-9a98-67da78ec1deb
-length(utility_vector)
-
-# ╔═╡ b58bc138-2ff4-4d46-8842-5f001e90ae00
-# begin
-# 	common_range = -10:10
-# 	common_vector = Array{Float16}(common_range)
-# 	@time begin
-# 		utility_vector_2 = Array{Float16}(undef,
-# 					length(common_range),
-# 					length(common_range),
-# 					length(common_range),
-# 					length(common_range),
-# 					length(common_range),
-# 					length(common_range),
-# 					length(common_range))
-# 		utility_vector_2 .= utility_attribution.(common_vector,common_vector,common_vector,common_vector,common_vector,common_vector,common_vector)
-# 	end
-# end
-
-# ╔═╡ 535773b8-43bd-4cb9-b104-4b7bf8211689
-# begin 
-# 	using Distributed 
-# 
-# 	Distributed.@everywhere function utility_attribution(consumption,labor,s_t_1,s_t,z,w,h)
-# 		# We check if it respects the budget constraint:
-# 		if budget_surplus(consumption,labor,s_t_1,s_t,z,w,h) < 0
-# 			# If not, we set the utility at -Inf
-# 			return -Inf
-# 		else
-# 			# If it respects it, it is equal to the utility:
-# 			 return utility(consumption,labor,z,w,h)
-# 		end
-# 	end
-# 
-# 	Distributed.@everywhere function utility_attribution(variables::Array)
-# 		# We check if it respects the budget constraint:
-# 		if budget_surplus(variables[1],variables[2],variables[3],variables[4],variables[5],variables[6],variables[7]) < 0
-# 			# If not, we set the utility at -Inf
-# 			return -Inf
-# 		else
-# 			# If it respects it, it is equal to the utility:
-# 			 return utility(variables[1],variables[2],variables[5],variables[6],variables[7])
-# 		end
-# 	end
-# 
-# 	domain = -10:1:10
-# 	
-# @distributed for variables in domain 
-# 	print(utility_attribution.(variables,variables,variables,variables,variables,variables,variables))
-# end
-# 
-# 
-
-# ╔═╡ e2e8277a-2264-4050-9ba1-c315e96c3483
-Threads.nthreads()
-
-# ╔═╡ cd5fc4e0-faf6-40f0-81af-f5fa0d4c0403
-# begin
-# 	b = 0
-# 	@threads for i in 1:100
-# 		global b += 1
-# 	end
-# 	b
-# 
-# 	range = 1:10
-# 	function compute_V(range)
-#            chunks = Iterators.partition(range, length(range) ÷ Threads.nthreads())
-#            tasks = map(chunks) do chunk
-#                Threads.@spawn sum_single(chunk)
-#            end
-#            chunk_sums = fetch.(tasks)
-#            return sum_single(chunk_sums)
-#        end
-# 	compute_V
-# end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2885,19 +2860,21 @@ version = "1.4.1+2"
 # ╠═f14c79f4-b786-468b-888a-8b256bf12b4e
 # ╟─0b152561-bd6f-4f11-9fc1-661ae84b325f
 # ╠═3fb0609e-b1ed-4603-a438-e25ecc9c9776
-# ╠═aa64899b-b738-44e9-964f-e272c1df01d3
 # ╟─4543c9ae-3dca-49b5-b72e-0177231f26db
+# ╠═aa64899b-b738-44e9-964f-e272c1df01d3
 # ╠═6403de51-b02e-4bc3-baf7-f001520a8435
 # ╠═025db95c-2f37-4cca-8832-56b670569c2b
 # ╠═71fc0640-1420-4c6f-8733-d6593b3c4d08
 # ╠═ee89ffb9-0ed7-4b76-bd98-33114bc2cbf1
+# ╠═d657f9d0-40e8-4b18-acb8-408dff531563
+# ╠═d5c35c68-fff0-48e6-8916-f2965798573c
+# ╟─0e79a3e3-19c5-4b6f-915f-025096353e7f
+# ╟─651ccc19-c04c-4260-ac48-f70fb7ba5a44
+# ╟─11921370-73c6-4b04-987c-1547016c67a2
+# ╠═9c3da758-55a4-4177-8960-c7051d41ce8a
+# ╟─499c927c-4f1a-4dd5-9593-7d59d7b703ef
+# ╟─8f82649c-7e03-4f28-80d9-52a77d7d68a5
+# ╟─e45513cb-eb3a-4408-9c01-e3790ad21ac8
 # ╠═b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
-# ╠═60d41349-aff9-4eaa-b5bf-44d28d14756b
-# ╠═3278b901-e553-45ff-81b6-9fb7dab90c2c
-# ╠═52c68e97-af56-4117-9a98-67da78ec1deb
-# ╠═b58bc138-2ff4-4d46-8842-5f001e90ae00
-# ╠═535773b8-43bd-4cb9-b104-4b7bf8211689
-# ╠═e2e8277a-2264-4050-9ba1-c315e96c3483
-# ╠═cd5fc4e0-faf6-40f0-81af-f5fa0d4c0403
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
