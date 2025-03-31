@@ -666,7 +666,7 @@ With respect to the labor supply $l_{t}$:
 -  $\lambda_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{-\varphi}$
 
 With respect to the savings/loan $s_{t+1}$:
--  $\lambda_{t}\cdot s_{t+1} = \beta^{t}\cdot\left(\lambda_{t+1}+(1+r)\right)$
+-  $\lambda_{t} = \beta\cdot (1+r) \cdot \mathbb{E}\left[\lambda_{t+1}\right]$
 
 """
 
@@ -893,7 +893,7 @@ begin
 						consumption_range::UnitRange,
 						labor_range::UnitRange,
 						value_function_nextperiod::Array,
-						β=0.9, z = 1,ρ = 0.1,φ = 0.1,proba_survival=0.9,r = 0.3)::NamedTuple
+						β=0.9, z = 1,ρ = 0.1,φ = 0.1,proba_survival=0.9,r = 0.3, w=0, h = "good")::NamedTuple
 
 		@assert length(value_function_nextperiod) == length(s_range) "The value function of the next period has the wrong length."
 
@@ -941,7 +941,7 @@ begin
 											index_consumption,
 											index_labor, 
 											index_sprime] =
-								utility(;c=consumption, l=labor, z=z, w=0, h="good",ρ = ρ,φ = φ)+β*proba_survival*value_function_nextperiod[index_s]
+								utility(;c=consumption, l=labor, z=z, w=w, h=h,ρ = ρ,φ = φ)+β*proba_survival*value_function_nextperiod[index_s]
 							
 						end
 						
@@ -996,7 +996,7 @@ result_of_Bellman = Bellman(;s_range = (-10:10)::UnitRange,
 	 					consumption_range = (0:200)::UnitRange,
 	 					labor_range = (0:200)::UnitRange,
 	 					value_function_nextperiod = zeros(length(-10:10))::Array,
-	 					β=0.9, z = 1)::NamedTuple
+	 					β=0.9, z = 1, w = 0, h="good")::NamedTuple
 
 # ╔═╡ a94a5543-4191-429f-8e9d-948f5a70f20d
 keys(result_of_Bellman) 
@@ -1049,14 +1049,14 @@ begin
 	 					sprime_range::UnitRange,
 	 					consumption_range::UnitRange,
 	 					labor_range::UnitRange,
-	 					β=0.9, z = 1, r = 0.3, proba_survival = 0.9)::NamedTuple
+	 					β=0.9, z = 1, r = 0.3, proba_survival = 0.9, w = 0, h="good")::NamedTuple
 	
 	return Bellman(;s_range = s_range,
 	 					sprime_range = sprime_range,
 	 					consumption_range = consumption_range,
 	 					labor_range = labor_range,
 	 					value_function_nextperiod = zeros(length(s_range)),
-	 					β=β, z = z, r = r, proba_survival = proba_survival)::NamedTuple
+	 					β=β, z = z, r = r, proba_survival = proba_survival, w = 0, h="good")::NamedTuple
 	end
 end
 
@@ -1098,7 +1098,7 @@ begin
 				labor_range::UnitRange,
 				nperiods::Number,
 				β=0.9, z = 1, r = 0.3, 
-				proba_survival=0.9)::NamedTuple
+				proba_survival=0.9, w = 0, h="good")::NamedTuple
 
 		# Initialisation: 
 
@@ -1147,7 +1147,7 @@ begin
 	 					sprime_range = sprime_range::UnitRange,
 	 					consumption_range = consumption_range::UnitRange,
 	 					labor_range = labor_range::UnitRange,
-	 					β=β, z = z, r = r, proba_survival = proba_survival)::NamedTuple
+	 					β=β, z = z, r = r, proba_survival = proba_survival, w = w, h=h)::NamedTuple
 
 		
 		# Value of the value function: 
@@ -1171,7 +1171,7 @@ begin
 					consumption_range=consumption_range,
 					labor_range=labor_range,
 					value_function_nextperiod=last_Bellman[:Vstar], 
-					β=β, z = z, r = r, proba_survival = proba_survival)
+					β=β, z = z, r = r, proba_survival = proba_survival, w = w, h=h)
 			
 			V[index_time,:,:,:,:] 							= tmp[:grid_of_value_function]  #1
 			Vstar[index_time,:] 							= tmp[:Vstar] 					#2
@@ -1252,9 +1252,6 @@ solution[:optimal_choices]
 # ╔═╡ fb269fa3-2e36-4f97-9c99-57145691326e
 solution[:optimal_choices][90:100,1:10,1]
 
-# ╔═╡ 2dea84d2-4ec9-4cfa-9b2f-bdec2db337c0
-size(solution[:optimal_choices][1][1])
-
 # ╔═╡ 0e79a3e3-19c5-4b6f-915f-025096353e7f
 begin 
 	"""
@@ -1276,6 +1273,9 @@ begin
 	end
 end
 
+# ╔═╡ 371d138c-06c4-4312-a529-d007993d9359
+# varinfo()
+
 # ╔═╡ 651ccc19-c04c-4260-ac48-f70fb7ba5a44
 md""" 
 
@@ -1284,6 +1284,21 @@ md"""
 Let us try to visualize the solution.
 First, we generate a fixed solution:
 """
+
+# ╔═╡ e1daff84-7577-428a-9ebf-692341536845
+@bind s_range_Vstar_min Slider(-100:1:-10, default = -10)
+
+# ╔═╡ 268a3d8f-5880-40be-93b7-68c02f0cd8ee
+@bind s_range_Vstar_max Slider(10:1:100, default = 10)
+
+# ╔═╡ 98507e01-f1a7-42a1-8f90-417ef9a7d359
+@bind fixed_r Slider(0.001:0.1:2, default = 0.04)
+
+# ╔═╡ 8f86deb2-981e-40c6-8290-7a31496360f3
+@bind consumption_max Slider(10:1:100, default = 10)
+
+# ╔═╡ 182b2fde-75bf-4722-bf5a-8f9b59e49cf1
+@bind labor_max Slider(10:1:100, default = 10)
 
 # ╔═╡ 499c927c-4f1a-4dd5-9593-7d59d7b703ef
 md"""
@@ -1297,32 +1312,43 @@ We will then plot them together and comment on some comparative statics.
 """
 
 # ╔═╡ bff985e5-c02b-4a0c-940d-f91e456ebdf0
-md""" Value function in function of the initial savings"""
+md""" ## The optimal value function"""
 
 # ╔═╡ e45513cb-eb3a-4408-9c01-e3790ad21ac8
 md"""
-The optimal choice in function of the initial savings:
+## The optimal choice variables
+
+### Consumption
 """
+
+# ╔═╡ d1d80da4-9476-4dc9-97c4-63b296c654f6
+md""" ### Labor supply """
+
+# ╔═╡ 398e7246-2265-470d-9a09-6ddeebf5b82f
+md""" ### Savings for next period """
 
 # ╔═╡ d2dec219-9d7c-4d3d-9ef6-d91ec9de79c6
 @bind r_star_plot Slider(-1:0.01:1, default = 0.1)
 
 # ╔═╡ 9c3da758-55a4-4177-8960-c7051d41ce8a
 begin 
-	s_range_Vstar = -10:10
+	s_range_Vstar = s_range_Vstar_min:s_range_Vstar_max
+	
 	solution_plot_Vstar_fixed = backwards(;s_range	= s_range_Vstar,
 	 						sprime_range		= s_range_Vstar,
-	 						consumption_range 	=0:23, # Increasing the maximum of the consumption range shifts the threshold (to the right) from which the value function stays stagnant. This is due to the fact that the agents being able to consume more, having more initial savings is more valuable. For max(s) = 10, max(c) = 23 is fine.
-	 						labor_range			=0:10,
-	 						nperiods 			=100, 
-							r = 0.1, # The interest rate determines the threshhold from which having debt inverts its effect on the value function. 
-							) 
+	 						consumption_range 	= 0:consumption_max, # Increasing the maximum of the consumption range shifts the threshold (to the right) from which the value function stays stagnant. This is due to the fact that the agents being able to consume more, having more initial savings is more valuable. For max(s) = 10, max(c) = 23 is fine.
+	 						labor_range			= 0:labor_max,
+	 						nperiods 			= 100,
+							r = fixed_r, # The interest rate determines the threshhold from which having debt inverts its effect on the value function. 
+							w = 0, h="bad") 
 	solution_plot_Vstar_adjustable = backwards(;s_range	= s_range_Vstar,
 	 						sprime_range		= s_range_Vstar,
-	 						consumption_range 	=0:23,
-	 						labor_range			=0:10,
-	 						nperiods 			=100, 
-							r = r_star_plot)
+	 						consumption_range 	= 0:consumption_max,
+	 						labor_range			= 0:labor_max,
+	 						nperiods 			= 100, 
+							r = r_star_plot, 
+							w = 0, h="bad")
+	# With the default values (-50:50, maxlabor=maxconsumption=100) of the variables, this takes 529 seconds and requires 18.30 Gb of memory.
 end
 
 # ╔═╡ 8f82649c-7e03-4f28-80d9-52a77d7d68a5
@@ -1344,7 +1370,8 @@ end
 
 # ╔═╡ b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
 begin
-	# (test2[4])
+
+	plotly()
 	period = 1
 	s = 1
 
@@ -1364,11 +1391,11 @@ begin
 	# Plotting it yields: 
 	plot_c_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][period,:,:][:,"c"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Consumption")
 	
-	for t in 90:100
+	for t in 1:100
 		Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"c"], label = "Period: $t")
 	end
 
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "Optimal consumption", legend = false)
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "r = $fixed_r", legend = false)
 
 	plot_c_star
 
@@ -1377,61 +1404,105 @@ begin
 
 	plot_c_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][period,:,:][:,"c"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Consumption")
 	
-	for t in 90:100
+	for t in 1:100
 		Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][t,:,:][:,"c"], label = "Period: $t")
 	end
 
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "Optimal consumption", legend = false)
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "r = $r_star_plot", legend = false)
 
-	Plots.plot(plot_c_star_a,plot_c_star)
+	Plots.plot(plot_c_star,plot_c_star_a)
 end
 
 # ╔═╡ 9f9e05bf-176d-4428-8331-1c384d5a33b4
 begin 
+	plotly()
 	plot_l_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][period,:,:][:,"l"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Labor supply")
 	
-	for t in 90:100
+	for t in 2:100
 		Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"l"], label = "Period: $t")
 	end
 
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal labor supply", title = "Fixed version", legend = false)
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal labor supply", title = "r = $fixed_r", legend = false)
 
 	plot_l_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][period,:,:][:,"l"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Labor supply")
 	
-	for t in 90:100
+	for t in 2:100
 		Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][t,:,:][:,"l"], label = "Period: $t")
 	end
 
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal labor supply", title = "Adjusted version", legend = false)
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal labor supply", title = "r = $r_star_plot", legend = false)
 
-	Plots.plot(plot_l_star_a,plot_l_star)
+	Plots.plot(plot_l_star,plot_l_star_a)
 end
 
 # ╔═╡ 1f589ca1-4752-4627-b42b-9f6274ede41b
 begin 
+	plotly()
 	plot_sprime_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][period,:,:][:,"sprime"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Savings at next period")
 	
-	for t in 1:2
+	for t in 1:100
 	 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"l"], label = "Period: $t")
 	end
 
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal savings for next period", title = "Fixed version", legend = false)
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal savings for next period", title = "r = $fixed_r", legend = false)
 
 	plot_sprime_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][period,:,:][:,"sprime"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Savings at next period")
 	
-	for t in 1:2
+	for t in 1:100
 	 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][t,:,:][:,"l"], label = "Period: $t")
 	end
 
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal savings for next period", title = "Adjusted version", legend = false)
-
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal savings for next period", title = "r = $r_star_plot", legend = false)
 	
 	Plots.plot(plot_sprime_star,plot_sprime_star_a)
 end
 
 # ╔═╡ 6fe5c79a-38dd-42da-a8c0-7c744754c457
 begin 
+	plotly()
 	Plots.plot(plot_Vstar,plot_c_star)
+end
+
+# ╔═╡ 04ff6031-c75b-499b-a077-886362f74fef
+md""" ## Comparison with theoretical results 
+
+We are now going to compare the solutions from numerical methods with the theoretical solutions.
+
+Remebering that the F.O.C.s are: 
+
+With respect to $c_{t}$ $(1)$: 
+
+-  $c_{t}^{-\rho} = \lambda_{t}$
+
+With respect to the labor supply $l_{t}$ $(2)$: 
+
+-  $\lambda_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{-\varphi}$
+
+With respect to the savings/loan $s_{t+1}$ $(3)$:
+-  $\lambda_{t} = \beta\cdot (1+r) \cdot \mathbb{E}\left[\lambda_{t+1}\right]$
+
+We have: 
+
+$$(2) \ \iff \ c_{t} = \left[\xi_{t}\cdot l_{t}^{-\varphi}\cdot z_{t}^{-1}\right]^{-\frac{1}{\rho}}$$
+
+$$(3) \ \iff \ c_{t} = \left[\beta\cdot (1+r)\right]^{-\frac{1}{\rho}}\cdot \mathbb{E}\left[c_{t+1}^{-\rho}\right]^{-\frac{1}{\rho}}$$
+
+"""
+
+# ╔═╡ bbcae025-3d88-4791-89d3-d0670fdb173e
+begin
+	# theoretical_φ = theroretical_ρ = 0.1
+	# theoretical_c_1 = []
+	theoretical_c_1(;w,h,l,φ,z,ρ) = (ξ.(w,h).*(l .^(-φ)).*(z .^(-1))).^(.-(1 ./ρ))
+	theoretical_c_1.(w=0,h="good",l=l_range,φ=0.1,z=1,ρ=0.1)
+end
+
+# ╔═╡ aad73f20-d44e-4085-a863-8872b76f2656
+begin 
+	theoretical_c_2(;β,r,ρ,ct1,proba_survival) = (β.*(1 .+r)) .^(-1 ./ρ) .* (proba_survival*(ct1 .^ (-ρ)) .^(-1 ./ ρ))
+	theoretical_c_2.(β = 0.9, r = 0.03, ct1 = (c_range), ρ = 0.1, proba_survival = 0.9)
+					# β=0.9, z = 1,ρ = 0.1,φ = 0.1,proba_survival=0.9,r = 0.3)::NamedTuple
+
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1458,7 +1529,7 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.3"
+julia_version = "1.11.4"
 manifest_format = "2.0"
 project_hash = "27c2fb7e79227d14516477bbafb25589102a617b"
 
@@ -2081,7 +2152,7 @@ version = "0.3.27+1"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+2"
+version = "0.8.1+4"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -2896,7 +2967,7 @@ version = "1.4.1+2"
 # ╟─24dd513c-3518-49e6-b164-a95b924d260e
 # ╟─e98cf3cf-a549-4c44-9994-f882014da4af
 # ╟─8e6232d8-09ae-11f0-1ee1-e71c2444c45c
-# ╟─50440502-c6bf-485f-9a62-8547c2f4575a
+# ╠═50440502-c6bf-485f-9a62-8547c2f4575a
 # ╟─ae7e4d2a-2e28-425b-85a3-608c05657796
 # ╟─7beca4ea-2d9f-448c-be28-530d39cfdabf
 # ╟─2077ad58-019d-4aa7-adfd-eb2ceee4e4e3
@@ -2942,18 +3013,28 @@ version = "1.4.1+2"
 # ╠═d657f9d0-40e8-4b18-acb8-408dff531563
 # ╠═d5c35c68-fff0-48e6-8916-f2965798573c
 # ╠═fb269fa3-2e36-4f97-9c99-57145691326e
-# ╠═2dea84d2-4ec9-4cfa-9b2f-bdec2db337c0
 # ╟─0e79a3e3-19c5-4b6f-915f-025096353e7f
-# ╠═651ccc19-c04c-4260-ac48-f70fb7ba5a44
+# ╠═371d138c-06c4-4312-a529-d007993d9359
+# ╟─651ccc19-c04c-4260-ac48-f70fb7ba5a44
+# ╠═e1daff84-7577-428a-9ebf-692341536845
+# ╠═268a3d8f-5880-40be-93b7-68c02f0cd8ee
+# ╠═98507e01-f1a7-42a1-8f90-417ef9a7d359
+# ╠═8f86deb2-981e-40c6-8290-7a31496360f3
+# ╠═182b2fde-75bf-4722-bf5a-8f9b59e49cf1
 # ╠═9c3da758-55a4-4177-8960-c7051d41ce8a
 # ╟─499c927c-4f1a-4dd5-9593-7d59d7b703ef
 # ╟─bff985e5-c02b-4a0c-940d-f91e456ebdf0
-# ╠═8f82649c-7e03-4f28-80d9-52a77d7d68a5
+# ╟─8f82649c-7e03-4f28-80d9-52a77d7d68a5
 # ╟─e45513cb-eb3a-4408-9c01-e3790ad21ac8
-# ╠═b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
+# ╟─b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
+# ╟─d1d80da4-9476-4dc9-97c4-63b296c654f6
 # ╟─9f9e05bf-176d-4428-8331-1c384d5a33b4
+# ╟─398e7246-2265-470d-9a09-6ddeebf5b82f
 # ╟─1f589ca1-4752-4627-b42b-9f6274ede41b
 # ╠═d2dec219-9d7c-4d3d-9ef6-d91ec9de79c6
-# ╠═6fe5c79a-38dd-42da-a8c0-7c744754c457
+# ╟─6fe5c79a-38dd-42da-a8c0-7c744754c457
+# ╟─04ff6031-c75b-499b-a077-886362f74fef
+# ╠═bbcae025-3d88-4791-89d3-d0670fdb173e
+# ╠═aad73f20-d44e-4085-a863-8872b76f2656
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
