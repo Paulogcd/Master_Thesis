@@ -893,7 +893,7 @@ begin
 						consumption_range::UnitRange,
 						labor_range::UnitRange,
 						value_function_nextperiod::Array,
-						β=0.9, z = 1,ρ = 0.1,φ = 0.1,proba_survival=0.9,r = 0.3, w=0, h = "good")::NamedTuple
+						β=0.9, z = 1,ρ = 0.1,φ = 0.1,proba_survival=0.9,r = 0.3, w=0, h = "good",return_full_grid=0)::NamedTuple
 
 		@assert length(value_function_nextperiod) == length(s_range) "The value function of the next period has the wrong length."
 
@@ -985,8 +985,11 @@ begin
 		# index_optimal_choice containing Cartesian index, its case is a bit more difficult to handle.
 
 		optimal_choice = NamedArray(optimal_choice, (param1_names, ["c","l","sprime"]))
-
-		return (;grid_of_value_function,Vstar,index_optimal_choice,optimal_choice)
+		if return_full_grid == 1
+			return (;grid_of_value_function,Vstar,index_optimal_choice,optimal_choice)
+		else
+			return (;Vstar,index_optimal_choice,optimal_choice)
+		end
 	end
 end
 
@@ -1003,7 +1006,7 @@ keys(result_of_Bellman)
 # (:grid_of_value_function, :Vstar, :index_optimal_choice, :optimal_choice)
 
 # ╔═╡ c0d772b1-9561-4bec-9571-c4fbcff1fb7e
-result_of_Bellman[:grid_of_value_function]
+# result_of_Bellman[:grid_of_value_function]
 # yields the grid of the values of the function with the different combinations of state and choice variables:
 # The dimensions are:	
 # s,c,l,s'
@@ -1015,7 +1018,7 @@ Instead, we can use the `display` function:
 """
 
 # ╔═╡ bec574bb-d9a1-457a-aacd-c6704a0f608d
-display(result_of_Bellman[:grid_of_value_function][1:10,1:10,1,1])
+# display(result_of_Bellman[:grid_of_value_function][1:10,1:10,1,1])
 
 # ╔═╡ 6d943848-cd25-4d2d-819b-fd96e173a14b
 result_of_Bellman[:Vstar]
@@ -1049,14 +1052,14 @@ begin
 	 					sprime_range::UnitRange,
 	 					consumption_range::UnitRange,
 	 					labor_range::UnitRange,
-						β=0.9, z = 1,ρ = 0.1,φ = 0.1,proba_survival=0.9,r = 0.3, w=0, h = "good")::NamedTuple
+						β=0.9, z = 1,ρ = 0.1,φ = 0.1,proba_survival=0.9,r = 0.3, w=0, h = "good",return_full_grid = 0)::NamedTuple
 
 	return Bellman(;s_range = s_range,
 	 					sprime_range = sprime_range,
 	 					consumption_range = consumption_range,
 	 					labor_range = labor_range,
 	 					value_function_nextperiod = zeros(length(s_range)),
-	 					β=β, z = z, ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h)::NamedTuple
+	 					β=β, z = z, ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h, return_full_grid)::NamedTuple
 	end
 end
 
@@ -1097,7 +1100,7 @@ begin
 				consumption_range::UnitRange,
 				labor_range::UnitRange,
 				nperiods::Number,
-				β=0.9, z = 1, r = 0.3, ρ = 0.1, φ = 0.1, proba_survival=0.9, w = 0, h="good")::NamedTuple
+				β=0.9, z = 1, r = 0.3, ρ = 0.1, φ = 0.1, proba_survival=0.9, w = 0, h="good", return_full_grid = 0)::NamedTuple
 
 		# Initialisation: 
 
@@ -1146,12 +1149,13 @@ begin
 	 					sprime_range = sprime_range::UnitRange,
 	 					consumption_range = consumption_range::UnitRange,
 	 					labor_range = labor_range::UnitRange,
-	 					β=β, z = z, ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h)::NamedTuple
+	 					β=β, z = z, ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h, return_full_grid = return_full_grid)::NamedTuple
 
 		
 		# Value of the value function: 
-		V[end,:,:,:,:] 							= last_Bellman[:grid_of_value_function] # last_Bellman[1]
-		
+		if return_full_grid == 1
+			V[end,:,:,:,:] 							= last_Bellman[:grid_of_value_function] # last_Bellman[1]
+		end 
 		# Values at the optimum:
 		Vstar[end,:] 							.= last_Bellman[:Vstar] # 2 	 
 		
@@ -1170,24 +1174,32 @@ begin
 					consumption_range=consumption_range,
 					labor_range=labor_range,
 					value_function_nextperiod=last_Bellman[:Vstar], 
-					β=β, z = z, ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h)::NamedTuple
-			
-			V[index_time,:,:,:,:] 							= tmp[:grid_of_value_function]  #1
+					β=β, z = z, ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h,return_full_grid=return_full_grid)::NamedTuple
+			if return_full_grid == 1
+				V[index_time,:,:,:,:] 							= tmp[:grid_of_value_function]  #1
+			end
+				
 			Vstar[index_time,:] 							= tmp[:Vstar] 					#2
 			index_optimal_choices[index_time] 				= tmp[:index_optimal_choice] 	#3
 			optimal_choices[index_time,:,:] 				= tmp[:optimal_choice] 			#4
-
+			
 			last_Bellman = tmp
 			
 		end # end of time loop
 
 		# Rename in NamedArrays:
-		V 		= NamedArray(V, (param1_names, savings_value, consumption_value, labor_value, sprime_value))
-		Vstar 	= NamedArray(Vstar, (param1_names,savings_value)) # = tmp[2]
+			if return_full_grid == 1
+				V 		= NamedArray(V, (param1_names, savings_value, consumption_value, labor_value, sprime_value))
+				Vstar 	= NamedArray(Vstar, (param1_names,savings_value)) # = tmp[2]
+				return (;V,Vstar,index_optimal_choices,optimal_choices)
+			else
+				Vstar 	= NamedArray(Vstar, (param1_names,savings_value)) # = tmp[2]
+				return (;Vstar,index_optimal_choices,optimal_choices)
+			end
 
 		# optimal_choices = NamedArray(optimal_choices, param1_names) # done previously
 
-		return (;V,Vstar,index_optimal_choices,optimal_choices)
+		# return (;V,Vstar,index_optimal_choices,optimal_choices)
 	end
 end
 
@@ -1221,18 +1233,19 @@ solution = backwards(s_range = (-10:10)::UnitRange,
 			sprime_range = (-10:10)::UnitRange,
 			consumption_range = (0:10)::UnitRange,
 			labor_range = (0:10)::UnitRange,
-			nperiods = 100)::NamedTuple
+			nperiods = 100,
+			return_full_grid = 0)::NamedTuple
 
 # ╔═╡ 6403de51-b02e-4bc3-baf7-f001520a8435
 keys(solution)
 
 # ╔═╡ 025db95c-2f37-4cca-8832-56b670569c2b
-solution[:V]
+# solution[:V]
 # Yields the grid of values of the value function. 
 # The dimensions are : time, initial savings, consumption, labor supply, savings next period.
 
 # ╔═╡ 71fc0640-1420-4c6f-8733-d6593b3c4d08
-display(solution[:V][1:100,1:end,1:2,1,1])
+# display(solution[:V][1:100,1:end,1:2,1,1])
 
 # ╔═╡ ee89ffb9-0ed7-4b76-bd98-33114bc2cbf1
 solution[:Vstar]
@@ -1291,16 +1304,16 @@ First, we generate a fixed solution:
 @bind s_range_Vstar_min Slider(-100:1:10, default = -10)
 
 # ╔═╡ 268a3d8f-5880-40be-93b7-68c02f0cd8ee
-@bind s_range_Vstar_max Slider(10:1:100, default = 10)
+@bind s_range_Vstar_max Slider(10:1:100, default = 50)
 
 # ╔═╡ 98507e01-f1a7-42a1-8f90-417ef9a7d359
 @bind fixed_r Slider(0.001:0.1:2, default = 0.04)
 
 # ╔═╡ 8f86deb2-981e-40c6-8290-7a31496360f3
-@bind consumption_max Slider(10:1:100, default = 10)
+@bind consumption_max Slider(10:1:100, default = 50)
 
 # ╔═╡ 182b2fde-75bf-4722-bf5a-8f9b59e49cf1
-@bind labor_max Slider(10:1:100, default = 10)
+@bind labor_max Slider(10:1:100, default = 50)
 
 # ╔═╡ ba31634e-baf7-42e8-aeaf-6a70b67ad66f
 @bind common_z Slider(0.001:0.01:10, default = 0.01)
@@ -1312,13 +1325,13 @@ First, we generate a fixed solution:
 begin 
 	s_range_Vstar = s_range_Vstar_min:s_range_Vstar_max
 	
-	solution_plot_Vstar_fixed = backwards(;s_range	= s_range_Vstar,
+	solution_plot_Vstar_fixed = backwards(s_range	= s_range_Vstar,
 	 						sprime_range		= s_range_Vstar,
 	 						consumption_range 	= 0:consumption_max, # Increasing the maximum of the consumption range shifts the threshold (to the right) from which the value function stays stagnant. This is due to the fact that the agents being able to consume more, having more initial savings is more valuable. For max(s) = 10, max(c) = 23 is fine.
 	 						labor_range			= 0:labor_max,
 	 						nperiods 			= nperiods,
 							r = fixed_r, # The interest rate determines the threshhold from which having debt inverts its effect on the value function. 
-							z = common_z, w = 0, h="bad", ρ = 0.99, φ = 0.09) 
+							z = common_z, w = 0, h="bad", ρ = 0.99, φ = 0.09, return_full_grid = 0) 
 end
 
 # ╔═╡ 3c6eefa3-3aa9-4808-9719-4647e235482d
