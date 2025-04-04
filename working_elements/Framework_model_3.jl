@@ -796,7 +796,7 @@ begin
 	
 	"""
 	function utility(;c,l,z,w,h,ρ=0.1,φ=0.1)
-		return ( ((abs.(c)).^(1-ρ)) ./ (1-ρ) ) - ξ.(w,h) .* ( ((abs.(l)).^(1-φ)) ./ (1-φ) )
+		return ( ((abs.(c)).^(1-ρ)) ./ (1-ρ) ) - ξ.(w,h) .* ( ((abs.(l)).^(1+φ)) ./ (1+φ) )
 	end
 end
 
@@ -1324,7 +1324,7 @@ First, we generate a fixed solution:
 @bind labor_max Slider(10:1:100, default = 50)
 
 # ╔═╡ ba31634e-baf7-42e8-aeaf-6a70b67ad66f
-@bind common_z Slider(0.001:0.01:10, default = 0.01)
+@bind common_z Slider(0.001:0.01:10, default = 0.1)
 
 # ╔═╡ 5dc0ccec-0a2c-40ac-bee9-e8e8c6dc29f7
 @bind common_β Slider(0.00:0.01:1, default = 0.9)
@@ -1358,6 +1358,8 @@ solution_plot_Vstar_adjustable = backwards(s_range	= s_range_Vstar,
 							r = r_star_plot, 
 							z = common_z, w = 0, h="bad", ρ = 0.99, φ = common_φ, β = common_β) 
 	# With the default values (-50:50, maxlabor=maxconsumption=100) of the variables, this takes 529 seconds and requires 18.30 Gb of memory.
+	# Nevermind the previous comment. With the default value of return_full_grid = 0, 50 periods take approximately 200 Mb of memory. great :) 
+	# Each backwards function takes 2 minutes to run however.
 
 # ╔═╡ 62f0a5bf-8d88-40ba-9ecf-b9574134955d
 # varinfo()
@@ -1423,7 +1425,7 @@ begin
 	# Plotting it yields: 
 	plot_c_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][period,:,:][:,"c"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Consumption")
 	
-	for t in 1:nperiods
+	for t in 2:nperiods
 		Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"c"], label = "Period: $t")
 	end
 
@@ -1552,13 +1554,17 @@ end
 md"""
 For labor supply, we have from $(2)$ : 
 
-$$l_{t} = \left[\frac{\lambda_{t}\cdot z_{t}}{\xi_{t}}\right]^{-\frac{1}{\varphi}}$$ 
+$$l_{t} = \left[\frac{\lambda_{t}\cdot z_{t}}{\xi_{t}}\right]^{\frac{1}{\varphi}}$$ 
 """
 
 # ╔═╡ c1e89300-5f02-454a-97bf-8ce029ef02f4
 begin 
-	theoretical_l() = 
+	theoretical_l(;lambda,z,ξ,φ) = ((lambda.*z)./ξ).^(1/φ)
+	theoretical_l.(lambda = (1:10).^(0.9), z = 1,ξ = 2,φ = 0.1)
 end
+
+# ╔═╡ ff73f6be-87d3-4872-848c-a5de3d8ad380
+varinfo()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1584,7 +1590,7 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.4"
+julia_version = "1.11.3"
 manifest_format = "2.0"
 project_hash = "27c2fb7e79227d14516477bbafb25589102a617b"
 
@@ -2207,7 +2213,7 @@ version = "0.3.27+1"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+4"
+version = "0.8.1+2"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -3101,5 +3107,6 @@ version = "1.4.1+2"
 # ╠═aad73f20-d44e-4085-a863-8872b76f2656
 # ╠═334bdf11-6f7c-4081-ace3-99a1f3d97d7e
 # ╠═c1e89300-5f02-454a-97bf-8ce029ef02f4
+# ╠═ff73f6be-87d3-4872-848c-a5de3d8ad380
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
