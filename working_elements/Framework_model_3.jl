@@ -1105,7 +1105,8 @@ begin
 				consumption_range::UnitRange,
 				labor_range::UnitRange,
 				nperiods::Number,
-				β=0.9, z = 1, r = 0.3, ρ = 0.1, φ = 0.1, proba_survival=0.9, w = 0, h="good", 
+				z = ones(nperiods)::Array,
+				β=0.9, r = 0.3, ρ = 0.1, φ = 0.1, proba_survival=0.9, w = 0, h="good", 
 				return_full_grid = 0)::NamedTuple
 
 		# Initialisation: 
@@ -1117,7 +1118,7 @@ begin
 		param4_names 			= ["l_i$i" for i in 1:length(labor_range)]
 		param5_names 			= ["sprime_i$i" for i in 1:length(sprime_range)]
 		choice_variable_name 	= ["c","l","sprime"]
-
+								
 		savings_value 			= ["s=$i" for i in s_range]
 		consumption_value 		= ["c=$i" for i in consumption_range]
 		labor_value 			= ["l=$i" for i in labor_range]
@@ -1155,7 +1156,7 @@ begin
 	 					sprime_range = sprime_range::UnitRange,
 	 					consumption_range = consumption_range::UnitRange,
 	 					labor_range = labor_range::UnitRange,
-	 					β=β, z = z, ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h,
+	 					β=β, z = z[end], ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h,
 			return_full_grid = 1)::NamedTuple
 
 		
@@ -1181,7 +1182,7 @@ begin
 					consumption_range=consumption_range,
 					labor_range=labor_range,
 					value_function_nextperiod=last_Bellman[:Vstar], 
-					β=β, z = z, ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h,return_full_grid=1)::NamedTuple
+					β=β, z = z[index_time], ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h,return_full_grid=1)::NamedTuple
 			
 			if return_full_grid == 1
 				V[index_time,:,:,:,:] 							= tmp[:grid_of_value_function]  #1
@@ -1338,28 +1339,8 @@ First, we generate a fixed solution:
 # ╔═╡ 94590837-b20b-4603-8c4c-24061c4a207f
 s_range_Vstar = s_range_Vstar_min:s_range_Vstar_max
 
-# ╔═╡ 9c3da758-55a4-4177-8960-c7051d41ce8a
-begin 
-	solution_plot_Vstar_fixed = backwards(s_range	= s_range_Vstar,
-	 						sprime_range		= s_range_Vstar,
-	 						consumption_range 	= 0:consumption_max, # Increasing the maximum of the consumption range shifts the threshold (to the right) from which the value function stays stagnant. This is due to the fact that the agents being able to consume more, having more initial savings is more valuable. For max(s) = 10, max(c) = 23 is fine.
-	 						labor_range			= 0:labor_max,
-	 						nperiods 			= nperiods,
-							r = fixed_r, # The interest rate determines the threshhold from which having debt inverts its effect on the value function. 
-							z = common_z, w = 0, h="bad", ρ = 0.99, φ = common_φ,β = common_β) 
-end
-
-# ╔═╡ 3c6eefa3-3aa9-4808-9719-4647e235482d
-solution_plot_Vstar_adjustable = backwards(s_range	= s_range_Vstar,
-	 						sprime_range		= s_range_Vstar,
-	 						consumption_range 	= 0:consumption_max,
-	 						labor_range			= 0:labor_max,
-	 						nperiods 			= nperiods, 
-							r = r_star_plot, 
-							z = common_z, w = 0, h="bad", ρ = 0.99, φ = common_φ, β = common_β) 
-	# With the default values (-50:50, maxlabor=maxconsumption=100) of the variables, this takes 529 seconds and requires 18.30 Gb of memory.
-	# Nevermind the previous comment. With the default value of return_full_grid = 0, 50 periods take approximately 200 Mb of memory. great :) 
-	# Each backwards function takes 2 minutes to run however.
+# ╔═╡ 3b5ee8e1-d62b-464e-97db-dcc3ca79bbaa
+fill(fixed_r,nperiods)
 
 # ╔═╡ 62f0a5bf-8d88-40ba-9ecf-b9574134955d
 # varinfo()
@@ -1378,23 +1359,6 @@ We will then plot them together and comment on some comparative statics.
 # ╔═╡ bff985e5-c02b-4a0c-940d-f91e456ebdf0
 md""" ## The optimal value function"""
 
-# ╔═╡ 8f82649c-7e03-4f28-80d9-52a77d7d68a5
-begin 	
-	plotly()
-	
-	# solution_plot_Vstar[:Vstar]
-	# solution_plot_Vstar[:Vstar][1,:]
-	plot_Vstar = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:Vstar][1,:], label = "Period: 1")
-	
-	for t in 1:nperiods
-		Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:Vstar][t,:], label = "Period: $t")
-	end
-
-	Plots.plot!(xaxis = "Initial savings" , yaxis = "Value function")
-
-	Plots.plot!(legend = false, title = "Value function in function of the initial savings.")
-end
-
 # ╔═╡ e45513cb-eb3a-4408-9c01-e3790ad21ac8
 md"""
 ## The optimal choice variables
@@ -1402,113 +1366,14 @@ md"""
 ### Consumption
 """
 
-# ╔═╡ b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
-begin
-
-	plotly()
-	period = 1
-	s = 1
-
-	solution_plot_Vstar_fixed[:optimal_choices]#[period][s]
-	keys(solution_plot_Vstar_fixed[:optimal_choices][period][s])
-	# solution_plot_Vstar[:optimal_choices][period][101][:consumption]
-
-	# The optimal values of c,l,sprime, for t = 1:10, and s = 1
-	solution_plot_Vstar_fixed[:optimal_choices][1:nperiods,1,:]
-
-	# We want to plot the optimal actions in function of the state variable s.
-	# First, let us limit ourselves to one period.
-	solution_plot_Vstar_fixed[:optimal_choices][period,:,:][:,:]
-	# Then, we are going to only plot consumption, omitting labor and savings at next period.
-	solution_plot_Vstar_fixed[:optimal_choices][period,:,:][:,["c","l","sprime"]]
-
-	# Plotting it yields: 
-	plot_c_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][period,:,:][:,"c"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Consumption")
-	
-	for t in 2:nperiods
-		Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"c"], label = "Period: $t")
-	end
-
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "r = $fixed_r", legend = false)
-
-	plot_c_star
-
-	# This is troubling. The consumption policy function does not change across time.
-	
-
-	plot_c_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][period,:,:][:,"c"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Consumption")
-	
-	for t in 1:nperiods
-		Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][t,:,:][:,"c"], label = "Period: $t")
-	end
-
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "r = $r_star_plot", legend = false)
-
-	Plots.plot(plot_c_star,plot_c_star_a)
-end
-
 # ╔═╡ d1d80da4-9476-4dc9-97c4-63b296c654f6
 md""" ### Labor supply """
-
-# ╔═╡ 9f9e05bf-176d-4428-8331-1c384d5a33b4
-begin 
-	plotly()
-	plot_l_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][period,:,"l"], label = "Period: 1", xaxis = "Initial savings", yaxis = "Labor supply")
-	
-	for t in 2:nperiods
-		Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,"l"], label = "Period: $t")
-	end
-
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal labor supply", title = "r = $fixed_r", legend = false)
-
-	
-	plot_l_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][period,:,"l"], label = "Period: 1", xaxis = "Initial savings", yaxis = "Labor supply")
-	
-	for t in 2:nperiods
-		Plots.plot!(s_range_Vstar,
-			solution_plot_Vstar_adjustable[:optimal_choices][t,:,"l"], label = "Period: $t")
-	end
-	
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal labor supply", title = "r = $r_star_plot", legend = false)
-
-	Plots.plot(plot_l_star,plot_l_star_a)
-end
 
 # ╔═╡ 398e7246-2265-470d-9a09-6ddeebf5b82f
 md""" ### Savings for next period """
 
-# ╔═╡ 1f589ca1-4752-4627-b42b-9f6274ede41b
-begin 
-	plotly()
-
-	# Fixed interest rate plot:
-	plot_sprime_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][1,:,:][:,"sprime"])
-	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
-	for t in 1:nperiods
-	 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"l"], label = "Period: $t")
-	end
-	Plots.plot!(title = "r = $fixed_r", legend = false)
-
-	# Adjusted interest rate plot:
-	plot_sprime_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][1,:,:][:,"sprime"])
-	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
-	for t in 2:nperiods
-	 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][t,:,:][:,"l"], label = "Period: $t")
-	end
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal savings for next period", title = "r = $r_star_plot", legend = false)
-
-	# Ploting both:
-	Plots.plot(plot_sprime_star,plot_sprime_star_a)
-end
-
 # ╔═╡ ee6fa04f-3581-4205-adc3-c59d2f9ee031
 md""" ## Altogether """
-
-# ╔═╡ 6fe5c79a-38dd-42da-a8c0-7c744754c457
-begin 
-	plotly()
-	Plots.plot(plot_Vstar,plot_c_star)
-end
 
 # ╔═╡ 04ff6031-c75b-499b-a077-886362f74fef
 md""" ## Comparison with theoretical results 
@@ -1563,6 +1428,152 @@ begin
 	theoretical_l.(lambda = (1:10).^(0.9), z = 1,ξ = 2,φ = 0.1)
 end
 
+# ╔═╡ 73d913a7-2892-47d2-9955-557e9941a38f
+decreasing_productivity = [1/x for x in 1:nperiods]
+
+# ╔═╡ 9c3da758-55a4-4177-8960-c7051d41ce8a
+begin 
+	solution_plot_Vstar_fixed = backwards(s_range	= s_range_Vstar,
+	 						sprime_range		= s_range_Vstar,
+	 						consumption_range 	= 0:consumption_max, # Increasing the maximum of the consumption range shifts the threshold (to the right) from which the value function stays stagnant. This is due to the fact that the agents being able to consume more, having more initial savings is more valuable. For max(s) = 10, max(c) = 23 is fine.
+	 						labor_range			= 0:labor_max,
+	 						nperiods 			= nperiods,
+							r = fixed_r, # The interest rate determines the threshhold from which having debt inverts its effect on the value function. 
+							# z = fill(common_z,nperiods),
+							z = decreasing_productivity,
+							w = 0, h="bad", ρ = 0.99, φ = common_φ,β = common_β) 
+end
+
+# ╔═╡ 8f82649c-7e03-4f28-80d9-52a77d7d68a5
+begin 	
+	plotly()
+	
+	# solution_plot_Vstar[:Vstar]
+	# solution_plot_Vstar[:Vstar][1,:]
+	plot_Vstar = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:Vstar][1,:], label = "Period: 1")
+	
+	for t in 1:nperiods
+		Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:Vstar][t,:], label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings" , yaxis = "Value function")
+
+	Plots.plot!(legend = false, title = "Value function in function of the initial savings.")
+end
+
+# ╔═╡ 3c6eefa3-3aa9-4808-9719-4647e235482d
+solution_plot_Vstar_adjustable = backwards(s_range	= s_range_Vstar,
+	 						sprime_range		= s_range_Vstar,
+	 						consumption_range 	= 0:consumption_max,
+	 						labor_range			= 0:labor_max,
+	 						nperiods 			= nperiods, 
+							r = r_star_plot, 
+							# z = fill(common_z,nperiods),
+							z = decreasing_productivity,
+							w = 0, h="bad", ρ = 0.99, φ = common_φ, β = common_β) 
+	# With the default values (-50:50, maxlabor=maxconsumption=100) of the variables, this takes 529 seconds and requires 18.30 Gb of memory.
+	# Nevermind the previous comment. With the default value of return_full_grid = 0, 50 periods take approximately 200 Mb of memory. great :) 
+	# Each backwards function takes 2 minutes to run however.
+
+# ╔═╡ b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
+begin
+
+	plotly()
+	period = 1
+	s = 1
+
+	solution_plot_Vstar_fixed[:optimal_choices]#[period][s]
+	keys(solution_plot_Vstar_fixed[:optimal_choices][period][s])
+	# solution_plot_Vstar[:optimal_choices][period][101][:consumption]
+
+	# The optimal values of c,l,sprime, for t = 1:10, and s = 1
+	solution_plot_Vstar_fixed[:optimal_choices][1:nperiods,1,:]
+
+	# We want to plot the optimal actions in function of the state variable s.
+	# First, let us limit ourselves to one period.
+	solution_plot_Vstar_fixed[:optimal_choices][period,:,:][:,:]
+	# Then, we are going to only plot consumption, omitting labor and savings at next period.
+	solution_plot_Vstar_fixed[:optimal_choices][period,:,:][:,["c","l","sprime"]]
+
+	# Plotting it yields: 
+	plot_c_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][period,:,:][:,"c"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Consumption")
+	
+	for t in 2:nperiods
+		Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"c"], label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "r = $fixed_r", legend = false)
+
+	plot_c_star
+
+	# This is troubling. The consumption policy function does not change across time.
+	
+
+	plot_c_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][period,:,:][:,"c"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Consumption")
+	
+	for t in 1:nperiods
+		Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][t,:,:][:,"c"], label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "r = $r_star_plot", legend = false)
+
+	Plots.plot(plot_c_star,plot_c_star_a)
+end
+
+# ╔═╡ 6fe5c79a-38dd-42da-a8c0-7c744754c457
+begin 
+	plotly()
+	Plots.plot(plot_Vstar,plot_c_star)
+end
+
+# ╔═╡ 9f9e05bf-176d-4428-8331-1c384d5a33b4
+begin 
+	plotly()
+	plot_l_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][period,:,"l"], label = "Period: 1", xaxis = "Initial savings", yaxis = "Labor supply")
+	
+	for t in 2:nperiods
+		Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,"l"], label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal labor supply", title = "r = $fixed_r", legend = false)
+
+	
+	plot_l_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][period,:,"l"], label = "Period: 1", xaxis = "Initial savings", yaxis = "Labor supply")
+	
+	for t in 2:nperiods
+		Plots.plot!(s_range_Vstar,
+			solution_plot_Vstar_adjustable[:optimal_choices][t,:,"l"], label = "Period: $t")
+	end
+	
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal labor supply", title = "r = $r_star_plot", legend = false)
+
+	Plots.plot(plot_l_star,plot_l_star_a)
+end
+
+# ╔═╡ 1f589ca1-4752-4627-b42b-9f6274ede41b
+begin 
+	plotly()
+
+	# Fixed interest rate plot:
+	plot_sprime_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][1,:,:][:,"sprime"])
+	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
+	for t in 1:nperiods
+	 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"l"], label = "Period: $t")
+	end
+	Plots.plot!(title = "r = $fixed_r", legend = false)
+
+	# Adjusted interest rate plot:
+	plot_sprime_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][1,:,:][:,"sprime"])
+	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
+	for t in 2:nperiods
+	 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][t,:,:][:,"l"], label = "Period: $t")
+	end
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal savings for next period", title = "r = $r_star_plot", legend = false)
+
+	# Ploting both:
+	Plots.plot(plot_sprime_star,plot_sprime_star_a)
+end
+
 # ╔═╡ ff73f6be-87d3-4872-848c-a5de3d8ad380
 varinfo()
 
@@ -1590,7 +1601,7 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.3"
+julia_version = "1.11.4"
 manifest_format = "2.0"
 project_hash = "27c2fb7e79227d14516477bbafb25589102a617b"
 
@@ -2213,7 +2224,7 @@ version = "0.3.27+1"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+2"
+version = "0.8.1+4"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -3089,6 +3100,7 @@ version = "1.4.1+2"
 # ╠═d2dec219-9d7c-4d3d-9ef6-d91ec9de79c6
 # ╠═94590837-b20b-4603-8c4c-24061c4a207f
 # ╠═9c3da758-55a4-4177-8960-c7051d41ce8a
+# ╠═3b5ee8e1-d62b-464e-97db-dcc3ca79bbaa
 # ╠═3c6eefa3-3aa9-4808-9719-4647e235482d
 # ╠═62f0a5bf-8d88-40ba-9ecf-b9574134955d
 # ╟─499c927c-4f1a-4dd5-9593-7d59d7b703ef
@@ -3099,7 +3111,7 @@ version = "1.4.1+2"
 # ╟─d1d80da4-9476-4dc9-97c4-63b296c654f6
 # ╟─9f9e05bf-176d-4428-8331-1c384d5a33b4
 # ╟─398e7246-2265-470d-9a09-6ddeebf5b82f
-# ╟─1f589ca1-4752-4627-b42b-9f6274ede41b
+# ╠═1f589ca1-4752-4627-b42b-9f6274ede41b
 # ╟─ee6fa04f-3581-4205-adc3-c59d2f9ee031
 # ╟─6fe5c79a-38dd-42da-a8c0-7c744754c457
 # ╟─04ff6031-c75b-499b-a077-886362f74fef
@@ -3107,6 +3119,7 @@ version = "1.4.1+2"
 # ╠═aad73f20-d44e-4085-a863-8872b76f2656
 # ╠═334bdf11-6f7c-4081-ace3-99a1f3d97d7e
 # ╠═c1e89300-5f02-454a-97bf-8ce029ef02f4
+# ╠═73d913a7-2892-47d2-9955-557e9941a38f
 # ╠═ff73f6be-87d3-4872-848c-a5de3d8ad380
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
