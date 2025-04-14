@@ -787,7 +787,7 @@ begin
 	"""
 	The `utility` function is defined such that its syntax is:
 	
-		utility(;c,l,z,w,h,ρ=0.1,φ=0.1)
+		utility(;c,l,z,w,h,ρ=1.5,φ=2)
 	
 	It returns:
 
@@ -795,7 +795,7 @@ begin
 
 	
 	"""
-	function utility(;c,l,z,w,h,ρ=0.1,φ=0.1)
+	function utility(;c,l,z,w,h,ρ=1.5,φ=2)
 		return ( ((abs.(c)).^(1-ρ)) ./ (1-ρ) ) - ξ.(w,h) .* ( ((abs.(l)).^(1+φ)) ./ (1+φ) )
 	end
 end
@@ -862,7 +862,7 @@ begin
 						consumption_range::UnitRange,
 						labor_range::UnitRange,
 						value_function_nextperiod::Array,
-						β=0.9, z = 1,ρ = 0.1,φ = 0.1,proba_survival=0.9,r = 0.3)::NamedTuple
+						β=0.9, z = 1,ρ = 1.5,φ = 2,proba_survival=0.9,r = 0.3)::NamedTuple
 
 	 
 	 Given ranges, and the value function of the next period, gives back 
@@ -893,7 +893,11 @@ begin
 						consumption_range::AbstractRange,
 						labor_range::AbstractRange,
 						value_function_nextperiod::Array,
-						β=0.9, z = 1,ρ = 0.1,φ = 0.1,proba_survival=0.9,r = 0.3, w=0, h = "good",
+						β=0.9, 
+						z = 1,
+						ρ = 1.5,
+						φ = 2,
+						proba_survival=0.9,r = 0.3, w=0, h = "good",
 						return_full_grid = 1, 
 						return_budget_balance = 1)::NamedTuple
 
@@ -947,7 +951,13 @@ begin
 											index_consumption,
 											index_labor, 
 											index_sprime] =
-								utility(;c=consumption, l=labor, z=z, w=w, h=h,ρ = ρ,φ = φ)+β*proba_survival*value_function_nextperiod[index_s]
+								utility(c=consumption,
+									l=labor,
+									z=z,
+									w=w,
+									h=h,
+									ρ=ρ,
+									φ=φ) + β*proba_survival*value_function_nextperiod[index_s]
 							
 						end
 						
@@ -1071,7 +1081,7 @@ begin
 	 					sprime_range::AbstractRange,
 	 					consumption_range::AbstractRange,
 	 					labor_range::AbstractRange,
-						β=0.9, z = 1,ρ = 0.1,φ = 0.1,proba_survival=0.9,r = 0.3, w=0, h = "good",
+						β=0.9, z = 1,ρ = 1.5,φ = 2,proba_survival=0.9,r = 0.3, w=0, h = "good",
 						return_full_grid = 0,
 						return_budget_balance = 1)::NamedTuple
 
@@ -1124,7 +1134,7 @@ begin
 				labor_range::AbstractRange,
 				nperiods::Integer,
 				z = ones(nperiods)::Array,
-				β=0.9, r = 0.3, ρ = 0.1, φ = 0.1, proba_survival=0.9, w = 0, h="good", 
+				β=0.9, r = 0.01, ρ = 1.5, φ = 2, proba_survival=0.9, w = 0, h="good", 
 				return_full_grid = 0, 
 				return_budget_balance = 1)::NamedTuple
 
@@ -1177,7 +1187,9 @@ begin
 	 					sprime_range = sprime_range::AbstractRange,
 	 					consumption_range = consumption_range::AbstractRange,
 	 					labor_range = labor_range::AbstractRange,
-	 					β=β, z = z[end], ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h,
+	 					β=β,
+			 			ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h,
+						z = z[end],
 						return_full_grid = 1,
 						return_budget_balance = return_budget_balance)::NamedTuple
 
@@ -1208,19 +1220,23 @@ begin
 					consumption_range=consumption_range,
 					labor_range=labor_range,
 					value_function_nextperiod=last_Bellman[:Vstar], 
-					β=β, z = z[index_time],
-					ρ = ρ, φ = φ, r = r, 
+					β=β,
+					z=z[index_time],
+					ρ=ρ,
+					φ=φ,
+					r= r, 
 					proba_survival = proba_survival, 
-					w = w, h=h,
+					w=w,
+					h=h,
 					return_full_grid = 1,
 					return_budget_balance = return_budget_balance)::NamedTuple
 			
 			if return_full_grid == 1
-				V[index_time,:,:,:,:] 							= tmp[:grid_of_value_function]  #1
+				V[index_time,:,:,:,:] 						= tmp[:grid_of_value_function]  #1
 			end
 
 			if return_budget_balance == 1 
-				budget_balance[index_time,:] = tmp[:budget_balance]
+				budget_balance[index_time,:] 				= tmp[:budget_balance]
 			end
 				
 			Vstar[index_time,:] 							= tmp[:Vstar] 					#2
@@ -1356,7 +1372,7 @@ First, we generate a fixed solution:
 """
 
 # ╔═╡ d037bdb7-eae1-40b3-b414-e9ccd664ac92
-@bind nperiods Slider(1:100, default = 30)
+@bind nperiods Slider(1:100, default = 80)
 
 # ╔═╡ e1daff84-7577-428a-9ebf-692341536845
 @bind s_range_Vstar_min Slider(-100:1:10, default = -10)
@@ -1367,29 +1383,49 @@ First, we generate a fixed solution:
 # ╔═╡ 98507e01-f1a7-42a1-8f90-417ef9a7d359
 @bind fixed_r Slider(0.001:0.1:2, default = 0.04)
 
+# ╔═╡ 143de478-7f8b-4c41-88e3-f2b69a0767d1
+fixed_r
+
 # ╔═╡ 8f86deb2-981e-40c6-8290-7a31496360f3
-@bind consumption_max Slider(10:1:100, default = 10)
+@bind consumption_max Slider(10:1:100, default = 30)
 
 # ╔═╡ 182b2fde-75bf-4722-bf5a-8f9b59e49cf1
-@bind labor_max Slider(10:1:100, default = 10)
+@bind labor_max Slider(10:1:100, default = 30)
 
 # ╔═╡ ba31634e-baf7-42e8-aeaf-6a70b67ad66f
 @bind common_z Slider(0.001:0.01:10, default = 0.1)
 
 # ╔═╡ 5dc0ccec-0a2c-40ac-bee9-e8e8c6dc29f7
-@bind common_β Slider(0.00:0.01:1, default = 0.9)
+@bind common_β Slider(0.00:0.01:1, default = 0.96)
+
+# ╔═╡ 4aba4292-90d8-4473-a07e-ddfcbe0e2b66
+common_β
 
 # ╔═╡ 441f0e00-f49c-4afd-99a7-bffb275e2064
-@bind common_φ Slider(0.00:0.01:1, default = 0.2)
+@bind common_φ Slider(0.00:0.01:5, default = 2)
 
 # ╔═╡ d2dec219-9d7c-4d3d-9ef6-d91ec9de79c6
 @bind r_star_plot Slider(-1:0.01:1, default = (1-common_β)/common_β)
 
-# ╔═╡ 94590837-b20b-4603-8c4c-24061c4a207f
-s_range_Vstar = s_range_Vstar_min:s_range_Vstar_max
+# ╔═╡ b4af7149-803d-45b5-9d6f-235dfb940eb8
+r_star_plot
 
-# ╔═╡ 62f0a5bf-8d88-40ba-9ecf-b9574134955d
-# varinfo()
+# ╔═╡ 94590837-b20b-4603-8c4c-24061c4a207f
+s_range_Vstar = s_range_Vstar_min:0.1:s_range_Vstar_max
+
+# ╔═╡ 3c6eefa3-3aa9-4808-9719-4647e235482d
+# solution_plot_Vstar_adjustable = backwards(s_range	= s_range_Vstar,
+# 	 							sprime_range		= s_range_Vstar,
+# 	 							consumption_range 	= 0:consumption_max,
+# 	 							labor_range			= 0:labor_max,
+# 	 							nperiods 			= nperiods, 
+# 								r = r_star_plot, 
+# 								# z = fill(common_z,nperiods),
+# 								z = decreasing_productivity,
+# 								w = 0, h="bad", ρ = 0.99, φ = common_φ, β = common_β) 
+	# With the default values (-50:50, maxlabor=maxconsumption=100) of the variables, this takes 529 seconds and requires 18.30 Gb of memory.
+	# Nevermind the previous comment. With the default value of return_full_grid = 0, 50 periods take approximately 200 Mb of memory. great :) 
+	# Each backwards function takes 2 minutes to run however.
 
 # ╔═╡ 2c65efe4-7ca0-4da3-bdd2-ed69ffde1762
 begin 
@@ -1402,10 +1438,11 @@ begin
 		end
 	end
 	stochastic_productivity = 1 .+ tmp
-	decreasing_productivity = [1/x for x in 1:nperiods]
 	fixed_productivity = fill(common_z,nperiods)
 	log_productivity = [log(x) for x in 1:nperiods]
 	concave_productivity = [-x* 1/1000 *(x-100) for x in 1:nperiods]
+	decreasing_productivity = [1/x for x in 1:nperiods]
+	typical_productivity = [exp(0.1*x - 0.001*x^2) for x in 1:nperiods] # peak at around 50 years old.
 end
 
 # ╔═╡ 9c3da758-55a4-4177-8960-c7051d41ce8a
@@ -1413,27 +1450,16 @@ begin
 	solution_plot_Vstar_fixed = backwards(s_range	= s_range_Vstar,
 	 							sprime_range		= s_range_Vstar,
 	 							consumption_range 	= 0:consumption_max, # Increasing the maximum of the consumption range shifts the threshold (to the right) from which the value function stays stagnant. This is due to the fact that the agents being able to consume more, having more initial savings is more valuable. For max(s) = 10, max(c) = 23 is fine.
-	 							labor_range			= 0:labor_max,
+	 							labor_range			= 0.00:0.1:1.00,
 	 							nperiods 			= nperiods,
-								r = fixed_r, # The interest rate determines the threshhold from which having debt inverts its effect on the value function. 
+								r = r_star_plot, # The interest rate determines the threshhold from which having debt inverts its effect on the value function. 
 								# z = fill(common_z,nperiods),
-								z = concave_productivity,
-								w = 0, h="bad", ρ = 0.99, φ = common_φ,β = common_β) 
+								z = typical_productivity,
+								w = 0, h="bad",
+								ρ = 1.5,
+								φ = common_φ,
+								β = common_β) 
 end
-
-# ╔═╡ 3c6eefa3-3aa9-4808-9719-4647e235482d
-solution_plot_Vstar_adjustable = backwards(s_range	= s_range_Vstar,
-	 							sprime_range		= s_range_Vstar,
-	 							consumption_range 	= 0:consumption_max,
-	 							labor_range			= 0:labor_max,
-	 							nperiods 			= nperiods, 
-								r = r_star_plot, 
-								# z = fill(common_z,nperiods),
-								z = concave_productivity,
-								w = 0, h="bad", ρ = 0.99, φ = common_φ, β = common_β) 
-	# With the default values (-50:50, maxlabor=maxconsumption=100) of the variables, this takes 529 seconds and requires 18.30 Gb of memory.
-	# Nevermind the previous comment. With the default value of return_full_grid = 0, 50 periods take approximately 200 Mb of memory. great :) 
-	# Each backwards function takes 2 minutes to run however.
 
 # ╔═╡ 499c927c-4f1a-4dd5-9593-7d59d7b703ef
 md"""
@@ -1496,26 +1522,25 @@ begin
 	# Plotting it yields: 
 	plot_c_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][period,:,:][:,"c"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Consumption")
 	
-	for t in 2:nperiods
+	for t in 10:10:nperiods
 		Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"c"], label = "Period: $t")
-	end
-
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "r = $fixed_r", legend = false)
-
-	plot_c_star
-
-	# This is troubling. The consumption policy function does not change across time.
-	
-
-	plot_c_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][period,:,:][:,"c"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Consumption")
-	
-	for t in 1:nperiods
-		Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][t,:,:][:,"c"], label = "Period: $t")
 	end
 
 	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "r = $r_star_plot", legend = false)
 
-	Plots.plot(plot_c_star,plot_c_star_a)
+	plot_c_star
+
+	# This is troubling. The consumption policy function does not change across time.
+
+	# plot_c_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][period,:,:][:,"c"], label = "Period: $period", xaxis = "Initial savings", yaxis = "Consumption")
+	# 
+	# for t in 1:nperiods
+	# 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][t,:,:][:,"c"], label = "Period: $t")
+	# end
+	# 
+	# Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "r = $r_star_plot", legend = false)
+
+	Plots.plot(plot_c_star)
 end
 
 # ╔═╡ d1d80da4-9476-4dc9-97c4-63b296c654f6
@@ -1530,19 +1555,19 @@ begin
 		Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,"l"], label = "Period: $t")
 	end
 
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal labor supply", title = "r = $fixed_r", legend = false)
-
-	
-	plot_l_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][period,:,"l"], label = "Period: 1", xaxis = "Initial savings", yaxis = "Labor supply")
-	
-	for t in 2:nperiods
-		Plots.plot!(s_range_Vstar,
-			solution_plot_Vstar_adjustable[:optimal_choices][t,:,"l"], label = "Period: $t")
-	end
-	
 	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal labor supply", title = "r = $r_star_plot", legend = false)
 
-	Plots.plot(plot_l_star,plot_l_star_a)
+	
+	# plot_l_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][period,:,"l"], label = "Period: 1", xaxis = "Initial savings", yaxis = "Labor supply")
+	# 
+	# for t in 2:nperiods
+	# 	Plots.plot!(s_range_Vstar,
+	# 		solution_plot_Vstar_adjustable[:optimal_choices][t,:,"l"], label = "Period: $t")
+	# end
+	# 
+	# Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal labor supply", title = "r = $r_star_plot", legend = false)
+
+	Plots.plot(plot_l_star)
 end
 
 # ╔═╡ 398e7246-2265-470d-9a09-6ddeebf5b82f
@@ -1553,23 +1578,23 @@ begin
 	plotly()
 
 	# Fixed interest rate plot:
-	plot_sprime_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][1,:,:][:,"sprime"])
+	plot_sprime_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][1,:,"sprime"])
 	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
-	for t in 1:nperiods
-	 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"sprime"], label = "Period: $t")
-	end
-	Plots.plot!(title = "r = $fixed_r", legend = false)
+	# for t in 1:nperiods
+	# 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"sprime"], label = "Period: $t")
+	# end
+	Plots.plot!(title = "r = $r_star_plot", legend = false)
 
 	# Adjusted interest rate plot:
-	plot_sprime_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][1,:,:][:,"sprime"])
-	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
-	for t in 2:nperiods
-	 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][t,:,:][:,"sprime"], label = "Period: $t")
-	end
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal savings for next period", title = "r = $r_star_plot", legend = false)
+	# plot_sprime_star_a = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][1,:,:][:,"sprime"])
+	# Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
+	# for t in 2:nperiods
+	#  	Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:optimal_choices][t,:,:][:,"sprime"], label = "Period: $t")
+	# end
+	# Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal savings for next period", title = "r = $r_star_plot", legend = false)
 
 	# Ploting both:
-	Plots.plot(plot_sprime_star,plot_sprime_star_a)
+	Plots.plot(plot_sprime_star)
 end
 
 # ╔═╡ a9470d5c-ce00-46c0-9fad-4a30ae1454d4
@@ -1582,6 +1607,9 @@ We can also check that the agent's optimal decision respect the budget constrain
 # l*z + s*(1+r) - c - sprime
 budget_surplus(c = 10,l=0,s = 0, sprime = -10, z = 1)
 
+# ╔═╡ c490281c-64e1-4665-9875-913ac57d0758
+budget_surplus(c = 10,l=5,s = 0, sprime = -10, z = 1)
+
 # ╔═╡ d9eaab6d-a6a9-4bd1-b99c-3a16d8a43d3f
 budget_surplus(c = 10,l=10,s = -10, sprime = -10, z = 1)
 
@@ -1589,19 +1617,19 @@ budget_surplus(c = 10,l=10,s = -10, sprime = -10, z = 1)
 begin 
 	budget_constraint_plot_fixed = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:budget_balance][1,:], label = "Period 1")
 	Plots.plot!(xaxis = "Initial savings", yaxis = "Budget surplus", title = "r = $fixed_r")
-	for t in 2:nperiods
+	for t in 10:10 #nperiods
 	 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:budget_balance][t,:], label = "Period: $t")
 	end
 	Plots.plot!(legend = false)
 
-	budget_constraint_plot_adjustable = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:budget_balance][1,:], label = "Period 1")
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Budget surplus", title = "r = $r_star_plot")
-	for t in 2:nperiods
-	 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:budget_balance][t,:], label = "Period: $t")
-	end
-	Plots.plot!(legend = false)
+	# budget_constraint_plot_adjustable = Plots.plot(s_range_Vstar,solution_plot_Vstar_adjustable[:budget_balance][1,:], label = "Period 1")
+	# Plots.plot!(xaxis = "Initial savings", yaxis = "Budget surplus", title = "r = $r_star_plot")
+	# for t in 2:nperiods
+	#  	Plots.plot!(s_range_Vstar,solution_plot_Vstar_adjustable[:budget_balance][t,:], label = "Period: $t")
+	# end
+	# Plots.plot!(legend = false)
 	
-	Plots.plot(budget_constraint_plot_fixed,budget_constraint_plot_adjustable)
+	Plots.plot(budget_constraint_plot_fixed)
 end
 
 # ╔═╡ adc6121d-cc65-497e-9f1b-f4896193a212
@@ -3157,7 +3185,7 @@ version = "1.4.1+2"
 # ╟─6cd0d377-4f5a-4e30-a5aa-be91b0bd2737
 # ╠═3da89744-6235-4902-ba92-0fde5ee26524
 # ╟─d5d2dfd7-09de-49f0-aa78-e787aa502872
-# ╟─309e4576-1f5f-4617-8e07-a494802a2860
+# ╠═309e4576-1f5f-4617-8e07-a494802a2860
 # ╠═e9ba4465-220b-4fb1-9b4e-28e4bee0f25a
 # ╠═ee3d3aee-a6dd-4fb6-9358-e15b7b5902aa
 # ╠═b04ba029-9be8-4dc1-8f50-04d58e19bfaa
@@ -3197,30 +3225,33 @@ version = "1.4.1+2"
 # ╠═e1daff84-7577-428a-9ebf-692341536845
 # ╠═268a3d8f-5880-40be-93b7-68c02f0cd8ee
 # ╠═98507e01-f1a7-42a1-8f90-417ef9a7d359
+# ╠═143de478-7f8b-4c41-88e3-f2b69a0767d1
 # ╠═8f86deb2-981e-40c6-8290-7a31496360f3
 # ╠═182b2fde-75bf-4722-bf5a-8f9b59e49cf1
 # ╠═ba31634e-baf7-42e8-aeaf-6a70b67ad66f
 # ╠═5dc0ccec-0a2c-40ac-bee9-e8e8c6dc29f7
+# ╠═4aba4292-90d8-4473-a07e-ddfcbe0e2b66
 # ╠═441f0e00-f49c-4afd-99a7-bffb275e2064
 # ╠═d2dec219-9d7c-4d3d-9ef6-d91ec9de79c6
+# ╠═b4af7149-803d-45b5-9d6f-235dfb940eb8
 # ╠═94590837-b20b-4603-8c4c-24061c4a207f
 # ╠═9c3da758-55a4-4177-8960-c7051d41ce8a
-# ╠═3c6eefa3-3aa9-4808-9719-4647e235482d
-# ╠═62f0a5bf-8d88-40ba-9ecf-b9574134955d
+# ╟─3c6eefa3-3aa9-4808-9719-4647e235482d
 # ╠═2c65efe4-7ca0-4da3-bdd2-ed69ffde1762
 # ╟─499c927c-4f1a-4dd5-9593-7d59d7b703ef
 # ╟─bff985e5-c02b-4a0c-940d-f91e456ebdf0
 # ╟─8f82649c-7e03-4f28-80d9-52a77d7d68a5
 # ╟─e45513cb-eb3a-4408-9c01-e3790ad21ac8
-# ╟─b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
+# ╠═b0c6d9d7-846b-4c8c-b15d-af3e3e5e1ecd
 # ╟─d1d80da4-9476-4dc9-97c4-63b296c654f6
-# ╟─9f9e05bf-176d-4428-8331-1c384d5a33b4
+# ╠═9f9e05bf-176d-4428-8331-1c384d5a33b4
 # ╟─398e7246-2265-470d-9a09-6ddeebf5b82f
-# ╟─1f589ca1-4752-4627-b42b-9f6274ede41b
+# ╠═1f589ca1-4752-4627-b42b-9f6274ede41b
 # ╟─a9470d5c-ce00-46c0-9fad-4a30ae1454d4
 # ╠═9a3e86a8-9dc5-4bf9-87e6-5afb795865fa
+# ╠═c490281c-64e1-4665-9875-913ac57d0758
 # ╠═d9eaab6d-a6a9-4bd1-b99c-3a16d8a43d3f
-# ╟─3712a72b-931d-42df-9fac-e3dd61428623
+# ╠═3712a72b-931d-42df-9fac-e3dd61428623
 # ╠═adc6121d-cc65-497e-9f1b-f4896193a212
 # ╟─ee6fa04f-3581-4205-adc3-c59d2f9ee031
 # ╟─6fe5c79a-38dd-42da-a8c0-7c744754c457
