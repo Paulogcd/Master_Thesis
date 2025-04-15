@@ -56,11 +56,11 @@
     "text": "Framework model 3\nThis model is currently under constructin.\nIt changes the fonctional forms of the utility function, and try to solve numerically the model.\nIts associated notebook is available here."
   },
   {
-    "objectID": "models.html#visualisation",
-    "href": "models.html#visualisation",
+    "objectID": "models.html#others",
+    "href": "models.html#others",
     "title": "Models",
-    "section": "Visualisation",
-    "text": "Visualisation\nI am also working on some model visualisation. A notebook about it can be found here."
+    "section": "Others",
+    "text": "Others\nThe demographics notebook can be found here.\nI am also working on some model visualisation. A notebook about it can be found here."
   },
   {
     "objectID": "about.html",

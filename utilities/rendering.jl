@@ -21,6 +21,10 @@ run(`mv working_elements/Framework_model_2_plot_2.html website/resources/Framewo
 PlutoSliderServer.export_notebook("working_elements/Framework_model_3.jl"; )
 run(`mv working_elements/Framework_model_3.html website/resources/Framework_model_3.html`)
 
+# Demographics notebook:
+PlutoSliderServer.export_notebook("working_elements/Demographics.jl"; )
+run(`mv working_elements/Demographics.html website/resources/Demographics.html`)
+
 # Visualisation notebook : 
 PlutoSliderServer.export_notebook("working_elements/Visualisation.jl"; )
 run(`mv working_elements/Visualisation.html website/resources/Visualisation.html`)

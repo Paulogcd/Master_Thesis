@@ -80,7 +80,10 @@ It changes the fonctional forms of the utility function, and try to solve numeri
 
 Its [associated notebook is available here](./resources/Framework_model_3.html).
 
-## Visualisation 
+## Others
+
+The demographics notebook can be found [here](./resources/demographics.html).
+
 
 I am also working on some model visualisation.
 A notebook about it can be found [here](/resources/Visualisation.html). 
