@@ -9,6 +9,9 @@ begin
 	using CSV
 	using DataFrames
 	using Plots
+	using Random
+	using Distributions
+	using GLM
 end
 
 # ╔═╡ 44e09b06-19dd-11f0-15b0-73a7622c7f17
@@ -113,6 +116,131 @@ end
 # ╔═╡ c27aae1f-f2ab-4f55-be59-57c692271a48
 md"""With this approach, only the effect of age is taken into account."""
 
+# ╔═╡ 5ef08de4-f3de-4506-a018-2691956f1ee0
+md""" Let us now generate data from this function. We will then use this data to run a logistic regression."""
+
+# ╔═╡ bbde2fb6-229b-468d-a23a-d8061f39aa6b
+begin 
+	function conditional_survival_probability(age)
+    	if age == 1
+        	return survival_probability(1) # Probability to survive first year
+    	else
+        	# Probability to survive to age given survival to age-1:
+        	return survival_probability(age) / survival_probability(age-1)
+    	end
+	end
+end
+
+# ╔═╡ 4a64302f-55d3-4e43-9dcb-a2901131c0cb
+begin 
+	function simulation(N::Integer)
+
+		# Initialising empty array for results:
+		results = fill(0,(N,105))
+		# results = Array{0}(N,105)
+		
+		for i in 1:N # For all individuals
+			# They begin alive, at time = 1
+			# living_status = 1
+			# t = 1
+
+			# As long as they are alive: 
+			for t in 1:105
+
+				if t == 1 # If it is their first year of life:
+					# We draw from Binomial
+					probability_of_surviving = Binomial(1, conditional_survival_probability(t)[1])
+					living_status = rand(probability_of_surviving, 1)
+	
+					# We assign the draw to the result array
+					results[i,t] = living_status[1]
+					
+				else # If it is not their first year of life:
+					if results[i,t-1] == 0 # If they were dead, they stay dead.
+						results[i,t] = 0
+					else # If they were alive last period: 
+						probability_of_surviving = Binomial(1, conditional_survival_probability(t)[1])
+						living_status = rand(probability_of_surviving, 1)
+	
+						# We assign the draw to the result array
+						results[i,t] = living_status[1]
+					end
+				end
+			end
+		end
+		
+		# Formating the data, with the names of the periods: 
+		periods = ["t=$x" for x in 1:105]
+		results = DataFrame(results, :auto)
+		rename!(results, periods)
+
+		# We return the data:
+		return results
+	end
+end
+
+# ╔═╡ 9b2b0400-f6cf-4b0e-882c-dddebc08df54
+res = simulation(200_000)
+
+# ╔═╡ f77be16f-2110-479b-906a-6f905bb99ab8
+begin
+	still_alive = [sum(res[!,t]) for t in 1:105]
+	Plots.plot(1:105,still_alive, legend = false)
+	Plots.plot!(yaxis = "Population", xaxis = "Time", title = "Population evolution from simulation")
+end
+
+# ╔═╡ ac07f747-c7a0-40cb-aa67-e3b405331adf
+md""" Now, from this simulated data, I am going to run a regression to estimate the death probability in function of age. First, we randomly collect some data from the simulation:"""
+
+# ╔═╡ ac43b070-e75c-42e6-a1a8-331fa2c99f7a
+begin 
+	still_alive2 = [sum(res[!,t]) for t in 1:105]
+	i_res = res[end:-1:1,end:-1:1]
+	r = Array{Integer}(undef)
+	age = []
+	ls = []
+	for x in 1:1000
+		rp = rand(1:105,1)[1]
+		ri = rand(1:200_000,1)[1]
+		r_age = rp 
+		r_ls = res[ri,rp]
+		push!(age,r_age)
+		push!(ls,r_ls)
+		# age
+		# ls
+	end
+	draw = DataFrame([age,ls], :auto)
+	rename!(draw,["age","ls"])
+	sort!(draw)
+end
+
+# ╔═╡ 93a981d6-90da-472a-a0f6-739d2a10d096
+begin 
+	# draw[!,:age] = float(draw[!,:age])
+	# draw.ls = (draw.ls)
+	
+end
+
+# ╔═╡ b227be40-31b5-4b22-9df9-4b99300923ba
+md"""Then, we run a logistic regression using the GLM package:"""
+
+# ╔═╡ 634ee06e-bfb9-4e83-b6b2-5cf7e2fea625
+begin
+	# We convert to float for the GLM package:
+	draw.age = Float64.(draw.age)
+	draw.ls = Float64.(draw.ls) 
+	model = glm(@formula(ls ~ age), draw, Binomial(), LogitLink())
+end
+
+# ╔═╡ f824ac87-f0b0-41d5-95b1-39ca9e0212b1
+Plots.plot(predict(model))
+
+# ╔═╡ aeffe549-61b6-4964-83aa-e778bc924cc8
+begin 
+	age_range = DataFrame(age = 1:110)
+	Plots.plot(age_range[!,:age],predict(model,age_range))
+end
+
 # ╔═╡ 2937f79d-4baa-4099-8111-bf9942b1c215
 md""" # Questions 
 
@@ -128,11 +256,16 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
 CSV = "~0.10.15"
 DataFrames = "~1.7.0"
+Distributions = "~0.25.118"
+GLM = "~1.9.0"
 Plots = "~1.40.11"
 """
 
@@ -142,7 +275,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.4"
 manifest_format = "2.0"
-project_hash = "08a0836c89ffb5139b9d0b1ce15a01f2b392de0c"
+project_hash = "78e0d268c2ac94b9037c58be2c69ec1bb1f73576"
 
 [[deps.AliasTables]]
 deps = ["PtrArrays", "Random"]
@@ -212,12 +345,10 @@ deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "Requires", "Statist
 git-tree-sha1 = "8b3b6f87ce8f65a2b4f857528fd8d70086cd72b1"
 uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
 version = "0.11.0"
+weakdeps = ["SpecialFunctions"]
 
     [deps.ColorVectorSpace.extensions]
     SpecialFunctionsExt = "SpecialFunctions"
-
-    [deps.ColorVectorSpace.weakdeps]
-    SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [[deps.Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
@@ -295,6 +426,22 @@ git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 version = "1.9.1"
 
+[[deps.Distributions]]
+deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
+git-tree-sha1 = "0b4190661e8a4e51a842070e7dd4fae440ddb7f4"
+uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
+version = "0.25.118"
+
+    [deps.Distributions.extensions]
+    DistributionsChainRulesCoreExt = "ChainRulesCore"
+    DistributionsDensityInterfaceExt = "DensityInterface"
+    DistributionsTestExt = "Test"
+
+    [deps.Distributions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    DensityInterface = "b429d917-457f-4dbc-8f4c-0cc954292b1d"
+    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
 git-tree-sha1 = "2fb1e02f2b635d0845df5d7c167fec4dd739b00d"
@@ -351,6 +498,18 @@ weakdeps = ["Mmap", "Test"]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 version = "1.11.0"
 
+[[deps.FillArrays]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "6a70198746448456524cb442b8af316927ff3e1a"
+uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
+version = "1.13.0"
+weakdeps = ["PDMats", "SparseArrays", "Statistics"]
+
+    [deps.FillArrays.extensions]
+    FillArraysPDMatsExt = "PDMats"
+    FillArraysSparseArraysExt = "SparseArrays"
+    FillArraysStatisticsExt = "Statistics"
+
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
 git-tree-sha1 = "05882d6995ae5c12bb5f36dd2ed3f61c98cbb172"
@@ -390,6 +549,12 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Xorg_libXcursor_jl
 git-tree-sha1 = "fcb0584ff34e25155876418979d4c8971243bb89"
 uuid = "0656b61e-2033-5cc2-a64a-77c0f6c09b89"
 version = "3.4.0+2"
+
+[[deps.GLM]]
+deps = ["Distributions", "LinearAlgebra", "Printf", "Reexport", "SparseArrays", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns", "StatsModels"]
+git-tree-sha1 = "273bd1cd30768a2fddfa3fd63bbc746ed7249e5f"
+uuid = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
+version = "1.9.0"
 
 [[deps.GR]]
 deps = ["Artifacts", "Base64", "DelimitedFiles", "Downloads", "GR_jll", "HTTP", "JSON", "Libdl", "LinearAlgebra", "Preferences", "Printf", "Qt6Wayland_jll", "Random", "Serialization", "Sockets", "TOML", "Tar", "Test", "p7zip_jll"]
@@ -437,6 +602,12 @@ deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll",
 git-tree-sha1 = "55c53be97790242c29031e5cd45e8ac296dadda3"
 uuid = "2e76f6c2-a576-52d4-95c1-20adfe4de566"
 version = "8.5.0+0"
+
+[[deps.HypergeometricFunctions]]
+deps = ["LinearAlgebra", "OpenLibm_jll", "SpecialFunctions"]
+git-tree-sha1 = "68c173f4f449de5b438ee67ed0c9c748dc31a2ec"
+uuid = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
+version = "0.3.28"
 
 [[deps.InlineStrings]]
 git-tree-sha1 = "6a9fde685a7ac1eb3495f8e812c5a7c3711c2d5e"
@@ -726,6 +897,12 @@ git-tree-sha1 = "a9697f1d06cc3eb3fb3ad49cc67f2cfabaac31ea"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
 version = "3.0.16+0"
 
+[[deps.OpenSpecFun_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "1346c9208249809840c91b26703912dff463d335"
+uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
+version = "0.5.6+0"
+
 [[deps.Opus_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "6703a85cb3781bd5909d48730a67205f3f31a575"
@@ -741,6 +918,12 @@ version = "1.8.0"
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
 version = "10.42.0+1"
+
+[[deps.PDMats]]
+deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
+git-tree-sha1 = "966b85253e959ea89c53a9abebbf2e964fbf593b"
+uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
+version = "0.11.32"
 
 [[deps.Pango_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "FriBidi_jll", "Glib_jll", "HarfBuzz_jll", "JLLWrappers", "Libdl"]
@@ -859,6 +1042,18 @@ git-tree-sha1 = "729927532d48cf79f49070341e1d918a65aba6b0"
 uuid = "e99dba38-086e-5de3-a5b1-6e4c66e897c3"
 version = "6.7.1+1"
 
+[[deps.QuadGK]]
+deps = ["DataStructures", "LinearAlgebra"]
+git-tree-sha1 = "9da16da70037ba9d701192e27befedefb91ec284"
+uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
+version = "2.11.2"
+
+    [deps.QuadGK.extensions]
+    QuadGKEnzymeExt = "Enzyme"
+
+    [deps.QuadGK.weakdeps]
+    Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
+
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "StyledStrings", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
@@ -898,6 +1093,18 @@ git-tree-sha1 = "62389eeff14780bfe55195b7204c0d8738436d64"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.3.1"
 
+[[deps.Rmath]]
+deps = ["Random", "Rmath_jll"]
+git-tree-sha1 = "852bd0f55565a9e973fcfee83a84413270224dc4"
+uuid = "79098fc4-a85e-5d69-aa6a-4863f24498fa"
+version = "0.8.0"
+
+[[deps.Rmath_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "58cdd8fb2201a6267e1db87ff148dd6c1dbd8ad8"
+uuid = "f50d1b31-88e8-58de-be2c-1cc44531875f"
+version = "0.5.1+0"
+
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 version = "0.7.0"
@@ -917,6 +1124,11 @@ version = "1.4.8"
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 version = "1.11.0"
+
+[[deps.ShiftedArrays]]
+git-tree-sha1 = "503688b59397b3307443af35cd953a13e8005c16"
+uuid = "1277b4bf-5013-50f5-be3d-901d8477a67a"
+version = "2.0.0"
 
 [[deps.Showoff]]
 deps = ["Dates", "Grisu"]
@@ -943,6 +1155,18 @@ version = "1.2.1"
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 version = "1.11.0"
+
+[[deps.SpecialFunctions]]
+deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
+git-tree-sha1 = "64cca0c26b4f31ba18f13f6c12af7c85f478cfde"
+uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
+version = "2.5.0"
+
+    [deps.SpecialFunctions.extensions]
+    SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
+
+    [deps.SpecialFunctions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 
 [[deps.StableRNGs]]
 deps = ["Random"]
@@ -972,6 +1196,26 @@ git-tree-sha1 = "29321314c920c26684834965ec2ce0dacc9cf8e5"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.34.4"
 
+[[deps.StatsFuns]]
+deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
+git-tree-sha1 = "b423576adc27097764a90e163157bcfc9acf0f46"
+uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
+version = "1.3.2"
+
+    [deps.StatsFuns.extensions]
+    StatsFunsChainRulesCoreExt = "ChainRulesCore"
+    StatsFunsInverseFunctionsExt = "InverseFunctions"
+
+    [deps.StatsFuns.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
+
+[[deps.StatsModels]]
+deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Printf", "REPL", "ShiftedArrays", "SparseArrays", "StatsAPI", "StatsBase", "StatsFuns", "Tables"]
+git-tree-sha1 = "9022bcaa2fc1d484f1326eaa4db8db543ca8c66d"
+uuid = "3eaba693-59b7-5ba5-a881-562e759f1c8d"
+version = "0.7.4"
+
 [[deps.StringManipulation]]
 deps = ["PrecompileTools"]
 git-tree-sha1 = "725421ae8e530ec29bcbdddbe91ff8053421d023"
@@ -981,6 +1225,10 @@ version = "0.4.1"
 [[deps.StyledStrings]]
 uuid = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
 version = "1.11.0"
+
+[[deps.SuiteSparse]]
+deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
+uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
@@ -1387,8 +1635,20 @@ version = "1.4.1+2"
 # ╟─b26e63b7-768f-4de8-978e-f9c0e2558acf
 # ╠═5127dcc9-ee61-4223-8659-159796a8d1fd
 # ╟─64bd60b6-5276-4bdd-a9ff-5137d3cc9a62
-# ╟─357b1bb1-7876-4dea-a3ea-a135b1659bac
+# ╠═357b1bb1-7876-4dea-a3ea-a135b1659bac
 # ╟─c27aae1f-f2ab-4f55-be59-57c692271a48
+# ╟─5ef08de4-f3de-4506-a018-2691956f1ee0
+# ╠═bbde2fb6-229b-468d-a23a-d8061f39aa6b
+# ╠═4a64302f-55d3-4e43-9dcb-a2901131c0cb
+# ╠═9b2b0400-f6cf-4b0e-882c-dddebc08df54
+# ╠═f77be16f-2110-479b-906a-6f905bb99ab8
+# ╠═ac07f747-c7a0-40cb-aa67-e3b405331adf
+# ╠═ac43b070-e75c-42e6-a1a8-331fa2c99f7a
+# ╠═93a981d6-90da-472a-a0f6-739d2a10d096
+# ╠═b227be40-31b5-4b22-9df9-4b99300923ba
+# ╠═634ee06e-bfb9-4e83-b6b2-5cf7e2fea625
+# ╠═f824ac87-f0b0-41d5-95b1-39ca9e0212b1
+# ╠═aeffe549-61b6-4964-83aa-e778bc924cc8
 # ╟─2937f79d-4baa-4099-8111-bf9942b1c215
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
