@@ -1371,8 +1371,11 @@ Let us try to visualize the solution.
 First, we generate a fixed solution:
 """
 
+# ╔═╡ 5016ed5f-f304-427e-8be4-014b5844f14b
+md"""## Parameters"""
+
 # ╔═╡ d037bdb7-eae1-40b3-b414-e9ccd664ac92
-@bind nperiods Slider(1:100, default = 80)
+@bind nperiods Slider(1:110, default = 104)
 
 # ╔═╡ e1daff84-7577-428a-9ebf-692341536845
 @bind s_range_Vstar_min Slider(-100:1:10, default = -10)
@@ -1412,23 +1415,19 @@ r_star_plot
 
 # ╔═╡ 94590837-b20b-4603-8c4c-24061c4a207f
 s_range_Vstar = s_range_Vstar_min:0.1:s_range_Vstar_max
+# A step of 0.05 took 516 seconds, i.e. a bit less than 9 minutes, and used 52 Gigabytes in memory.
+# The results did not differ much however. We could try to increase the step of the other grids instead.
+# The labor policy did change more.
 
-# ╔═╡ 3c6eefa3-3aa9-4808-9719-4647e235482d
-# solution_plot_Vstar_adjustable = backwards(s_range	= s_range_Vstar,
-# 	 							sprime_range		= s_range_Vstar,
-# 	 							consumption_range 	= 0:consumption_max,
-# 	 							labor_range			= 0:labor_max,
-# 	 							nperiods 			= nperiods, 
-# 								r = r_star_plot, 
-# 								# z = fill(common_z,nperiods),
-# 								z = decreasing_productivity,
-# 								w = 0, h="bad", ρ = 0.99, φ = common_φ, β = common_β) 
-	# With the default values (-50:50, maxlabor=maxconsumption=100) of the variables, this takes 529 seconds and requires 18.30 Gb of memory.
-	# Nevermind the previous comment. With the default value of return_full_grid = 0, 50 periods take approximately 200 Mb of memory. great :) 
-	# Each backwards function takes 2 minutes to run however.
+# ╔═╡ bed197f5-6df4-4ad7-88b3-bf8039022dd4
+md"""## Simulation result """
 
-# ╔═╡ 2c65efe4-7ca0-4da3-bdd2-ed69ffde1762
-begin 
+# ╔═╡ abcc3bb4-5566-4566-9c94-744f1f5d0087
+md""" ## Lifetime productivity """
+
+# ╔═╡ 276ed8bf-b984-486f-9c23-64b5130c1d40
+begin
+
 	tmp = randn(nperiods)
 	for t in 1:nperiods
 		if tmp[t] <= -1
@@ -1443,14 +1442,17 @@ begin
 	concave_productivity = [-x* 1/1000 *(x-100) for x in 1:nperiods]
 	decreasing_productivity = [1/x for x in 1:nperiods]
 	typical_productivity = [exp(0.1*x - 0.001*x^2) for x in 1:nperiods] # peak at around 50 years old.
+
+	Plots.plot(1:nperiods,typical_productivity)
+	Plots.plot!(xaxis = "Age", yaxis = "Productivity", title = "Lifetime productivity of the agent", legend = false)
 end
 
 # ╔═╡ 9c3da758-55a4-4177-8960-c7051d41ce8a
 begin 
 	solution_plot_Vstar_fixed = backwards(s_range	= s_range_Vstar,
 	 							sprime_range		= s_range_Vstar,
-	 							consumption_range 	= 0:consumption_max, # Increasing the maximum of the consumption range shifts the threshold (to the right) from which the value function stays stagnant. This is due to the fact that the agents being able to consume more, having more initial savings is more valuable. For max(s) = 10, max(c) = 23 is fine.
-	 							labor_range			= 0.00:0.1:1.00,
+	 							consumption_range 	= 0:0.5:consumption_max, # Increasing the maximum of the consumption range shifts the threshold (to the right) from which the value function stays stagnant. This is due to the fact that the agents being able to consume more, having more initial savings is more valuable. For max(s) = 10, max(c) = 23 is fine.
+	 							labor_range			= 0.00:0.1:1.4,
 	 							nperiods 			= nperiods,
 								r = r_star_plot, # The interest rate determines the threshhold from which having debt inverts its effect on the value function. 
 								# z = fill(common_z,nperiods),
@@ -1551,9 +1553,12 @@ begin
 	plotly()
 	plot_l_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][period,:,"l"], label = "Period: 1", xaxis = "Initial savings", yaxis = "Labor supply")
 	
-	for t in 2:nperiods
+	for t in [50,80,104]
 		Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,"l"], label = "Period: $t")
 	end
+
+	# Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][50,:,"l"], label = "Period: 50")
+	# Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][80,:,"l"], label = "Period: 80")
 
 	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal labor supply", title = "r = $r_star_plot", legend = false)
 
@@ -1580,9 +1585,9 @@ begin
 	# Fixed interest rate plot:
 	plot_sprime_star = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][1,:,"sprime"])
 	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
-	# for t in 1:nperiods
-	# 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"sprime"], label = "Period: $t")
-	# end
+	for t in [50,80,104]
+	 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:optimal_choices][t,:,:][:,"sprime"], label = "Period: $t")
+	end
 	Plots.plot!(title = "r = $r_star_plot", legend = false)
 
 	# Adjusted interest rate plot:
@@ -1617,7 +1622,7 @@ budget_surplus(c = 10,l=10,s = -10, sprime = -10, z = 1)
 begin 
 	budget_constraint_plot_fixed = Plots.plot(s_range_Vstar,solution_plot_Vstar_fixed[:budget_balance][1,:], label = "Period 1")
 	Plots.plot!(xaxis = "Initial savings", yaxis = "Budget surplus", title = "r = $fixed_r")
-	for t in 10:10 #nperiods
+	for t in [50,80,104]
 	 	Plots.plot!(s_range_Vstar,solution_plot_Vstar_fixed[:budget_balance][t,:], label = "Period: $t")
 	end
 	Plots.plot!(legend = false)
@@ -1648,7 +1653,7 @@ end
 begin
 	optimal_consumption = solution_plot_Vstar_fixed[:optimal_choices][:,:,"c"]
 	Plots.plot(s_range_Vstar,1:nperiods,optimal_consumption, st=:surface)
-	Plots.plot!(xaxis = "Time", yaxis = "Initial savings", zaxis = "Consumption")
+	Plots.plot!(yaxis = "Time", xaxis = "Initial savings", zaxis = "Consumption", title = "Optimal consumption in function of age and initial savings")
 end
 
 # ╔═╡ 04ff6031-c75b-499b-a077-886362f74fef
@@ -3221,6 +3226,7 @@ version = "1.4.1+2"
 # ╟─0e79a3e3-19c5-4b6f-915f-025096353e7f
 # ╠═371d138c-06c4-4312-a529-d007993d9359
 # ╟─651ccc19-c04c-4260-ac48-f70fb7ba5a44
+# ╟─5016ed5f-f304-427e-8be4-014b5844f14b
 # ╠═d037bdb7-eae1-40b3-b414-e9ccd664ac92
 # ╠═e1daff84-7577-428a-9ebf-692341536845
 # ╠═268a3d8f-5880-40be-93b7-68c02f0cd8ee
@@ -3235,9 +3241,10 @@ version = "1.4.1+2"
 # ╠═d2dec219-9d7c-4d3d-9ef6-d91ec9de79c6
 # ╠═b4af7149-803d-45b5-9d6f-235dfb940eb8
 # ╠═94590837-b20b-4603-8c4c-24061c4a207f
+# ╟─bed197f5-6df4-4ad7-88b3-bf8039022dd4
 # ╠═9c3da758-55a4-4177-8960-c7051d41ce8a
-# ╟─3c6eefa3-3aa9-4808-9719-4647e235482d
-# ╠═2c65efe4-7ca0-4da3-bdd2-ed69ffde1762
+# ╟─abcc3bb4-5566-4566-9c94-744f1f5d0087
+# ╠═276ed8bf-b984-486f-9c23-64b5130c1d40
 # ╟─499c927c-4f1a-4dd5-9593-7d59d7b703ef
 # ╟─bff985e5-c02b-4a0c-940d-f91e456ebdf0
 # ╟─8f82649c-7e03-4f28-80d9-52a77d7d68a5

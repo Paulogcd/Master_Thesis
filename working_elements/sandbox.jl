@@ -319,3 +319,30 @@ param4_names = ["Savings_next_period_index_$i" for i in 1:21]
 using NamedArrays
 # Create the named array
 named_V = NamedArray(V, (param1_names, param2_names, param3_names, param4_names))
+
+####################################################################################
+
+using Pkg
+Pkg.add("XLSX")
+import XLSX
+using CSV
+using DataFrames
+# Loading the data: 
+mortality_table = CSV.read("working_elements/mortality_tables.csv", DataFrame)
+# Data cleaning: 
+mortality_table = rename(mortality_table,
+["Age","Survival_men","Expectancy_men","Survival_women","Expectancy_women","Survival_both","Expectancy_both"])
+mortality_table = mortality_table[Not(1),:]
+mortality_table = Number(mortality_table[:,"Survival_both"])./100_000
+mortality_table
+Pkg.add("GLM")
+using GLM
+using Random 
+
+mortality_table[:,"Survival_both"] = parse.(Float64, mortality_table[:,"Survival_both"])
+
+
+model = glm(@formula(Survival_both ~ Age), mortality_table)
+
+model = lm(@formula(Survival_both ~ Age), mortality_table)
+
