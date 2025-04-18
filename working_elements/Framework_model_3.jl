@@ -28,6 +28,7 @@ begin
 	using Test
 	using NamedArrays
 	using DataFrames
+	using CSV
 end
 
 # ╔═╡ f9b82879-6183-4919-8d67-6739c56eeecc
@@ -357,6 +358,22 @@ $$\zeta_{t}(t,h_t,w_t,\zeta_1;a,E) = \zeta_1 \cdot
 Graphically, we have:
 """
 
+# ╔═╡ 3c2ba9b2-ce66-4a11-903f-7ed82b072fa1
+begin 
+	"""
+	ζ is the death probability function. 
+	Its syntax is:
+
+		ζ(;a1,a2,t,h,w,E1,E2,ζ1,r, Δh)
+
+	Due to possible rounding error in the computations with very small values, it is recommended to use the simplified version of this functin, `s_ζ`convert possible negative values into the specified minimum.
+	
+	"""
+	function ζ(;a1,a2,t,h,w,E1,E2,ζ1,r,Δah,ΔKh, Δrh)
+		return (ζ_1.*logistic_1.(K = 1, a = a1, r = r, t = t, E1 = E1, h = h, Δah =Δah, ΔKh = ΔKh, Δrh = Δrh) .+ (1-ζ1) .* logistic_2.(K=1,a = a2, r = r, t = t, E2 = E2, w = w))
+	end
+end
+
 # ╔═╡ e4086a46-d059-4470-987d-a02fe2518b4c
 @bind E Slider(50:1:100, default = 82)
 
@@ -381,22 +398,6 @@ end
 
 # ╔═╡ d6fdad51-7faa-4860-9fe9-1a36bc61dfc3
 @bind ζ_1 Slider(0.001:0.1:1, default = 0.5)
-
-# ╔═╡ 3c2ba9b2-ce66-4a11-903f-7ed82b072fa1
-begin 
-	"""
-	ζ is the death probability function. 
-	Its syntax is:
-
-		ζ(;a1,a2,t,h,w,E1,E2,ζ1,r, Δh)
-
-	Due to possible rounding error in the computations with very small values, it is recommended to use the simplified version of this functin, `s_ζ`convert possible negative values into the specified minimum.
-	
-	"""
-	function ζ(;a1,a2,t,h,w,E1,E2,ζ1,r,Δah,ΔKh, Δrh)
-		return (ζ_1.*logistic_1.(K = 1, a = a1, r = r, t = t, E1 = E1, h = h, Δah =Δah, ΔKh = ΔKh, Δrh = Δrh) .+ (1-ζ1) .* logistic_2.(K=1,a = a2, r = r, t = t, E2 = E2, w = w))
-	end
-end
 
 # ╔═╡ 31f9594c-40db-47bc-a410-62046d6b674c
 @bind Δah_final Slider(0.01:1:100, default = 50)
@@ -670,6 +671,100 @@ With respect to the savings/loan $s_{t+1}$:
 
 """
 
+# ╔═╡ 3c2a059c-9ba6-4cf2-99f6-180d37369c03
+md"""
+Let us here define r.
+Keeping it fixed would result in the agents always choosing the maximum amount of debt. 
+We are therefore going to introduce some extra cost of borrowing. 
+In order for us to do that, we are going to define a bank to which agents can go to borrow, or lend. 
+With a non-profit condition, the bank must equalize its expected profits next period, and what it lends in the current period, such as: 
+
+
+$$\mathbb{E}\left[s\cdot(1+r_{\pi=0})\right]-s = 0$$ 
+$$\iff$$
+$$\zeta \cdot s \cdot (1+r_{\pi=0})-s = 0$$
+
+With $\zeta$ the probability of survival of the individual at a certain time.
+
+Therefore, the non-profit interest rate is such that:
+
+$$r_{\pi=0} = \frac{1-\zeta}{\zeta}$$
+
+With this specification however, the interest rate would be 0 until 26 years old, due to the very weak chances of dying of this population. We are therefore going to add this zero-profit interest rate to the minimal one:
+
+$r_{min}=\frac{1-\beta}{\beta}$
+
+Therefore, we have: 
+
+$$r = r_{min} + r_{\pi=0} =\frac{1-\beta}{\beta} + \frac{1-\zeta}{\zeta}$$
+
+Now, if we say that the bank bases itself on a simple mortality table (for example [this one](https://www.paulogcd.com/Master_Thesis/resources/demographics.html)), we have: 
+"""
+
+# ╔═╡ 33bf170d-e640-4c2e-a52d-0b7f7ee45723
+begin 
+	mortality_table = CSV.read("mortality_tables.csv", DataFrame)
+	mortality_table = rename(mortality_table,
+	["Age","Survival_men","Expectancy_men","Survival_women","Expectancy_women","Survival_both","Expectancy_both"])
+	mortality_table = mortality_table[Not(1),:]
+	mortality_table[!,"Survival_both"] .= parse.(Float64, mortality_table[!,"Survival_both"])
+	mortality_table[!,"Expectancy_both"] .= parse.(Float64, mortality_table[!,"Expectancy_both"])
+	mortality_table[!,"Age"] .= parse.(Float16, mortality_table[!,"Age"])
+	mortality_table[:,["Age","Survival_both","Expectancy_both"]]
+end
+
+# ╔═╡ c36bbfeb-478c-4ed0-ac3c-0c34785130ad
+begin 
+"""
+This function gives a very basic approximation of the survival probability, based on the mortality table above. If the age is in the mortality table, it return the given survival rate, if it is not, it returns a value obtained by linear interpolation based on the two closest values.
+"""
+	function survival_probability(age)
+		if age ∈ mortality_table[:,"Age"]
+			return 	convert(Float64,(mortality_table[mortality_table[!,"Age"].==age,"Survival_both"]/100_000)[1])
+		elseif age > 104
+			return 0
+		else
+			lower_age = upper_age = age
+			while lower_age ∉ mortality_table[:,"Age"]
+				lower_age = lower_age -1 
+			end
+			
+			while upper_age ∉ mortality_table[:,"Age"]
+				upper_age = upper_age+1
+			end
+
+			pla = mortality_table[mortality_table[!,"Age"] .== lower_age,"Survival_both"] / 100_000
+
+			pua = mortality_table[mortality_table[!,"Age"] .== upper_age,"Survival_both"] / 100_000
+
+			f(x) = ((upper_age-x)/(upper_age-lower_age))*pla + (((x-lower_age)/(upper_age-lower_age)))*pua
+			
+			return convert(Float64, f(age)[1])
+		end
+	end	
+end
+
+# ╔═╡ a374eb14-e00c-40fa-bf61-2c5e05cca519
+begin 
+	plot_age_range = 1:104
+	# survival_probability.(plot_age_range)
+	Plots.plot(plot_age_range,survival_probability, legend = false)
+	Plots.plot!(xaxis = "age", yaxis = "Probability of survival", title = "Estimated survival probability")
+end
+
+# ╔═╡ 464aa266-b2d1-45a4-81e1-5d536de60955
+begin 
+	rp0(ζ) = (1 - ζ) /ζ
+	rmin(β) = (1-β)/β
+	r(;ζ,β) = rp0.(ζ) .+ rmin(β)
+	final_r = r(ζ = survival_probability.(1:104), β = 0.9)
+	Plots.plot(1:104,final_r)
+	Plots.plot!(xaxis = "age", yaxis = "interest rate", title = "Final interest rate", legend = false)
+end
+
+# ╔═╡ f297a163-bddf-4639-96ac-9e718cc8d0c5
+length(final_r)
+
 # ╔═╡ ae7e4d2a-2e28-425b-85a3-608c05657796
 md"""
 # Numerical methods
@@ -897,7 +992,10 @@ begin
 						z = 1,
 						ρ = 1.5,
 						φ = 2,
-						proba_survival=0.9,r = 0.3, w=0, h = "good",
+						proba_survival=0.9,
+						r = 0.3,
+						w=0,
+						h = "good",
 						return_full_grid = 1, 
 						return_budget_balance = 1)::NamedTuple
 
@@ -1134,7 +1232,9 @@ begin
 				labor_range::AbstractRange,
 				nperiods::Integer,
 				z = ones(nperiods)::Array,
-				β=0.9, r = 0.01, ρ = 1.5, φ = 2, proba_survival=0.9, w = 0, h="good", 
+				β=0.9,
+				r = final_r::Array, # r=r,
+				ρ = 1.5, φ = 2, proba_survival=0.9, w = 0, h="good", 
 				return_full_grid = 0, 
 				return_budget_balance = 1)::NamedTuple
 
@@ -1188,8 +1288,10 @@ begin
 	 					consumption_range = consumption_range::AbstractRange,
 	 					labor_range = labor_range::AbstractRange,
 	 					β=β,
-			 			ρ = ρ, φ = φ, r = r, proba_survival = proba_survival, w = w, h=h,
-						z = z[end],
+			 			ρ = ρ, φ = φ,
+						r = r[nperiods],
+						proba_survival = proba_survival, w = w, h=h,
+						z = z[nperiods],
 						return_full_grid = 1,
 						return_budget_balance = return_budget_balance)::NamedTuple
 
@@ -1224,7 +1326,7 @@ begin
 					z=z[index_time],
 					ρ=ρ,
 					φ=φ,
-					r= r, 
+					r=r[index_time], 
 					proba_survival = proba_survival, 
 					w=w,
 					h=h,
@@ -1454,7 +1556,7 @@ begin
 	 							consumption_range 	= 0:0.5:consumption_max, # Increasing the maximum of the consumption range shifts the threshold (to the right) from which the value function stays stagnant. This is due to the fact that the agents being able to consume more, having more initial savings is more valuable. For max(s) = 10, max(c) = 23 is fine.
 	 							labor_range			= 0.00:0.1:1.4,
 	 							nperiods 			= nperiods,
-								r = r_star_plot, # The interest rate determines the threshhold from which having debt inverts its effect on the value function. 
+								r = final_r, # The interest rate determines the threshhold from which having debt inverts its effect on the value function. 
 								# z = fill(common_z,nperiods),
 								z = typical_productivity,
 								w = 0, h="bad",
@@ -1462,6 +1564,9 @@ begin
 								φ = common_φ,
 								β = common_β) 
 end
+
+# ╔═╡ d52f9555-90e5-4598-93d8-74bfe2c83b25
+length(typical_productivity)
 
 # ╔═╡ 499c927c-4f1a-4dd5-9593-7d59d7b703ef
 md"""
@@ -1715,6 +1820,7 @@ varinfo()
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
@@ -1724,6 +1830,7 @@ PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
+CSV = "~0.10.15"
 DataFrames = "~1.7.0"
 Distributions = "~0.25.118"
 NamedArrays = "~0.10.3"
@@ -1738,7 +1845,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.4"
 manifest_format = "2.0"
-project_hash = "27c2fb7e79227d14516477bbafb25589102a617b"
+project_hash = "b3040b3291f5d02de3272efb3384e784a74c39f3"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1774,6 +1881,12 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "1b96ea4a01afe0ea4090c5c8039690672dd13f2e"
 uuid = "6e34b625-4abd-537c-b88f-471c36dfa7a0"
 version = "1.0.9+0"
+
+[[deps.CSV]]
+deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "PrecompileTools", "SentinelArrays", "Tables", "Unicode", "WeakRefStrings", "WorkerUtilities"]
+git-tree-sha1 = "deddd8725e5e1cc49ee205a1964256043720a6c3"
+uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+version = "0.10.15"
 
 [[deps.Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
@@ -1946,6 +2059,17 @@ deps = ["Artifacts", "Bzip2_jll", "FreeType2_jll", "FriBidi_jll", "JLLWrappers",
 git-tree-sha1 = "466d45dc38e15794ec7d5d63ec03d776a9aff36e"
 uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"
 version = "4.4.4+1"
+
+[[deps.FilePathsBase]]
+deps = ["Compat", "Dates"]
+git-tree-sha1 = "3bab2c5aa25e7840a4b065805c0cdfc01f3068d2"
+uuid = "48062228-2e41-5def-b9a4-89aafe57970f"
+version = "0.9.24"
+weakdeps = ["Mmap", "Test"]
+
+    [deps.FilePathsBase.extensions]
+    FilePathsBaseMmapExt = "Mmap"
+    FilePathsBaseTestExt = "Test"
 
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
@@ -2841,6 +2965,17 @@ git-tree-sha1 = "5db3e9d307d32baba7067b13fc7b5aa6edd4a19a"
 uuid = "2381bf8a-dfd0-557d-9999-79630e7b1b91"
 version = "1.36.0+0"
 
+[[deps.WeakRefStrings]]
+deps = ["DataAPI", "InlineStrings", "Parsers"]
+git-tree-sha1 = "b1be2855ed9ed8eac54e5caff2afcdb442d52c23"
+uuid = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
+version = "1.4.2"
+
+[[deps.WorkerUtilities]]
+git-tree-sha1 = "cd1659ba0d57b71a464a29e64dbc67cfe83d54e7"
+uuid = "76eceee3-57b5-4d4a-8e66-0e911cebbf60"
+version = "1.6.1"
+
 [[deps.XML2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Zlib_jll"]
 git-tree-sha1 = "b8b243e47228b4a3877f1dd6aee0c5d56db7fcf4"
@@ -3174,7 +3309,13 @@ version = "1.4.1+2"
 # ╟─24dd513c-3518-49e6-b164-a95b924d260e
 # ╟─e98cf3cf-a549-4c44-9994-f882014da4af
 # ╟─8e6232d8-09ae-11f0-1ee1-e71c2444c45c
-# ╠═50440502-c6bf-485f-9a62-8547c2f4575a
+# ╟─50440502-c6bf-485f-9a62-8547c2f4575a
+# ╟─3c2a059c-9ba6-4cf2-99f6-180d37369c03
+# ╟─33bf170d-e640-4c2e-a52d-0b7f7ee45723
+# ╟─c36bbfeb-478c-4ed0-ac3c-0c34785130ad
+# ╟─a374eb14-e00c-40fa-bf61-2c5e05cca519
+# ╠═464aa266-b2d1-45a4-81e1-5d536de60955
+# ╠═f297a163-bddf-4639-96ac-9e718cc8d0c5
 # ╟─ae7e4d2a-2e28-425b-85a3-608c05657796
 # ╟─7beca4ea-2d9f-448c-be28-530d39cfdabf
 # ╟─2077ad58-019d-4aa7-adfd-eb2ceee4e4e3
@@ -3243,6 +3384,7 @@ version = "1.4.1+2"
 # ╠═94590837-b20b-4603-8c4c-24061c4a207f
 # ╟─bed197f5-6df4-4ad7-88b3-bf8039022dd4
 # ╠═9c3da758-55a4-4177-8960-c7051d41ce8a
+# ╠═d52f9555-90e5-4598-93d8-74bfe2c83b25
 # ╟─abcc3bb4-5566-4566-9c94-744f1f5d0087
 # ╠═276ed8bf-b984-486f-9c23-64b5130c1d40
 # ╟─499c927c-4f1a-4dd5-9593-7d59d7b703ef
