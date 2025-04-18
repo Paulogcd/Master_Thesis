@@ -9,6 +9,8 @@ begin
 	using NamedArrays
 	using Plots
 	using Base.Threads
+	using Interpolations
+	using Loess
 end
 
 # ╔═╡ 61ece9da-1bdf-11f0-3325-6194598f6f4a
@@ -108,7 +110,7 @@ begin
 						sprime_range::AbstractRange,
 						consumption_range::AbstractRange,
 						labor_range::AbstractRange,
-						value_function_nextperiod::Array,
+						value_function_nextperiod::Any,
 						β = 0.96::Float64, 
 						z = 1::Float64,
 						ρ = 1.5::Float64,
@@ -135,10 +137,10 @@ begin
 		# Initialise empty array that will store the optimal utility and choice:
 		Vstar = zeros(length(s_range))
 		index_optimal_choice = Array{CartesianIndex}(undef,length(s_range))
-		optimal_choice = Array{Number}(undef,length(s_range),3)
+		optimal_choice = Array{Float64}(undef,length(s_range),3)
 
 		if return_budget_balance == true
-			budget_balance = Array{Number}(undef,length(s_range))
+			budget_balance = Array{Float64}(undef,length(s_range))
 		end
 
 		# for all levels of endowment
@@ -165,6 +167,9 @@ begin
 						# function at the next period : 
 							
 						else
+
+							# Use interpolated value function (evaluated at sprime)
+                        	continuation_value = value_function_nextperiod(sprime)
 							
 							grid_of_value_function[index_s,
 											index_consumption,
@@ -176,7 +181,7 @@ begin
 									w=w,
 									h=h,
 									ρ=ρ,
-									φ=φ) + β*proba_survival*value_function_nextperiod[index_s]
+									φ=φ) + β*proba_survival*continuation_value
 							
 						end
 						
@@ -191,15 +196,19 @@ begin
 			Vstar[index_s],
 			index_optimal_choice[index_s] =
 				findmax(grid_of_value_function[index_s,:,:,:])
+
+			itp = linear_interpolation(s_range, Vstar)
 			
 			optimal_choice[index_s,:] = [consumption_range[index_optimal_choice[index_s][1]],
 										labor_range[index_optimal_choice[index_s][2]],
 										sprime_range[index_optimal_choice[index_s][3]]]
 
-			budget_balance[index_s] = budget_surplus(c = consumption_range[index_optimal_choice[index_s][1]],
-											l = labor_range[index_optimal_choice[index_s][2]],
-											sprime = sprime_range[index_optimal_choice[index_s][3]],
-											s = s, z = z)
+			budget_balance[index_s] = budget_surplus(
+							c = consumption_range[index_optimal_choice[index_s][1]],
+							l = labor_range[index_optimal_choice[index_s][2]],
+							sprime = sprime_range[index_optimal_choice[index_s][3]],
+							s = s,
+							z = z)
 
 		end # end of s
 
@@ -207,7 +216,7 @@ begin
 		
 		# Transforming the grid_of_value_function array into a Named Array:
 
-		param1_names = ["s_i$i" for i in 1:length(s_range)]
+		param1_names 			= ["s_i$i" for i in 1:length(s_range)]
 		savings_value 			= ["s=$i" for i in s_range]
 		consumption_value 		= ["c=$i" for i in consumption_range]
 		labor_value 			= ["l=$i" for i in labor_range]
@@ -415,7 +424,7 @@ end
 # ╔═╡ 69c81e81-4f68-4eaa-9e9d-723f246244d1
 begin 
 	"""
-		function backwards2(;s_range::AbstractRange,
+		function backwards(;s_range::AbstractRange,
 				sprime_range::AbstractRange,
 				consumption_range::AbstractRange,
 				labor_range::AbstractRange,
@@ -487,12 +496,15 @@ begin
 		# and the values of choice variables at the optimum (optimal_choices): 
 		optimal_choices 	= Array{Number}(undef,nperiods,length(sprime_range),3) # Time periods, level of initial savings, choice variables
 		optimal_choices 	= NamedArray(optimal_choices,(param1_names,savings_value,choice_variable_name))
-		
+
+		itp_Vlast = linear_interpolation(s_range, zeros(length(s_range)), extrapolation_bc=Line())
+
 		# First, we solve for the last period, in which the value function of next period is 0: 
-		last_Bellman = value_last_period(s_range = s_range::AbstractRange,
+		last_Bellman = Bellman(s_range = s_range::AbstractRange,
 	 					sprime_range = sprime_range::AbstractRange,
 	 					consumption_range = consumption_range::AbstractRange,
 	 					labor_range = labor_range::AbstractRange,
+						value_function_nextperiod=itp_Vlast,
 	 					β=β,
 			 			ρ = ρ, φ = φ,
 						r = r[nperiods],
@@ -507,27 +519,32 @@ begin
 		
 		# Value of the value function: 
 		if return_full_grid == true
-			V[end,:,:,:,:] 							= last_Bellman[:grid_of_value_function] # last_Bellman[1]
+			V[end,:,:,:,:]	= last_Bellman[:grid_of_value_function] 
 		end 
 		
 		# Values at the optimum:
-		Vstar[end,:] 							.= last_Bellman[:Vstar] # 2 	 
+		Vstar[end,:] 							.= last_Bellman[:Vstar] 	 
 		
 		# Index of optimal choice:
-		index_optimal_choices[end] 				= last_Bellman[:index_optimal_choice] #3
+		index_optimal_choices[end] 				= last_Bellman[:index_optimal_choice]
 		
-		optimal_choices[end,:,:]				= last_Bellman[:optimal_choice] #4
+		optimal_choices[end,:,:]				= last_Bellman[:optimal_choice]
 
 		# Values of the choice variables at optimum:
 		# optimal_choice[end,:] = collect(grid_of_value_function)
 		
 		for index_time in (nperiods-1):-1:1
+			# Interpolate last period's Vstar to use in Bellman
+        itp_Vnext =
+				linear_interpolation(s_range,
+				last_Bellman[:Vstar],
+				extrapolation_bc=Line())
 			
 			tmp = Bellman(s_range=s_range,
 					sprime_range=sprime_range,
 					consumption_range=consumption_range,
 					labor_range=labor_range,
-					value_function_nextperiod=last_Bellman[:Vstar], 
+					value_function_nextperiod = itp_Vnext, # Interpolated value
 					β=β,
 					z=z[index_time],
 					ρ=ρ,
@@ -540,16 +557,16 @@ begin
 					return_budget_balance = return_budget_balance)::NamedTuple
 			
 			if return_full_grid == true
-				V[index_time,:,:,:,:] 						= tmp[:grid_of_value_function]  #1
+				V[index_time,:,:,:,:] 			= tmp[:grid_of_value_function] 
 			end
 
 			if return_budget_balance == true
-				budget_balance[index_time,:] 				= tmp[:budget_balance]
+				budget_balance[index_time,:] 	= tmp[:budget_balance]
 			end
 				
-			Vstar[index_time,:] 							= tmp[:Vstar] 					#2
-			index_optimal_choices[index_time] 				= tmp[:index_optimal_choice] 	#3
-			optimal_choices[index_time,:,:] 				= tmp[:optimal_choice] 			#4
+			Vstar[index_time,:] 				= tmp[:Vstar]
+			index_optimal_choices[index_time] 	= tmp[:index_optimal_choice]
+			optimal_choices[index_time,:,:] 	= tmp[:optimal_choice] 
 			
 			last_Bellman = tmp
 			
@@ -735,12 +752,22 @@ md"""Parameters: """
 
 # ╔═╡ 0c09f2ae-0050-42f7-a78e-3b167a688ecf
 begin 
-	s_range = -1:0.05:1
-	consumption_max = 100
+	s_range 		= 0.00000000:0.05:2
+	sprime_range 	= 0.00000000:0.05:2
+	consumption_max = 10
 	nperiods = 104
-	r = (1:nperiods).^2
+	ζ = (1 ./(1:nperiods))
+	r_pi0 = (1 .- ζ) ./ζ
+	# r = (1:nperiods).^2
+	# r = fill(10,nperiods)
+	r_min = ((1-0.96)/(0.96))
+	r = r_min .+ r_pi0
+	# r = zeros(nperiods)
 	typical_productivity = [exp(0.1*x - 0.001*x^2) for x in 1:nperiods]
 end
+
+# ╔═╡ 7eececd6-be68-4291-865f-4760f4526c7e
+ζ
 
 # ╔═╡ fb31e39e-a61e-460b-85b4-e625937de7ba
 md"""Solution: """
@@ -748,12 +775,15 @@ md"""Solution: """
 # ╔═╡ 3ba1e203-b245-40f6-9533-ac3855c5326d
 r
 
+# ╔═╡ dea08ef0-c915-4bcc-8128-b566f0542022
+typeof(Interpolations.Extrapolation)
+
 # ╔═╡ 066a698c-efd6-435a-9127-79e621597dee
 begin 
-	@time benchmark = backwards(s_range				= s_range,
-							sprime_range		= s_range,
-							consumption_range 	= 0:0.5:consumption_max,
-							labor_range			= 0.00:0.1:1.4,
+	@time benchmark = backwards(s_range			= s_range,
+							sprime_range		= sprime_range,
+							consumption_range 	= 0:0.05:consumption_max,
+							labor_range			= 0.00:0.05:1.4,
 							nperiods 			= nperiods,
 							r 					= r,
 							z 					= typical_productivity,
@@ -819,7 +849,7 @@ begin
 	plotly()
 	plot_c_star = Plots.plot(s_range,benchmark[:optimal_choices][1,:,"c"], label = "Period: 1", xaxis = "Initial savings", yaxis = "Consumption")
 	
-	for t in 10:10:nperiods
+	for t in 1:nperiods#10:10:nperiods
 		Plots.plot!(s_range,benchmark[:optimal_choices][t,:,"c"], label = "Period: $t")
 	end
 
@@ -833,7 +863,7 @@ begin
 	plotly()
 	plot_l_star = Plots.plot(s_range,benchmark[:optimal_choices][1,:,"l"], label = "Period: 1", xaxis = "Initial savings", yaxis = "Labor supply")
 	
-	for t in [50,80,104]
+	for t in 1:nperiods#[50,80,104]
 		Plots.plot!(s_range,benchmark[:optimal_choices][t,:,"l"], label = "Period: $t")
 	end
 
@@ -849,7 +879,7 @@ begin
 	# Fixed interest rate plot:
 	plot_sprime_star = Plots.plot(s_range,benchmark[:optimal_choices][1,:,"sprime"])
 	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
-	for t in [50,80,104]
+	for t in 1:nperiods # [50,80,100,104]
 	 	Plots.plot!(s_range,benchmark[:optimal_choices][t,:,:][:,"sprime"], label = "Period: $t")
 	end
 	Plots.plot!(title = "Savings policy", legend = false)
@@ -865,7 +895,7 @@ md""" Budget surplus """
 begin 
 	budget_constraint_plot_fixed = Plots.plot(s_range,benchmark[:budget_balance][1,:], label = "Period 1")
 	Plots.plot!(xaxis = "Initial savings", yaxis = "Budget surplus", title = "Budget surplus",legend = false)
-	for t in [50,80,104]
+	for t in 1:nperiods #[50,80,104]
 	 	Plots.plot!(s_range,benchmark[:budget_balance][t,:], label = "Period: $t")
 	end
 	Plots.plot(budget_constraint_plot_fixed)
@@ -874,10 +904,14 @@ end
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
+Loess = "4345ca2d-374a-55d4-8d30-97f9976e7612"
 NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 
 [compat]
+Interpolations = "~0.15.1"
+Loess = "~0.6.4"
 NamedArrays = "~0.10.3"
 Plots = "~1.40.11"
 """
@@ -888,7 +922,18 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.4"
 manifest_format = "2.0"
-project_hash = "896b9aeaad75b1632a78a907c962ee4158ca0a2f"
+project_hash = "f98092a6de64a4e3bdcdb2d56f3e06b607ca763c"
+
+[[deps.Adapt]]
+deps = ["LinearAlgebra", "Requires"]
+git-tree-sha1 = "f7817e2e585aa6d924fd714df1e2a84be7896c60"
+uuid = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
+version = "4.3.0"
+weakdeps = ["SparseArrays", "StaticArrays"]
+
+    [deps.Adapt.extensions]
+    AdaptSparseArraysExt = "SparseArrays"
+    AdaptStaticArraysExt = "StaticArrays"
 
 [[deps.AliasTables]]
 deps = ["PtrArrays", "Random"]
@@ -903,6 +948,12 @@ version = "1.1.2"
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 version = "1.11.0"
+
+[[deps.AxisAlgorithms]]
+deps = ["LinearAlgebra", "Random", "SparseArrays", "WoodburyMatrices"]
+git-tree-sha1 = "01b8ccb13d68535d73d2b0c23e39bd23155fb712"
+uuid = "13072b0f-2c55-5437-9ae7-d433b7a33950"
+version = "1.1.0"
 
 [[deps.Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -924,6 +975,16 @@ deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jl
 git-tree-sha1 = "2ac646d71d0d24b44f3f8c84da8c9f4d70fb67df"
 uuid = "83423d85-b0ee-5818-9007-b63ccbeb887a"
 version = "1.18.4+0"
+
+[[deps.ChainRulesCore]]
+deps = ["Compat", "LinearAlgebra"]
+git-tree-sha1 = "1713c74e00545bfe14605d2a2be1712de8fbcb58"
+uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+version = "1.25.1"
+weakdeps = ["SparseArrays"]
+
+    [deps.ChainRulesCore.extensions]
+    ChainRulesCoreSparseArraysExt = "SparseArrays"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
@@ -1023,6 +1084,22 @@ deps = ["Mmap"]
 git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 version = "1.9.1"
+
+[[deps.Distances]]
+deps = ["LinearAlgebra", "Statistics", "StatsAPI"]
+git-tree-sha1 = "c7e3a542b999843086e2f29dac96a618c105be1d"
+uuid = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
+version = "0.10.12"
+weakdeps = ["ChainRulesCore", "SparseArrays"]
+
+    [deps.Distances.extensions]
+    DistancesChainRulesCoreExt = "ChainRulesCore"
+    DistancesSparseArraysExt = "SparseArrays"
+
+[[deps.Distributed]]
+deps = ["Random", "Serialization", "Sockets"]
+uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+version = "1.11.0"
 
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
@@ -1155,6 +1232,16 @@ version = "8.5.0+0"
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 version = "1.11.0"
+
+[[deps.Interpolations]]
+deps = ["Adapt", "AxisAlgorithms", "ChainRulesCore", "LinearAlgebra", "OffsetArrays", "Random", "Ratios", "Requires", "SharedArrays", "SparseArrays", "StaticArrays", "WoodburyMatrices"]
+git-tree-sha1 = "88a101217d7cb38a7b481ccd50d21876e1d1b0e0"
+uuid = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
+version = "0.15.1"
+weakdeps = ["Unitful"]
+
+    [deps.Interpolations.extensions]
+    InterpolationsUnitfulExt = "Unitful"
 
 [[deps.InvertedIndices]]
 git-tree-sha1 = "6da3c4316095de0f5ee2ebd875df8721e7e0bdbe"
@@ -1317,6 +1404,12 @@ deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 version = "1.11.0"
 
+[[deps.Loess]]
+deps = ["Distances", "LinearAlgebra", "Statistics", "StatsAPI"]
+git-tree-sha1 = "f749e7351f120b3566e5923fefdf8e52ba5ec7f9"
+uuid = "4345ca2d-374a-55d4-8d30-97f9976e7612"
+version = "0.6.4"
+
 [[deps.LogExpFunctions]]
 deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
 git-tree-sha1 = "13ca9e2586b89836fd20cccf56e57e2b9ae7f38f"
@@ -1398,6 +1491,15 @@ version = "0.10.3"
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
+
+[[deps.OffsetArrays]]
+git-tree-sha1 = "a414039192a155fb38c4599a60110f0018c6ec82"
+uuid = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
+version = "1.16.0"
+weakdeps = ["Adapt"]
+
+    [deps.OffsetArrays.extensions]
+    OffsetArraysAdaptExt = "Adapt"
 
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1558,6 +1660,16 @@ deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 version = "1.11.0"
 
+[[deps.Ratios]]
+deps = ["Requires"]
+git-tree-sha1 = "1342a47bf3260ee108163042310d26f2be5ec90b"
+uuid = "c84ed2f1-dad5-54f0-aa8e-dbefe2724439"
+version = "0.4.5"
+weakdeps = ["FixedPointNumbers"]
+
+    [deps.Ratios.extensions]
+    RatiosFixedPointNumbersExt = "FixedPointNumbers"
+
 [[deps.RecipesBase]]
 deps = ["PrecompileTools"]
 git-tree-sha1 = "5c3d09cc4f31f5fc6af001c250bf1278733100ff"
@@ -1601,6 +1713,11 @@ version = "1.2.1"
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 version = "1.11.0"
 
+[[deps.SharedArrays]]
+deps = ["Distributed", "Mmap", "Random", "Serialization"]
+uuid = "1a1011a3-84de-559e-8e89-a11a2f7dc383"
+version = "1.11.0"
+
 [[deps.Showoff]]
 deps = ["Dates", "Grisu"]
 git-tree-sha1 = "91eddf657aca81df9ae6ceb20b959ae5653ad1de"
@@ -1632,6 +1749,22 @@ deps = ["Random"]
 git-tree-sha1 = "83e6cce8324d49dfaf9ef059227f91ed4441a8e5"
 uuid = "860ef19b-820b-49d6-a774-d7a799459cd3"
 version = "1.0.2"
+
+[[deps.StaticArrays]]
+deps = ["LinearAlgebra", "PrecompileTools", "Random", "StaticArraysCore"]
+git-tree-sha1 = "0feb6b9031bd5c51f9072393eb5ab3efd31bf9e4"
+uuid = "90137ffa-7385-5640-81b9-e52037218182"
+version = "1.9.13"
+weakdeps = ["ChainRulesCore", "Statistics"]
+
+    [deps.StaticArrays.extensions]
+    StaticArraysChainRulesCoreExt = "ChainRulesCore"
+    StaticArraysStatisticsExt = "Statistics"
+
+[[deps.StaticArraysCore]]
+git-tree-sha1 = "192954ef1208c7019899fbf8049e717f92959682"
+uuid = "1e83bf80-4336-4d27-bf5d-d5a4f845583c"
+version = "1.4.3"
 
 [[deps.Statistics]]
 deps = ["LinearAlgebra"]
@@ -1752,6 +1885,12 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "5db3e9d307d32baba7067b13fc7b5aa6edd4a19a"
 uuid = "2381bf8a-dfd0-557d-9999-79630e7b1b91"
 version = "1.36.0+0"
+
+[[deps.WoodburyMatrices]]
+deps = ["LinearAlgebra", "SparseArrays"]
+git-tree-sha1 = "c1a7aa6219628fcd757dede0ca95e245c5cd9511"
+uuid = "efce3f68-66dc-5838-9240-27a6d6f5f9b6"
+version = "1.0.0"
 
 [[deps.XML2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Zlib_jll"]
@@ -2036,29 +2175,31 @@ version = "1.4.1+2"
 # ╟─61ece9da-1bdf-11f0-3325-6194598f6f4a
 # ╠═0c2c4774-f0ab-4009-a029-892add173ec5
 # ╟─9507a676-66eb-4c17-a1a2-8318e95f2e82
-# ╟─db95f881-9083-457b-ac65-cb2f2569bde4
+# ╠═db95f881-9083-457b-ac65-cb2f2569bde4
 # ╟─21df5a6d-d53e-453a-aa89-4cb9fe76971c
 # ╟─89e8c72e-40f5-492e-a546-ca34a9849ae3
 # ╟─e90b29d0-9eb7-4485-963f-cd7f812330f9
-# ╟─46db2210-8a1d-4139-bffd-b0aa443f46d7
+# ╠═46db2210-8a1d-4139-bffd-b0aa443f46d7
 # ╟─746fb476-5fd2-4903-819b-33f837f1efe7
 # ╟─f3f62277-9bae-4403-9995-f8b1df13ad17
-# ╟─69c81e81-4f68-4eaa-9e9d-723f246244d1
+# ╠═69c81e81-4f68-4eaa-9e9d-723f246244d1
 # ╟─60096934-1c07-4a67-a7ba-3fe93bfc62ef
 # ╟─06a8e624-a538-408d-9ad2-4898b119cb32
 # ╠═0c09f2ae-0050-42f7-a78e-3b167a688ecf
+# ╠═7eececd6-be68-4291-865f-4760f4526c7e
 # ╟─fb31e39e-a61e-460b-85b4-e625937de7ba
 # ╠═3ba1e203-b245-40f6-9533-ac3855c5326d
+# ╠═dea08ef0-c915-4bcc-8128-b566f0542022
 # ╠═066a698c-efd6-435a-9127-79e621597dee
 # ╟─2e9b0376-7845-467a-a8f2-243f6d284532
 # ╠═40c8858b-2df1-42e1-beb5-7f39a6206207
 # ╟─f0953e52-b68f-450d-9677-a41e1d8704ef
 # ╟─08dbbc85-d330-4e2e-8d13-61e6f27f69b3
 # ╟─c6bee05f-14b1-4ded-bdf3-3bb3b9eba153
-# ╟─1fac55e0-1fc1-4176-89b4-ff5a19bee0bd
-# ╟─faf854c0-fac3-46c4-8fa4-9b49ef23b4f0
-# ╟─3a3b6027-9597-4f44-b25d-ade1b573c4dc
+# ╠═1fac55e0-1fc1-4176-89b4-ff5a19bee0bd
+# ╠═faf854c0-fac3-46c4-8fa4-9b49ef23b4f0
+# ╠═3a3b6027-9597-4f44-b25d-ade1b573c4dc
 # ╟─801085ea-08e9-447b-9a1f-b08048b73c0d
-# ╟─92803382-f0f9-4212-9743-2d50ed1a42e5
+# ╠═92803382-f0f9-4212-9743-2d50ed1a42e5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
