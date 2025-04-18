@@ -444,6 +444,6 @@ begin
         φ 					= 2.00,
         β 					= 0.96, 
         save                = true)
-    end
+    end # Mac Mini: 249.805237 seconds (2.29 G allocations: 88.475 GiB, 3.63% gc time, 0.01% compilation time)
 end
 
