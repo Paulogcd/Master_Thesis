@@ -39,6 +39,12 @@ begin
 	end
 end
 
+# ╔═╡ 251c5cff-4edf-4952-a639-5fe7518a44a2
+begin
+	#cr
+	budget_surplus(c = 10.00,l = 10.00, sprime = 1.00, s = 1.00, z = 1.00)
+end
+
 # ╔═╡ 21df5a6d-d53e-453a-aa89-4cb9fe76971c
 begin 
 	""" 
@@ -140,6 +146,7 @@ begin
 		optimal_choice = Array{Float64}(undef,length(s_range),3)
 
 		if return_budget_balance == true
+			tmp_budget = Array{Float64}(undef,length(s_range),length(consumption_range),length(labor_range),length(sprime_range))
 			budget_balance = Array{Float64}(undef,length(s_range))
 		end
 
@@ -155,6 +162,7 @@ begin
 						# If the budget constraint is violated,
 						# set the value function to minus infinity : 
 						tmp = budget_surplus(c = consumption, l = labor, sprime = sprime, s = s, z = z, r = r)
+						tmp_budget[index_s,index_consumption,index_labor,index_sprime] = tmp
 						if tmp < 0 
 							
 							grid_of_value_function[index_s,
@@ -197,18 +205,37 @@ begin
 			index_optimal_choice[index_s] =
 				findmax(grid_of_value_function[index_s,:,:,:])
 
+			ioc = index_optimal_choice[index_s]
+
 			# itp = linear_interpolation(s_range, Vstar)
 			
-			optimal_choice[index_s,:] = [consumption_range[index_optimal_choice[index_s][1]],
-										labor_range[index_optimal_choice[index_s][2]],
-										sprime_range[index_optimal_choice[index_s][3]]]
+			optimal_choice[index_s,:] = [consumption_range[ioc[1]],
+										labor_range[ioc[2]],
+										sprime_range[ioc[3]]]
 
-			budget_balance[index_s] = budget_surplus(
-							c = consumption_range[index_optimal_choice[index_s][1]],
-							l = labor_range[index_optimal_choice[index_s][2]],
-							sprime = sprime_range[index_optimal_choice[index_s][3]],
-							s = s,
-							z = z)
+			# Former version: 
+			# budget_balance[index_s] = budget_surplus(
+			# 				c = consumption_range[index_optimal_choice[index_s][1]],
+			# 				l = labor_range[index_optimal_choice[index_s][2]],
+			# 				sprime = sprime_range[index_optimal_choice[index_s][3]],
+			# 				s = s,
+			# 				z = z)
+
+			# budget_balance[index_s] = budget_surplus(
+			# 	c = optimal_choice[index_s,:][1],
+			# 	l = optimal_choice[index_s,:][1],
+			# 	sprime = optimal_choice[index_s,:][1],
+			# 	s = s,
+			# 	z = z)
+			     
+			# Validation check
+        	optimal_surplus = tmp_budget[index_s, ioc[1], ioc[2], ioc[3]]
+        	@assert optimal_surplus >= 0 "Infeasible optimal choice found!
+				Surplus: $optimal_surplus."
+			
+			if return_budget_balance
+				budget_balance[index_s] = optimal_surplus
+			end
 
 		end # end of s
 
@@ -508,11 +535,11 @@ begin
 	 					β = β::Float64,
 			 			ρ = ρ::Float64,
 						φ = φ::Float64,
-						r = r[nperiods],
+						r = r[nperiods]::Float64,
 						proba_survival = proba_survival::Float64,
 						w = w::Float64,
 						h = h::AbstractString,
-						z = z[nperiods],
+						z = z[nperiods]::Float64,
 						return_full_grid = true::Bool,
 						return_budget_balance = return_budget_balance::Bool)::NamedTuple
 
@@ -585,11 +612,11 @@ begin
 		end
 		
 
-		if return_full_grid == true && return_budget_balance == true
+		if return_full_grid && return_budget_balance
 			return (;V,Vstar,index_optimal_choices,optimal_choices,budget_balance)
-		elseif return_full_grid == true && return_budget_balance == false
+		elseif return_full_grid
 			return (;V,Vstar,index_optimal_choices,optimal_choices)
-		elseif return_full_grid == false && return_budget_balance == true
+		elseif return_budget_balance
 			return (;Vstar,index_optimal_choices,optimal_choices,budget_balance)
 		else 
 			return (;Vstar,index_optimal_choices,optimal_choices)
@@ -755,22 +782,25 @@ md"""Parameters: """
 
 # ╔═╡ 0c09f2ae-0050-42f7-a78e-3b167a688ecf
 begin 
-	s_range 		= 0.00000000:0.1:2
-	sprime_range 	= 0.00000000:0.1:2
-	consumption_max = 10
+	s_range 		= 0.00000000:0.1:5
+	sprime_range 	= 0.00000000:0.1:5
+	consumption_max = 13
 	nperiods = 104
 	ζ = (1 ./(1:nperiods))
 	r_pi0 = (1 .- ζ) ./ζ
 	# r = (1:nperiods).^2
 	# r = fill(10,nperiods)
 	r_min = ((1-0.96)/(0.96))
-	r = r_min .+ r_pi0
-	# r = zeros(nperiods)
+	# r = r_min .+ r_pi0
+	r = fill(0.1,nperiods)
 	typical_productivity = [exp(0.1*x - 0.001*x^2) for x in 1:nperiods]
 end
 
 # ╔═╡ 7eececd6-be68-4291-865f-4760f4526c7e
 ζ
+
+# ╔═╡ 4598a64b-45a0-476f-903b-1ddf745c1cb4
+typical_productivity
 
 # ╔═╡ fb31e39e-a61e-460b-85b4-e625937de7ba
 md"""Solution: """
@@ -785,8 +815,8 @@ typeof(Interpolations.Extrapolation)
 begin 
 	@time benchmark = backwards(s_range			= s_range,
 							sprime_range		= sprime_range,
-							consumption_range 	= 0:0.1:consumption_max,
-							labor_range			= 0.00:0.1:1.4,
+							consumption_range 	= 0:0.05:consumption_max,
+							labor_range			= 0.00:0.05:2,
 							nperiods 			= nperiods,
 							r 					= r,
 							z 					= typical_productivity,
@@ -2180,6 +2210,7 @@ version = "1.4.1+2"
 # ╠═0c2c4774-f0ab-4009-a029-892add173ec5
 # ╟─9507a676-66eb-4c17-a1a2-8318e95f2e82
 # ╠═db95f881-9083-457b-ac65-cb2f2569bde4
+# ╠═251c5cff-4edf-4952-a639-5fe7518a44a2
 # ╟─21df5a6d-d53e-453a-aa89-4cb9fe76971c
 # ╟─89e8c72e-40f5-492e-a546-ca34a9849ae3
 # ╟─e90b29d0-9eb7-4485-963f-cd7f812330f9
@@ -2191,6 +2222,7 @@ version = "1.4.1+2"
 # ╟─06a8e624-a538-408d-9ad2-4898b119cb32
 # ╠═0c09f2ae-0050-42f7-a78e-3b167a688ecf
 # ╠═7eececd6-be68-4291-865f-4760f4526c7e
+# ╠═4598a64b-45a0-476f-903b-1ddf745c1cb4
 # ╟─fb31e39e-a61e-460b-85b4-e625937de7ba
 # ╠═3ba1e203-b245-40f6-9533-ac3855c5326d
 # ╠═dea08ef0-c915-4bcc-8128-b566f0542022
@@ -2198,12 +2230,12 @@ version = "1.4.1+2"
 # ╟─2e9b0376-7845-467a-a8f2-243f6d284532
 # ╠═40c8858b-2df1-42e1-beb5-7f39a6206207
 # ╟─f0953e52-b68f-450d-9677-a41e1d8704ef
-# ╟─08dbbc85-d330-4e2e-8d13-61e6f27f69b3
+# ╠═08dbbc85-d330-4e2e-8d13-61e6f27f69b3
 # ╟─c6bee05f-14b1-4ded-bdf3-3bb3b9eba153
-# ╠═1fac55e0-1fc1-4176-89b4-ff5a19bee0bd
-# ╠═faf854c0-fac3-46c4-8fa4-9b49ef23b4f0
-# ╠═3a3b6027-9597-4f44-b25d-ade1b573c4dc
+# ╟─1fac55e0-1fc1-4176-89b4-ff5a19bee0bd
+# ╟─faf854c0-fac3-46c4-8fa4-9b49ef23b4f0
+# ╟─3a3b6027-9597-4f44-b25d-ade1b573c4dc
 # ╟─801085ea-08e9-447b-9a1f-b08048b73c0d
-# ╠═92803382-f0f9-4212-9743-2d50ed1a42e5
+# ╟─92803382-f0f9-4212-9743-2d50ed1a42e5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
