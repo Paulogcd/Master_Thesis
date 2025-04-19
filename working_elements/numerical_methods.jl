@@ -126,7 +126,7 @@ begin
 
 		# Initialise a grid of the value function for all possible 
 		# combinations of choice and state variables:
-		grid_of_value_function = Array{Number}(undef,length(s_range),
+		grid_of_value_function = Array{Float64}(undef,length(s_range),
 															length(consumption_range),
 															length(labor_range),
 															length(sprime_range))
@@ -169,7 +169,7 @@ begin
 						else
 
 							# Use interpolated value function (evaluated at sprime)
-                        	continuation_value = value_function_nextperiod(sprime)
+                        	# continuation_value = value_function_nextperiod(sprime)
 							
 							grid_of_value_function[index_s,
 											index_consumption,
@@ -181,7 +181,7 @@ begin
 									w=w,
 									h=h,
 									ρ=ρ,
-									φ=φ) + β*proba_survival*continuation_value
+									φ=φ) + β*proba_survival*value_function_nextperiod[index_sprime]
 							
 						end
 						
@@ -197,7 +197,7 @@ begin
 			index_optimal_choice[index_s] =
 				findmax(grid_of_value_function[index_s,:,:,:])
 
-			itp = linear_interpolation(s_range, Vstar)
+			# itp = linear_interpolation(s_range, Vstar)
 			
 			optimal_choice[index_s,:] = [consumption_range[index_optimal_choice[index_s][1]],
 										labor_range[index_optimal_choice[index_s][2]],
@@ -227,13 +227,13 @@ begin
 		optimal_choice = NamedArray(optimal_choice, (param1_names, ["c","l","sprime"]))
 
 		# Returning results:
-		if return_full_grid == true & return_budget_balance == true
+		if return_full_grid == true && return_budget_balance == true
 			return (;grid_of_value_function,Vstar,index_optimal_choice,optimal_choice,budget_balance)
-		elseif return_full_grid == true & return_budget_balance == false
+		elseif return_full_grid == true && return_budget_balance == false
 			return (;grid_of_value_function,Vstar,index_optimal_choice,optimal_choice)
-		elseif return_full_grid == false & return_budget_balance == true
+		elseif return_full_grid == false && return_budget_balance == true
 			return (;Vstar,index_optimal_choice,optimal_choice,budget_balance)
-		elseif return_full_grid == false & return_budget_balance == false
+		elseif return_full_grid == false && return_budget_balance == false
 			return (;Vstar,index_optimal_choice,optimal_choice)
 		end
 		
@@ -432,10 +432,10 @@ begin
 				z = ones(nperiods)::Array,
 				β = 0.9::Float64,
 				r = final_r::Array,
-				ρ = 1.5::Float64, 
-				φ = 2::Float64,
-				proba_survival = 0.9::Float64,
-				w = 0::Float64,
+				ρ = 1.50::Float64, 
+				φ = 2.00::Float64,
+				proba_survival = 0.90::Float64,
+				w = 0.00::Float64,
 				h = "good"::AbstractString, 
 				return_full_grid = false::Bool, 
 				return_budget_balance = true::Bool)::NamedTuple
@@ -447,11 +447,11 @@ begin
 				nperiods::Integer,
 				z = ones(nperiods)::Array,
 				β = 0.9::Float64,
-				r = final_r::Array,
-				ρ = 1.5::Float64, 
-				φ = 2::Float64,
-				proba_survival = 0.9::Float64,
-				w = 0::Float64,
+				r = ones(nperiods)::Array,
+				ρ = 1.50::Float64, 
+				φ = 2.00::Float64,
+				proba_survival = 0.90::Float64,
+				w = 0.00::Float64,
 				h = "good"::AbstractString, 
 				return_full_grid = false::Bool, 
 				return_budget_balance = true::Bool)::NamedTuple
@@ -473,14 +473,14 @@ begin
 
 		# From the given ranges, construct a grid of all possible values, 
 		# And save its size: 
-		grid_of_value_function 	= Array{Number}(undef,length(s_range),
+		grid_of_value_function 	= Array{Float64}(undef,length(s_range),
 															length(consumption_range),
 															length(labor_range),
 															length(sprime_range))
 		points 					= size(grid_of_value_function)
 
 		if return_budget_balance == true
-			budget_balance = Array{Number}(undef,nperiods,length(s_range))
+			budget_balance = Array{Float64}(undef,nperiods,length(s_range))
 		end
 		
 		# Initialize empty arrays that will:
@@ -494,24 +494,27 @@ begin
 		index_optimal_choices = Array{Array{CartesianIndex{3}}}(undef,nperiods)
 
 		# and the values of choice variables at the optimum (optimal_choices): 
-		optimal_choices 	= Array{Number}(undef,nperiods,length(sprime_range),3) # Time periods, level of initial savings, choice variables
+		optimal_choices 	= Array{Float64}(undef,nperiods,length(sprime_range),3) # Time periods, level of initial savings, choice variables
 		optimal_choices 	= NamedArray(optimal_choices,(param1_names,savings_value,choice_variable_name))
 
-		itp_Vlast = linear_interpolation(s_range, zeros(length(s_range)), extrapolation_bc=Line())
+		# itp_Vlast = linear_interpolation(s_range, zeros(length(s_range)), extrapolation_bc=Line())
 
 		# First, we solve for the last period, in which the value function of next period is 0: 
 		last_Bellman = Bellman(s_range = s_range::AbstractRange,
 	 					sprime_range = sprime_range::AbstractRange,
 	 					consumption_range = consumption_range::AbstractRange,
 	 					labor_range = labor_range::AbstractRange,
-						value_function_nextperiod=itp_Vlast,
-	 					β=β,
-			 			ρ = ρ, φ = φ,
+						value_function_nextperiod = zeros(length(s_range)),
+	 					β = β::Float64,
+			 			ρ = ρ::Float64,
+						φ = φ::Float64,
 						r = r[nperiods],
-						proba_survival = proba_survival, w = w, h=h,
+						proba_survival = proba_survival::Float64,
+						w = w::Float64,
+						h = h::AbstractString,
 						z = z[nperiods],
-						return_full_grid = 1,
-						return_budget_balance = return_budget_balance)::NamedTuple
+						return_full_grid = true::Bool,
+						return_budget_balance = return_budget_balance::Bool)::NamedTuple
 
 		if return_budget_balance == true
 			budget_balance[end,:] = last_Bellman[:budget_balance]
@@ -535,25 +538,25 @@ begin
 		
 		for index_time in (nperiods-1):-1:1
 			# Interpolate last period's Vstar to use in Bellman
-        itp_Vnext =
-				linear_interpolation(s_range,
-				last_Bellman[:Vstar],
-				extrapolation_bc=Line())
+        # itp_Vnext =
+		# 		linear_interpolation(s_range,
+		# 		last_Bellman[:Vstar],
+		# 		extrapolation_bc=Line())
 			
-			tmp = Bellman(s_range=s_range,
-					sprime_range=sprime_range,
-					consumption_range=consumption_range,
-					labor_range=labor_range,
-					value_function_nextperiod = itp_Vnext, # Interpolated value
-					β=β,
-					z=z[index_time],
-					ρ=ρ,
-					φ=φ,
-					r=r[index_time], 
+			tmp = Bellman(s_range = s_range,
+					sprime_range = sprime_range,
+					consumption_range = consumption_range,
+					labor_range = labor_range,
+					value_function_nextperiod = last_Bellman[:Vstar], # itp_Vnext, # Interpolated value
+					β = β,
+					z = z[index_time],
+					ρ = ρ,
+					φ = φ,
+					r = r[index_time], 
 					proba_survival = proba_survival, 
-					w=w,
-					h=h,
-					return_full_grid = 1,
+					w = w,
+					h = h,
+					return_full_grid = true,
 					return_budget_balance = return_budget_balance)::NamedTuple
 			
 			if return_full_grid == true
@@ -573,12 +576,12 @@ begin
 		end # end of time loop
 
 		# Rename in NamedArrays:
-		Vstar 			= NamedArray(Vstar, (param1_names,savings_value))
+		Vstar = NamedArray(Vstar, (param1_names,savings_value))
 		if return_budget_balance == true
-			budget_balance 	= NamedArray(budget_balance, (param1_names,savings_value))
+			budget_balance = NamedArray(budget_balance, (param1_names,savings_value))
 		end
 		if return_full_grid == true
-			V 		= NamedArray(V, (param1_names, savings_value, consumption_value, labor_value, sprime_value))
+			V = NamedArray(V, (param1_names, savings_value, consumption_value, labor_value, sprime_value))
 		end
 		
 
@@ -752,8 +755,8 @@ md"""Parameters: """
 
 # ╔═╡ 0c09f2ae-0050-42f7-a78e-3b167a688ecf
 begin 
-	s_range 		= 0.00000000:0.05:2
-	sprime_range 	= 0.00000000:0.05:2
+	s_range 		= 0.00000000:0.1:2
+	sprime_range 	= 0.00000000:0.1:2
 	consumption_max = 10
 	nperiods = 104
 	ζ = (1 ./(1:nperiods))
@@ -782,14 +785,14 @@ typeof(Interpolations.Extrapolation)
 begin 
 	@time benchmark = backwards(s_range			= s_range,
 							sprime_range		= sprime_range,
-							consumption_range 	= 0:0.05:consumption_max,
-							labor_range			= 0.00:0.05:1.4,
+							consumption_range 	= 0:0.1:consumption_max,
+							labor_range			= 0.00:0.1:1.4,
 							nperiods 			= nperiods,
 							r 					= r,
 							z 					= typical_productivity,
 							w 					= 0.00,
 							h 					= "good",
-							ρ 					= 1.5,
+							ρ 					= 1.50,
 							φ 					= 2.00,
 							β 					= 0.96) 
 end
@@ -812,6 +815,7 @@ end
 
 # ╔═╡ 40c8858b-2df1-42e1-beb5-7f39a6206207
 # benchmark[:Vstar] .== benchmark2[:Vstar]
+benchmark[:optimal_choices][:,:,"c"]
 
 # ╔═╡ f0953e52-b68f-450d-9677-a41e1d8704ef
 md"""Plots: """
@@ -920,7 +924,7 @@ Plots = "~1.40.11"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.4"
+julia_version = "1.11.3"
 manifest_format = "2.0"
 project_hash = "f98092a6de64a4e3bdcdb2d56f3e06b607ca763c"
 
@@ -1515,7 +1519,7 @@ version = "0.3.27+1"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+4"
+version = "0.8.1+2"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
