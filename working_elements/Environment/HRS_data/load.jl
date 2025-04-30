@@ -1,3 +1,6 @@
+using ReadStatTables
+using StatsBase
+
 # This file is dedicated to the loading of the needed files from the HRS.
 # We need the 'c' section, for physical condition, and the exit files, 'pr' section.
 
@@ -194,3 +197,49 @@ Plots.plot!(xaxis = "Age", yaxis = "Survival Probability")
 
 
 
+# We now are interested in the income of individuals. 
+# These data are observed in the 'Q' section.
+data_q_2022 = readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h22core/h22sta/H22Q_H.dta")
+
+data_q_2022[:SQ016] # Self employment
+data_q_2022[:SQ020] # Wage and salary
+data_q_2022[:SQ223_1] # From pension
+data_q_2022[:SQ038]
+data_q_2022[:SQ037]
+data_q_2022[:SQ069]
+data_q_2022[:SQ079]
+data_q_2022[:SQ088]
+
+
+test = data_q_2022[:SQ087] .- data_q_2022[:SQ086]
+
+countmap(test)
+
+dropmissing!(test)
+
+describe(data_q_2022[:SQ087])
+
+x = dropmissing(data_q_2022[:SQ087])
+
+countmap(data_q_2022[:SQ087])
+countmap(data_q_2022[:SQ086])
+
+unique(test)
+
+
+unique(data_q_2022[:SQ088])
+
+unique(data_q_2022[:SQ079])
+
+unique(data_q_2022[:SQ069])
+
+unique(data_q_2022[:SQ037])
+describe(data_q_2022[:SQ037])
+
+describe(data_q_2022[:SQ038])
+unique(data_q_2022[:SQ038])
+describe(data_q_2022[:SQ223_1])
+unique(data_q_2022[:SQ223_1])
+
+# It seems delicate to control for "income" with these Data. 
+# Instead, if we use the gdp ?
