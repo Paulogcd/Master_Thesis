@@ -144,7 +144,6 @@ end
 
 data_pr_2016    = readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h16_man/H16PR_R.dta")
 data_c_2016     = readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h16_man/H16C_R.dta")
-exit_2016       = readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h16_man/X16PR_R.dta")
 exit_2018       = readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/x18sta/X18PR_R.dta")
 
 # Loading data:
@@ -210,4 +209,72 @@ begin
     df_16_18 = vcat(df_2016_a,df_2018_a,df_2018_d)
 end
 
-df_final = vcat(df_16_18,df_18_20,df_20_22)
+# df_final = vcat(df_16_18,df_18_20,df_20_22)
+
+# 2016-2014
+
+data_pr_2014    = readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h14_man/H14PR_R.dta")
+data_c_2014     = readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h14_man/H14C_R.dta")
+exit_2014       = readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h14_man/X14PR_R.dta")
+exit_2016       = readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h16_man/X16PR_R.dta")
+
+# Loading data:
+begin
+    # Living:
+        # For physical health:
+        data_c_2014     = readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h14_man/H14C_R.dta")
+        data_c_2014     = DataFrame(data_c_2014)
+        # For age:
+        data_pr_2014    = readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h14_man/H14PR_R.dta")
+        data_pr_2014    = DataFrame(data_pr_2014)
+    # Dead:
+    exit_2016       = readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h16_man/X16PR_R.dta")
+    exit_2016           = DataFrame(exit_2016)
+end
+    
+# Defining IDs and Age:
+begin
+    # Defining IDs:
+    ID_2014_a   = string.(data_c_2014[!,:HHID],data_c_2014[!,:PN])
+    ID_2016_d   = string.(exit_2016[!,:HHID],exit_2016[!,:PN])
+
+    # Age:
+    age_2014_a              = 2014 .- data_pr_2014[:,:OX067_R]
+    age_of_death_2016       = 2016 .- exit_2016[!,:ZX067_R]
+end
+    
+# Defining Health status: 
+begin 
+    # Living:
+    health_rate_2014_a                  = data_c_2014[!,:OC001]
+    
+    df_2016_d = DataFrame(ID = ID_2016_d,
+                            Year = fill(2016, length(ID_2016_d)), 
+                            Age = age_of_death_2016,
+                            Health = fill(8,length(ID_2016_d)), # 8 is the value for "don't know/NA" in the HRS dataset
+                            Status = zeros(length(ID_2016_d)))
+
+    df_2014_a = DataFrame(ID = ID_2014_a,
+                            Year = fill(2014, length(ID_2014_a)), 
+                            Age = age_2014_a,
+                            Health = health_rate_2014_a, 
+                            Status = ones(length(ID_2014_a)))
+
+    # Ppl in the 2018 survey that are in exit 2020 (with health for 2018)
+    # fdf1 = filter(row -> row.ID in ID_2022_d, df_2018_a)
+    fdf1 = filter(row -> row.ID in ID_2016_d, df_2014_a)
+    fdf1
+
+    # We take the exit 2020 data, and are going to replace the Health by the previous one:
+    fdf2 = filter(row -> row.ID in fdf1.ID, df_2016_d)
+    fdf2.Health = fdf1.Health
+    fdf2
+
+    df_2018_d = fdf2
+    
+    df_14_16 = vcat(df_2014_a,df_2016_a,df_2016_d)
+end
+
+df_final = vcat(df_14_16,df_16_18,df_18_20,df_20_22)
+
+df_final = unique(df_final)

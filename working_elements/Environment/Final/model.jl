@@ -132,6 +132,12 @@ begin
     # transition_df.rowindex = states
     transition_df
 
+    sum(transition_df[1,:])
+    sum(transition_df[2,:])
+    sum(transition_df[3,:])
+    sum(transition_df[4,:])
+    sum(transition_df[5,:])
+
 end
 
 
@@ -257,8 +263,8 @@ end
     end
 
     dff = clean_health_2(dff, "Health_t")
-
-    dff = dropmissing!(dff)
+    describe(dff)
+    dff = dropmissing!(dff) # 3 observations dropped
     # describe(dff) # Checking: it's cleaned.
 
     # Formatting: 
@@ -288,7 +294,7 @@ end
 
     # Trying to plot it: 
 
-    av_annual_range = range(minimum(dff.av_annual_t)-0.01, maximum(dff.av_annual_t)+0.01, length=10)
+    av_annual_range = range(minimum(dff.av_annual_t)-1, maximum(dff.av_annual_t)+1, length=100)
 
     # 2. Get all Health_1 categories
     health_t_1_categories = levels(dff.Health_t_1)
@@ -320,27 +326,38 @@ end
         
         # Get predicted probabilities
         probs = MLJ.predict(mach, plot_data_encoded) #? 
-        
 
         # Reshape probabilities into a matrix (av_annual_t × Age_t × Health)
         prob_matrix = reshape([p.prob_given_ref[l] for p in probs, l in health_t_1_categories],
             (length(av_annual_range), length(age_range), length(health_t_1_categories)))
 
         # Create 3D plot
-        p = plot(title = "Transition from Health_t_1 = $health_t_1",
+        p = Plots.surface(title = "Transition from Health_t_1 = $health_t_1",
             xlabel = "av_annual_t", 
             ylabel = "Age_t",
             zlabel = "Probability",
+            # ylims = (minimum(age_range), maximum(age_range)),
             legend = :topright)
-
+        
         # Plot a surface for each target health category
         for (i, health) in enumerate(health_t_1_categories)
-            surface!(av_annual_range, age_range, prob_matrix[:, :, i],
+            surface!(av_annual_range, age_range, prob_matrix[:, :, i]',
             label = "To $health", alpha = 0.7)
         end
 
-        display(p) # Looks weird. 
+        heatmap(age_range, av_annual_range, prob_matrix[:, :, 1],
+        title="2D Slice Check", xlabel="Age", ylabel="av_annual")
+        
+
+        display(p) # Looks weird: the surface stops at y = 30 (age = 30)
     end
+
+    size(prob_matrix)
+    length(av_annual_range)
+    length(age_range)
+    length(health_t_1_categories)
 
 
 # end
+
+temperature
