@@ -53,7 +53,9 @@ temperature deviation with variable creating heterogeneity in the population, su
 
 ## On this website
 
-For now, you can find different versions of previous or current prototypic models I am working on in the [models page](models.qmd).
+For now, you can find different versions of previous or current prototypic models I am working on in the [models page](fm_models.qmd).
+
+You can also find my last empirical model [here](./resources/Empirical_model_1.html).
 
 As I will advance on my Master Thesis, I will try to add additional material, such as work on the literature and empirical data analysis.
 

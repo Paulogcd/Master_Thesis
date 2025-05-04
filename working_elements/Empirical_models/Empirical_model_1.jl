@@ -15,20 +15,32 @@ begin
 	using MLJLinearModels
 	using Plots
 	using GLM
+	using StatsBase
+	using Base.Threads
+	using NamedArrays
+	using Loess
 	TableOfContents(title = "Empirical model 1")
 end
 
 # ╔═╡ 03b5f43c-2806-11f0-1aad-913619158eaf
 md"""# Introduction
 
-This model is based upon: 
+This model is based upon the following data: 
 
-- HRS data (for health, age, and status)
-- Berkely climate data (for annual temperature) 
-- Federal Bank of Minnesota (for GDP of te USA)
+* HRS data (for health, age, and status)
+* Berkely climate data (for annual temperature)
+* Federal Bank of Minessota (for GDP of te USA) 
+
+They can be accessed here: 
+
+- [https://hrsdata.isr.umich.edu](https://hrsdata.isr.umich.edu)
+- [https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Global/Complete_TAVG_complete.txt](https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Global/Complete_TAVG_complete.txt)
+- [https://fred.stlouisfed.org/series/MNNGSP](https://fred.stlouisfed.org/series/MNNGSP)
 
 
-After cleaning and merging data, we obtain:
+## HRS Data
+
+After cleaning and merging the HRS data, we obtain:
 """
 
 # ╔═╡ 37dd945d-d760-4f94-a46e-672e61c2057e
@@ -40,6 +52,33 @@ end
 # ╔═╡ c2364d33-9afe-426b-ac1b-59504913c4df
 describe(df)
 
+# ╔═╡ 5ad9efa0-a367-4643-88e3-d0fe69d8132a
+md""" ## Berkeley climate data """
+
+# ╔═╡ ea58fb60-fdd3-4d00-b7fe-ceafe869adf0
+begin 
+	temperature = CSV.read("temperature.csv", DataFrame)
+	Plots.gr()
+	Plots.plot(temperature.Year,
+			   temperature.av_annual_t,
+			   legend = false, 
+			   xaxis = "Year", 
+			   yaxis = "Temperature",
+			   title = "Average annual temperature deviation \n from the 1950s")
+end
+
+# ╔═╡ 2c6a9943-dbcc-44c6-8f84-7035cf920208
+md""" ## Minnesota Federal Bank Data """
+
+# ╔═╡ 69649ff8-e60a-42d8-9f55-c291d6602ca2
+begin 
+	Plots.gr()
+	gdp = CSV.read("gdp.csv", DataFrame)
+	Plots.plot(gdp.Year,gdp.GDP, legend = false, 
+			  xaxis = "Year", yaxis = "GDP", title = "USA GDP in Billion dollars")
+	# gdp[gdp.Year .== 2020,:GDP][1]
+end
+
 # ╔═╡ 5a8a26ec-4d3c-4d8e-a709-f2a4fab66801
 md"""# Environment 
 
@@ -50,7 +89,7 @@ The environment part of this model is subdivised into the following parts:
 """
 
 # ╔═╡ b28eb188-6d11-43ef-86d1-cb739dab4646
-md"""# Health
+md"""## Health
 
 
 Let Health status at period $t$ be denoted $h_t$.
@@ -103,7 +142,6 @@ end
 
 # ╔═╡ 7829dd48-681f-4fa1-93f9-9107848e0a98
 begin 
-	
 	# We group data by two years, to have the health at previous survey:
 	df_2022_2020 = leftjoin(df_2022,df_2020, on = :ID, makeunique=true)
 	df_2020_2018 = leftjoin(df_2020,df_2018, on = :ID, makeunique=true)
@@ -158,15 +196,11 @@ begin
     age_range = range(minimum(dff.Age_t), maximum(dff.Age_t))
 end
 
-# ╔═╡ 2a034969-92d4-4b08-9949-e44067a053d0
-begin 
-	# Setting the backend to plotly: 
-    plotly()
-end
-
 # ╔═╡ e512be5c-ef0d-4595-b516-d9117e703153
-begin # 3. Create a plot for each Health_1 category
-	
+begin 
+
+	plotly()
+	# Create a plot for each Health_1 category
 	
 	P = Array{Any}(undef,5) 	# Initialise empty array for plots and probability matrix
 	Prob_Matrix = Array{Any}(undef,5)
@@ -219,8 +253,14 @@ begin # 3. Create a plot for each Health_1 category
     end
 end
 
+# ╔═╡ dce13a03-f121-4fad-930a-5c8cf9a7f685
+P
+
 # ╔═╡ a32b576d-44c3-4f09-93b3-3386dd1ee1de
-Plots.plot(P[1])
+begin 
+	plotly()
+	Plots.plot(P[1])
+end
 
 # ╔═╡ 96e9ea8a-129c-4ab3-a2c3-c947fe4a83b8
 Plots.plot(P[2])
@@ -257,7 +297,7 @@ end
 md"""These results are counter-intuitive: temperature seems to have a slightly positive effect on health transition in some cases, but this could be driven by the effect of age and survival."""
 
 # ╔═╡ 1905c0a8-18e8-4f67-8c37-5c2daf756bb0
-md""" # Survival 
+md""" ## Survival 
 
 Regarding survival, the results are easier to get. Running a logistic regression to explain the living status (1 if alive, 0 if dead) on age, health, average annual temperature and GDP, we obtain similar results to the literature regarding health status influence on survival:
 """
@@ -285,10 +325,10 @@ begin
 	
 	model_health_age_temperature_gdp =
 		GLM.glm(@formula(Status ~
-						 	Age +
+						 	log(Age) +
 							Health +
-							av_annual_t # + 
-							# GDP
+							av_annual_t + 
+							GDP
 							),
 				DF, Bernoulli(), LogitLink())
 
@@ -334,6 +374,9 @@ begin
 				yaxis = "Survival Probability")
 end
 
+# ╔═╡ d7c398ec-4325-40ae-8d71-1aa306830131
+model_health_age_temperature_gdp
+
 # ╔═╡ f97b719e-8b44-472b-b1ce-57eb5303ea02
 describe(DF)
 
@@ -346,8 +389,8 @@ begin
 	
 	# Create age-temperature grid
 	age_range2 = 1:110
-	temp_range = range(minimum(DF.av_annual_t), maximum(DF.av_annual_t), length=100)
-	# temp_range = range(-1, 1, length = 100)
+	# temp_range = range(minimum(DF.av_annual_t), maximum(DF.av_annual_t), length=100)
+	temp_range = range(-1, 1, length = 100)
 		
 	age_grid = repeat(age_range2', length(temp_range), 1)
 	temp_grid = repeat(temp_range, 1, length(age_range2))
@@ -379,13 +422,1036 @@ begin
 	)
 end
 
-# ╔═╡ 83c589e2-42d9-435f-9d3b-247b17821a9e
+# ╔═╡ 038f2359-69ca-4227-bb12-9bec3d4a3ae5
+md""" ## Simulations
+
+If now we use the above estimated functions, we obtain: """
+
+# ╔═╡ 6c5c973f-9197-4114-9924-8e7a299b1472
 begin 
-	temperature_range =
-			range(minimum(DF.av_annual_t),
-				  maximum(DF.av_annual_t),
-				  length=110)
+	""" 
+	The survival function returns the probability of survival given the Age, current health, annual temperature, and GDP. 
+		
+		function survival(;Age::Int64,
+			Health::Int64,
+			Temperature::Float64,
+			GDP::Float64)::Float64
+	
+	"""
+	function survival(;Age::Int64, Health::Int64, Temperature::Float64, GDP::Float64)::Float64
+
+		# For reminder: 
+		# model_health_age_temperature_gdp =
+		# GLM.glm(@formula(Status ~
+		# 				 	Age +
+		# 					Health +
+		# 					av_annual_t + 
+		# 					GDP
+		# 					),
+		# 		DF, Bernoulli(), LogitLink())
+
+		data = DataFrame(Age = Age, 
+						Health = Health, 
+						av_annual_t = Temperature, 
+						GDP = GDP)
+
+		result = GLM.predict(model_health_age_temperature_gdp,data)
+
+		# result = Float64.(result)
+
+		result = result[1]
+		
+		return result
+	end
 end
+
+# ╔═╡ d7ba6c4c-0f80-453b-a893-648d80b0c9b3
+begin 
+	survival(Age = 99, Health = 3, Temperature = 0.62, GDP = 2200.0)
+end
+
+# ╔═╡ 919c1aae-4e9b-489f-9950-17d11f59555c
+begin 
+	"""
+	The function `health` returns a 5 elements vector for the transition probabilities of each of the health status.
+
+			function health(;Age::Int64,
+					Health_t_1::Int64,
+					Temperature::Float64)::Vector{Float64}
+	"""
+	function health(;Age::Int64,
+					Health_t_1::Int64,
+					Temperature::Float64)::Vector{Float64}
+
+		health_t_categories = categorical([1,2,3,4,5])
+		        
+			# Create a DataFrame with fixed Health_1 and temperature
+        	plot_data = DataFrame(
+        	    Health_t_1   = Health_t_1,
+        	    av_annual_t  = Temperature,  
+        	    Age_t        = Age)
+        	
+		# Align categorical levels
+		plot_data.Health_t_1 = categorical(plot_data.Health_t_1)
+		levels!(plot_data.Health_t_1, health_t_categories) # Force same levels
+		
+		plot_data_encoded = MLJ.transform(mach_encoder, plot_data) #? 
+        
+        # Get predicted probabilities
+        probs = MLJ.predict(mach, plot_data_encoded) #? 
+
+        # Reshape probabilities into a 5 sized vector
+        prob_matrix =
+			reshape([p.prob_given_ref[l] for p in probs, l in health_t_categories],
+            (length(health_t_categories)))
+
+		return prob_matrix
+	end
+		
+end
+
+# ╔═╡ 22019072-9fa5-40a3-bb22-89696e19a2d5
+begin 	
+	""" 
+	The function `population_simulation` allows for a simulation of the evolution of a population of size `N` for `T` periods, given a weather and a GDP path.
+		
+		population_simulation(;N::Int64,
+							   T::Int64,
+							   weather_history::Vector{Float64},
+							   GDP::Vector{Float64})
+	"""
+	function population_simulation(;N::Int64,
+								   T::Int64,
+								   weather_history::Vector{Float64},
+								   GDP::Vector{Float64})::NamedTuple
+
+		# Initialisation:
+		collective_age 						= []
+		collective_living_history 			= []
+		collective_health_history 			= []
+		collective_probability_history 		= []
+		
+		Threads.@threads for i in 1:N # For each individual
+			
+			# Initialisation of individual results:
+			individual_living_history 			= zeros(T)
+			individual_health_history 			= zeros(T)
+			individual_probability_history 		= zeros(T) # Setting it to 0 makes r ≠ Inf
+
+			individual_past_health 				= 1 	# Excellent health
+			cumulative_survival_prob 			= 1 	# Birth probability
+	
+			for t in 1:T # For each period 
+		    
+			    # Age : 
+			    age = t
+			    
+			    # The weather comes from the weather history
+			    weather_t = weather_history[t]
+			    
+			    # Health status :
+					# probability of being in good health: 
+					individual_pgh = health(Age 		= age, 
+											Health_t_1 	= individual_past_health,
+											Temperature = weather_t)::Vector{Float64}
+				
+					# Health status draw:
+					individual_health_t = 	
+						sample(1:5,Weights(individual_pgh))
+
+					# We add it to the history
+					individual_health_history[t] = individual_health_t
+					# The current health becomes the past one for next period
+					individual_past_health = individual_health_t
+	
+			    # Living status : 
+				
+					annual_survival = survival(Age 			= age,
+											 Health 		= individual_health_t, 
+											 Temperature 	= weather_t,
+											 GDP 			= GDP[t])::Float64
+				
+            		cumulative_survival_prob = 
+						cumulative_survival_prob * annual_survival
+
+					individual_probability_history[t] = cumulative_survival_prob
+				
+				    # Realisation : 
+					individual_living_status = 
+						rand(Binomial(1,cumulative_survival_prob))#*individual_pd_2))
+
+				# Possible alternative formulation: 
+					# if rand() > cumulative_survival_prob
+					# 	individual_living_status = 0
+					# else
+					# 	individual_living_status = 1
+					# end
+
+					# Into its history :
+					individual_living_history[t] = individual_living_status
+
+				# When death comes : 
+				if individual_living_status == 0
+					push!(collective_age, age)
+				    push!(collective_living_history, individual_living_history)
+					push!(collective_health_history, individual_health_history)
+					push!(collective_probability_history, individual_probability_history)
+					break
+				end
+				
+			end # End of loop over periods
+			
+		end # End of loop over individuals
+
+		results = (;weather_history,
+				   collective_age,
+				   collective_living_history,
+				   collective_health_history, 
+				  collective_probability_history)
+		println("Life expectancy in this population: ", mean(collective_age))
+		
+		return(results)
+	end
+end 
+
+# ╔═╡ 410fe8b7-79a4-44b6-abfa-42f8c0e0aa60
+begin 
+	println("Age 80 survival: ", survival(Age=80, Health=3, Temperature=2.0, GDP=1.0))
+	println("Age 90 survival: ", survival(Age=90, Health=3, Temperature=2.0, GDP=1.0))
+	println("Age 100 survival: ", survival(Age=100, Health=3, Temperature=0.61, GDP=21354.0))
+end
+
+# ╔═╡ ffe1f6bb-e4b6-4f61-9468-2009244b607f
+begin 
+	periods 			= 110
+	fixed_temperature_1 = 0.61 # 2018
+	fixed_temperature_2 = 0.71 # 0.10 increase from 2018
+	
+	population_1 = population_simulation(N 	= 1_000,
+						  T 				= periods, 
+						  weather_history 	= fill(fixed_temperature_1,periods),
+						  GDP 				= fill(gdp[gdp.Year .== 2020,:GDP][1], periods))
+	population_2 = population_simulation(N 	= 1_000,
+						  T 				= periods, 
+						  weather_history 	= fill(fixed_temperature_2,periods),
+						  GDP 				= fill(gdp[gdp.Year .== 2020,:GDP][1], periods))
+end
+
+# ╔═╡ 520abb10-18f1-4747-8d72-b5749834d713
+md""" The life expectancy is coherent with the descriptive statistics of the data. Also, it's important to remember that the life expenctancy of an individual in 1950 (average year minus average age) was 69 years old. This discrepancy with the current life expectancy (77 years old) is due to the year of birth of the individuals observed by the HRS data. """
+
+# ╔═╡ abda697c-044b-4b42-b386-aab9226b755a
+begin 
+	Plots.gr()
+	
+	cls1 	= []
+	for i in 1:length(population_1[:collective_living_history])
+		tmp = population_1[:collective_living_history][i]
+		push!(cls1,tmp)
+	end
+
+	Plot1 	= Plots.plot(1:periods,sum(cls1[:, 1]),
+						 # legend = false, 
+						 label = "Average temperature = $fixed_temperature_1")
+
+	cls2 	= []
+	for i in 1:length(population_2[:collective_living_history])
+		tmp = population_2[:collective_living_history][i]
+		push!(cls2,tmp)
+	end
+
+	Plots.plot!(1:periods, sum(cls2[:, 1]),
+						 # legend = false,
+						 label = "Average temperature = $fixed_temperature_2")
+	Plots.plot!(xaxis = "Time",
+		yaxis = "Population",
+		title = "Evolution of population: constant temperatures")
+	
+end 
+
+# ╔═╡ a12ccacc-e6be-44bf-a46f-d513a5d3376d
+begin 
+	Plots.gr()
+
+	temperature_path_1 = collect(range(start = 0.61, stop = 1.00, length = periods))
+	temperature_path_2 = Normal(0.61, 0.1)
+	
+	population_3 = population_simulation(N 	= 1_000,
+						  T 				= periods, 
+						  weather_history 	= temperature_path_1,
+						  GDP 				= fill(21354.0, periods))
+	population_4 = population_simulation(N 	= 1_000,
+						  T 				= periods, 
+						  weather_history 	= rand(temperature_path_2,100),
+						  GDP 				= fill(21354.0, periods))
+	
+	cls3 	= []
+	for i in 1:length(population_3[:collective_living_history])
+		tmp = population_3[:collective_living_history][i]
+		push!(cls3,tmp)
+	end
+
+	Plot2 	= Plots.plot(1:periods,sum(cls3[:, 1]),
+						 # legend = false, 
+						 label = "From 0.61 to 1 degree")
+
+	cls4 	= []
+	for i in 1:length(population_4[:collective_living_history])
+		tmp = population_4[:collective_living_history][i]
+		push!(cls4,tmp)
+	end
+
+	Plots.plot!(1:periods, sum(cls4[:, 1]),
+						 # legend = false,
+						 label = "Normal temperature around 0.61")
+	Plots.plot!(xaxis = "Time",
+		yaxis = "Population",
+		title = "Evolution of population: constant temperatures")
+
+end
+
+# ╔═╡ 1dabd52f-2e78-40a1-b8dc-d213fdf673a2
+md""" # Maximisation problem """
+
+# ╔═╡ 1c338d96-1072-4d3a-b920-46d5beb5ea39
+md"""# Numerical methods
+
+We are now going to solve this problem numerically. 
+
+"""
+
+# ╔═╡ 9c586ff2-2a7a-46b6-a94b-6605c4f7bfff
+md""" ## Auxiliary functions 
+
+The auxiliary functions of the numerical the numerical solving process are: 
+
+- The utility funtion, 
+- The budget surplus function, 
+- The $\xi$ function, that determines the labor disutility coefficient for a given period."""
+
+# ╔═╡ 6b3fbc49-a701-49a3-8cdb-c76c1ef3ea11
+begin 
+	"""
+	The `budget_surplus` function computes the budget states for certain levels of consumption, labor supply, productivity, and savings.
+
+	Its syntax is:
+		
+		budget_surplus(;c::Float64,
+			l::Float64,
+			sprime::Float64,
+			s::Float64,
+			z::Float64,
+			r::Float64)::Float64
+
+	"""
+	function budget_surplus(;c::Float64,
+			l::Float64,
+			sprime::Float64,
+			s::Float64,
+			z::Float64,
+			r::Float64)::Float64
+		if r == Inf
+			return -Inf
+		else
+			return (l*z + s*(1+r) - c - sprime)::Float64
+		end
+	end
+end
+
+# ╔═╡ 005c34ae-fd96-4915-bdba-9d8ab7918ab5
+budget_surplus(c = 10.00,
+			   l = 10.00,
+			   sprime = 1.00,
+			   s = 1.00,
+			   z = 1.00,
+			   r = (1-0.8)/0.8)
+
+# ╔═╡ 3577bd41-9719-4043-aeb6-cb8c87578ce8
+begin 
+	"""
+	The function `individual_probability_simulation` allows to simulate survival probability without actually drawing a survival status. It is used in the Numerical methods solving process.
+
+		individual_probability_simulation(;T::Integer,
+								   temperature_path::Vector{Float64},
+								   GDP_path::Vector{Float64})::Vector{Float64}
+
+	This is useful for the computation of the interest rate at each period.
+	
+	"""
+	function individual_probability_simulation(;T::Integer,
+								   temperature_path::Vector{Float64},
+								   GDP_path::Vector{Float64})::Vector{Float64}
+		
+		# Initialization: 
+		probability_history = Vector{Float64}(undef,T)
+
+		individual_past_health 				= 1 	# Excellent health
+		cumulative_survival_prob 			= 1 	# Birth probability
+		
+		for t in 1:T
+			# Age : 
+			age = t
+			    
+			# The weather comes from the weather history
+			weather_t = temperature_path[t]
+			    
+			# Health status :
+				# probability of being in good health: 
+				individual_pgh = health(Age 		= age, 
+										Health_t_1 	= individual_past_health,
+										Temperature = weather_t)::Vector{Float64}
+			
+				# Health status draw:
+				individual_health_t = 	
+					sample(1:5,Weights(individual_pgh))
+
+				# We add it to the history
+				# individual_health_history[t] = individual_health_t
+				# The current health becomes the past one for next period
+				individual_past_health = individual_health_t
+
+			# Living status : 
+			
+			annual_survival = survival(Age 			= age,
+									 Health 		= individual_health_t, 
+									 Temperature 	= weather_t,
+									 GDP 			= GDP_path[t])::Float64
+		
+			cumulative_survival_prob = 
+				cumulative_survival_prob * annual_survival
+
+			probability_history[t] = cumulative_survival_prob
+		end
+		return probability_history
+	end
+end
+
+# ╔═╡ f9889496-fb2e-4a74-a782-a7deb1dfcd54
+individual_probability_simulation(T = 100,
+					  temperature_path = 0.61 .* ones(100),
+					  GDP_path = fill(gdp[gdp.Year .== 2020, :GDP][1],100))
+
+# ╔═╡ 21e27aed-cc4e-4bb4-a6e9-1b3a7af5ecc1
+begin 
+	""" 
+	The `ξ` function returns the disutility of work in the utility function.
+
+	Its syntax is: 
+		
+		ξ(w,h)
+
+	For now, it returns 1.
+	
+		# (1+abs(w))*(1+1(h=="bad"))
+	"""
+	function ξ(;w::Float64,h::Float64)::Float64
+		return 1.00 # ((1 + abs(w)) * (1+1(h=="bad")))::Float64
+	end
+end
+
+# ╔═╡ db073054-762d-4c71-a081-42a90f29e08e
+begin 
+	"""
+	The `utility` function is defined such that its syntax is:
+	
+		utility(;c,l,z,w,h,ρ=1.5,φ=2)
+	
+	It returns:
+
+		(abs(c)^(1-ρ))/(1-ρ) - ξ(w,h) *((abs(l)^(1+φ)/(1+φ)))
+
+	
+	"""
+	function utility(;c::Float64,
+						l::Float64,
+						z::Float64,
+						w::Float64,
+						h::Float64,
+						ρ = 1.50::Float64,
+						φ = 2.00::Float64)::Float64
+		return ( ((abs(c))^(1-ρ)) / (1-ρ) ) - ξ(w=w,h=h) * ( ((abs(l))^(1+φ)) / (1+φ) )::Float64
+	end
+end
+
+# ╔═╡ 6d2ce8fe-628d-49a4-84f0-82d55162efe6
+utility(c = 1.00, 
+	   l = 1.00, 
+	   z = 1.00, 
+	   w = 1.00, 
+	   h = 1.00)
+
+# ╔═╡ 0219f3cc-778a-49ab-9fa8-f792e9a8d44f
+ξ(w = 0.5, h = 1.00)
+
+# ╔═╡ cb5d816e-674b-4619-b8fd-9dd73ff2b82f
+md""" ## Main functions 
+
+The main function of the numerical solving process are: 
+
+- The Bellman function, that maximises the current period and the next one,
+- The backwards function, that calls the Bellman function for all considered periods.
+"""
+
+# ╔═╡ bbd92e65-2e7d-403a-ba04-deff5276d2eb
+begin 
+	 """
+	 The `Bellman` function is not to be used alone, but with the `backwards` function.
+	 
+			function Bellman(;s_range::AbstractRange,
+						sprime_range::AbstractRange,
+						consumption_range::AbstractRange,
+						labor_range::AbstractRange,
+						value_function_nextperiod::Any,
+						β = 0.96::Float64, 
+						z = 1::Float64,
+						ρ = 1.5::Float64,
+						φ = 2::Float64,
+						proba_survival = 0.9::Float64,
+						r = ((1-0.9)/0.9)::Float64,
+						w = 0.0::Float64,
+						h = 2.00::Float64,
+						return_full_grid = true::Bool, 
+						return_budget_balance = true::Bool)::NamedTuple
+	 
+	 """
+	function Bellman(;s_range::AbstractRange,
+						sprime_range::AbstractRange,
+						consumption_range::AbstractRange,
+						labor_range::AbstractRange,
+						value_function_nextperiod::Any,
+						β = 0.96::Float64, 
+						z = 1.00::Float64,
+						ρ = 1.5::Float64,
+						φ = 2.00::Float64,
+						proba_survival = 0.90::Float64,
+						r = ((1-0.9)/0.9)::Float64,
+						w = 0.00::Float64,
+						h = 2.00::Float64,
+						return_full_grid = true::Bool, 
+						return_budget_balance = true::Bool)::NamedTuple
+
+		@assert length(value_function_nextperiod) == length(s_range) "The value function of the next period has the wrong length."
+
+		# Initialization
+
+		# Grid of possible values
+		grid_of_value_function = Array{Float64}(undef,length(s_range),
+															length(consumption_range),
+															length(labor_range),
+															length(sprime_range))
+		
+		# Optimal utility and choice
+		Vstar = zeros(length(s_range))
+		index_optimal_choice = Array{CartesianIndex}(undef,length(s_range))
+		optimal_choice = Array{Float64}(undef,length(s_range),3)
+
+		if return_budget_balance == true
+			tmp_budget = Array{Float64}(undef,length(s_range),length(consumption_range),length(labor_range),length(sprime_range))
+			budget_balance = Array{Float64}(undef,length(s_range))
+		end
+
+		# for all levels of endowment
+		for (index_s,s) in enumerate(s_range)
+			# for all levels of consumption
+			for (index_consumption,consumption) in enumerate(consumption_range) 
+				# for all levels of labor
+				for (index_labor,labor) in enumerate(labor_range)
+					# for all levels of savings
+					for (index_sprime,sprime) in enumerate(sprime_range)
+
+						# Compute the budget:
+						tmp = budget_surplus(c = consumption, l = labor, sprime = sprime, s = s, z = z, r = r)
+						tmp_budget[index_s,index_consumption,index_labor,index_sprime] = tmp
+
+						# If the budget constraint is violated,
+						# set the value function to minus infinity :
+						
+						if tmp < 0 
+							
+							grid_of_value_function[index_s,
+											index_consumption,
+											index_labor, 
+											index_sprime] = -Inf
+
+						# If the budget constraint is not violated,
+						# set the value function to the utility plus the value 
+						# function at the next period : 
+							
+						elseif tmp >= 0
+							
+							grid_of_value_function[index_s,
+											index_consumption,
+											index_labor, 
+											index_sprime] =
+								utility(c=consumption,
+									l=labor,
+									z=z,
+									w=w,
+									h=h,
+									ρ=ρ,
+									φ=φ) + β*proba_survival*value_function_nextperiod[index_sprime]
+						end
+					end # end of sprime loop
+				end # end of labor loop
+			end # end of consumption loop
+
+			# For a given level of initial endowment, 
+			# find the maximum of the value function 
+			# and the associated optimal choice
+			
+			Vstar[index_s],
+			index_optimal_choice[index_s] =
+				findmax(grid_of_value_function[index_s,:,:,:])
+
+			ioc = index_optimal_choice[index_s]
+			
+			optimal_choice[index_s,:] = [consumption_range[ioc[1]],
+										labor_range[ioc[2]],
+										sprime_range[ioc[3]]]
+			     
+			# Validation check
+        	optimal_surplus = tmp_budget[index_s, ioc[1], ioc[2], ioc[3]]
+        	@assert optimal_surplus >= 0 "Infeasible optimal choice found!
+				Surplus: $optimal_surplus."
+			
+			if return_budget_balance
+				budget_balance[index_s] = optimal_surplus
+			end
+
+		end # end of s
+
+		# Formatting the output for better readability:
+		
+		# Transforming the grid_of_value_function array into a Named Array:
+
+		param1_names 			= ["s_i$i" for i in 1:length(s_range)]
+		savings_value 			= ["s=$i" for i in s_range]
+		consumption_value 		= ["c=$i" for i in consumption_range]
+		labor_value 			= ["l=$i" for i in labor_range]
+		sprime_value 			= ["l=$i" for i in sprime_range]
+		
+		grid_of_value_function = NamedArray(grid_of_value_function, (savings_value, consumption_value, labor_value, sprime_value))
+
+		optimal_choice = NamedArray(optimal_choice, (param1_names, ["c","l","sprime"]))
+
+		# Returning results:
+		if return_full_grid == true && return_budget_balance == true
+			return (;grid_of_value_function,Vstar,index_optimal_choice,optimal_choice,budget_balance)
+		elseif return_full_grid == true && return_budget_balance == false
+			return (;grid_of_value_function,Vstar,index_optimal_choice,optimal_choice)
+		elseif return_full_grid == false && return_budget_balance == true
+			return (;Vstar,index_optimal_choice,optimal_choice,budget_balance)
+		elseif return_full_grid == false && return_budget_balance == false
+			return (;Vstar,index_optimal_choice,optimal_choice)
+		end
+		
+	end
+end
+
+# ╔═╡ dc3e4c47-f782-4886-aba7-b53c1bb66a40
+Bellman(s_range 					= 0.00:2.00,
+	   sprime_range 				= 0.00:2.00, 
+	   consumption_range 			= 0.00:10.00,
+	   labor_range 					= 0.00:10.00,
+	   value_function_nextperiod 	= zeros(3))
+
+# ╔═╡ 1fbda6f2-de90-40a7-ab56-08796c218472
+begin 
+	"""
+		function backwards(;s_range::AbstractRange,
+				sprime_range::AbstractRange,
+				consumption_range::AbstractRange,
+				labor_range::AbstractRange,
+				nperiods::Integer,
+				z = ones(nperiods)::Array,
+				β = 0.9::Float64,
+				r = final_r::Array,
+				ρ = 1.50::Float64, 
+				φ = 2.00::Float64,
+				proba_survival = 0.90::Float64,
+				w = 0.00::Float64,
+				h = "good"::AbstractString, 
+				return_full_grid = false::Bool, 
+				return_budget_balance = true::Bool)::NamedTuple
+	"""
+	function backwards(;s_range::AbstractRange,
+				sprime_range::AbstractRange,
+				consumption_range::AbstractRange,
+				labor_range::AbstractRange,
+				nperiods::Integer,
+				z 						= ones(nperiods)::Array{Float64},
+				β 						= 0.90::Float64,
+				r 						= ones(nperiods)::Array{Float64},
+				ρ 						= 1.50::Float64, 
+				φ 						= 2.00::Float64,
+				proba_survival 			= 0.90 .* ones(nperiods)::Array{Float64},
+				w 						= zeros(nperiods)::Array{Float64},
+				h 						= 2 .* ones(nperiods)::Array{Float64}, 
+				return_full_grid 		= false::Bool, 
+				return_budget_balance 	= true::Bool)::NamedTuple
+
+		# Initialization: 
+
+		# We define the name of the variables for the named arrays: 
+		param1_names 			= ["t_$i" for i in 1:nperiods]
+		param2_names 			= ["s_i$i" for i in 1:length(s_range)]
+		param3_names 			= ["c_i$i" for i in 1:length(consumption_range)]
+		param4_names 			= ["l_i$i" for i in 1:length(labor_range)]
+		param5_names 			= ["sprime_i$i" for i in 1:length(sprime_range)]
+		choice_variable_name 	= ["c","l","sprime"]
+								
+		savings_value 			= ["s=$i" for i in s_range]
+		consumption_value 		= ["c=$i" for i in consumption_range]
+		labor_value 			= ["l=$i" for i in labor_range]
+		sprime_value 			= ["l=$i" for i in sprime_range]
+
+		# From the given ranges, construct a grid of all possible values, 
+		# And save its size: 
+		grid_of_value_function 	= Array{Float64}(undef,length(s_range),
+															length(consumption_range),
+															length(labor_range),
+															length(sprime_range))
+		points 					= size(grid_of_value_function)
+
+		if return_budget_balance == true
+			budget_balance = Array{Float64}(undef,nperiods,length(s_range))
+		end
+		
+		# Initialize empty arrays that will:
+		# contain the values of the value function (V): 
+		V = zeros(nperiods,points[1],points[2],points[3],points[4])
+
+		# the values at optimum (Vstar), 
+		Vstar = zeros(nperiods,points[1])
+		
+		# The indices of optimal choice (index_optimal_choices),
+		index_optimal_choices = Array{Array{CartesianIndex{3}}}(undef,nperiods)
+
+		# and the values of choice variables at the optimum (optimal_choices): 
+		optimal_choices 	= Array{Float64}(undef,nperiods,length(sprime_range),3) # Time periods, level of initial savings, choice variables
+		optimal_choices 	= NamedArray(optimal_choices,(param1_names,savings_value,choice_variable_name))
+
+		# First, we solve for the last period, in which the value function of next period is 0: 
+		last_Bellman = Bellman(s_range 		= s_range::AbstractRange,
+	 					sprime_range 		= sprime_range::AbstractRange,
+	 					consumption_range 	= consumption_range::AbstractRange,
+	 					labor_range 		= labor_range::AbstractRange,
+						value_function_nextperiod = zeros(length(s_range)),
+	 					β 					= β::Float64,
+			 			ρ 					= ρ::Float64,
+						φ 					= φ::Float64,
+						r 					= r[nperiods]::Float64,
+						proba_survival 		= proba_survival[nperiods]::Float64,
+						w 					= w[nperiods]::Float64,
+						h 					= h[nperiods]::Float64,
+						z 					= z[nperiods]::Float64,
+						return_full_grid 	= true::Bool,
+						return_budget_balance = return_budget_balance::Bool)::NamedTuple
+
+		if return_budget_balance == true
+			budget_balance[end,:] = last_Bellman[:budget_balance]
+		end
+		
+		# Value of the value function: 
+		if return_full_grid == true
+			V[end,:,:,:,:]	= last_Bellman[:grid_of_value_function] 
+		end 
+		
+		# Values at the optimum:
+		Vstar[end,:] 							.= last_Bellman[:Vstar] 	 
+		
+		# Index of optimal choice:
+		index_optimal_choices[end] 				= last_Bellman[:index_optimal_choice]
+		
+		optimal_choices[end,:,:]				= last_Bellman[:optimal_choice]
+
+		# Values of the choice variables at optimum:
+		# optimal_choice[end,:] = collect(grid_of_value_function)
+		
+		for index_time in (nperiods-1):-1:1
+			
+			tmp = Bellman(s_range 				= s_range,
+					sprime_range 				= sprime_range,
+					consumption_range 			= consumption_range,
+					labor_range 				= labor_range,
+					value_function_nextperiod 	= last_Bellman[:Vstar],
+					β 							= β,
+					z 							= z[index_time],
+					ρ 							= ρ,
+					φ 							= φ,
+					r 							= r[index_time], 
+					proba_survival 				= proba_survival[index_time], 
+					w 							= w[index_time],
+					h 							= h[index_time],
+					return_full_grid 			= true,
+					return_budget_balance 		= return_budget_balance)::NamedTuple
+			
+			if return_full_grid == true
+				V[index_time,:,:,:,:] 			= tmp[:grid_of_value_function] 
+			end
+
+			if return_budget_balance == true
+				budget_balance[index_time,:] 	= tmp[:budget_balance]
+			end
+				
+			Vstar[index_time,:] 				= tmp[:Vstar]
+			index_optimal_choices[index_time] 	= tmp[:index_optimal_choice]
+			optimal_choices[index_time,:,:] 	= tmp[:optimal_choice] 
+			
+			last_Bellman = tmp
+			
+		end # end of time loop
+
+		# Rename in NamedArrays:
+		Vstar = NamedArray(Vstar, (param1_names,savings_value))
+		if return_budget_balance == true
+			budget_balance = NamedArray(budget_balance, (param1_names,savings_value))
+		end
+		if return_full_grid == true
+			V = NamedArray(V, (param1_names, savings_value, consumption_value, labor_value, sprime_value))
+		end
+		
+
+		if return_full_grid && return_budget_balance
+			return (;V,Vstar,index_optimal_choices,optimal_choices,budget_balance)
+		elseif return_full_grid
+			return (;V,Vstar,index_optimal_choices,optimal_choices)
+		elseif return_budget_balance
+			return (;Vstar,index_optimal_choices,optimal_choices,budget_balance)
+		else 
+			return (;Vstar,index_optimal_choices,optimal_choices)
+		end
+
+	end
+end
+
+# ╔═╡ f90fc22b-93a2-49e2-9e08-0ffdde7ca403
+begin 
+	s_range 				= -2:0.1:5
+	sprime_range 			= -2:0.1:5
+	consumption_max 		= 5
+	nperiods 				= 104
+	ζ 						= (1 ./(1:nperiods))
+	r_pi0 					= (1 .- ζ) ./ζ
+	# r = (1:nperiods).^2
+	# r = fill(10,nperiods)
+	r_min 					= ((1-0.96)/(0.96))
+	# r = r_min .+ r_pi0
+	r 						= fill(0.1,nperiods)
+	typical_productivity 	= [exp(0.1*x - 0.001*x^2) for x in 1:nperiods]
+end
+
+# ╔═╡ 22b7f311-62fb-4035-baae-70c427f10ca7
+begin 
+	s_range_2 			= 0.00:0.1:5.00
+	sprime_range_2 		= s_range_2
+	growing_temperature = collect(range(start = 0.61,
+										stop = 1.00,
+										length = nperiods))
+	Stable_GDP 			= gdp[gdp.Year .== 2020, :GDP][1]
+
+	# survival_probability 	= pop_num_1.collective_probability_history
+
+	# typeof(survival_probability)
+	# typeof(survival_probability[1])
+	# survival_probability 	= pop_num_1.collective_probability_history
+
+	survival_probability =
+		individual_probability_simulation(T = nperiods, 
+										  temperature_path = growing_temperature,
+										  GDP_path = fill(Stable_GDP,nperiods))
+
+	dynamic_r = ((1 .- survival_probability) ./ (survival_probability))
+end
+
+# ╔═╡ 1d3319e5-fb5c-48ce-ba1c-1e80cf8c630c
+begin 
+	@time benchmark = backwards(s_range			= s_range_2,
+							sprime_range		= s_range_2,
+							consumption_range 	= 0:0.05:consumption_max,
+							labor_range			= 0.00:0.05:2,
+							nperiods 			= nperiods,
+							r 					= dynamic_r,
+							z 					= ones(nperiods),
+							w 					= growing_temperature,
+							proba_survival 		= survival_probability,
+							h 					= 2 .* ones(nperiods),
+							ρ 					= 1.50,
+							φ 					= 2.00,
+							β 					= 0.96)
+end
+
+# ╔═╡ 6f8168ad-84fc-438b-8d98-953f14f3d96a
+begin 
+	benchmark
+
+	"""
+	The `smoothing` function smoothes the results of jumping policy functions.
+			
+		smoothing(y::AbstractArray{Float64},
+				span::Float64)
+	"""
+	function smoothing(y::AbstractArray{Float64},
+				   span::Float64)
+		x = 1:length(y)
+		model = loess(x,y, span = span)
+		return Loess.predict(model,x)::Vector{Float64}
+		
+	end	
+end
+
+# ╔═╡ 25aa4c26-cbb1-4f9d-9f1d-8044cc560610
+common_span = 0.2
+
+# ╔═╡ 84942076-3d3b-403e-94b3-dade70c2077e
+begin 
+	plotly()
+	plot_Vstar = Plots.plot(s_range_2,benchmark[:Vstar][1,:], label = "Period: 1")
+	
+	for t in 1:nperiods
+		Plots.plot!(s_range_2,benchmark[:Vstar][t,:], label = "Period: $t")
+	end
+	
+	Plots.plot!(xaxis = "Initial savings" , yaxis = "Value function")
+	
+	Plots.plot!(legend = false, title = "Value function")
+end
+
+# ╔═╡ 791a294e-cb97-40a6-be0b-56f7976a40c3
+begin 
+	plotly()
+	plot_c_star = 
+		Plots.plot(s_range_2,
+				   smoothing(benchmark[:optimal_choices][1,:,"c"], common_span),
+				   label = "Period: 1",
+				   xaxis = "Initial savings",
+				   yaxis = "Consumption")
+	
+	for t in 1:nperiods#10:10:nperiods
+		Plots.plot!(s_range_2,
+					smoothing(benchmark[:optimal_choices][t,:,"c"], common_span),
+					label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "Consumption policy", legend = false)
+
+	plot_c_star
+end
+
+# ╔═╡ 0082c7aa-8c39-4090-bdfe-e7e92835c86e
+Plots.plot(s_range_2,
+				   (benchmark[:optimal_choices][1,:,"c"]),
+				   label = "Period: 1",
+				   xaxis = "Initial savings",
+				   yaxis = "Consumption")
+
+# ╔═╡ 14cceed7-e78e-4259-b797-b4dd3efe4b42
+begin 
+	plotly()
+	plot_l_star = Plots.plot(s_range_2,
+							 smoothing(benchmark[:optimal_choices][1,:,"l"],
+									   common_span),
+							 label = "Period: 1",
+							 xaxis = "Initial savings",
+							 yaxis = "Labor supply")
+	
+	for t in 1:nperiods#[50,80,104]
+		Plots.plot!(s_range_2,
+					smoothing(benchmark[:optimal_choices][t,:,"l"], common_span), label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Optimal labor supply",
+				title = "Labor supply policy",
+				legend = false)
+
+	Plots.plot(plot_l_star)
+end
+
+# ╔═╡ 40dde4de-243f-4355-ba22-7d429c638b8e
+Plots.plot(s_range_2,
+		 (benchmark[:optimal_choices][1,:,"l"]),
+		 label = "Period: 1",
+		 xaxis = "Initial savings",
+		 yaxis = "Labor supply")
+
+# ╔═╡ f73ff0fe-698d-4fca-a2f0-e10771ce360f
+begin 
+	plotly()
+
+	plot_sprime_star = Plots.plot(s_range_2,
+								  smoothing(benchmark[:optimal_choices][1,:,"sprime"], common_span))
+	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
+	for t in 1:nperiods # [50,80,100,104]
+	 	Plots.plot!(s_range_2,
+					smoothing(benchmark[:optimal_choices][t,:,:][:,"sprime"], common_span), label = "Period: $t")
+	end
+	Plots.plot!(title = "Savings policy", legend = false)
+
+	# Ploting both:
+	Plots.plot(plot_sprime_star)
+end
+
+# ╔═╡ d547e247-0587-4cf8-885c-4caa38bf3507
+Plots.plot(s_range_2,
+		   benchmark[:optimal_choices][1,:,"sprime"],
+		   label = "Period: 1",
+		   xaxis = "Initial savings",
+		   yaxis = "Savings at next period",
+		   legend = false,
+		   title = "Savings policy at first period")
+
+# ╔═╡ 5ca6d81c-0168-42c0-a432-6e4bdaeef032
+begin 
+	budget_constraint_plot_fixed = Plots.plot(s_range_2,benchmark[:budget_balance][1,:], label = "Period 1")
+	Plots.plot!(xaxis = "Initial savings", yaxis = "Budget surplus", title = "Budget surplus",legend = false)
+	for t in 1:nperiods #[50,80,104]
+	 	Plots.plot!(s_range_2,benchmark[:budget_balance][t,:], label = "Period: $t")
+	end
+	Plots.plot(budget_constraint_plot_fixed)
+end
+
+# ╔═╡ af3d666b-2b86-42a4-826b-76fdf1384698
+begin 
+	Plots.gr()
+	Plots.plot(s_range_2,
+			   benchmark[:budget_balance][1,:],
+			   label = "Period 1",
+			   xaxis = "Initial savings", 
+			   yaxis = "Budget surplus", 
+			   title = "Budget surplus at the first period")
+end
+
+# ╔═╡ 57ae7de2-6646-4f0b-84de-168a88d8a380
+md""" # Conclusion: Aggregate effect of health 
+
+To assess the welfare loss through the change in health status induced by climate change, we can now compare two different scenarios: One with a stabilized temperature distribution around the annual averages of the last years, and one in which the rise in annual average temperature continues.
+
+To do so, we must consider the whole effect of temperature deviation: 
+
+- On survival probability, 
+- On health transition, 
+- On productivity, 
+- On work disutility, 
+- On GDP.
+
+The comparison of outputs with two different can partially be done analytically, but requires necessarily a numerical simulation parts.
+
+"""
+
+# ╔═╡ f3eb326f-6d64-4ed3-aed0-94904cc4d7a8
+md""" # Extensions 
+
+Here a list of possible extensions: 
+
+- Including international data,
+- Productivity types heterogeneity,
+- Health types heterogeneity,
+- Inter-individuals interest rate,
+- Using data to calibrate the model: savings, add bequest motivation,
+- Using mortality table to assess the effect on younger individuals. 
+
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -394,22 +1460,28 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
+Loess = "4345ca2d-374a-55d4-8d30-97f9976e7612"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
 MLJLinearModels = "6ee0df7b-362f-4a72-a706-9e79364fb692"
 MLJModels = "d491faf4-2d78-11e9-2867-c94bc002c0b7"
+NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 CSV = "~0.10.15"
 CategoricalArrays = "~0.10.8"
 DataFrames = "~1.7.0"
 GLM = "~1.9.0"
+Loess = "~0.6.4"
 MLJ = "~0.20.7"
 MLJLinearModels = "~0.10.0"
 MLJModels = "~0.17.9"
+NamedArrays = "~0.10.3"
 Plots = "~1.40.11"
 PlutoUI = "~0.7.23"
+StatsBase = "~0.34.4"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -418,7 +1490,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "b250d0dd1a9c15360114bae7fee0b242983ff486"
+project_hash = "c5eb34b72e1a02650c4c5b537861d8103a3c7eec"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "e2478490447631aedba0823d4d7a80b2cc8cdb32"
@@ -1401,6 +2473,12 @@ weakdeps = ["ChainRulesCore", "SparseArrays", "Statistics"]
     LinearMapsSparseArraysExt = "SparseArrays"
     LinearMapsStatisticsExt = "Statistics"
 
+[[deps.Loess]]
+deps = ["Distances", "LinearAlgebra", "Statistics", "StatsAPI"]
+git-tree-sha1 = "f749e7351f120b3566e5923fefdf8e52ba5ec7f9"
+uuid = "4345ca2d-374a-55d4-8d30-97f9976e7612"
+version = "0.6.4"
+
 [[deps.LogExpFunctions]]
 deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
 git-tree-sha1 = "13ca9e2586b89836fd20cccf56e57e2b9ae7f38f"
@@ -1601,6 +2679,12 @@ deps = ["PrettyPrint"]
 git-tree-sha1 = "1a0fa0e9613f46c9b8c11eee38ebb4f590013c5e"
 uuid = "71a1bf82-56d0-4bbc-8a3c-48b961074391"
 version = "0.1.5"
+
+[[deps.NamedArrays]]
+deps = ["Combinatorics", "DataStructures", "DelimitedFiles", "InvertedIndices", "LinearAlgebra", "Random", "Requires", "SparseArrays", "Statistics"]
+git-tree-sha1 = "58e317b3b956b8aaddfd33ff4c3e33199cd8efce"
+uuid = "86f7a689-2022-50b4-a561-43c23ac3c673"
+version = "0.10.3"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
@@ -2525,14 +3609,18 @@ version = "1.8.1+0"
 # ╟─03b5f43c-2806-11f0-1aad-913619158eaf
 # ╠═37dd945d-d760-4f94-a46e-672e61c2057e
 # ╠═c2364d33-9afe-426b-ac1b-59504913c4df
+# ╟─5ad9efa0-a367-4643-88e3-d0fe69d8132a
+# ╠═ea58fb60-fdd3-4d00-b7fe-ceafe869adf0
+# ╟─2c6a9943-dbcc-44c6-8f84-7035cf920208
+# ╠═69649ff8-e60a-42d8-9f55-c291d6602ca2
 # ╟─5a8a26ec-4d3c-4d8e-a709-f2a4fab66801
 # ╟─b28eb188-6d11-43ef-86d1-cb739dab4646
 # ╠═b7f90644-d4fe-4cb7-a60e-5ab180a35d50
 # ╠═2336c8fd-263f-42c2-85d4-2b5a64f11a69
 # ╠═7829dd48-681f-4fa1-93f9-9107848e0a98
 # ╠═babfe2e0-19b6-4a22-bc4f-74716ec50ec9
-# ╠═2a034969-92d4-4b08-9949-e44067a053d0
 # ╠═e512be5c-ef0d-4595-b516-d9117e703153
+# ╠═dce13a03-f121-4fad-930a-5c8cf9a7f685
 # ╠═a32b576d-44c3-4f09-93b3-3386dd1ee1de
 # ╠═96e9ea8a-129c-4ab3-a2c3-c947fe4a83b8
 # ╠═0d24cd79-fe1b-47fb-8a78-872b3335b6c5
@@ -2546,9 +3634,50 @@ version = "1.8.1+0"
 # ╠═50251579-de6d-43f3-af36-dc459585ad22
 # ╠═342da11c-cc36-4156-8d5a-e93d859e7a8c
 # ╠═badaea58-868b-4ef0-aee8-3c4583f7b3ea
+# ╠═d7c398ec-4325-40ae-8d71-1aa306830131
 # ╠═f97b719e-8b44-472b-b1ce-57eb5303ea02
-# ╠═a28d672e-693f-44ba-9c38-9edf43bfff41
+# ╟─a28d672e-693f-44ba-9c38-9edf43bfff41
 # ╠═7e61cdcc-3764-4cb8-b426-05939fc8e966
-# ╠═83c589e2-42d9-435f-9d3b-247b17821a9e
+# ╟─038f2359-69ca-4227-bb12-9bec3d4a3ae5
+# ╠═6c5c973f-9197-4114-9924-8e7a299b1472
+# ╠═d7ba6c4c-0f80-453b-a893-648d80b0c9b3
+# ╠═919c1aae-4e9b-489f-9950-17d11f59555c
+# ╠═22019072-9fa5-40a3-bb22-89696e19a2d5
+# ╠═410fe8b7-79a4-44b6-abfa-42f8c0e0aa60
+# ╠═ffe1f6bb-e4b6-4f61-9468-2009244b607f
+# ╟─520abb10-18f1-4747-8d72-b5749834d713
+# ╠═abda697c-044b-4b42-b386-aab9226b755a
+# ╠═a12ccacc-e6be-44bf-a46f-d513a5d3376d
+# ╟─1dabd52f-2e78-40a1-b8dc-d213fdf673a2
+# ╟─1c338d96-1072-4d3a-b920-46d5beb5ea39
+# ╟─9c586ff2-2a7a-46b6-a94b-6605c4f7bfff
+# ╠═db073054-762d-4c71-a081-42a90f29e08e
+# ╠═6d2ce8fe-628d-49a4-84f0-82d55162efe6
+# ╠═6b3fbc49-a701-49a3-8cdb-c76c1ef3ea11
+# ╠═005c34ae-fd96-4915-bdba-9d8ab7918ab5
+# ╠═3577bd41-9719-4043-aeb6-cb8c87578ce8
+# ╠═f9889496-fb2e-4a74-a782-a7deb1dfcd54
+# ╠═21e27aed-cc4e-4bb4-a6e9-1b3a7af5ecc1
+# ╠═0219f3cc-778a-49ab-9fa8-f792e9a8d44f
+# ╟─cb5d816e-674b-4619-b8fd-9dd73ff2b82f
+# ╠═bbd92e65-2e7d-403a-ba04-deff5276d2eb
+# ╠═dc3e4c47-f782-4886-aba7-b53c1bb66a40
+# ╠═1fbda6f2-de90-40a7-ab56-08796c218472
+# ╠═f90fc22b-93a2-49e2-9e08-0ffdde7ca403
+# ╠═22b7f311-62fb-4035-baae-70c427f10ca7
+# ╠═1d3319e5-fb5c-48ce-ba1c-1e80cf8c630c
+# ╠═6f8168ad-84fc-438b-8d98-953f14f3d96a
+# ╠═25aa4c26-cbb1-4f9d-9f1d-8044cc560610
+# ╠═84942076-3d3b-403e-94b3-dade70c2077e
+# ╠═791a294e-cb97-40a6-be0b-56f7976a40c3
+# ╠═0082c7aa-8c39-4090-bdfe-e7e92835c86e
+# ╠═14cceed7-e78e-4259-b797-b4dd3efe4b42
+# ╠═40dde4de-243f-4355-ba22-7d429c638b8e
+# ╠═f73ff0fe-698d-4fca-a2f0-e10771ce360f
+# ╠═d547e247-0587-4cf8-885c-4caa38bf3507
+# ╠═5ca6d81c-0168-42c0-a432-6e4bdaeef032
+# ╠═af3d666b-2b86-42a4-826b-76fdf1384698
+# ╟─57ae7de2-6646-4f0b-84de-168a88d8a380
+# ╠═f3eb326f-6d64-4ed3-aed0-94904cc4d7a8
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

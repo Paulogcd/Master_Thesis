@@ -30,4 +30,6 @@ end
 # Creating file: 
 begin 
     CSV.write("working_elements/Empirical_models/data.csv", df)
+    CSV.write("working_elements/Empirical_models/temperature.csv", temperature)
+    CSV.write("working_elements/Empirical_models/gdp.csv", gdp)
 end

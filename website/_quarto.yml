@@ -21,7 +21,7 @@ website:
         text: Paulogcd
       - href: index.qmd
         text: Master Thesis
-      - models.qmd
+      - fm_models.qmd
       - references.qmd
       - about.qmd
 
