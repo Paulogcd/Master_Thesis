@@ -304,6 +304,7 @@ Regarding survival, the results are easier to get. Running a logistic regression
 
 # ╔═╡ 342da11c-cc36-4156-8d5a-e93d859e7a8c
 begin
+	DF = dropmissing!(df)
 	DF = clean_health(df,"Health")
 	
 	# DF = DF[DF[:,:Year] .!= 2014,:]
@@ -325,38 +326,41 @@ begin
 	
 	model_health_age_temperature_gdp =
 		GLM.glm(@formula(Status ~
-						 	log(Age) +
+						 	Age +
 							Health +
 							av_annual_t + 
-							GDP
+							Health * av_annual_t + 
+							Age * av_annual_t +
+							# Age * GDP
+							Age * Health
 							),
 				DF, Bernoulli(), LogitLink())
 
     Poor        =
-		DataFrame(Age = 1:110,
-				  Health = fill(5,110),
-				  av_annual_t = fill(fixed_temperature,110),
+		DataFrame(Age = age_range,
+				  Health = fill(5,length(age_range)),
+				  av_annual_t = fill(fixed_temperature,length(age_range)),
 				  GDP = 21354.1)
 	
     Fair        = 
-		DataFrame(Age = 1:110,
-				  Health = fill(4,110),
-				  av_annual_t = fill(fixed_temperature,110),
+		DataFrame(Age = age_range,
+				  Health = fill(4,length(age_range)),
+				  av_annual_t = fill(fixed_temperature,length(age_range)),
 				  GDP = 21354.1)
 	
-    Good        = DataFrame(Age = 1:110,
-							Health = fill(3,110),
-							av_annual_t = fill(fixed_temperature,110),
+    Good        = DataFrame(Age = age_range,
+							Health = fill(3,length(age_range)),
+							av_annual_t = fill(fixed_temperature,length(age_range)),
 							GDP = 21354.1)
 	
-    VeryGood    = DataFrame(Age = 1:110,
-							Health = fill(2,110),
-							av_annual_t = fill(fixed_temperature,110),
+    VeryGood    = DataFrame(Age = age_range,
+							Health = fill(2,length(age_range)),
+							av_annual_t = fill(fixed_temperature,length(age_range)),
 							GDP = 21354.1)
 	
-    Excellent   = DataFrame(Age = 1:110,
-							Health = fill(1,110),
-							av_annual_t = fill(fixed_temperature,110),
+    Excellent   = DataFrame(Age = age_range,
+							Health = fill(1,length(age_range)),
+							av_annual_t = fill(fixed_temperature,length(age_range)),
 							GDP = 21354.1)
 
     pv  = GLM.predict(model_health_age_temperature_gdp,Poor)
@@ -376,39 +380,11 @@ begin
 	Plots.plot!(legend = :bottomleft)
 end
 
+# ╔═╡ f2f00733-5e93-44f7-802a-53653191ef34
+age_range
+
 # ╔═╡ d7c398ec-4325-40ae-8d71-1aa306830131
 model_health_age_temperature_gdp
-
-# ╔═╡ 6cfc9382-3dca-4b97-a893-5ce699fab0a7
-begin 
-	model_health_age_temperature_gdp2 =
-		GLM.glm(@formula(Status ~
-						 	Age +
-							Health +
-							av_annual_t + 
-							GDP
-							),
-				DF, Bernoulli(), LogitLink())
-	
-	pv2  = GLM.predict(model_health_age_temperature_gdp2,Poor)
-    fv2  = GLM.predict(model_health_age_temperature_gdp2,Fair)
-    gv2  = GLM.predict(model_health_age_temperature_gdp2,Good)
-    vgv2 = GLM.predict(model_health_age_temperature_gdp2,VeryGood)
-    ev2  = GLM.predict(model_health_age_temperature_gdp2,Excellent)
-
-    Plots.plot(pv2, label = "Poor")
-    Plots.plot!(fv2, label = "Fair")
-    Plots.plot!(gv2, label = "Good")
-    Plots.plot!(vgv2, label = "Very good")
-    Plots.plot!(ev2, label = "Excellent")
-    Plots.plot!(xaxis = "Age",
-				yaxis = "Probability",
-				title = "Survival probability in function of age")
-	Plots.plot!(legend = :bottomleft)
-end
-
-# ╔═╡ 17984f20-3a10-4a27-b293-881c378c0705
-model_health_age_temperature_gdp2
 
 # ╔═╡ f97b719e-8b44-472b-b1ce-57eb5303ea02
 describe(DF)
@@ -421,12 +397,12 @@ begin
 	plotly()  # Use Plotly for 3D
 	
 	# Create age-temperature grid
-	age_range2 = 1:110
-	# temp_range = range(minimum(DF.av_annual_t), maximum(DF.av_annual_t), length=100)
-	temp_range = range(-1, 1, length = 100)
+	# age_range2 = 1:110
+	temp_range = range(minimum(DF.av_annual_t), maximum(DF.av_annual_t), length=100)
+	#temp_range = range(-1, 1, length = 100)
 		
-	age_grid = repeat(age_range2', length(temp_range), 1)
-	temp_grid = repeat(temp_range, 1, length(age_range2))
+	age_grid = repeat(age_range', length(temp_range), 1)
+	temp_grid = repeat(temp_range, 1, length(age_range))
 	
 	# Health categories (assuming 1=Excellent, 5=Poor)
 	health_levels = [1, 2, 3, 4, 5]  
@@ -439,18 +415,18 @@ begin
 	    # Predict for all age-temp combinations
 	    pred_grid = [GLM.predict(model_health_age_temperature_gdp, 
 	                  DataFrame(Age=a, Health=health, av_annual_t=t, GDP=21354.1))[1]
-	                  for t in temp_range, a in age_range2]
+	                  for t in temp_range, a in age_range]
 	    
 	    # Add surface plot
-	    surface!(plt, age_range2, temp_range, pred_grid, label=label)
+	    surface!(plt, age_range, temp_range, pred_grid, label=label)
 	end
 	
 	# Customize plot
 	plot!(plt, 
 	    title="Survival Probability by Age and Temperature",
 	    xlabel="Age", 
-	    ylabel="Temperature (av_annual_t)",
-	    zlabel="Survival Probability",
+	    ylabel="Temperature",
+	    zlabel="Probability",
 	    camera=(30, 45)  # Adjust viewing angle
 	)
 end
@@ -744,7 +720,41 @@ begin
 end
 
 # ╔═╡ 1dabd52f-2e78-40a1-b8dc-d213fdf673a2
-md""" # Maximisation problem """
+md""" # Maximisation problem 
+
+The agents maximizes: 
+
+$$\max_{c_{t},l_{t},s_{t+1}}{\mathbb{E}\left[\sum_{t=1}^{\infty} \beta^{t}\cdot u(c_t,l_t)\right]}$$
+
+Their utility function is: 
+
+$$u(c_{t},l_{t}) = \frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\varphi}}{1+\varphi}$$
+
+With : 
+
+-  $c$  the consumption
+-  $l$  the quantity of labor supply provided by the agent
+-  $h$  the health status
+-  $w$  the weather variable, which is here temperature
+-  $\xi$ the labor disutility coefficient
+
+The agent is subject to: 
+
+$$c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})$$
+
+With: 
+
+-  $c_t$ the consumption at period $t$
+-  $s_{t+1}$ the savings for period $t+1$
+-  $l_t$ the labor supply provided by the agent at period $t$
+-  $z_t$ the productivity at time $t$
+-  $s_{t}$ the savings available at the beginning of period $t$
+-  $r_{t}$ the interest rate at period $t$
+
+Also, let us define the non-borrowing constraint as: 
+
+$$s_{t}\geq0, \forall t$$
+"""
 
 # ╔═╡ 1c338d96-1072-4d3a-b920-46d5beb5ea39
 md"""# Numerical methods
@@ -947,20 +957,20 @@ begin
 						return_budget_balance = true::Bool)::NamedTuple
 	 
 	 """
-	function Bellman(;s_range::AbstractRange,
+	function Bellman2(;s_range::AbstractRange,
 						sprime_range::AbstractRange,
 						consumption_range::AbstractRange,
 						labor_range::AbstractRange,
 						value_function_nextperiod::Any,
-						β = 0.96::Float64, 
-						z = 1.00::Float64,
-						ρ = 1.5::Float64,
-						φ = 2.00::Float64,
-						proba_survival = 0.90::Float64,
-						r = ((1-0.9)/0.9)::Float64,
-						w = 0.00::Float64,
-						h = 2.00::Float64,
-						return_full_grid = true::Bool, 
+						β 					= 0.96::Float64, 
+						z 					= 1.00::Float64,
+						ρ 					= 1.5::Float64,
+						φ 					= 2.00::Float64,
+						proba_survival 		= 0.90::Float64,
+						r 					= ((1-0.9)/0.9)::Float64,
+						w 					= 0.00::Float64,
+						h 					= 2.00::Float64,
+						return_full_grid 	= true::Bool, 
 						return_budget_balance = true::Bool)::NamedTuple
 
 		@assert length(value_function_nextperiod) == length(s_range) "The value function of the next period has the wrong length."
@@ -974,27 +984,45 @@ begin
 															length(sprime_range))
 		
 		# Optimal utility and choice
-		Vstar = zeros(length(s_range))
-		index_optimal_choice = Array{CartesianIndex}(undef,length(s_range))
-		optimal_choice = Array{Float64}(undef,length(s_range),3)
+		Vstar 					= zeros(length(s_range))
+		index_optimal_choice 	= Array{CartesianIndex}(undef,length(s_range))
+		optimal_choice 			= Array{Float64}(undef,length(s_range),3)
 
 		if return_budget_balance == true
-			tmp_budget = Array{Float64}(undef,length(s_range),length(consumption_range),length(labor_range),length(sprime_range))
-			budget_balance = Array{Float64}(undef,length(s_range))
+			tmp_budget = Array{Float64}(undef, 
+										length(s_range),
+										length(consumption_range),
+										length(labor_range),
+										length(sprime_range))
+			budget_balance = Array{Float64}(undef,
+											length(s_range))
 		end
 
 		# for all levels of endowment
 		for (index_s,s) in enumerate(s_range)
 			# for all levels of consumption
 			for (index_consumption,consumption) in enumerate(consumption_range) 
+
+				# Insert F.O.C.1.
+				
 				# for all levels of labor
 				for (index_labor,labor) in enumerate(labor_range)
+					
 					# for all levels of savings
 					for (index_sprime,sprime) in enumerate(sprime_range)
 
 						# Compute the budget:
-						tmp = budget_surplus(c = consumption, l = labor, sprime = sprime, s = s, z = z, r = r)
-						tmp_budget[index_s,index_consumption,index_labor,index_sprime] = tmp
+						tmp = budget_surplus(c 		= consumption,
+											 l 		= labor,
+											 sprime = sprime,
+											 s 		= s,
+											 z 		= z,
+											 r 		= r)
+						
+						tmp_budget[index_s,
+								   index_consumption,
+								   index_labor,
+								   index_sprime] = tmp
 
 						# If the budget constraint is violated,
 						# set the value function to minus infinity :
@@ -1016,13 +1044,14 @@ begin
 											index_consumption,
 											index_labor, 
 											index_sprime] =
-								utility(c=consumption,
-									l=labor,
-									z=z,
-									w=w,
-									h=h,
-									ρ=ρ,
-									φ=φ) + β*proba_survival*value_function_nextperiod[index_sprime]
+								utility(c = consumption,
+										l = labor,
+										z = z,
+										w = w,
+										h = h,
+										ρ = ρ,
+										φ = φ) +
+										β * proba_survival * value_function_nextperiod[index_sprime]
 						end
 					end # end of sprime loop
 				end # end of labor loop
@@ -1044,8 +1073,8 @@ begin
 			     
 			# Validation check
         	optimal_surplus = tmp_budget[index_s, ioc[1], ioc[2], ioc[3]]
-        	#@assert optimal_surplus >= 0 "Infeasible optimal choice found!
-			#	Surplus: $optimal_surplus."
+        	@assert optimal_surplus >= 0 "Infeasible optimal choice found!
+				Surplus: $optimal_surplus."
 			
 			if return_budget_balance
 				budget_balance[index_s] = optimal_surplus
@@ -1063,9 +1092,190 @@ begin
 		labor_value 			= ["l=$i" for i in labor_range]
 		sprime_value 			= ["l=$i" for i in sprime_range]
 		
-		grid_of_value_function = NamedArray(grid_of_value_function, (savings_value, consumption_value, labor_value, sprime_value))
+		grid_of_value_function = NamedArray(grid_of_value_function,
+											(savings_value,
+											 consumption_value,
+											 labor_value,
+											 sprime_value))
 
-		optimal_choice = NamedArray(optimal_choice, (param1_names, ["c","l","sprime"]))
+		optimal_choice = NamedArray(optimal_choice,
+									(param1_names,
+									 ["c","l","sprime"]))
+
+		# Returning results:
+		if return_full_grid == true && return_budget_balance == true
+			return (;grid_of_value_function,Vstar,index_optimal_choice,optimal_choice,budget_balance)
+		elseif return_full_grid == true && return_budget_balance == false
+			return (;grid_of_value_function,Vstar,index_optimal_choice,optimal_choice)
+		elseif return_full_grid == false && return_budget_balance == true
+			return (;Vstar,index_optimal_choice,optimal_choice,budget_balance)
+		elseif return_full_grid == false && return_budget_balance == false
+			return (;Vstar,index_optimal_choice,optimal_choice)
+		end
+		
+	end
+end
+
+# ╔═╡ 1d0d984f-69df-4860-89ac-00d47493c648
+begin 
+	 """
+	 The `Bellman` function is not to be used alone, but with the `backwards` function.
+	 
+			function Bellman(;s_range::AbstractRange,
+						sprime_range::AbstractRange,
+						consumption_range::AbstractRange,
+						labor_range::AbstractRange,
+						value_function_nextperiod::Any,
+						β = 0.96::Float64, 
+						z = 1::Float64,
+						ρ = 1.5::Float64,
+						φ = 2::Float64,
+						proba_survival = 0.9::Float64,
+						r = ((1-0.9)/0.9)::Float64,
+						w = 0.0::Float64,
+						h = 2.00::Float64,
+						return_full_grid = true::Bool, 
+						return_budget_balance = true::Bool)::NamedTuple
+	 
+	 """
+	function Bellman(;s_range::AbstractRange,
+						sprime_range::AbstractRange,
+						consumption_range::AbstractRange,
+						# labor_range::AbstractRange,
+						value_function_nextperiod::Any,
+						β 					= 0.96::Float64, 
+						z 					= 1.00::Float64,
+						ρ 					= 1.5::Float64,
+						φ 					= 2.00::Float64,
+						proba_survival 		= 0.90::Float64,
+						r 					= ((1-0.9)/0.9)::Float64,
+						w 					= 0.00::Float64,
+						h 					= 2.00::Float64,
+					 	ξ 					= 1.00::Float64,
+						return_full_grid 	= true::Bool, 
+						return_budget_balance = true::Bool)::NamedTuple
+
+		@assert length(value_function_nextperiod) == length(s_range) "The value function of the next period has the wrong length."
+
+		# Initialization
+
+		# Grid of possible values
+		grid_of_value_function = Array{Float64}(undef,length(s_range),
+															length(consumption_range),
+															length(sprime_range))
+		
+		# Optimal utility and choice
+		Vstar 					= zeros(length(s_range))
+		index_optimal_choice 	= Array{CartesianIndex}(undef,length(s_range))
+		optimal_choice 			= Array{Float64}(undef,length(s_range),2)
+
+		if return_budget_balance == true
+			tmp_budget = Array{Float64}(undef, 
+										length(s_range),
+										length(consumption_range),
+										length(sprime_range))
+			budget_balance = Array{Float64}(undef,
+											length(s_range))
+		end
+
+		# for all levels of endowment
+		for (index_s,s) in enumerate(s_range)
+			# for all levels of consumption
+			for (index_consumption,consumption) in enumerate(consumption_range) 
+
+				# We fix labor with the FOC 1: 
+				labor = (consumption ^(-ρ)*z/ξ)^(1/φ)
+					
+					# for all levels of savings
+					for (index_sprime,sprime) in enumerate(sprime_range)
+
+						# Compute the budget:
+						tmp = budget_surplus(c 		= consumption,
+											 l 		= labor,
+											 sprime = sprime,
+											 s 		= s,
+											 z 		= z,
+											 r 		= r)
+						
+						tmp_budget[index_s,
+								   index_consumption,
+								   index_sprime] = tmp
+
+						# If the budget constraint is violated,
+						# set the value function to minus infinity :
+						
+						if tmp < 0 
+							
+							grid_of_value_function[index_s,
+											index_consumption,
+											index_sprime] = -Inf
+
+						# If the budget constraint is not violated,
+						# set the value function to the utility plus the value 
+						# function at the next period : 
+							
+						elseif tmp >= 0
+							
+							grid_of_value_function[index_s,
+											index_consumption,
+											index_sprime] =
+								utility(c = consumption,
+										l = labor,
+										z = z,
+										w = w,
+										h = h,
+										ρ = ρ,
+										φ = φ) +
+										β * proba_survival * value_function_nextperiod[index_sprime]
+						end
+					end # end of sprime loop
+
+			end # end of consumption loop
+
+			# For a given level of initial endowment, 
+			# find the maximum of the value function 
+			# and the associated optimal choice
+			
+			Vstar[index_s],
+			index_optimal_choice[index_s] =
+				findmax(grid_of_value_function[index_s,:,:])
+
+			ioc = index_optimal_choice[index_s]
+			
+			optimal_choice[index_s,:] = [consumption_range[ioc[1]],
+										sprime_range[ioc[2]]]
+			     
+			# Validation check
+        	optimal_surplus = tmp_budget[index_s, ioc[1],
+										 # ioc[2],
+										 ioc[2]]
+        	@assert optimal_surplus >= 0 "Infeasible optimal choice found!
+				Surplus: $optimal_surplus."
+			
+			if return_budget_balance
+				budget_balance[index_s] = optimal_surplus
+			end
+
+		end # end of s
+
+		# Formatting the output for better readability:
+		
+		# Transforming the grid_of_value_function array into a Named Array:
+
+		param1_names 			= ["s_i$i" for i in 1:length(s_range)]
+		savings_value 			= ["s=$i" for i in s_range]
+		consumption_value 		= ["c=$i" for i in consumption_range]
+		# labor_value 			= ["l=$i" for i in labor_range]
+		sprime_value 			= ["l=$i" for i in sprime_range]
+		
+		grid_of_value_function = NamedArray(grid_of_value_function,
+											(savings_value,
+											 consumption_value,
+											 sprime_value))
+
+		optimal_choice = NamedArray(optimal_choice,
+									(param1_names,
+									 ["c","sprime"]))
 
 		# Returning results:
 		if return_full_grid == true && return_budget_balance == true
@@ -1085,10 +1295,9 @@ end
 Bellman(s_range 					= 0.00:2.00,
 	   sprime_range 				= 0.00:2.00, 
 	   consumption_range 			= 0.00:10.00,
-	   labor_range 					= 0.00:10.00,
 	   value_function_nextperiod 	= zeros(3))
 
-# ╔═╡ 1fbda6f2-de90-40a7-ab56-08796c218472
+# ╔═╡ a5dbb6c1-a58d-41a1-bd58-784a194f6fe5
 begin 
 	"""
 		function backwards(;s_range::AbstractRange,
@@ -1107,7 +1316,7 @@ begin
 				return_full_grid = false::Bool, 
 				return_budget_balance = true::Bool)::NamedTuple
 	"""
-	function backwards(;s_range::AbstractRange,
+	function backwards2(;s_range::AbstractRange,
 				sprime_range::AbstractRange,
 				consumption_range::AbstractRange,
 				labor_range::AbstractRange,
@@ -1258,6 +1467,187 @@ begin
 	end
 end
 
+# ╔═╡ 1fbda6f2-de90-40a7-ab56-08796c218472
+begin 
+	"""
+		function backwards(;s_range::AbstractRange,
+				sprime_range::AbstractRange,
+				consumption_range::AbstractRange,
+				labor_range::AbstractRange,
+				nperiods::Integer,
+				z = ones(nperiods)::Array,
+				β = 0.9::Float64,
+				r = final_r::Array,
+				ρ = 1.50::Float64, 
+				φ = 2.00::Float64,
+				proba_survival = 0.90::Float64,
+				w = 0.00::Float64,
+				h = "good"::AbstractString, 
+				return_full_grid = false::Bool, 
+				return_budget_balance = true::Bool)::NamedTuple
+	"""
+	function backwards(;s_range::AbstractRange,
+				sprime_range::AbstractRange,
+				consumption_range::AbstractRange,
+				nperiods::Integer,
+				z 						= ones(nperiods)::Array{Float64},
+				β 						= 0.90::Float64,
+				r 						= ones(nperiods)::Array{Float64},
+				ρ 						= 1.50::Float64, 
+				φ 						= 2.00::Float64,
+				proba_survival 			= 0.90 .* ones(nperiods)::Array{Float64},
+				w 						= zeros(nperiods)::Array{Float64},
+				h 						= 2 .* ones(nperiods)::Array{Float64}, 
+				return_full_grid 		= false::Bool, 
+				return_budget_balance 	= true::Bool)::NamedTuple
+
+		# Initialization: 
+
+		# We define the name of the variables for the named arrays: 
+		param1_names 			= ["t_$i" for i in 1:nperiods]
+		param2_names 			= ["s_i$i" for i in 1:length(s_range)]
+		param3_names 			= ["c_i$i" for i in 1:length(consumption_range)]
+		# param4_names 			= ["l_i$i" for i in 1:length(labor_range)]
+		param5_names 			= ["sprime_i$i" for i in 1:length(sprime_range)]
+		choice_variable_name 	= ["c","sprime"]
+								
+		savings_value 			= ["s=$i" for i in s_range]
+		consumption_value 		= ["c=$i" for i in consumption_range]
+		# labor_value 			= ["l=$i" for i in labor_range]
+		sprime_value 			= ["l=$i" for i in sprime_range]
+
+		# From the given ranges, construct a grid of all possible values, 
+		# And save its size: 
+		grid_of_value_function 	= Array{Float64}(undef,
+												 length(s_range),
+												 length(consumption_range),
+												# length(labor_range),
+												 length(sprime_range))
+		points 					= size(grid_of_value_function)
+
+		if return_budget_balance == true
+			budget_balance = Array{Float64}(undef,nperiods,length(s_range))
+		end
+		
+		# Initialize empty arrays that will:
+		# contain the values of the value function (V): 
+		V = zeros(nperiods,
+				  points[1],
+				  points[2],
+				  #points[3],
+				  points[3])
+
+		# the values at optimum (Vstar), 
+		Vstar = zeros(nperiods,points[1])
+		
+		# The indices of optimal choice (index_optimal_choices),
+		index_optimal_choices = Array{Array{CartesianIndex{2}}}(undef,nperiods)
+
+		# and the values of choice variables at the optimum (optimal_choices): 
+		optimal_choices 	= Array{Float64}(undef,
+											 nperiods,
+											 length(sprime_range),
+											 2) # Time periods, level of initial savings, choice variables
+		optimal_choices 	=
+			NamedArray(optimal_choices,
+					   (param1_names,
+						savings_value,
+						choice_variable_name))
+
+		# First, we solve for the last period, in which the value function of next period is 0: 
+		last_Bellman = Bellman(s_range 		= s_range::AbstractRange,
+	 					sprime_range 		= sprime_range::AbstractRange,
+	 					consumption_range 	= consumption_range::AbstractRange,
+	 					# labor_range 		= labor_range::AbstractRange,
+						value_function_nextperiod = zeros(length(s_range)),
+	 					β 					= β::Float64,
+			 			ρ 					= ρ::Float64,
+						φ 					= φ::Float64,
+						r 					= r[nperiods]::Float64,
+						proba_survival 		= proba_survival[nperiods]::Float64,
+						w 					= w[nperiods]::Float64,
+						h 					= h[nperiods]::Float64,
+						z 					= z[nperiods]::Float64,
+						return_full_grid 	= true::Bool,
+						return_budget_balance = return_budget_balance::Bool)::NamedTuple
+
+		if return_budget_balance == true
+			budget_balance[end,:] = last_Bellman[:budget_balance]
+		end
+		
+		# Value of the value function: 
+		if return_full_grid == true
+			V[end,:,:,:,:]	= last_Bellman[:grid_of_value_function] 
+		end 
+		
+		# Values at the optimum:
+		Vstar[end,:] 							.= last_Bellman[:Vstar] 	 
+		
+		# Index of optimal choice:
+		index_optimal_choices[end] 				= last_Bellman[:index_optimal_choice]
+		
+		optimal_choices[end,:,:]				= last_Bellman[:optimal_choice]
+
+		# Values of the choice variables at optimum:
+		# optimal_choice[end,:] = collect(grid_of_value_function)
+		
+		for index_time in (nperiods-1):-1:1
+			
+			tmp = Bellman(s_range 				= s_range,
+					sprime_range 				= sprime_range,
+					consumption_range 			= consumption_range,
+					# labor_range 				= labor_range,
+					value_function_nextperiod 	= last_Bellman[:Vstar],
+					β 							= β,
+					z 							= z[index_time],
+					ρ 							= ρ,
+					φ 							= φ,
+					r 							= r[index_time], 
+					proba_survival 				= proba_survival[index_time], 
+					w 							= w[index_time],
+					h 							= h[index_time],
+					return_full_grid 			= true,
+					return_budget_balance 		= return_budget_balance)::NamedTuple
+			
+			if return_full_grid == true
+				V[index_time,:,:,:,:] 			= tmp[:grid_of_value_function] 
+			end
+
+			if return_budget_balance == true
+				budget_balance[index_time,:] 	= tmp[:budget_balance]
+			end
+				
+			Vstar[index_time,:] 				= tmp[:Vstar]
+			index_optimal_choices[index_time] 	= tmp[:index_optimal_choice]
+			optimal_choices[index_time,:,:] 	= tmp[:optimal_choice] 
+			
+			last_Bellman = tmp
+			
+		end # end of time loop
+
+		# Rename in NamedArrays:
+		Vstar = NamedArray(Vstar, (param1_names,savings_value))
+		if return_budget_balance == true
+			budget_balance = NamedArray(budget_balance, (param1_names,savings_value))
+		end
+		if return_full_grid == true
+			V = NamedArray(V, (param1_names, savings_value, consumption_value, labor_value, sprime_value))
+		end
+		
+
+		if return_full_grid && return_budget_balance
+			return (;V,Vstar,index_optimal_choices,optimal_choices,budget_balance)
+		elseif return_full_grid
+			return (;V,Vstar,index_optimal_choices,optimal_choices)
+		elseif return_budget_balance
+			return (;Vstar,index_optimal_choices,optimal_choices,budget_balance)
+		else 
+			return (;Vstar,index_optimal_choices,optimal_choices)
+		end
+
+	end
+end
+
 # ╔═╡ f90fc22b-93a2-49e2-9e08-0ffdde7ca403
 begin 
 	s_range 				= -2:0.1:5
@@ -1276,7 +1666,7 @@ end
 
 # ╔═╡ 22b7f311-62fb-4035-baae-70c427f10ca7
 begin 
-	s_range_2 			= -1.00:0.1:5.00
+	s_range_2 			= 0.00:0.01:2.00
 	sprime_range_2 		= s_range_2
 	growing_temperature = collect(range(start = 0.61,
 										stop = 1.00,
@@ -1301,8 +1691,8 @@ end
 begin 
 	@time benchmark = backwards(s_range			= s_range_2,
 							sprime_range		= s_range_2,
-							consumption_range 	= 0:0.05:consumption_max,
-							labor_range			= 0.00:0.05:2,
+							consumption_range 	= 0:0.01:consumption_max,
+							# labor_range			= 0.00:0.05:2,
 							nperiods 			= nperiods,
 							r 					= dynamic_r,
 							z 					= ones(nperiods),
@@ -1326,15 +1716,18 @@ begin
 	"""
 	function smoothing(y::AbstractArray{Float64},
 				   span::Float64)
+		
 		x = 1:length(y)
-		model = loess(x,y, span = span)
+		model = loess(x,
+					  y,
+					  span = span)
 		return Loess.predict(model,x)::Vector{Float64}
 		
 	end	
 end
 
 # ╔═╡ 25aa4c26-cbb1-4f9d-9f1d-8044cc560610
-common_span = 0.2
+common_span = 0.99
 
 # ╔═╡ 84942076-3d3b-403e-94b3-dade70c2077e
 begin 
@@ -1367,46 +1760,16 @@ begin
 	end
 
 	Plots.plot!(xaxis = "Initial savings", yaxis = "Optimal consumption", title = "Consumption policy", legend = false)
-
+	
 	plot_c_star
 end
 
 # ╔═╡ 0082c7aa-8c39-4090-bdfe-e7e92835c86e
 Plots.plot(s_range_2,
-				   (benchmark[:optimal_choices][1,:,"c"]),
+				   smoothing(benchmark[:optimal_choices][1,:,"c"],common_span),
 				   label = "Period: 1",
 				   xaxis = "Initial savings",
 				   yaxis = "Consumption")
-
-# ╔═╡ 14cceed7-e78e-4259-b797-b4dd3efe4b42
-begin 
-	plotly()
-	plot_l_star = Plots.plot(s_range_2,
-							 smoothing(benchmark[:optimal_choices][1,:,"l"],
-									   common_span),
-							 label = "Period: 1",
-							 xaxis = "Initial savings",
-							 yaxis = "Labor supply")
-	
-	for t in 1:nperiods#[50,80,104]
-		Plots.plot!(s_range_2,
-					smoothing(benchmark[:optimal_choices][t,:,"l"], common_span), label = "Period: $t")
-	end
-
-	Plots.plot!(xaxis = "Initial savings",
-				yaxis = "Optimal labor supply",
-				title = "Labor supply policy",
-				legend = false)
-
-	Plots.plot(plot_l_star)
-end
-
-# ╔═╡ 40dde4de-243f-4355-ba22-7d429c638b8e
-Plots.plot(s_range_2,
-		 (benchmark[:optimal_choices][1,:,"l"]),
-		 label = "Period: 1",
-		 xaxis = "Initial savings",
-		 yaxis = "Labor supply")
 
 # ╔═╡ f73ff0fe-698d-4fca-a2f0-e10771ce360f
 begin 
@@ -1436,11 +1799,19 @@ Plots.plot(s_range_2,
 
 # ╔═╡ 5ca6d81c-0168-42c0-a432-6e4bdaeef032
 begin 
-	budget_constraint_plot_fixed = Plots.plot(s_range_2,benchmark[:budget_balance][1,:], label = "Period 1")
-	Plots.plot!(xaxis = "Initial savings", yaxis = "Budget surplus", title = "Budget surplus",legend = false)
-	for t in 1:nperiods #[50,80,104]
+	plotly()
+	budget_constraint_plot_fixed = 
+		Plots.plot(s_range_2,benchmark[:budget_balance][1,:], label = "Period 1")
+	
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Budget surplus",
+				title = "Budget surplus",
+				legend = false)
+	
+	for t in 1:nperiods
 	 	Plots.plot!(s_range_2,benchmark[:budget_balance][t,:], label = "Period: $t")
 	end
+	
 	Plots.plot(budget_constraint_plot_fixed)
 end
 
@@ -1454,6 +1825,111 @@ begin
 			   yaxis = "Budget surplus", 
 			   title = "Budget surplus at the first period")
 end
+
+# ╔═╡ a9f52855-a830-4763-81a5-4680724d9677
+md""" ## Comparison with analytical results 
+
+From the maximization program, we have: 
+
+$$c_{t} = \left[\frac{z_{t}}{\xi_{t}\cdot l_{t}^{\varphi}}\right]^{-1/\rho}$$
+
+"""
+
+# ╔═╡ a02b0189-e253-4c8f-84a5-c0177f8e7b91
+begin
+		ρ = 1.50::Float64 
+		φ = 2.00::Float64
+end
+
+# ╔═╡ 14cceed7-e78e-4259-b797-b4dd3efe4b42
+begin 
+	plotly()
+
+	lstar(c) = (c ^(-ρ)*1/1)^(1/φ)
+
+	
+	plot_l_star = Plots.plot(s_range_2,
+							 smoothing(lstar.(benchmark[:optimal_choices][1,:,"c"].array),
+									   common_span),
+							 label = "Period: 1",
+							 xaxis = "Initial savings",
+							 yaxis = "Labor supply")
+	
+	for t in 1:nperiods
+		Plots.plot!(s_range_2,
+					smoothing(lstar.(benchmark[:optimal_choices][1,:,"c"].array), common_span),
+					label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Labor supply",
+				title = "Labor supply policy",
+				legend = false)
+
+	Plots.plot(plot_l_star)
+end
+
+# ╔═╡ 04f0df4c-22b2-4808-9ecf-c61dd94c3f17
+begin 
+	plotly()
+
+	c = benchmark[:optimal_choices][2,:,"c"].array
+	c2 = benchmark[:optimal_choices][2,:,"c"].array
+	l = lstar.(c)
+
+	# Plots.plot(s_range_2,
+	# 			c,
+	# 			label = "Generated results")
+
+	Plots.plot(xaxis = "Labor",
+			   yaxis = "Consumption")
+	
+	Plots.plot!(s_range_2,
+			smoothing(c,common_span),
+			label 	= "Model")
+	
+	c_FOC1 = (1 .* l.^φ .* 1^(-1)) .^ (-1/ρ)
+	
+	# Plots.plot!(s_range_2,
+	# 		   c_FOC1,
+	# 		   xaxis = "Initial savings", 
+	# 		   yaxis = "Consumption", 
+	# 		   label = "FOC 1")
+
+	Plots.plot!(s_range_2,
+				smoothing(c_FOC1,common_span),
+				label 	= "FOC 1")
+
+	β = 0.96
+	
+	c_FOC2 = Array{Float64}(undef,length(c))
+	
+	c_FOC2 = 
+		(β * survival_probability[2] .* (c2 .^ (-φ)) .* 1 .* (1+dynamic_r[2])) .^ (-1/ρ)
+
+	# Plots.plot!(s_range_2,
+	# 			c_FOC2,
+	# 			label = "FOC 2")
+
+	Plots.plot!(s_range_2,
+				smoothing(c_FOC2,common_span),
+				label = "FOC 2")
+
+	c4 = (c_FOC1 .+ c_FOC2) ./2
+	
+	Plots.plot!(s_range_2,
+				smoothing(c4,common_span),
+				label = "Average",
+				primary = false)
+
+	
+end
+
+# ╔═╡ 4c056973-7892-448c-97ca-81fdd3196257
+survival_probability
+
+# ╔═╡ d9997183-e8cd-4843-8db4-5e6eac5f81f6
+dynamic_r[1]
 
 # ╔═╡ 57ae7de2-6646-4f0b-84de-168a88d8a380
 md""" # Conclusion: Aggregate effect of health 
@@ -1482,7 +1958,8 @@ Here a list of possible extensions:
 - Health types heterogeneity,
 - Inter-individuals interest rate,
 - Using data to calibrate the model: savings, add bequest motivation,
-- Using mortality table to assess the effect on younger individuals. 
+- Using mortality table to assess the effect on younger individuals,
+- Using data on savings.
 
 """
 
@@ -3667,9 +4144,8 @@ version = "1.8.1+0"
 # ╠═50251579-de6d-43f3-af36-dc459585ad22
 # ╠═342da11c-cc36-4156-8d5a-e93d859e7a8c
 # ╠═badaea58-868b-4ef0-aee8-3c4583f7b3ea
+# ╠═f2f00733-5e93-44f7-802a-53653191ef34
 # ╠═d7c398ec-4325-40ae-8d71-1aa306830131
-# ╠═6cfc9382-3dca-4b97-a893-5ce699fab0a7
-# ╠═17984f20-3a10-4a27-b293-881c378c0705
 # ╠═f97b719e-8b44-472b-b1ce-57eb5303ea02
 # ╟─a28d672e-693f-44ba-9c38-9edf43bfff41
 # ╠═7e61cdcc-3764-4cb8-b426-05939fc8e966
@@ -3683,7 +4159,7 @@ version = "1.8.1+0"
 # ╟─520abb10-18f1-4747-8d72-b5749834d713
 # ╠═abda697c-044b-4b42-b386-aab9226b755a
 # ╠═a12ccacc-e6be-44bf-a46f-d513a5d3376d
-# ╟─1dabd52f-2e78-40a1-b8dc-d213fdf673a2
+# ╠═1dabd52f-2e78-40a1-b8dc-d213fdf673a2
 # ╟─1c338d96-1072-4d3a-b920-46d5beb5ea39
 # ╟─9c586ff2-2a7a-46b6-a94b-6605c4f7bfff
 # ╠═db073054-762d-4c71-a081-42a90f29e08e
@@ -3696,7 +4172,9 @@ version = "1.8.1+0"
 # ╠═0219f3cc-778a-49ab-9fa8-f792e9a8d44f
 # ╟─cb5d816e-674b-4619-b8fd-9dd73ff2b82f
 # ╠═bbd92e65-2e7d-403a-ba04-deff5276d2eb
+# ╠═1d0d984f-69df-4860-89ac-00d47493c648
 # ╠═dc3e4c47-f782-4886-aba7-b53c1bb66a40
+# ╟─a5dbb6c1-a58d-41a1-bd58-784a194f6fe5
 # ╠═1fbda6f2-de90-40a7-ab56-08796c218472
 # ╠═f90fc22b-93a2-49e2-9e08-0ffdde7ca403
 # ╠═22b7f311-62fb-4035-baae-70c427f10ca7
@@ -3707,11 +4185,15 @@ version = "1.8.1+0"
 # ╠═791a294e-cb97-40a6-be0b-56f7976a40c3
 # ╠═0082c7aa-8c39-4090-bdfe-e7e92835c86e
 # ╠═14cceed7-e78e-4259-b797-b4dd3efe4b42
-# ╠═40dde4de-243f-4355-ba22-7d429c638b8e
 # ╠═f73ff0fe-698d-4fca-a2f0-e10771ce360f
 # ╠═d547e247-0587-4cf8-885c-4caa38bf3507
 # ╠═5ca6d81c-0168-42c0-a432-6e4bdaeef032
 # ╠═af3d666b-2b86-42a4-826b-76fdf1384698
+# ╠═a9f52855-a830-4763-81a5-4680724d9677
+# ╠═a02b0189-e253-4c8f-84a5-c0177f8e7b91
+# ╠═04f0df4c-22b2-4808-9ecf-c61dd94c3f17
+# ╠═4c056973-7892-448c-97ca-81fdd3196257
+# ╠═d9997183-e8cd-4843-8db4-5e6eac5f81f6
 # ╟─57ae7de2-6646-4f0b-84de-168a88d8a380
 # ╠═f3eb326f-6d64-4ed3-aed0-94904cc4d7a8
 # ╟─00000000-0000-0000-0000-000000000001
