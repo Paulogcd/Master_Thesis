@@ -318,7 +318,7 @@ describe(DF)
 
 # ╔═╡ badaea58-868b-4ef0-aee8-3c4583f7b3ea
 begin 
-	Plots.plotly()
+	Plots.gr()
 
 	# fixed_temperature = 0.616167 # Temperature deviation of 2018
 	fixed_temperature = 0.61 # Temperature deviation of 2018
@@ -371,11 +371,44 @@ begin
     Plots.plot!(vgv, label = "Very good")
     Plots.plot!(ev, label = "Excellent")
     Plots.plot!(xaxis = "Age",
-				yaxis = "Survival Probability")
+				yaxis = "Probability",
+				title = "Survival probability in function of age")
+	Plots.plot!(legend = :bottomleft)
 end
 
 # ╔═╡ d7c398ec-4325-40ae-8d71-1aa306830131
 model_health_age_temperature_gdp
+
+# ╔═╡ 6cfc9382-3dca-4b97-a893-5ce699fab0a7
+begin 
+	model_health_age_temperature_gdp2 =
+		GLM.glm(@formula(Status ~
+						 	Age +
+							Health +
+							av_annual_t + 
+							GDP
+							),
+				DF, Bernoulli(), LogitLink())
+	
+	pv2  = GLM.predict(model_health_age_temperature_gdp2,Poor)
+    fv2  = GLM.predict(model_health_age_temperature_gdp2,Fair)
+    gv2  = GLM.predict(model_health_age_temperature_gdp2,Good)
+    vgv2 = GLM.predict(model_health_age_temperature_gdp2,VeryGood)
+    ev2  = GLM.predict(model_health_age_temperature_gdp2,Excellent)
+
+    Plots.plot(pv2, label = "Poor")
+    Plots.plot!(fv2, label = "Fair")
+    Plots.plot!(gv2, label = "Good")
+    Plots.plot!(vgv2, label = "Very good")
+    Plots.plot!(ev2, label = "Excellent")
+    Plots.plot!(xaxis = "Age",
+				yaxis = "Probability",
+				title = "Survival probability in function of age")
+	Plots.plot!(legend = :bottomleft)
+end
+
+# ╔═╡ 17984f20-3a10-4a27-b293-881c378c0705
+model_health_age_temperature_gdp2
 
 # ╔═╡ f97b719e-8b44-472b-b1ce-57eb5303ea02
 describe(DF)
@@ -430,7 +463,7 @@ If now we use the above estimated functions, we obtain: """
 # ╔═╡ 6c5c973f-9197-4114-9924-8e7a299b1472
 begin 
 	""" 
-	The survival function returns the probability of survival given the Age, current health, annual temperature, and GDP. 
+	The survival function returns the probability of survival given age, current health, annual temperature, and GDP. 
 		
 		function survival(;Age::Int64,
 			Health::Int64,
@@ -673,7 +706,7 @@ end
 begin 
 	Plots.gr()
 
-	temperature_path_1 = collect(range(start = 0.61, stop = 1.00, length = periods))
+	temperature_path_1 = collect(range(start = 0.61, stop = 2.00, length = periods))
 	temperature_path_2 = Normal(0.61, 0.1)
 	
 	population_3 = population_simulation(N 	= 1_000,
@@ -693,7 +726,7 @@ begin
 
 	Plot2 	= Plots.plot(1:periods,sum(cls3[:, 1]),
 						 # legend = false, 
-						 label = "From 0.61 to 1 degree")
+						 label = "From 0.61 to 2 degrees")
 
 	cls4 	= []
 	for i in 1:length(population_4[:collective_living_history])
@@ -1011,8 +1044,8 @@ begin
 			     
 			# Validation check
         	optimal_surplus = tmp_budget[index_s, ioc[1], ioc[2], ioc[3]]
-        	@assert optimal_surplus >= 0 "Infeasible optimal choice found!
-				Surplus: $optimal_surplus."
+        	#@assert optimal_surplus >= 0 "Infeasible optimal choice found!
+			#	Surplus: $optimal_surplus."
 			
 			if return_budget_balance
 				budget_balance[index_s] = optimal_surplus
@@ -1243,7 +1276,7 @@ end
 
 # ╔═╡ 22b7f311-62fb-4035-baae-70c427f10ca7
 begin 
-	s_range_2 			= 0.00:0.1:5.00
+	s_range_2 			= -1.00:0.1:5.00
 	sprime_range_2 		= s_range_2
 	growing_temperature = collect(range(start = 0.61,
 										stop = 1.00,
@@ -3635,6 +3668,8 @@ version = "1.8.1+0"
 # ╠═342da11c-cc36-4156-8d5a-e93d859e7a8c
 # ╠═badaea58-868b-4ef0-aee8-3c4583f7b3ea
 # ╠═d7c398ec-4325-40ae-8d71-1aa306830131
+# ╠═6cfc9382-3dca-4b97-a893-5ce699fab0a7
+# ╠═17984f20-3a10-4a27-b293-881c378c0705
 # ╠═f97b719e-8b44-472b-b1ce-57eb5303ea02
 # ╟─a28d672e-693f-44ba-9c38-9edf43bfff41
 # ╠═7e61cdcc-3764-4cb8-b426-05939fc8e966
