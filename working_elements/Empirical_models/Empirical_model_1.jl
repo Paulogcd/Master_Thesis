@@ -475,9 +475,37 @@ With:
 
 Also, let us define the borrowing constraint as: 
 
-$$s_{t}\geq \underline{s}, \forall t$$
+$$s_{t+1}\geq \underline{s}, \forall t$$
 """
 
+
+# ╔═╡ 78e8a9b6-fdfd-4b9c-914e-413037fc08de
+md"""
+
+The associated Lagrangien is: 
+$$\begin{split}
+\mathcal{L}(c_{t},l_{t},s_{t+1};\lambda_t) & = \mathbb{E}\Biggr[\sum_{t=1}^{100} \beta^{t}\cdot ((\frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot\frac{l_{t}^{1+\varphi}}{1+\varphi}) \\
+& +\lambda_{t}\cdot \left(l_{t}\cdot z_{t}+s_{t}\cdot (1+r_{t})-c_{t}-s_{t+1}\right) \\ 
+& + \gamma_{t}\cdot \left(s_{t+1}-\underline{s}\right)
+)\Biggr]
+\end{split}$$
+
+
+The F.O.C.s are: 
+
+With respect to $c_{t}$: 
+
+-  $c_{t}^{-\rho} = \lambda_{t}$
+
+With respect to the labor supply $l_{t}$: 
+
+-  $\lambda_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi}$
+
+With respect to the savings/loan $s_{t+1}$:
+-  $\lambda_{t} = \beta\cdot (1+r) \cdot \mathbb{E}\left[\lambda_{t+1}\right]$
+
+
+"""
 
 # ╔═╡ e29e2ee8-1e85-4236-96ca-47962898e105
 md"""# Numerical methods
@@ -1386,7 +1414,7 @@ md""" ## Comparison with analytical results
 
 From the maximization program, we have: 
 
-$$c_{t} = \left[\frac{z_{t}}{\xi_{t}\cdot l_{t}^{\varphi}}\right]^{-\frac{1}{\rho}}$$
+$$c_{t} = \left[\frac{z_{t}}{\xi_{t}\cdot l_{t}^{\varphi}}\right]^{\frac{1}{\rho}}$$
 
 """
 
@@ -1442,13 +1470,13 @@ begin
 		GLM.glm(@formula(Status ~
 						 	Age +
 							Health +
-							av_annual_t  
-							# Age * Health * av_annual_t
+							av_annual_t 
+							#Age * Health * av_annual_t
 							# Health * av_annual_t +
 							# Age * av_annual_t
 							# When including GDP, the solver does not converge
 							# log(GDP) + 
-							# Age * log(GDP) + 
+							# Age * log(GDP)
 							# Year +
 							# Year * Age + 
 							# Age * Health
@@ -1779,7 +1807,7 @@ individual_probability_simulation(T = 100,
 
 # ╔═╡ cc131fbc-a2d2-42af-8160-b22e32aac512
 begin 
-	s_range_2 			= -1.00:0.1:2.00
+	s_range_2 			= 0.00:0.1:2.00
 	sprime_range_2 		= s_range_2
 	growing_temperature = collect(range(start = 0.61,
 										stop = 1.00,
@@ -1793,7 +1821,7 @@ begin
 
 	dynamic_r = ((1 .- survival_probability[:probability_history]) ./ (survival_probability[:probability_history]))
 
-	small_r = (fill(0.2,nperiods))
+	small_r = (fill(0.05,nperiods))
 	
 end
 
@@ -2062,7 +2090,7 @@ end
 begin 
 	plotly()
 
-	lstar(c) = (c ^(-ρ)*1/1)^(1/φ)
+	lstar(c) = (c ^(-ρ)*(1 ./ survival_probability[2][1])/1)^(1/φ)
 
 	
 	plot_l_star = Plots.plot(s_range_2,
@@ -2103,7 +2131,7 @@ begin
 			smoothing(c1,common_span),
 			label 	= "Model - period 1")
 	
-	c_FOC1 = (1 .* l1.^φ .* 1^(-1)) .^ (-1/ρ)
+	c_FOC1 = (1 .* l1.^φ .* (1 ./ survival_probability[2][1])^(-1)) .^ (-1/ρ)
 
 	Plots.plot!(s_range_2,
 				smoothing(c_FOC1,common_span),
@@ -2127,6 +2155,86 @@ begin
 	Plots.plot!(s_range_2,
 				smoothing(c2,common_span),
 				label = "Model - period 2")
+end
+
+# ╔═╡ ae13c7ba-e907-4655-b2b9-4c34f373f9c4
+begin 
+	plotly()
+
+	c103 = benchmark[:optimal_choices][103,:,"c"].array
+	c104 = benchmark[:optimal_choices][104,:,"c"].array
+
+	l103 = lstar.(c103)
+	l104 = lstar.(c104)
+
+	Plots.plot(xaxis = "Labor",
+			   yaxis = "Consumption")
+	
+	Plots.plot!(s_range_2,
+			smoothing(c103,common_span),
+			label 	= "Model - period 103")
+	
+	c_FOC1_last = (1 .* l103.^φ .* (1 ./ survival_probability[2][103])^(-1)) .^ (-1/ρ)
+
+	Plots.plot!(s_range_2,
+				smoothing(c_FOC1_last,common_span),
+				label 	= "FOC 1")
+	
+	c_FOC2_103 = Array{Float64}(undef,length(c104))
+	
+	c_FOC2_103 = 
+		(β *
+			survival_probability[1][104] .*
+			(c104 .^ (-ρ)) .*
+			(1+small_r[104])) .^ (-1/ρ)
+
+	Plots.plot!(s_range_2,
+				smoothing(c_FOC2_103,common_span),
+				label = "FOC 2 - Euler 103")
+
+	# Plots.plot!(s_range_2,
+	# 			smoothing(c104,common_span),
+	# 			label = "Model - last period")
+end
+
+# ╔═╡ 34210909-d7ea-4609-804a-729302bc504f
+begin 
+	plotly()
+
+	c103n = numerical[:optimal_choices][103,:,"c"].array
+	c104n = numerical[:optimal_choices][104,:,"c"].array
+
+	l103n = lstar.(c103)
+	l104n = lstar.(c104)
+
+	Plots.plot(xaxis = "Labor",
+			   yaxis = "Consumption")
+	
+	Plots.plot!(s_range_2,
+			smoothing(c103,common_span),
+			label 	= "Model - period 103")
+	
+	c_FOC1_lastn = (1 .* l103n.^φ .* (1 ./ survival_probability[2][103])^(-1)) .^ (-1/ρ)
+
+	Plots.plot!(s_range_2,
+				smoothing(c_FOC1_lastn,common_span),
+				label 	= "FOC 1")
+	
+	c_FOC2_103n = Array{Float64}(undef,length(c104))
+	
+	c_FOC2_103n = 
+		(β *
+			survival_probability[1][104] .*
+			(c104n .^ (-ρ)) .*
+			(1+small_r[104])) .^ (-1/ρ)
+
+	Plots.plot!(s_range_2,
+				smoothing(c_FOC2_103n,common_span),
+				label = "FOC 2 - Euler 103")
+
+	# Plots.plot!(s_range_2,
+	# 			smoothing(c104,common_span),
+	# 			label = "Model - last period")
 end
 
 # ╔═╡ 4258e19c-4277-428a-9164-3d8615520ad0
@@ -4650,6 +4758,7 @@ version = "1.8.1+0"
 # ╠═abda697c-044b-4b42-b386-aab9226b755a
 # ╠═a12ccacc-e6be-44bf-a46f-d513a5d3376d
 # ╟─1dabd52f-2e78-40a1-b8dc-d213fdf673a2
+# ╠═78e8a9b6-fdfd-4b9c-914e-413037fc08de
 # ╟─e29e2ee8-1e85-4236-96ca-47962898e105
 # ╟─b04ea071-adf7-4d2b-9ad9-2acb6338c321
 # ╠═32daa090-3c9a-4d9f-b1a2-d969cf4e6966
@@ -4686,11 +4795,13 @@ version = "1.8.1+0"
 # ╟─5cae56c7-c5ba-447b-a9ea-ef7f1ad99dfe
 # ╠═5508a281-254d-4d67-ab3d-ad32b2ff67f3
 # ╠═7fde6bdb-b9cc-4ca3-827f-8aaa4f03a82a
-# ╟─5ee88736-733b-480a-b9e2-929408cef55f
+# ╠═5ee88736-733b-480a-b9e2-929408cef55f
 # ╠═383d864d-310a-4e98-be68-48801a1c3a9d
 # ╠═a99f953d-2df4-4f30-9ca4-d3302f56571f
 # ╟─b9259bf1-e248-4ba7-bd9c-ae6094e368dd
 # ╠═46ff7619-926c-445d-abf5-7bad5878169f
+# ╠═ae13c7ba-e907-4655-b2b9-4c34f373f9c4
+# ╠═34210909-d7ea-4609-804a-729302bc504f
 # ╟─c3acbb4e-1330-4c7d-9875-fc89d8a35453
 # ╠═4258e19c-4277-428a-9164-3d8615520ad0
 # ╠═7435b69e-a57a-44d2-8978-622f9f4236d3
