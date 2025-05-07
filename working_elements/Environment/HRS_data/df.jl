@@ -486,6 +486,75 @@ begin
     end
 end
 
-df_final = vcat(df_08_10,df_10_12,df_12_14,df_14_16,df_16_18,df_18_20,df_20_22)
+# df_final = vcat(df_08_10,df_10_12,df_12_14,df_14_16,df_16_18,df_18_20,df_20_22)
+
+# df_final = unique(df_final)
+
+# 2008-2006:
+begin 
+    data_pr_2006    = ReadStatTables.readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h06_man/H06PR_R.dta")
+    data_c_2006     = ReadStatTables.readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h06_man/H06C_R.dta")
+    exit_2008       = ReadStatTables.readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h08_man/X08PR_R.dta")
+
+    # Loading data:
+    begin
+        # Living:
+            # For physical health:
+            data_c_2006     = ReadStatTables.readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h06_man/H06C_R.dta")
+            data_c_2006     = DataFrame(data_c_2006)
+            # For age:
+            data_pr_2006    = ReadStatTables.readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h06_man/H06PR_R.dta")
+            data_pr_2006    = DataFrame(data_pr_2006)
+        # Dead:
+        exit_2008           = ReadStatTables.readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h08_man/X08PR_R.dta")
+        exit_2008           = DataFrame(exit_2008)
+    end
+        
+    # Defining IDs and Age:
+    begin
+        # Defining IDs:
+        ID_2006_a   = string.(data_c_2006[!,:HHID],data_c_2006[!,:PN])
+        ID_2008_d   = string.(exit_2008[!,:HHID],exit_2008[!,:PN])
+
+        # Age:
+        age_2006_a              = 2006 .- data_pr_2006[:,:KX067_R ]
+        age_of_death_2008       = 2008 .- exit_2008[!,:VZ068_R] 
+    end
+        
+    # Defining Health status: 
+    begin
+        # Living:
+        health_rate_2006_a                  = data_c_2006[!,:KC001]
+        
+        df_2008_d = DataFrame(ID = ID_2008_d,
+                                Year = fill(2008, length(ID_2008_d)), 
+                                Age = age_of_death_2008,
+                                Health = fill(8,length(ID_2008_d)), # 8 is the value for "don't know/NA" in the HRS dataset
+                                Status = zeros(length(ID_2008_d)))
+
+        df_2006_a = DataFrame(ID        = ID_2006_a,
+                                Year    = fill(2006, length(ID_2006_a)), 
+                                Age     = age_2006_a,
+                                Health  = health_rate_2006_a, 
+                                Status  = ones(length(ID_2006_a)))
+
+        # Ppl in the 2018 survey that are in exit 2020 (with health for 2018)
+        # fdf1 = filter(row -> row.ID in ID_2022_d, df_2018_a)
+        fdf1 = filter(row -> row.ID in ID_2008_d, df_2006_a)
+        fdf1
+
+        # We take the exit 2020 data, and are going to replace the Health by the previous one:
+        fdf2 = filter(row -> row.ID in fdf1.ID, df_2008_d)
+        fdf2.Health = fdf1.Health
+        fdf2
+
+        df_2008_d = fdf2
+        
+        df_06_08 = vcat(df_2006_a,df_2008_d)
+        df_06_08 = unique(df_06_08)
+    end
+end
+
+df_final = vcat(df_06_08,df_08_10,df_10_12,df_12_14,df_14_16,df_16_18,df_18_20,df_20_22)
 
 df_final = unique(df_final)

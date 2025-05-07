@@ -69,6 +69,17 @@ begin
 			   title = "Average annual temperature deviation \n from the 1950s")
 end
 
+# ╔═╡ 8141f03e-7a82-4b90-9a5d-427201b3be45
+begin 
+	Plots.gr()
+	Plots.plot(temperature.Year,
+			   temperature.av_5_annual_t,
+			   legend = false, 
+			   xaxis = "Year", 
+			   yaxis = "Temperature",
+			   title = "Average 5 years temperature deviation \n from the 1950s")
+end
+
 # ╔═╡ 2c6a9943-dbcc-44c6-8f84-7035cf920208
 md""" ## Minnesota Federal Bank Data """
 
@@ -121,23 +132,60 @@ begin
     end
 end
 
+# ╔═╡ 1a625bfe-ddc5-4fb3-b006-6b70b086559c
+md"""To get the detail of the effect of Temperature, we can plot a heatmap:"""
+
+# ╔═╡ 92ddcaa0-5105-482a-bc90-385b53270e8b
+md"""These results are counter-intuitive: temperature seems to have a slightly positive effect on health transition in some cases, but this could be driven by the effect of age and survival.
+
+However, another explanation could be due to the effect of economic growth: since the annual average of temperature is positively correlated with economic production, the isolated effect of temperature on other variables could be heavily affected by the omission of GDP.
+"""
+
+# ╔═╡ e5693cfe-19c3-4c35-a361-89a6560a7b21
+begin 
+	recent_gdp 			= gdp[gdp.Year .>= 1947, :GDP]
+	recent_temperature 	= temperature[temperature.Year .>= 1947, :av_annual_t]
+
+	Plots.scatter(recent_gdp,
+				  recent_temperature, 
+				 xaxis = "GDP",
+				 yaxis = "Temperature", 
+				 legend = false)
+end
+
+# ╔═╡ 1905c0a8-18e8-4f67-8c37-5c2daf756bb0
+md""" ## Survival 
+
+Regarding survival, the results are easier to get. Running a logistic regression to explain the living status (1 if alive, 0 if dead) on age, health, average annual temperature and GDP, we obtain similar results to the literature regarding health status influence on survival:
+"""
+
+# ╔═╡ 342da11c-cc36-4156-8d5a-e93d859e7a8c
+begin
+	DF = dropmissing!(df)
+	DF = clean_health(df,"Health")
+	
+	# DF = DF[DF[:,:Year] .!= 2014,:]
+	# DF = DF[DF[:,:Year] .!= 2016,:]
+	# DF = DF[DF[:,:Year] .!= 2018,:]
+	# DF = DF[DF[:,:Year] .!= 2020,:]
+	# DF = DF[DF[:,:Year] .!= 2022,:]
+end
+
 # ╔═╡ 2336c8fd-263f-42c2-85d4-2b5a64f11a69
 begin 
 
 	# We define some year-specific dataframes: 
 	
-	df_2022 = df[df[:,:Year] .== 2022,:]
-	# rename!(df_2022, Dict("Health" => "Health_2022"))
+	df_2022 = DF[DF[:,:Year] .== 2022,:]	
+	df_2020 = DF[DF[:,:Year] .== 2020,:]
+	df_2018 = DF[DF[:,:Year] .== 2018,:]
+	df_2016 = DF[DF[:,:Year] .== 2016,:]
+	df_2014 = DF[DF[:,:Year] .== 2014,:]
+	df_2012 = DF[DF[:,:Year] .== 2012,:]
+	df_2010 = DF[DF[:,:Year] .== 2010,:]
+	df_2008 = DF[DF[:,:Year] .== 2008,:]
+	df_2006 = DF[DF[:,:Year] .== 2006,:]
 	
-	df_2020 = df[df[:,:Year] .== 2020,:]
-	# rename!(df_2020, Dict("Health" => "Health_2020"))
-	
-	df_2018 = df[df[:,:Year] .== 2018,:]
-	# rename!(df_2018, Dict("Health" => "Health_2018"))
-	
-	df_2016 = df[df[:,:Year] .== 2016,:]
-	# rename!(df_2016, Dict("Health" => "Health_2016"))
-
 	nothing
 
 end
@@ -148,12 +196,28 @@ begin
 	df_2022_2020 = leftjoin(df_2022,df_2020, on = :ID, makeunique=true)
 	df_2020_2018 = leftjoin(df_2020,df_2018, on = :ID, makeunique=true)
 	df_2018_2016 = leftjoin(df_2018,df_2016, on = :ID, makeunique=true)
+	df_2016_2014 = leftjoin(df_2016,df_2014, on = :ID, makeunique=true)
+	df_2014_2012 = leftjoin(df_2014,df_2012, on = :ID, makeunique=true)
+	df_2012_2010 = leftjoin(df_2012,df_2010, on = :ID, makeunique=true)
+	df_2010_2008 = leftjoin(df_2010,df_2008, on = :ID, makeunique=true)
 
-	dff = vcat(df_2022_2020,df_2020_2018,df_2020_2018)
+	dff = vcat(df_2022_2020,
+			   df_2020_2018,
+			   df_2018_2016,
+				df_2016_2014, 
+				df_2014_2012,
+				df_2012_2010,
+				df_2010_2008)
+	
 	rename!(dff,Dict("Health" => "Health_t",
 					 "Health_1" => "Health_t_1",
 					"Age" => "Age_t"))
-	dff = select(dff,[:ID,:Age_t,:Health_t,:av_annual_t,:Health_t_1,:GDP])
+	dff = select(dff,[:ID,
+					  :Age_t,
+					  :Health_t,
+					  :av_annual_t,
+					  :Health_t_1,
+					  :GDP])
 
 	# We proceed to some last cleaning:
 	dff = dropmissing!(dff)
@@ -276,9 +340,6 @@ Plots.plot(P[4])
 # ╔═╡ 8a8e9034-f6be-4715-b481-2f62a554bbef
 Plots.plot(P[5])
 
-# ╔═╡ 1a625bfe-ddc5-4fb3-b006-6b70b086559c
-md"""To get the detail of the effect of Temperature, we can plot a heatmap:"""
-
 # ╔═╡ 388af98a-fec2-45e2-897a-6e818d586745
 av_annual_range
 
@@ -307,112 +368,21 @@ Plots.gr()
 		ylabel="Average annual temperature")
 end
 
-# ╔═╡ 92ddcaa0-5105-482a-bc90-385b53270e8b
-md"""These results are counter-intuitive: temperature seems to have a slightly positive effect on health transition in some cases, but this could be driven by the effect of age and survival.
-
-However, another explanation could be due to the effect of economic growth: since the annual average of temperature is positively correlated with economic production, the isolated effect of temperature on other variables could be heavily affected by the omission of GDP.
-"""
-
-# ╔═╡ e5693cfe-19c3-4c35-a361-89a6560a7b21
-begin 
-	recent_gdp 			= gdp[gdp.Year .>= 1947, :GDP]
-	recent_temperature 	= temperature[temperature.Year .>= 1947, :av_annual_t]
-
-	Plots.scatter(recent_gdp,
-				  recent_temperature, 
-				 xaxis = "GDP",
-				 yaxis = "Temperature", 
-				 legend = false)
-end
-
-# ╔═╡ 1905c0a8-18e8-4f67-8c37-5c2daf756bb0
-md""" ## Survival 
-
-Regarding survival, the results are easier to get. Running a logistic regression to explain the living status (1 if alive, 0 if dead) on age, health, average annual temperature and GDP, we obtain similar results to the literature regarding health status influence on survival:
-"""
-
-# ╔═╡ 342da11c-cc36-4156-8d5a-e93d859e7a8c
-begin
-	DF = dropmissing!(df)
-	DF = clean_health(df,"Health")
-	
-	# DF = DF[DF[:,:Year] .!= 2014,:]
-	# DF = DF[DF[:,:Year] .!= 2016,:]
-	# DF = DF[DF[:,:Year] .!= 2018,:]
-	# DF = DF[DF[:,:Year] .!= 2020,:]
-	# DF = DF[DF[:,:Year] .!= 2022,:]
-end
-
 # ╔═╡ 50251579-de6d-43f3-af36-dc459585ad22
 describe(DF)
 
-# ╔═╡ badaea58-868b-4ef0-aee8-3c4583f7b3ea
+# ╔═╡ 60194c76-1ae5-49af-8baf-0f3465c634e1
 begin 
-	Plots.gr()
-
-	# fixed_temperature = 0.616167 # Temperature deviation of 2018
-	fixed_temperature = 0.61 # Temperature deviation of 2018
-	
-	model_health_age_temperature_gdp =
-		GLM.glm(@formula(Status ~
-						 	Age +
-							Health +
-							av_annual_t + 
-							Health * av_annual_t + 
-							Age * av_annual_t +
-							# When including GDP, the solver does not converge
-							# GDP + 
-							# Age * GDP + 
-							Age * Health
-							),
-				DF, Bernoulli(), LogitLink())
-
-    Poor        =
-		DataFrame(Age = age_range,
-				  Health = fill(5,length(age_range)),
-				  av_annual_t = fill(fixed_temperature,length(age_range)),
-				  GDP = 21354.1)
-	
-    Fair        = 
-		DataFrame(Age = age_range,
-				  Health = fill(4,length(age_range)),
-				  av_annual_t = fill(fixed_temperature,length(age_range)),
-				  GDP = 21354.1)
-	
-    Good        = DataFrame(Age = age_range,
-							Health = fill(3,length(age_range)),
-							av_annual_t = fill(fixed_temperature,length(age_range)),
-							GDP = 21354.1)
-	
-    VeryGood    = DataFrame(Age = age_range,
-							Health = fill(2,length(age_range)),
-							av_annual_t = fill(fixed_temperature,length(age_range)),
-							GDP = 21354.1)
-	
-    Excellent   = DataFrame(Age = age_range,
-							Health = fill(1,length(age_range)),
-							av_annual_t = fill(fixed_temperature,length(age_range)),
-							GDP = 21354.1)
-
-    pv  = GLM.predict(model_health_age_temperature_gdp,Poor)
-    fv  = GLM.predict(model_health_age_temperature_gdp,Fair)
-    gv  = GLM.predict(model_health_age_temperature_gdp,Good)
-    vgv = GLM.predict(model_health_age_temperature_gdp,VeryGood)
-    ev  = GLM.predict(model_health_age_temperature_gdp,Excellent)
-
-    Plots.plot(pv, label = "Poor")
-    Plots.plot!(fv, label = "Fair")
-    Plots.plot!(gv, label = "Good")
-    Plots.plot!(vgv, label = "Very good")
-    Plots.plot!(ev, label = "Excellent")
-    Plots.plot!(xaxis = "Age",
-				yaxis = "Probability",
-				title = "Survival probability in function of age")
-	Plots.plot!(legend = :bottomleft)
+	#temperature_2022 = Float64.(temperature[temperature.Year .== 2022, :av_annual_t][1])
+	temperature_2020 =
+		Float64(temperature[temperature.Year .== 2020, :av_annual_t][1])
+	temperature_2018 =
+		Float64(temperature[temperature.Year .== 2018, :av_annual_t][1])
+	temperature_2016 =
+		Float64(temperature[temperature.Year .== 2016, :av_annual_t][1])
+	temperature_2014 =
+		Float64(temperature[temperature.Year .== 2014, :av_annual_t][1])
 end
-
-# ╔═╡ d7c398ec-4325-40ae-8d71-1aa306830131
-model_health_age_temperature_gdp
 
 # ╔═╡ f97b719e-8b44-472b-b1ce-57eb5303ea02
 describe(DF)
@@ -420,92 +390,10 @@ describe(DF)
 # ╔═╡ a28d672e-693f-44ba-9c38-9edf43bfff41
 md""" Now, if we want to make both variables vary: """
 
-# ╔═╡ 7e61cdcc-3764-4cb8-b426-05939fc8e966
-begin 
-	plotly()  # Use Plotly for 3D
-	
-	# Create age-temperature grid
-	# age_range2 = 1:110
-	temp_range = range(minimum(DF.av_annual_t), maximum(DF.av_annual_t), length=100)
-	#temp_range = range(-1, 1, length = 100)
-		
-	age_grid = repeat(age_range', length(temp_range), 1)
-	temp_grid = repeat(temp_range, 1, length(age_range))
-	
-	# Health categories (assuming 1=Excellent, 5=Poor)
-	health_levels = [1, 2, 3, 4, 5]  
-	health_labels = ["Excellent", "VeryGood", "Good", "Fair", "Poor"]
-	
-	# Initialize plot
-	plt = plot()
-	
-	for (health, label) in zip(health_levels, health_labels)
-	    # Predict for all age-temp combinations
-	    pred_grid = [GLM.predict(model_health_age_temperature_gdp, 
-	                  DataFrame(Age=a, Health=health, av_annual_t=t, GDP=21354.1))[1]
-	                  for t in temp_range, a in age_range]
-	    
-	    # Add surface plot
-	    surface!(plt, age_range, temp_range, pred_grid, label=label)
-	end
-	
-	# Customize plot
-	plot!(plt, 
-	    title="Survival Probability by Age and Temperature",
-	    xlabel="Age", 
-	    ylabel="Temperature",
-	    zlabel="Probability",
-	    camera=(30, 45)  # Adjust viewing angle
-	)
-end
-
 # ╔═╡ 038f2359-69ca-4227-bb12-9bec3d4a3ae5
 md""" ## Simulations
 
 If now we use the above estimated functions, we obtain: """
-
-# ╔═╡ 6c5c973f-9197-4114-9924-8e7a299b1472
-begin 
-	""" 
-	The survival function returns the probability of survival given age, current health, annual temperature, and GDP. 
-		
-		function survival(;Age::Int64,
-			Health::Int64,
-			Temperature::Float64,
-			GDP::Float64)::Float64
-	
-	"""
-	function survival(;Age::Int64, Health::Int64, Temperature::Float64, GDP::Float64)::Float64
-
-		# For reminder: 
-		# model_health_age_temperature_gdp =
-		# GLM.glm(@formula(Status ~
-		# 				 	Age +
-		# 					Health +
-		# 					av_annual_t + 
-		# 					GDP
-		# 					),
-		# 		DF, Bernoulli(), LogitLink())
-
-		data = DataFrame(Age = Age, 
-						Health = Health, 
-						av_annual_t = Temperature, 
-						GDP = GDP)
-
-		result = GLM.predict(model_health_age_temperature_gdp,data)
-
-		# result = Float64.(result)
-
-		result = result[1]
-		
-		return result
-	end
-end
-
-# ╔═╡ d7ba6c4c-0f80-453b-a893-648d80b0c9b3
-begin 
-	survival(Age = 99, Health = 3, Temperature = 0.62, GDP = 2200.0)
-end
 
 # ╔═╡ 919c1aae-4e9b-489f-9950-17d11f59555c
 begin 
@@ -547,208 +435,11 @@ begin
 		
 end
 
-# ╔═╡ 22019072-9fa5-40a3-bb22-89696e19a2d5
-begin 	
-	""" 
-	The function `population_simulation` allows for a simulation of the evolution of a population of size `N` for `T` periods, given a weather and a GDP path.
-		
-		population_simulation(;N::Int64,
-							   T::Int64,
-							   weather_history::Vector{Float64},
-							   GDP::Vector{Float64})
-	"""
-	function population_simulation(;N::Int64,
-								   T::Int64,
-								   weather_history::Vector{Float64},
-								   GDP::Vector{Float64})::NamedTuple
-
-		# Initialisation:
-		collective_age 						= []
-		collective_living_history 			= []
-		collective_health_history 			= []
-		collective_probability_history 		= []
-		
-		Threads.@threads for i in 1:N # For each individual
-			
-			# Initialisation of individual results:
-			individual_living_history 			= zeros(T)
-			individual_health_history 			= zeros(T)
-			individual_probability_history 		= zeros(T) # Setting it to 0 makes r ≠ Inf
-
-			individual_past_health 				= 1 	# Excellent health
-			cumulative_survival_prob 			= 1 	# Birth probability
-	
-			for t in 1:T # For each period 
-		    
-			    # Age : 
-			    age = t
-			    
-			    # The weather comes from the weather history
-			    weather_t = weather_history[t]
-			    
-			    # Health status :
-					# probability of being in good health: 
-					individual_pgh = health(Age 		= age, 
-											Health_t_1 	= individual_past_health,
-											Temperature = weather_t)::Vector{Float64}
-				
-					# Health status draw:
-					individual_health_t = 	
-						sample(1:5,Weights(individual_pgh))
-
-					# We add it to the history
-					individual_health_history[t] = individual_health_t
-					# The current health becomes the past one for next period
-					individual_past_health = individual_health_t
-	
-			    # Living status : 
-				
-					annual_survival = survival(Age 			= age,
-											 Health 		= individual_health_t, 
-											 Temperature 	= weather_t,
-											 GDP 			= GDP[t])::Float64
-				
-            		cumulative_survival_prob = 
-						cumulative_survival_prob * annual_survival
-
-					individual_probability_history[t] = cumulative_survival_prob
-				
-				    # Realisation : 
-					individual_living_status = 
-						rand(Binomial(1,cumulative_survival_prob))#*individual_pd_2))
-
-				# Possible alternative formulation: 
-					# if rand() > cumulative_survival_prob
-					# 	individual_living_status = 0
-					# else
-					# 	individual_living_status = 1
-					# end
-
-					# Into its history :
-					individual_living_history[t] = individual_living_status
-
-				# When death comes : 
-				if individual_living_status == 0
-					push!(collective_age, age)
-				    push!(collective_living_history, individual_living_history)
-					push!(collective_health_history, individual_health_history)
-					push!(collective_probability_history, individual_probability_history)
-					break
-				end
-				
-			end # End of loop over periods
-			
-		end # End of loop over individuals
-
-		results = (;weather_history,
-				   collective_age,
-				   collective_living_history,
-				   collective_health_history, 
-				  collective_probability_history)
-		println("Life expectancy in this population: ", mean(collective_age))
-		
-		return(results)
-	end
-end 
-
-# ╔═╡ 410fe8b7-79a4-44b6-abfa-42f8c0e0aa60
-begin 
-	println("Age 80 survival: ", survival(Age=100, Health=3, Temperature=2.0, GDP=21354.0))
-	println("Age 90 survival: ", survival(Age=100, Health=3, Temperature=1.0, GDP=21354.0))
-	println("Age 100 survival: ", survival(Age=100, Health=3, Temperature=0.61, GDP=21354.0))
-end
-
-# ╔═╡ ffe1f6bb-e4b6-4f61-9468-2009244b607f
-begin 
-	periods 			= 110
-	fixed_temperature_1 = 0.61 # 2018
-	fixed_temperature_2 = 0.71 # 0.10 increase from 2018
-	
-	population_1 = population_simulation(N 	= 1_000,
-						  T 				= periods, 
-						  weather_history 	= fill(fixed_temperature_1,periods),
-						  GDP 				= fill(gdp[gdp.Year .== 2020,:GDP][1], periods))
-	population_2 = population_simulation(N 	= 1_000,
-						  T 				= periods, 
-						  weather_history 	= fill(fixed_temperature_2,periods),
-						  GDP 				= fill(gdp[gdp.Year .== 2020,:GDP][1], periods))
-end
-
 # ╔═╡ 520abb10-18f1-4747-8d72-b5749834d713
 md""" The life expectancy is coherent with the descriptive statistics of the data. Also, it's important to remember that the life expenctancy of an individual in 1950 (average year minus average age) was 69 years old. This discrepancy with the current life expectancy (77 years old) is due to the year of birth of the individuals observed by the HRS data. """
 
 # ╔═╡ b3dd0d43-dd39-4b2a-9f16-7ecb1f6646c9
 Random.seed!(1234);
-
-# ╔═╡ abda697c-044b-4b42-b386-aab9226b755a
-begin 
-	Plots.gr()
-	
-	cls1 	= []
-	for i in 1:length(population_1[:collective_living_history])
-		tmp = population_1[:collective_living_history][i]
-		push!(cls1,tmp)
-	end
-
-	Plot1 	= Plots.plot(1:periods,sum(cls1[:, 1]),
-						 # legend = false, 
-						 label = "Average temperature = $fixed_temperature_1")
-
-	cls2 	= []
-	for i in 1:length(population_2[:collective_living_history])
-		tmp = population_2[:collective_living_history][i]
-		push!(cls2,tmp)
-	end
-
-	Plots.plot!(1:periods, sum(cls2[:, 1]),
-						 # legend = false,
-						 label = "Average temperature = $fixed_temperature_2")
-	Plots.plot!(xaxis = "Time",
-		yaxis = "Population",
-		title = "Evolution of population: constant temperatures")
-	
-end 
-
-# ╔═╡ a12ccacc-e6be-44bf-a46f-d513a5d3376d
-begin 
-	Plots.gr()
-
-	temperature_path_1 = collect(range(start = 0.61, stop = 2.00, length = periods))
-	temperature_path_2 = Normal(0.61, 0.1)
-	
-	population_3 = population_simulation(N 	= 1_000,
-						  T 				= periods, 
-						  weather_history 	= temperature_path_1,
-						  GDP 				= fill(21354.0, periods))
-	population_4 = population_simulation(N 	= 1_000,
-						  T 				= periods, 
-						  weather_history 	= rand(temperature_path_2,100),
-						  GDP 				= fill(21354.0, periods))
-	
-	cls3 	= []
-	for i in 1:length(population_3[:collective_living_history])
-		tmp = population_3[:collective_living_history][i]
-		push!(cls3,tmp)
-	end
-
-	Plot2 	= Plots.plot(1:periods,sum(cls3[:, 1]),
-						 # legend = false, 
-						 label = "From 0.61 to 2 degrees")
-
-	cls4 	= []
-	for i in 1:length(population_4[:collective_living_history])
-		tmp = population_4[:collective_living_history][i]
-		push!(cls4,tmp)
-	end
-
-	Plots.plot!(1:periods, sum(cls4[:, 1]),
-						 # legend = false,
-						 label = "Normal temperature around 0.61")
-	Plots.plot!(xaxis = "Time",
-		yaxis = "Population",
-		title = "Evolution of population: constant temperatures")
-
-end
 
 # ╔═╡ 1dabd52f-2e78-40a1-b8dc-d213fdf673a2
 md""" # Maximisation problem 
@@ -782,13 +473,10 @@ With:
 -  $s_{t}$ the savings available at the beginning of period $t$
 -  $r_{t}$ the interest rate at period $t$
 
-Also, let us define the non-borrowing constraint as: 
+Also, let us define the borrowing constraint as: 
 
-$$s_{t}\geq0, \forall t$$
+$$s_{t}\geq \underline{s}, \forall t$$
 """
-
-
-# ╔═╡ 95500699-4c1f-4672-b33e-5cbe55f481ff
 
 
 # ╔═╡ e29e2ee8-1e85-4236-96ca-47962898e105
@@ -843,72 +531,6 @@ budget_surplus(c = 10.00,
 			   s = 1.00,
 			   z = 1.00,
 			   r = (1-0.8)/0.8)
-
-# ╔═╡ e3c5099c-063c-4809-943f-557cf5269691
-begin 
-	"""
-	The function `individual_probability_simulation` allows to simulate survival probability without actually drawing a survival status. It is used in the Numerical methods solving process.
-
-		individual_probability_simulation(;T::Integer,
-								   temperature_path::Vector{Float64},
-								   GDP_path::Vector{Float64})::Vector{Float64}
-
-	This is useful for the computation of the interest rate at each period.
-	
-	"""
-	function individual_probability_simulation(;T::Integer,
-								   temperature_path::Vector{Float64},
-								   GDP_path::Vector{Float64})::Vector{Float64}
-		
-		# Initialization: 
-		probability_history = Vector{Float64}(undef,T)
-
-		individual_past_health 				= 1 	# Excellent health
-		cumulative_survival_prob 			= 1 	# Birth probability
-		
-		for t in 1:T
-			# Age : 
-			age = t
-			    
-			# The weather comes from the weather history
-			weather_t = temperature_path[t]
-			    
-			# Health status :
-				# probability of being in good health: 
-				individual_pgh = health(Age 		= age, 
-										Health_t_1 	= individual_past_health,
-										Temperature = weather_t)::Vector{Float64}
-			
-				# Health status draw:
-				individual_health_t = 	
-					sample(1:5,Weights(individual_pgh))
-
-				# We add it to the history
-				# individual_health_history[t] = individual_health_t
-				# The current health becomes the past one for next period
-				individual_past_health = individual_health_t
-
-			# Living status : 
-			
-			annual_survival = survival(Age 			= age,
-									 Health 		= individual_health_t, 
-									 Temperature 	= weather_t,
-									 GDP 			= GDP_path[t])::Float64
-		
-			cumulative_survival_prob = 
-				cumulative_survival_prob * annual_survival
-
-			probability_history[t] = cumulative_survival_prob
-		end
-		return probability_history
-	end
-end
-
-# ╔═╡ ad02c350-0b75-49d7-8aad-253dd61e0062
-individual_probability_simulation(T = 100,
-					  temperature_path = 0.61 .* ones(100),
-					  GDP_path = fill(gdp[gdp.Year .== 2020, :GDP][1],100))
-
 
 # ╔═╡ b55356ef-c4d8-4533-b90a-d2ba2adbbfc3
 begin 
@@ -1721,59 +1343,6 @@ begin
 	typical_productivity 	= [exp(0.1*x - 0.001*x^2) for x in 1:nperiods]
 end
 
-# ╔═╡ cc131fbc-a2d2-42af-8160-b22e32aac512
-begin 
-	s_range_2 			= -1.00:0.1:2.00
-	sprime_range_2 		= s_range_2
-	growing_temperature = collect(range(start = 0.61,
-										stop = 1.00,
-										length = nperiods))
-	Stable_GDP 			= gdp[gdp.Year .== 2020, :GDP][1]
-
-	survival_probability =
-		individual_probability_simulation(T = nperiods, 
-										  temperature_path = growing_temperature,
-										  GDP_path = fill(Stable_GDP,nperiods))
-
-	dynamic_r = ((1 .- survival_probability) ./ (survival_probability))
-
-	small_r = (fill(0.2,nperiods))
-end
-
-# ╔═╡ f65052f6-d532-426e-b4cc-a755d9955ae4
-begin 
-	@time benchmark = backwards(s_range			= s_range_2,
-							sprime_range		= s_range_2,
-							consumption_range 	= 0:0.01:consumption_max,
-							# labor_range			= 0.00:0.05:2,
-							nperiods 			= nperiods,
-							r 					= small_r,
-							z 					= ones(nperiods),
-							w 					= growing_temperature,
-							proba_survival 		= survival_probability,
-							h 					= 2 .* ones(nperiods),
-							ρ 					= 1.50,
-							φ 					= 2.00,
-							β 					= 0.96)
-end
-
-# ╔═╡ 25b0c3e1-eca9-4e09-9d06-e302f517e485
-begin 
-	@time numerical = backwards_numerical(s_range = s_range_2,
-							sprime_range		= s_range_2,
-							consumption_range 	= 0:0.01:consumption_max,
-							labor_range			= 0.00:0.05:2,
-							nperiods 			= nperiods,
-							r 					= small_r,
-							z 					= ones(nperiods),
-							w 					= growing_temperature,
-							proba_survival 		= survival_probability,
-							h 					= 2 .* ones(nperiods),
-							ρ 					= 1.50,
-							φ 					= 2.00,
-							β 					= 0.96)
-end
-
 # ╔═╡ 96445695-d923-44bd-8c68-d89fd974dc13
 begin 
 	"""
@@ -1799,6 +1368,482 @@ common_span = 0.99
 
 # ╔═╡ d523f5d5-113b-44a0-a631-b05acc1a408a
 md""" ### Value function"""
+
+# ╔═╡ 47fab280-4f42-412d-ad35-adf8fa2e988f
+md""" ### Consumption"""
+
+# ╔═╡ aef9601d-f05e-4995-937f-b1b9cb140e73
+md""" ### Savings"""
+
+# ╔═╡ 5cae56c7-c5ba-447b-a9ea-ef7f1ad99dfe
+md""" ### Budget clearing
+
+Finally, we can control that the budget constraint is binding. The following value should be close to 0. """
+
+
+# ╔═╡ 5ee88736-733b-480a-b9e2-929408cef55f
+md""" ## Comparison with analytical results 
+
+From the maximization program, we have: 
+
+$$c_{t} = \left[\frac{z_{t}}{\xi_{t}\cdot l_{t}^{\varphi}}\right]^{-\frac{1}{\rho}}$$
+
+"""
+
+# ╔═╡ 383d864d-310a-4e98-be68-48801a1c3a9d
+begin
+		ρ = 1.50::Float64 
+		φ = 2.00::Float64
+end
+
+# ╔═╡ b9259bf1-e248-4ba7-bd9c-ae6094e368dd
+md"""
+The following could be useful to identify the lagrangien multiplicator:
+"""
+
+# ╔═╡ c3acbb4e-1330-4c7d-9875-fc89d8a35453
+md""" # Conclusion: Aggregate effect of health 
+
+To assess the welfare loss through the change in health status induced by climate change, we could now compare two different scenarios: One with a stabilized temperature distribution around the annual averages of the last years, and one in which the rise in annual average temperature continues.
+
+To do so, one could consider the whole effect of temperature deviation: 
+
+- On survival probability, 
+- On health transition, 
+- On productivity, 
+- On work disutility, 
+- On GDP.
+
+The comparison of outputs with two different can partially be done analytically, but requires necessarily a numerical simulation parts.
+
+Another approach would be a comparison through individual simulations, to assess the life-time cost of climate change, taking into account the effect of temperature on health, and survival. This approach would be less holistic, but more tractable. 
+
+"""
+
+# ╔═╡ 6502e5f8-56b4-4f57-8851-91b826c45bbf
+begin 
+	GDP_2010 = gdp[gdp.Year .== 2010, :GDP][1]
+	GDP_2012 = gdp[gdp.Year .== 2012, :GDP][1]
+	GDP_2014 = gdp[gdp.Year .== 2014, :GDP][1]
+	GDP_2016 = gdp[gdp.Year .== 2016, :GDP][1]
+	GDP_2018 = gdp[gdp.Year .== 2018, :GDP][1]
+	GDP_2020 = gdp[gdp.Year .== 2020, :GDP][1]
+	GDP_2022 = gdp[gdp.Year .== 2022, :GDP][1]
+end
+
+# ╔═╡ badaea58-868b-4ef0-aee8-3c4583f7b3ea
+begin 
+	Plots.gr()
+
+	# fixed_temperature = 0.616167 # Temperature deviation of 2018
+	# fixed_temperature = 0.61 # Temperature deviation of 2018
+	
+	model_health_age_temperature_gdp =
+		GLM.glm(@formula(Status ~
+						 	Age +
+							Health +
+							av_annual_t  
+							# Age * Health * av_annual_t
+							# Health * av_annual_t +
+							# Age * av_annual_t
+							# When including GDP, the solver does not converge
+							# log(GDP) + 
+							# Age * log(GDP) + 
+							# Year +
+							# Year * Age + 
+							# Age * Health
+						),
+				DF, Bernoulli(), LogitLink())
+
+    Poor        =
+		DataFrame(Age = age_range,
+				  Health = fill(5,length(age_range)),
+				  av_annual_t = fill(temperature_2018,length(age_range)),
+				  GDP = fill(GDP_2018, length(age_range)),
+				  Year = fill(2018,length(age_range)))
+	
+    Fair        = 
+		DataFrame(Age = age_range,
+				  Health = fill(4,length(age_range)),
+				  av_annual_t = fill(temperature_2018,length(age_range)),
+				  GDP = fill(GDP_2018,length(age_range)),
+				  Year = fill(2018,length(age_range)))
+	
+    Good        = DataFrame(Age = age_range,
+							Health = fill(3,length(age_range)),
+							av_annual_t = fill(temperature_2018,length(age_range)),
+							GDP = GDP_2018,
+							Year = 2018)
+	
+    VeryGood    = DataFrame(Age = age_range,
+							Health = fill(2,length(age_range)),
+							av_annual_t = fill(temperature_2018,length(age_range)),
+							GDP = GDP_2018,
+						   Year = 2018)
+	
+    Excellent   = DataFrame(Age = age_range,
+	 						Health = fill(1,length(age_range)),
+	 						av_annual_t = fill(temperature_2018,length(age_range)),
+	 						GDP = GDP_2018,
+	 					   Year = 2018)
+	 
+    pv  = GLM.predict(model_health_age_temperature_gdp,Poor)
+    fv  = GLM.predict(model_health_age_temperature_gdp,Fair)
+    gv  = GLM.predict(model_health_age_temperature_gdp,Good)
+    vgv = GLM.predict(model_health_age_temperature_gdp,VeryGood)
+    ev  = GLM.predict(model_health_age_temperature_gdp,Excellent)
+
+    Plots.plot(pv, label = "Poor")
+    Plots.plot!(fv, label = "Fair")
+    Plots.plot!(gv, label = "Good")
+    Plots.plot!(vgv, label = "Very good")
+    Plots.plot!(ev, label = "Excellent")
+    Plots.plot!(xaxis = "Age",
+				yaxis = "Probability",
+				title = "Survival probability as a function of age")
+	Plots.plot!(legend = :bottomleft)
+end
+
+# ╔═╡ d7c398ec-4325-40ae-8d71-1aa306830131
+model_health_age_temperature_gdp
+
+# ╔═╡ 6c5c973f-9197-4114-9924-8e7a299b1472
+begin 
+	""" 
+	The survival function returns the probability of survival given age, current health, annual temperature, and GDP. 
+		
+		function survival(;Age::Int64,
+			Health::Int64,
+			Temperature::Float64,
+			GDP::Float64)::Float64
+	
+	"""
+	function survival(;Age::Int64,
+					  Health::Int64,
+					  Temperature::Float64,
+					  GDP::Float64)::Float64
+
+		# For reminder: 
+		# model_health_age_temperature_gdp =
+		# GLM.glm(@formula(Status ~
+		# 				 	Age +
+		# 					Health +
+		# 					av_annual_t + 
+		# 					GDP
+		# 					),
+		# 		DF, Bernoulli(), LogitLink())
+
+		data = DataFrame(Age = Age, 
+						Health = Health, 
+						av_annual_t = Temperature, 
+						GDP = GDP)
+
+		result = GLM.predict(model_health_age_temperature_gdp,data)
+
+		# result = Float64.(result)
+
+		result = result[1]
+		
+		return result
+	end
+end
+
+# ╔═╡ d7ba6c4c-0f80-453b-a893-648d80b0c9b3
+begin 
+	survival(Age = 99, Health = 3, Temperature = 0.62, GDP = 2200.0)
+end
+
+# ╔═╡ 22019072-9fa5-40a3-bb22-89696e19a2d5
+begin 	
+	""" 
+	The function `population_simulation` allows for a simulation of the evolution of a population of size `N` for `T` periods, given a weather and a GDP path.
+		
+		population_simulation(;N::Int64,
+							   T::Int64,
+							   weather_history::Vector{Float64},
+							   GDP::Vector{Float64})
+	"""
+	function population_simulation(;N::Int64,
+								   T::Int64,
+								   weather_history::Vector{Float64},
+								   GDP::Vector{Float64})::NamedTuple
+
+		# Initialisation:
+		collective_age 						= []
+		collective_living_history 			= []
+		collective_health_history 			= []
+		collective_probability_history 		= []
+		
+		Threads.@threads for i in 1:N # For each individual
+			
+			# Initialisation of individual results:
+			individual_living_history 			= zeros(T)
+			individual_health_history 			= zeros(T)
+			individual_probability_history 		= zeros(T) # Setting it to 0 makes r ≠ Inf
+
+			individual_past_health 				= 1 	# Excellent health
+			cumulative_survival_prob 			= 1 	# Birth probability
+	
+			for t in 1:T # For each period 
+		    
+			    # Age : 
+			    age = t
+			    
+			    # The weather comes from the weather history
+			    weather_t = weather_history[t]
+			    
+			    # Health status :
+					# probability of being in good health: 
+					individual_pgh = health(Age 		= age, 
+											Health_t_1 	= individual_past_health,
+											Temperature = weather_t)::Vector{Float64}
+				
+					# Health status draw:
+					individual_health_t = 	
+						sample(1:5,Weights(individual_pgh))
+
+					# We add it to the history
+					individual_health_history[t] = individual_health_t
+					# The current health becomes the past one for next period
+					individual_past_health = individual_health_t
+	
+			    # Living status : 
+				
+					annual_survival = survival(Age 			= age,
+											 Health 		= individual_health_t, 
+											 Temperature 	= weather_t,
+											 GDP 			= GDP[t])::Float64
+				
+            		cumulative_survival_prob = 
+						cumulative_survival_prob * annual_survival
+
+					individual_probability_history[t] = cumulative_survival_prob
+				
+				    # Realisation : 
+					individual_living_status = 
+						rand(Binomial(1,cumulative_survival_prob))#*individual_pd_2))
+
+				# Possible alternative formulation: 
+					# if rand() > cumulative_survival_prob
+					# 	individual_living_status = 0
+					# else
+					# 	individual_living_status = 1
+					# end
+
+					# Into its history :
+					individual_living_history[t] = individual_living_status
+
+				# When death comes : 
+				if individual_living_status == 0
+					push!(collective_age, age)
+				    push!(collective_living_history, individual_living_history)
+					push!(collective_health_history, individual_health_history)
+					push!(collective_probability_history, individual_probability_history)
+					break
+				end
+				
+			end # End of loop over periods
+			
+		end # End of loop over individuals
+
+		results = (;weather_history,
+				   collective_age,
+				   collective_living_history,
+				   collective_health_history, 
+				  collective_probability_history)
+		println("Life expectancy in this population: ", mean(collective_age))
+		
+		return(results)
+	end
+end 
+
+# ╔═╡ ffe1f6bb-e4b6-4f61-9468-2009244b607f
+begin 
+	periods 			= 110
+	fixed_temperature_1 = 0.61 # 2018
+	fixed_temperature_2 = 0.71 # 0.10 increase from 2018
+	
+	population_1 = population_simulation(N 	= 1_000,
+						  T 				= periods, 
+						  weather_history 	= fill(fixed_temperature_1,periods),
+						  GDP 				= fill(gdp[gdp.Year .== 2020,:GDP][1], periods))
+	population_2 = population_simulation(N 	= 1_000,
+						  T 				= periods, 
+						  weather_history 	= fill(fixed_temperature_2,periods),
+						  GDP 				= fill(gdp[gdp.Year .== 2020,:GDP][1], periods))
+	
+end
+
+# ╔═╡ abda697c-044b-4b42-b386-aab9226b755a
+begin 
+	Plots.gr()
+	
+	cls1 	= []
+	for i in 1:length(population_1[:collective_living_history])
+		tmp = population_1[:collective_living_history][i]
+		push!(cls1,tmp)
+	end
+
+	Plot1 	= Plots.plot(1:periods,sum(cls1[:, 1]),
+						 # legend = false, 
+						 label = "Average temperature = $fixed_temperature_1")
+
+	cls2 	= []
+	for i in 1:length(population_2[:collective_living_history])
+		tmp = population_2[:collective_living_history][i]
+		push!(cls2,tmp)
+	end
+
+	Plots.plot!(1:periods, sum(cls2[:, 1]),
+						 # legend = false,
+						 label = "Average temperature = $fixed_temperature_2")
+	Plots.plot!(xaxis = "Time",
+		yaxis = "Population",
+		title = "Evolution of population: constant temperatures")
+	
+end 
+
+# ╔═╡ 410fe8b7-79a4-44b6-abfa-42f8c0e0aa60
+begin 
+	println("Age 80 survival: ", survival(Age=100, Health=3, Temperature=2.0, GDP=21354.0))
+	println("Age 90 survival: ", survival(Age=100, Health=3, Temperature=1.0, GDP=21354.0))
+	println("Age 100 survival: ", survival(Age=100, Health=3, Temperature=0.61, GDP=21354.0))
+end
+
+# ╔═╡ e3c5099c-063c-4809-943f-557cf5269691
+begin 
+	"""
+	The function `individual_probability_simulation` allows to simulate survival probability without actually drawing a survival status. It is used in the Numerical methods solving process.
+
+		individual_probability_simulation(;T::Integer,
+								   temperature_path::Vector{Float64},
+								   GDP_path::Vector{Float64})::Vector{Float64}
+
+	This is useful for the computation of the interest rate at each period.
+	
+	"""
+	function individual_probability_simulation(;T::Integer,
+								   temperature_path::Vector{Float64},
+								   GDP_path::Vector{Float64})
+		
+		# Initialization: 
+		probability_history = Vector{Float64}(undef,T)
+		health_history 		= Vector{Float64}(undef,T)
+
+		individual_past_health 				= 1 	# Excellent health
+		cumulative_survival_prob 			= 1 	# Birth probability
+		
+		for t in 1:T
+			# Age : 
+			age = t
+			    
+			# The weather comes from the weather history
+			weather_t = temperature_path[t]
+			    
+			# Health status :
+				# probability of being in good health: 
+				individual_pgh = health(Age 		= age, 
+										Health_t_1 	= individual_past_health,
+										Temperature = weather_t)::Vector{Float64}
+			
+				# Health status draw:
+				individual_health_t = 	
+					sample(1:5,Weights(individual_pgh))
+
+				# We add it to the history
+				# individual_health_history[t] = individual_health_t
+				# The current health becomes the past one for next period
+				individual_past_health = individual_health_t
+				health_history[t] = individual_past_health
+
+			# Living status : 
+			
+			annual_survival = survival(Age 			= age,
+									 Health 		= individual_health_t, 
+									 Temperature 	= weather_t,
+									 GDP 			= GDP_path[t])::Float64
+		
+			cumulative_survival_prob = 
+				cumulative_survival_prob * annual_survival
+
+			probability_history[t] = cumulative_survival_prob
+		end
+		return (;probability_history,health_history)
+	end
+end
+
+# ╔═╡ ad02c350-0b75-49d7-8aad-253dd61e0062
+individual_probability_simulation(T = 100,
+					  temperature_path = 0.61 .* ones(100),
+					  GDP_path = fill(gdp[gdp.Year .== 2020, :GDP][1],100))
+
+# ╔═╡ cc131fbc-a2d2-42af-8160-b22e32aac512
+begin 
+	s_range_2 			= -1.00:0.1:2.00
+	sprime_range_2 		= s_range_2
+	growing_temperature = collect(range(start = 0.61,
+										stop = 1.00,
+										length = nperiods))
+	Stable_GDP 			= gdp[gdp.Year .== 2020, :GDP][1]
+
+	survival_probability =
+		individual_probability_simulation(T = nperiods, 
+										  temperature_path = growing_temperature,
+										  GDP_path = fill(Stable_GDP,nperiods))
+
+	dynamic_r = ((1 .- survival_probability[:probability_history]) ./ (survival_probability[:probability_history]))
+
+	small_r = (fill(0.2,nperiods))
+	
+end
+
+# ╔═╡ 0c94843d-2572-4713-bbaf-44952f398e73
+Plots.plot(1:nperiods, 
+		   survival_probability[1],
+		  xaxis = "Year", 
+		  yaxis = "Probability", 
+		  legend = false)
+
+# ╔═╡ a98ee210-bc95-4bbc-ac68-77724de41d62
+Plots.plot(1:nperiods, 
+		   survival_probability[2],
+		  xaxis = "Year", 
+		  yaxis = "Health state",
+		  legend = false)
+
+# ╔═╡ f65052f6-d532-426e-b4cc-a755d9955ae4
+begin 
+	@time benchmark = backwards(s_range			= s_range_2,
+							sprime_range		= s_range_2,
+							consumption_range 	= 0:0.01:consumption_max,
+							# labor_range			= 0.00:0.05:2,
+							nperiods 			= nperiods,
+							r 					= small_r,
+							z 					= 1 ./ survival_probability[2],
+							w 					= growing_temperature,
+							proba_survival 		= survival_probability[1],
+							h 					= 2 .* ones(nperiods),
+							ρ 					= 1.50,
+							φ 					= 2.00,
+							β 					= 0.96)
+end
+
+# ╔═╡ 25b0c3e1-eca9-4e09-9d06-e302f517e485
+begin 
+	@time numerical = backwards_numerical(s_range = s_range_2,
+							sprime_range		= s_range_2,
+							consumption_range 	= 0:0.01:consumption_max,
+							labor_range			= 0.00:0.05:2,
+							nperiods 			= nperiods,
+							r 					= small_r,
+							z 					= 1 ./ survival_probability[2],
+							w 					= growing_temperature,
+							proba_survival 		= survival_probability[1],
+							h 					= 2 .* ones(nperiods),
+							ρ 					= 1.50,
+							φ 					= 2.00,
+							β 					= 0.96)
+end
 
 # ╔═╡ f5052cbb-d54f-4b74-a57d-959578a989f6
 begin 
@@ -1832,9 +1877,6 @@ begin
 	Plots.plot(plot_Vstar_approximation,plot_Vstar_numerical)
 	
 end
-
-# ╔═╡ 47fab280-4f42-412d-ad35-adf8fa2e988f
-md""" ### Consumption"""
 
 # ╔═╡ 0a0cb7c1-99ac-41db-8061-480090fd44f6
 begin 
@@ -1902,9 +1944,6 @@ begin
 	Plots.plot(consumption_1_approximation,consumption_1_numerical)
 end
 
-# ╔═╡ aef9601d-f05e-4995-937f-b1b9cb140e73
-md""" ### Savings"""
-
 # ╔═╡ 5e5cb6db-def1-4ac0-9fb7-51584d91970b
 begin 
 	plotly()
@@ -1965,12 +2004,6 @@ begin
 	Plots.plot(savings_2_approximation,savings_2_numerical)
 end
 
-# ╔═╡ 5cae56c7-c5ba-447b-a9ea-ef7f1ad99dfe
-md""" ### Budget clearing
-
-Finally, we can control that the budget constraint is binding. The following value should be close to 0. """
-
-
 # ╔═╡ 5508a281-254d-4d67-ab3d-ad32b2ff67f3
 begin 
 	plotly()
@@ -2025,21 +2058,6 @@ begin
 	Plots.plot(budget_clearing_1_approximation,budget_clearing_1_numerical)
 end
 
-# ╔═╡ 5ee88736-733b-480a-b9e2-929408cef55f
-md""" ## Comparison with analytical results 
-
-From the maximization program, we have: 
-
-$$c_{t} = \left[\frac{z_{t}}{\xi_{t}\cdot l_{t}^{\varphi}}\right]^{-\frac{1}{\rho}}$$
-
-"""
-
-# ╔═╡ 383d864d-310a-4e98-be68-48801a1c3a9d
-begin
-		ρ = 1.50::Float64 
-		φ = 2.00::Float64
-end
-
 # ╔═╡ a99f953d-2df4-4f30-9ca4-d3302f56571f
 begin 
 	plotly()
@@ -2067,11 +2085,6 @@ begin
 
 	Plots.plot(plot_l_star)
 end
-
-# ╔═╡ b9259bf1-e248-4ba7-bd9c-ae6094e368dd
-md"""
-The following could be useful to identify the lagrangien multiplicator:
-"""
 
 # ╔═╡ 46ff7619-926c-445d-abf5-7bad5878169f
 begin 
@@ -2101,7 +2114,11 @@ begin
 	c_FOC2 = Array{Float64}(undef,length(c2))
 	
 	c_FOC2 = 
-		(β * survival_probability[1] .* (c2 .^ (-φ)) .* 1 .* (1+dynamic_r[2])) .^ (-1/ρ)
+		(β *
+			survival_probability[1][1] .*
+			(c2 .^ (-ρ)) .*
+			survival_probability[2][1] .*
+			(1+small_r[2])) .^ (-1/ρ)
 
 	Plots.plot!(s_range_2,
 				smoothing(c_FOC2,common_span),
@@ -2111,25 +2128,6 @@ begin
 				smoothing(c2,common_span),
 				label = "Model - period 2")
 end
-
-# ╔═╡ c3acbb4e-1330-4c7d-9875-fc89d8a35453
-md""" # Conclusion: Aggregate effect of health 
-
-To assess the welfare loss through the change in health status induced by climate change, we could now compare two different scenarios: One with a stabilized temperature distribution around the annual averages of the last years, and one in which the rise in annual average temperature continues.
-
-To do so, one could consider the whole effect of temperature deviation: 
-
-- On survival probability, 
-- On health transition, 
-- On productivity, 
-- On work disutility, 
-- On GDP.
-
-The comparison of outputs with two different can partially be done analytically, but requires necessarily a numerical simulation parts.
-
-Another approach would be a comparison through individual simulations, to assess the life-time cost of climate change, taking into account the effect of temperature on health, and survival. This approach would be less holistic, but more tractable. 
-
-"""
 
 # ╔═╡ 4258e19c-4277-428a-9164-3d8615520ad0
 begin 
@@ -2163,20 +2161,107 @@ begin
 		survival_probabilities =
 			individual_probability_simulation(T = nperiods,
 											  temperature_path = collect(temperature_path),
-											  GDP_path = collect(GDP_path))
+											  GDP_path = collect(GDP_path))[:probability_history]
 		return survival_probabilities
 	end
 end
 
-# ╔═╡ 6502e5f8-56b4-4f57-8851-91b826c45bbf
+# ╔═╡ 7e61cdcc-3764-4cb8-b426-05939fc8e966
 begin 
-	GDP_2010 = gdp[gdp.Year .== 2010, :GDP][1]
-	GDP_2012 = gdp[gdp.Year .== 2012, :GDP][1]
-	GDP_2014 = gdp[gdp.Year .== 2014, :GDP][1]
-	GDP_2016 = gdp[gdp.Year .== 2016, :GDP][1]
-	GDP_2018 = gdp[gdp.Year .== 2018, :GDP][1]
-	GDP_2020 = gdp[gdp.Year .== 2020, :GDP][1]
-	GDP_2022 = gdp[gdp.Year .== 2022, :GDP][1]
+	plotly()  # Use Plotly for 3D
+	
+	# Create age-temperature grid
+	# age_range2 = 1:110
+	temp_range = range(minimum(DF.av_annual_t), maximum(DF.av_annual_t), length=100)
+	#temp_range = range(-1, 1, length = 100)
+		
+	age_grid = repeat(age_range', length(temp_range), 1)
+	temp_grid = repeat(temp_range, 1, length(age_range))
+	
+	# Health categories (assuming 1=Excellent, 5=Poor)
+	health_levels = [1, 2, 3, 4, 5]  
+	health_labels = ["Excellent", "VeryGood", "Good", "Fair", "Poor"]
+	
+	# Initialize plot
+	plt = plot()
+	
+	for (health, label) in zip(health_levels, health_labels)
+	    # Predict for all age-temp combinations
+	    pred_grid = [GLM.predict(model_health_age_temperature_gdp, 
+	                  DataFrame(Age=a,
+								Health=health,
+								av_annual_t=t,
+								GDP=GDP_2018,
+							   Year = 2018))[1]
+	                  for t in temp_range, a in age_range]
+	    
+	    # Add surface plot
+	    surface!(plt, age_range, temp_range, pred_grid, label=label)
+	end
+	
+	# Customize plot
+	plot!(plt, 
+	    title="Survival Probability by Age and Temperature",
+	    xlabel="Age", 
+	    ylabel="Temperature",
+	    zlabel="Probability",
+	    camera=(30, 45)  # Adjust viewing angle
+	)
+end
+
+# ╔═╡ a12ccacc-e6be-44bf-a46f-d513a5d3376d
+begin 
+	Plots.gr()
+
+	temperature_path_1 = collect(range(start = 0.61, stop = 2.00, length = periods))
+	temperature_path_2 = Normal(0.61, 0.1)
+	
+	population_3 = population_simulation(N 	= 1_000,
+						  T 				= periods, 
+						  weather_history 	= temperature_path_1,
+						  GDP 				= fill(GDP_2022, periods))
+	population_4 = population_simulation(N 	= 1_000,
+						  T 				= periods, 
+						  weather_history 	= rand(temperature_path_2,100),
+						  GDP 				= fill(GDP_2022, periods))
+	population_5 = population_simulation(N 	= 1_000,
+						  T 				= periods, 
+						  weather_history 	= fill(0.01,periods),
+						  GDP 				= fill(GDP_2022, periods))
+	cls3 	= []
+	for i in 1:length(population_3[:collective_living_history])
+		tmp = population_3[:collective_living_history][i]
+		push!(cls3,tmp)
+	end
+
+	Plot2 	= Plots.plot(1:periods,sum(cls3[:, 1]),
+						 # legend = false, 
+						 label = "From 0.61 to 2 degrees")
+
+	cls4 	= []
+	for i in 1:length(population_4[:collective_living_history])
+		tmp = population_4[:collective_living_history][i]
+		push!(cls4,tmp)
+	end
+
+	Plots.plot!(1:periods, sum(cls4[:, 1]),
+						 # legend = false,
+						 label = "Normal temperature around 0.61")
+	
+	cls5 	= []
+	for i in 1:length(population_5[:collective_living_history])
+		tmp = population_5[:collective_living_history][i]
+		push!(cls5,tmp)
+	end
+
+	Plots.plot!(1:periods, sum(cls5[:, 1]),
+						 # legend = false,
+						 label = "Fixed 0.01")
+	
+	Plots.plot!(xaxis = "Time",
+		yaxis = "Population",
+		title = "Evolution of population: constant temperatures")
+
 end
 
 # ╔═╡ 7435b69e-a57a-44d2-8978-622f9f4236d3
@@ -4523,6 +4608,7 @@ version = "1.8.1+0"
 # ╠═c2364d33-9afe-426b-ac1b-59504913c4df
 # ╟─5ad9efa0-a367-4643-88e3-d0fe69d8132a
 # ╠═ea58fb60-fdd3-4d00-b7fe-ceafe869adf0
+# ╠═8141f03e-7a82-4b90-9a5d-427201b3be45
 # ╟─2c6a9943-dbcc-44c6-8f84-7035cf920208
 # ╠═69649ff8-e60a-42d8-9f55-c291d6602ca2
 # ╟─5a8a26ec-4d3c-4d8e-a709-f2a4fab66801
@@ -4546,6 +4632,7 @@ version = "1.8.1+0"
 # ╟─1905c0a8-18e8-4f67-8c37-5c2daf756bb0
 # ╠═50251579-de6d-43f3-af36-dc459585ad22
 # ╠═342da11c-cc36-4156-8d5a-e93d859e7a8c
+# ╠═60194c76-1ae5-49af-8baf-0f3465c634e1
 # ╠═badaea58-868b-4ef0-aee8-3c4583f7b3ea
 # ╠═d7c398ec-4325-40ae-8d71-1aa306830131
 # ╠═f97b719e-8b44-472b-b1ce-57eb5303ea02
@@ -4563,8 +4650,7 @@ version = "1.8.1+0"
 # ╠═abda697c-044b-4b42-b386-aab9226b755a
 # ╠═a12ccacc-e6be-44bf-a46f-d513a5d3376d
 # ╟─1dabd52f-2e78-40a1-b8dc-d213fdf673a2
-# ╠═95500699-4c1f-4672-b33e-5cbe55f481ff
-# ╠═e29e2ee8-1e85-4236-96ca-47962898e105
+# ╟─e29e2ee8-1e85-4236-96ca-47962898e105
 # ╟─b04ea071-adf7-4d2b-9ad9-2acb6338c321
 # ╠═32daa090-3c9a-4d9f-b1a2-d969cf4e6966
 # ╠═0dcbe2c1-2ed3-4911-bafe-09e76f269153
@@ -4580,9 +4666,11 @@ version = "1.8.1+0"
 # ╠═976923cb-7132-415c-881d-f46485032623
 # ╠═fbf795ba-0065-4e35-944e-36762dff99fd
 # ╠═da863575-eeeb-44b1-a9d4-edd92ffb09ca
-# ╠═e029f368-ec95-4317-8e87-2153ace4c123
+# ╟─e029f368-ec95-4317-8e87-2153ace4c123
 # ╠═5c51eae5-c28e-4be1-8a5c-61ca8038f1c5
 # ╠═cc131fbc-a2d2-42af-8160-b22e32aac512
+# ╠═0c94843d-2572-4713-bbaf-44952f398e73
+# ╠═a98ee210-bc95-4bbc-ac68-77724de41d62
 # ╠═f65052f6-d532-426e-b4cc-a755d9955ae4
 # ╠═25b0c3e1-eca9-4e09-9d06-e302f517e485
 # ╠═96445695-d923-44bd-8c68-d89fd974dc13
@@ -4598,10 +4686,10 @@ version = "1.8.1+0"
 # ╟─5cae56c7-c5ba-447b-a9ea-ef7f1ad99dfe
 # ╠═5508a281-254d-4d67-ab3d-ad32b2ff67f3
 # ╠═7fde6bdb-b9cc-4ca3-827f-8aaa4f03a82a
-# ╠═5ee88736-733b-480a-b9e2-929408cef55f
+# ╟─5ee88736-733b-480a-b9e2-929408cef55f
 # ╠═383d864d-310a-4e98-be68-48801a1c3a9d
 # ╠═a99f953d-2df4-4f30-9ca4-d3302f56571f
-# ╠═b9259bf1-e248-4ba7-bd9c-ae6094e368dd
+# ╟─b9259bf1-e248-4ba7-bd9c-ae6094e368dd
 # ╠═46ff7619-926c-445d-abf5-7bad5878169f
 # ╟─c3acbb4e-1330-4c7d-9875-fc89d8a35453
 # ╠═4258e19c-4277-428a-9164-3d8615520ad0
