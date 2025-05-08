@@ -223,6 +223,7 @@ begin
 	dff = dropmissing!(dff)
 	dff = clean_health(dff, "Health_t")
 	dff = clean_health(dff, "Health_t_1")
+	describe(dff)
 	
 end
 
@@ -262,14 +263,20 @@ begin
     age_range = range(minimum(dff.Age_t), maximum(dff.Age_t))
 end
 
+# ╔═╡ 79568db0-f75f-4352-8495-0e2d7c804e6f
+unique(y)
+
+# ╔═╡ 88c4dc0b-ff13-4af6-9e8e-a784b9c860b7
+health_t_categories
+
 # ╔═╡ e512be5c-ef0d-4595-b516-d9117e703153
 begin 
 
 	plotly()
 	# Create a plot for each Health_1 category
 	
-	P = Array{Any}(undef,5) 	# Initialise empty array for plots and probability matrix
-	Prob_Matrix = Array{Any}(undef,5)
+	P = Array{Any}(undef,6) 	# Initialise empty array for plots and probability matrix
+	Prob_Matrix = Array{Any}(undef,6)
 	i = 1 	# Initialise index
 	
 	for health_t_1 in health_t_1_categories
@@ -291,10 +298,10 @@ begin
 
         # Reshape probabilities into a matrix (av_annual_t × Age_t × Health)
         prob_matrix =
-			reshape([p.prob_given_ref[l] for p in probs, l in health_t_1_categories],
+			reshape([p.prob_given_ref[l] for p in probs, l in health_t_categories],
             (length(av_annual_range),
 			 length(age_range),
-			 length(health_t_1_categories)))
+			 length(health_t_categories)))
 
         # Create 3D plot
         p =
@@ -306,7 +313,7 @@ begin
             legend = :topright)
         
         # Plot a surface for each target health category
-        for (i, health) in enumerate(health_t_1_categories)
+        for (i, health) in enumerate(health_t_categories)
             surface!(av_annual_range, age_range, prob_matrix[:, :, i]',
             label = "To $health", alpha = 0.7)
         end
@@ -339,6 +346,9 @@ Plots.plot(P[4])
 
 # ╔═╡ 8a8e9034-f6be-4715-b481-2f62a554bbef
 Plots.plot(P[5])
+
+# ╔═╡ 628855ff-2c30-4960-afe9-27210c45fdbe
+health_t_1_categories
 
 # ╔═╡ 388af98a-fec2-45e2-897a-6e818d586745
 av_annual_range
@@ -446,7 +456,7 @@ md""" # Maximisation problem
 
 The agents maximizes: 
 
-$$\max_{c_{t},l_{t},s_{t+1}}{\mathbb{E}\left[\sum_{t=1}^{\infty} \beta^{t}\cdot u(c_t,l_t)\right]}$$
+$$\max_{c_{t},l_{t},s_{t+1}}{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot u(c_t,l_t)\right]}$$
 
 Their utility function is: 
 
@@ -502,8 +512,18 @@ With respect to the labor supply $l_{t}$:
 -  $\lambda_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi}$
 
 With respect to the savings/loan $s_{t+1}$:
--  $\lambda_{t} = \beta\cdot (1+r) \cdot \mathbb{E}\left[\lambda_{t+1}\right]$
+-  $\lambda_{t} = \beta\cdot \mathbb{E}\left[(1+r_{t+1}) \cdot \lambda_{t+1}\right] + \gamma_{t}$
 
+Plugging the first equation yields:
+
+$$\begin{cases}
+c^{-\rho}_{t} = \beta\cdot \mathbb{E}\left[(1+r_{t+1}) \cdot c^{-\rho}_{t+1}\right] + \gamma_{t} \\
+c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi}
+\end{cases}$$
+
+We obtain the following relationship for labor supply: 
+
+$$l_{t}=\left[ c_{t}^{-\rho} \cdot z_{t} \cdot \xi_{t}^{-1}\right]^{\frac{1}{\varphi}}$$
 
 """
 
@@ -1259,7 +1279,8 @@ begin
 		optimal_choices 	= NamedArray(optimal_choices,(param1_names,savings_value,choice_variable_name))
 
 		# First, we solve for the last period, in which the value function of next period is 0: 
-		last_Bellman = Bellman_numerical(s_range 		= s_range::AbstractRange,
+		last_Bellman = Bellman_numerical(
+						s_range 			= s_range::AbstractRange,
 	 					sprime_range 		= sprime_range::AbstractRange,
 	 					consumption_range 	= consumption_range::AbstractRange,
 	 					labor_range 		= labor_range::AbstractRange,
@@ -1355,20 +1376,42 @@ end
 # ╔═╡ e029f368-ec95-4317-8e87-2153ace4c123
 md""" ## Results """
 
+# ╔═╡ ba4edf7b-f17e-4a4d-87c0-4bb262a4c025
+md""" First, setting some range parameters:"""
+
 # ╔═╡ 5c51eae5-c28e-4be1-8a5c-61ca8038f1c5
 begin 
 	s_range 				= -2:0.1:5
 	sprime_range 			= -2:0.1:5
 	consumption_max 		= 5
 	nperiods 				= 104
+	β 						= 0.96
 	ζ 						= (1 ./(1:nperiods))
 	r_pi0 					= (1 .- ζ) ./ζ
-	# r = (1:nperiods).^2
-	# r = fill(10,nperiods)
 	r_min 					= ((1-0.96)/(0.96))
-	# r = r_min .+ r_pi0
 	r 						= fill(0.1,nperiods)
 	typical_productivity 	= [exp(0.1*x - 0.001*x^2) for x in 1:nperiods]
+end
+
+# ╔═╡ 6fc2b02b-a505-4ce5-a504-f2549c66c290
+md"""Now, we are going to set:
+
+- probabilities average,
+- health states average."""
+
+# ╔═╡ 28700efa-39fc-4628-aab5-b2822fa97c9d
+begin 
+	bad_scenario = collect(range(start = 0.61,
+										stop = 4.00,
+										length = nperiods))
+	
+	intermediate_scenario = collect(range(start = 0.61,
+										stop = 3.00,
+										length = nperiods))
+	
+	good_scenario = collect(range(start = 0.61,
+										stop = 2.00,
+										length = nperiods))
 end
 
 # ╔═╡ 96445695-d923-44bd-8c68-d89fd974dc13
@@ -1400,6 +1443,13 @@ md""" ### Value function"""
 # ╔═╡ 47fab280-4f42-412d-ad35-adf8fa2e988f
 md""" ### Consumption"""
 
+# ╔═╡ 3a74fdf2-87da-48fd-80fa-8936747a2448
+md""" ### Labor 
+
+
+The first algorithm uses the first F.O.C. condition to set a fixed value of the labor. Therefore, we are going to use the formula to retrieve the value of labor supplied, based on the chosen consumption.
+"""
+
 # ╔═╡ aef9601d-f05e-4995-937f-b1b9cb140e73
 md""" ### Savings"""
 
@@ -1422,6 +1472,11 @@ $$c_{t} = \left[\frac{z_{t}}{\xi_{t}\cdot l_{t}^{\varphi}}\right]^{\frac{1}{\rho
 begin
 		ρ = 1.50::Float64 
 		φ = 2.00::Float64
+end
+
+# ╔═╡ 6ee4f2fe-284b-4e48-88bf-fefaf7a7dfc6
+begin 
+	optimal_labor(c,z) = (c ^(-ρ)*(z))^(1/φ)
 end
 
 # ╔═╡ b9259bf1-e248-4ba7-bd9c-ae6094e368dd
@@ -1805,12 +1860,51 @@ individual_probability_simulation(T = 100,
 					  temperature_path = 0.61 .* ones(100),
 					  GDP_path = fill(gdp[gdp.Year .== 2020, :GDP][1],100))
 
+# ╔═╡ 3f4ee3c5-a87b-4f66-a6a5-4992d15784b7
+begin 
+	"""
+	The function `collective_probability_simulation` allows to simulate survival probability without actually drawing a survival status, for a population. It is used in the numerical methods solving process.
+
+		collective_probability_simulation(;N::Integer,
+									T::Integer,
+									temperature_path::Vector{Float64},
+									GDP_path::Vector{Float64})::Vector{Float64}
+
+	
+	"""
+	function collective_probability_simulation(;N::Integer, 
+											   T::Integer,
+											   temperature_path::Vector{Float64},
+											   GDP_path::Vector{Float64})
+
+		collective_probability = Vector{Array}(undef,N)
+		collective_health = Vector{Array}(undef,N)
+		
+		Threads.@threads for n in 1:N
+			
+			tmp = individual_probability_simulation(T = T, 
+											 temperature_path = temperature_path,
+											 GDP_path = GDP_path)
+			
+			collective_probability[n] 	= tmp[1]
+			collective_health[n] 		= tmp[2]
+		end
+		
+		return (;collective_probability,collective_health)
+	end
+end
+
+# ╔═╡ 47a68901-649f-4e8f-9589-425bd695fa3b
+cp = collective_probability_simulation(N = 200, T = 100,
+					  temperature_path = 0.61 .* ones(100),
+					  GDP_path = fill(gdp[gdp.Year .== 2020, :GDP][1],100))
+
 # ╔═╡ cc131fbc-a2d2-42af-8160-b22e32aac512
 begin 
 	s_range_2 			= 0.00:0.1:2.00
 	sprime_range_2 		= s_range_2
 	growing_temperature = collect(range(start = 0.61,
-										stop = 1.00,
+										stop = 2.00,
 										length = nperiods))
 	Stable_GDP 			= gdp[gdp.Year .== 2020, :GDP][1]
 
@@ -1823,418 +1917,6 @@ begin
 
 	small_r = (fill(0.05,nperiods))
 	
-end
-
-# ╔═╡ 0c94843d-2572-4713-bbaf-44952f398e73
-Plots.plot(1:nperiods, 
-		   survival_probability[1],
-		  xaxis = "Year", 
-		  yaxis = "Probability", 
-		  legend = false)
-
-# ╔═╡ a98ee210-bc95-4bbc-ac68-77724de41d62
-Plots.plot(1:nperiods, 
-		   survival_probability[2],
-		  xaxis = "Year", 
-		  yaxis = "Health state",
-		  legend = false)
-
-# ╔═╡ f65052f6-d532-426e-b4cc-a755d9955ae4
-begin 
-	@time benchmark = backwards(s_range			= s_range_2,
-							sprime_range		= s_range_2,
-							consumption_range 	= 0:0.01:consumption_max,
-							# labor_range			= 0.00:0.05:2,
-							nperiods 			= nperiods,
-							r 					= small_r,
-							z 					= 1 ./ survival_probability[2],
-							w 					= growing_temperature,
-							proba_survival 		= survival_probability[1],
-							h 					= 2 .* ones(nperiods),
-							ρ 					= 1.50,
-							φ 					= 2.00,
-							β 					= 0.96)
-end
-
-# ╔═╡ 25b0c3e1-eca9-4e09-9d06-e302f517e485
-begin 
-	@time numerical = backwards_numerical(s_range = s_range_2,
-							sprime_range		= s_range_2,
-							consumption_range 	= 0:0.01:consumption_max,
-							labor_range			= 0.00:0.05:2,
-							nperiods 			= nperiods,
-							r 					= small_r,
-							z 					= 1 ./ survival_probability[2],
-							w 					= growing_temperature,
-							proba_survival 		= survival_probability[1],
-							h 					= 2 .* ones(nperiods),
-							ρ 					= 1.50,
-							φ 					= 2.00,
-							β 					= 0.96)
-end
-
-# ╔═╡ f5052cbb-d54f-4b74-a57d-959578a989f6
-begin 
-	plotly()
-
-	# Approximation: 
-	plot_Vstar_approximation =
-		Plots.plot(s_range_2,benchmark[:Vstar][1,:], label = "Period: 1")
-	
-	for t in 1:nperiods
-		Plots.plot!(s_range_2,benchmark[:Vstar][t,:], label = "Period: $t")
-	end
-	
-	Plots.plot!(xaxis = "Initial savings" , yaxis = "Value function")
-	
-	Plots.plot!(legend = false, title = "Approximation")
-
-	# Numerical: 
-
-	plot_Vstar_numerical =
-		Plots.plot(s_range_2,numerical[:Vstar][1,:], label = "Period: 1")
-	
-	for t in 1:nperiods
-		Plots.plot!(s_range_2,numerical[:Vstar][t,:], label = "Period: $t")
-	end
-	
-	Plots.plot!(xaxis = "Initial savings" , yaxis = "Value function")
-	
-	Plots.plot!(legend = false, title = "Numerical solution")
-
-	Plots.plot(plot_Vstar_approximation,plot_Vstar_numerical)
-	
-end
-
-# ╔═╡ 0a0cb7c1-99ac-41db-8061-480090fd44f6
-begin 
-	plotly()
-
-	# Approximation model: 
-	
-	plot_c_star_approximation = 
-		Plots.plot(s_range_2,
-				   smoothing(benchmark[:optimal_choices][1,:,"c"], common_span),
-				   label = "Period: 1",
-				   xaxis = "Initial savings",
-				   yaxis = "Consumption")
-	
-	for t in 1:nperiods#10:10:nperiods
-		Plots.plot!(s_range_2,
-					smoothing(benchmark[:optimal_choices][t,:,"c"], common_span),
-					label = "Period: $t")
-	end
-
-	Plots.plot!(xaxis = "Initial savings",
-				yaxis = "Optimal consumption",
-				title = "Approximation", legend = false)
-
-	# Full-Numerical solution: 
-
-		plot_c_star_numerical = 
-		Plots.plot(s_range_2,
-				   smoothing(numerical[:optimal_choices][1,:,"c"], common_span),
-				   label = "Period: 1",
-				   xaxis = "Initial savings",
-				   yaxis = "Consumption")
-	
-	for t in 1:nperiods#10:10:nperiods
-		Plots.plot!(s_range_2,
-					smoothing(numerical[:optimal_choices][t,:,"c"], common_span),
-					label = "Period: $t")
-	end
-
-	Plots.plot!(xaxis = "Initial savings",
-				yaxis = "Optimal consumption",
-				title = "Numerical solution", legend = false)
-	
-	Plots.plot(plot_c_star_approximation,plot_c_star_numerical)
-end
-
-# ╔═╡ 98bda9bb-ec29-4387-ad60-411006a9f309
-begin 
-	consumption_1_approximation = Plots.plot(s_range_2,
-				   benchmark[:optimal_choices][1,:,"c"],
-				   label = "Period: 1",
-				 primary = false,
-				   xaxis = "Initial savings",
-				   yaxis = "Consumption",
-			  title = "Approximation")
-
-	consumption_1_numerical = Plots.plot(s_range_2,
-				   numerical[:optimal_choices][1,:,"c"],
-				   label = "Period: 1",
-				 primary = false,
-				   xaxis = "Initial savings",
-				   yaxis = "Consumption",
-			  title = "Numerical solution")
-
-	Plots.plot(consumption_1_approximation,consumption_1_numerical)
-end
-
-# ╔═╡ 5e5cb6db-def1-4ac0-9fb7-51584d91970b
-begin 
-	plotly()
-
-	# Approximation: 
-
-	plot_sprime_star_approximation = Plots.plot(s_range_2,
-								  smoothing(benchmark[:optimal_choices][1,:,"sprime"], common_span))
-	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
-	for t in 1:nperiods # [50,80,100,104]
-	 	Plots.plot!(s_range_2,
-					smoothing(benchmark[:optimal_choices][t,:,:][:,"sprime"], common_span), label = "Period: $t")
-	end
-	Plots.plot!(title = "Approximation", legend = false)
-
-	# Numerical solution: 
-
-
-	plot_sprime_star_numerical = Plots.plot(s_range_2,
-								  smoothing(numerical[:optimal_choices][1,:,"sprime"], common_span))
-	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
-	for t in 1:nperiods # [50,80,100,104]
-	 	Plots.plot!(s_range_2,
-					smoothing(numerical[:optimal_choices][t,:,:][:,"sprime"], common_span), label = "Period: $t")
-	end
-	Plots.plot!(title = "Numerical solution", legend = false)
-	
-	# Ploting both:
-	Plots.plot(plot_sprime_star_approximation,plot_sprime_star_numerical)
-end
-
-# ╔═╡ d4784e37-86a4-49d5-91bb-b68dc0ec7d24
-begin
-	savings_2_approximation = Plots.plot(s_range_2,
-			   benchmark[:optimal_choices][1,:,"sprime"],
-			   label = "Period: 1",
-			   xaxis = "Initial savings",
-			   yaxis = "Savings at next period",
-			   legend = false,
-			   title = "Approximation")
-	
-	Plots.plot!(s_range_2,
-			   benchmark[:optimal_choices][75,:,"sprime"], 
-			   label = "Period 75")
-
-	savings_2_numerical = Plots.plot(s_range_2,
-			   numerical[:optimal_choices][1,:,"sprime"],
-			   label = "Period: 1",
-			   xaxis = "Initial savings",
-			   yaxis = "Savings at next period",
-			   legend = false,
-			   title = "Numerical solution")
-	
-	Plots.plot!(s_range_2,
-			   numerical[:optimal_choices][75,:,"sprime"], 
-			   label = "Period 75")
-
-	Plots.plot(savings_2_approximation,savings_2_numerical)
-end
-
-# ╔═╡ 5508a281-254d-4d67-ab3d-ad32b2ff67f3
-begin 
-	plotly()
-	
-	budget_constraint_approximation = 
-		Plots.plot(s_range_2,benchmark[:budget_balance][1,:], label = "Period 1")
-	
-	Plots.plot!(xaxis = "Initial savings",
-				yaxis = "Budget surplus",
-				title = "Approximation",
-				legend = false)
-	
-	for t in 1:nperiods
-	 	Plots.plot!(s_range_2,benchmark[:budget_balance][t,:], label = "Period: $t")
-	end
-
-	budget_constraint_numerical_solution = 
-		Plots.plot(s_range_2,numerical[:budget_balance][1,:], label = "Period 1")
-	
-	Plots.plot!(xaxis = "Initial savings",
-				yaxis = "Budget surplus",
-				title = "Numerical solution",
-				legend = false)
-	
-	for t in 1:nperiods
-	 	Plots.plot!(s_range_2,numerical[:budget_balance][t,:], label = "Period: $t")
-	end
-	
-	Plots.plot(budget_constraint_approximation,budget_constraint_numerical_solution)
-end
-
-
-# ╔═╡ 7fde6bdb-b9cc-4ca3-827f-8aaa4f03a82a
-begin 
-	Plots.gr()
-	budget_clearing_1_approximation = Plots.plot(s_range_2,
-			   benchmark[:budget_balance][1,:],
-			   label = "Period 1",
-			 primary = false,
-			   xaxis = "Initial savings", 
-			   yaxis = "Budget surplus", 
-			   title = "Approximation")
-
-	budget_clearing_1_numerical = Plots.plot(s_range_2,
-			   numerical[:budget_balance][1,:],
-			   label = "Period 1",
-			 primary = false,
-			   xaxis = "Initial savings", 
-			   yaxis = "Budget surplus", 
-			   title = "Numerical solution")
-
-	Plots.plot(budget_clearing_1_approximation,budget_clearing_1_numerical)
-end
-
-# ╔═╡ a99f953d-2df4-4f30-9ca4-d3302f56571f
-begin 
-	plotly()
-
-	lstar(c) = (c ^(-ρ)*(1 ./ survival_probability[2][1])/1)^(1/φ)
-
-	
-	plot_l_star = Plots.plot(s_range_2,
-							 smoothing(lstar.(benchmark[:optimal_choices][1,:,"c"].array),
-									   common_span),
-							 label = "Period: 1",
-							 xaxis = "Initial savings",
-							 yaxis = "Labor supply")
-	
-	for t in 1:nperiods
-		Plots.plot!(s_range_2,
-					smoothing(lstar.(benchmark[:optimal_choices][1,:,"c"].array), common_span),
-					label = "Period: $t")
-	end
-
-	Plots.plot!(xaxis = "Initial savings",
-				yaxis = "Labor supply",
-				title = "Labor supply policy",
-				legend = false)
-
-	Plots.plot(plot_l_star)
-end
-
-# ╔═╡ 46ff7619-926c-445d-abf5-7bad5878169f
-begin 
-	plotly()
-
-	c1 = benchmark[:optimal_choices][1,:,"c"].array
-	c2 = benchmark[:optimal_choices][2,:,"c"].array
-
-	l1 = lstar.(c1)
-	l2 = lstar.(c2)
-
-	Plots.plot(xaxis = "Labor",
-			   yaxis = "Consumption")
-	
-	Plots.plot!(s_range_2,
-			smoothing(c1,common_span),
-			label 	= "Model - period 1")
-	
-	c_FOC1 = (1 .* l1.^φ .* (1 ./ survival_probability[2][1])^(-1)) .^ (-1/ρ)
-
-	Plots.plot!(s_range_2,
-				smoothing(c_FOC1,common_span),
-				label 	= "FOC 1")
-
-	β = 0.96
-	
-	c_FOC2 = Array{Float64}(undef,length(c2))
-	
-	c_FOC2 = 
-		(β *
-			survival_probability[1][1] .*
-			(c2 .^ (-ρ)) .*
-			survival_probability[2][1] .*
-			(1+small_r[2])) .^ (-1/ρ)
-
-	Plots.plot!(s_range_2,
-				smoothing(c_FOC2,common_span),
-				label = "FOC 2 - Euler")
-
-	Plots.plot!(s_range_2,
-				smoothing(c2,common_span),
-				label = "Model - period 2")
-end
-
-# ╔═╡ ae13c7ba-e907-4655-b2b9-4c34f373f9c4
-begin 
-	plotly()
-
-	c103 = benchmark[:optimal_choices][103,:,"c"].array
-	c104 = benchmark[:optimal_choices][104,:,"c"].array
-
-	l103 = lstar.(c103)
-	l104 = lstar.(c104)
-
-	Plots.plot(xaxis = "Labor",
-			   yaxis = "Consumption")
-	
-	Plots.plot!(s_range_2,
-			smoothing(c103,common_span),
-			label 	= "Model - period 103")
-	
-	c_FOC1_last = (1 .* l103.^φ .* (1 ./ survival_probability[2][103])^(-1)) .^ (-1/ρ)
-
-	Plots.plot!(s_range_2,
-				smoothing(c_FOC1_last,common_span),
-				label 	= "FOC 1")
-	
-	c_FOC2_103 = Array{Float64}(undef,length(c104))
-	
-	c_FOC2_103 = 
-		(β *
-			survival_probability[1][104] .*
-			(c104 .^ (-ρ)) .*
-			(1+small_r[104])) .^ (-1/ρ)
-
-	Plots.plot!(s_range_2,
-				smoothing(c_FOC2_103,common_span),
-				label = "FOC 2 - Euler 103")
-
-	# Plots.plot!(s_range_2,
-	# 			smoothing(c104,common_span),
-	# 			label = "Model - last period")
-end
-
-# ╔═╡ 34210909-d7ea-4609-804a-729302bc504f
-begin 
-	plotly()
-
-	c103n = numerical[:optimal_choices][103,:,"c"].array
-	c104n = numerical[:optimal_choices][104,:,"c"].array
-
-	l103n = lstar.(c103)
-	l104n = lstar.(c104)
-
-	Plots.plot(xaxis = "Labor",
-			   yaxis = "Consumption")
-	
-	Plots.plot!(s_range_2,
-			smoothing(c103,common_span),
-			label 	= "Model - period 103")
-	
-	c_FOC1_lastn = (1 .* l103n.^φ .* (1 ./ survival_probability[2][103])^(-1)) .^ (-1/ρ)
-
-	Plots.plot!(s_range_2,
-				smoothing(c_FOC1_lastn,common_span),
-				label 	= "FOC 1")
-	
-	c_FOC2_103n = Array{Float64}(undef,length(c104))
-	
-	c_FOC2_103n = 
-		(β *
-			survival_probability[1][104] .*
-			(c104n .^ (-ρ)) .*
-			(1+small_r[104])) .^ (-1/ρ)
-
-	Plots.plot!(s_range_2,
-				smoothing(c_FOC2_103n,common_span),
-				label = "FOC 2 - Euler 103")
-
-	# Plots.plot!(s_range_2,
-	# 			smoothing(c104,common_span),
-	# 			label = "Model - last period")
 end
 
 # ╔═╡ 4258e19c-4277-428a-9164-3d8615520ad0
@@ -2370,6 +2052,633 @@ begin
 		yaxis = "Population",
 		title = "Evolution of population: constant temperatures")
 
+end
+
+# ╔═╡ d50ed00c-e9b1-4d84-8994-073d03b3bb10
+begin 
+	cp_benchmark_b = collective_probability_simulation(N = 20_000,
+								  T = nperiods,
+								  temperature_path = bad_scenario,
+								 GDP_path = fill(GDP_2018,nperiods))
+
+	cp_benchmark_i = collective_probability_simulation(N = 20_000,
+								  T = nperiods,
+								  temperature_path = intermediate_scenario,
+								 GDP_path = fill(GDP_2018,nperiods))
+	
+	cp_benchmark_g = collective_probability_simulation(N = 20_000,
+								  T = nperiods,
+								  temperature_path = good_scenario,
+								 GDP_path = fill(GDP_2018,nperiods))
+end
+
+# ╔═╡ 0c94843d-2572-4713-bbaf-44952f398e73
+begin 
+	Plots.plot(1:nperiods, 
+		   mean(cp_benchmark_b[1]),
+		  xaxis = "Year", 
+		  yaxis = "Probability",
+		   label = "Bad scenario")
+	Plots.plot!(mean(cp_benchmark_i[1]),
+			   label = "Intermediate scenario")
+	Plots.plot!(mean(cp_benchmark_g[1]),
+			   label = "Good scenario")
+	Plots.plot!(title = "Probability of survival")
+end
+
+# ╔═╡ a98ee210-bc95-4bbc-ac68-77724de41d62
+begin 
+	Plots.gr()
+	Plots.plot(1:nperiods, 
+		   mean(cp_benchmark_b[2]),
+		  label = "Bad scenario", 
+			  color = "red")
+
+	Plots.plot!(1:nperiods, 
+	   mean(cp_benchmark_i[2]),
+	  label = "Intermediate scenario", 
+			   color = "orange")
+
+	Plots.plot!(1:nperiods, 
+	   mean(cp_benchmark_g[2]),
+	  label = "Good scenario", 
+			   color = "green")
+
+	Plots.plot!(xaxis = "Year", yaxis = "Health average", legend = :bottomright)
+end
+
+# ╔═╡ f65052f6-d532-426e-b4cc-a755d9955ae4
+begin 
+	@time benchmark = backwards(s_range			= s_range_2,
+							sprime_range		= s_range_2,
+							consumption_range 	= 0:0.01:consumption_max,
+							# labor_range			= 0.00:0.05:2,
+							nperiods 			= nperiods,
+							r 					= small_r,
+							z 					= 1 ./ mean(cp_benchmark_i[2]),
+							w 					= growing_temperature,
+							proba_survival 		= mean(cp_benchmark_i[1]),
+							h 					= 2 .* ones(nperiods),
+							ρ 					= 1.50,
+							φ 					= 2.00,
+							β 					= 0.96)
+end
+
+# ╔═╡ beb2f153-922c-4a0b-b602-3066806678f2
+begin
+	benchmark_c = benchmark[:optimal_choices][:,:,"c"]
+	# optimal_labor.(benchmark_c[1,:].array,1)
+end
+
+# ╔═╡ a99f953d-2df4-4f30-9ca4-d3302f56571f
+begin 
+	plotly()
+
+	lstar(c) = (c ^(-ρ)*(1 ./ survival_probability[2][1])/1)^(1/φ)
+
+	
+	plot_l_star = Plots.plot(s_range_2,
+							 smoothing(lstar.(benchmark[:optimal_choices][1,:,"c"].array),
+									   common_span),
+							 label = "Period: 1",
+							 xaxis = "Initial savings",
+							 yaxis = "Labor supply")
+	
+	for t in 1:nperiods
+		Plots.plot!(s_range_2,
+					smoothing(lstar.(benchmark[:optimal_choices][1,:,"c"].array), common_span),
+					label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Labor supply",
+				title = "Labor supply policy",
+				legend = false)
+
+	Plots.plot(plot_l_star)
+end
+
+# ╔═╡ ae13c7ba-e907-4655-b2b9-4c34f373f9c4
+begin 
+	plotly()
+
+	c103 = benchmark[:optimal_choices][103,:,"c"].array
+	c104 = benchmark[:optimal_choices][104,:,"c"].array
+
+	l103 = lstar.(c103)
+	l104 = lstar.(c104)
+
+	Plots.plot(xaxis = "Labor",
+			   yaxis = "Consumption")
+	
+	Plots.plot!(s_range_2,
+			smoothing(c103,common_span),
+			label 	= "Model - period 103")
+	
+	c_FOC1_last = (1 .* l103.^φ .* (1 ./ survival_probability[2][103])^(-1)) .^ (-1/ρ)
+
+	Plots.plot!(s_range_2,
+				smoothing(c_FOC1_last,common_span),
+				label 	= "FOC 1")
+	
+	c_FOC2_103 = Array{Float64}(undef,length(c104))
+	
+	c_FOC2_103 = 
+		(β *
+			survival_probability[1][104] .*
+			(c104 .^ (-ρ)) .*
+			(1+small_r[104])) .^ (-1/ρ)
+
+	Plots.plot!(s_range_2,
+				smoothing(c_FOC2_103,common_span),
+				label = "FOC 2 - Euler 103")
+
+	# Plots.plot!(s_range_2,
+	# 			smoothing(c104,common_span),
+	# 			label = "Model - last period")
+end
+
+# ╔═╡ 25b0c3e1-eca9-4e09-9d06-e302f517e485
+begin 
+	@time numerical = backwards_numerical(s_range = s_range_2,
+							sprime_range		= s_range_2,
+							consumption_range 	= 0:0.01:consumption_max,
+							labor_range			= 0.00:0.05:2,
+							nperiods 			= nperiods,
+							r 					= small_r,
+							z 					= 1 ./ mean(cp_benchmark_i[2]),
+							w 					= growing_temperature,
+							proba_survival 		= mean(cp_benchmark_i[1]),
+							h 					= 2 .* ones(nperiods),
+							ρ 					= 1.50,
+							φ 					= 2.00,
+							β 					= 0.96)
+end
+
+# ╔═╡ f5052cbb-d54f-4b74-a57d-959578a989f6
+begin 
+	plotly()
+
+	# Approximation: 
+	plot_Vstar_approximation =
+		Plots.plot(s_range_2,benchmark[:Vstar][1,:], label = "Period: 1")
+	
+	for t in 1:nperiods
+		Plots.plot!(s_range_2,benchmark[:Vstar][t,:], label = "Period: $t")
+	end
+	
+	Plots.plot!(xaxis = "Initial savings" , yaxis = "Value function")
+	
+	Plots.plot!(legend = false, title = "Approximation")
+
+	# Numerical: 
+
+	plot_Vstar_numerical =
+		Plots.plot(s_range_2,numerical[:Vstar][1,:], label = "Period: 1")
+	
+	for t in 1:nperiods
+		Plots.plot!(s_range_2,numerical[:Vstar][t,:], label = "Period: $t")
+	end
+	
+	Plots.plot!(xaxis = "Initial savings" , yaxis = "Value function")
+	
+	Plots.plot!(legend = false, title = "Numerical solution")
+
+	Plots.plot(plot_Vstar_approximation,plot_Vstar_numerical)
+	
+end
+
+# ╔═╡ 0a0cb7c1-99ac-41db-8061-480090fd44f6
+begin 
+	plotly()
+
+	# Approximation model: 
+	
+	plot_c_star_approximation = 
+		Plots.plot(s_range_2,
+				   smoothing(benchmark[:optimal_choices][1,:,"c"], common_span),
+				   label = "Period: 1",
+				   xaxis = "Initial savings",
+				   yaxis = "Consumption")
+	
+	for t in 1:nperiods#10:10:nperiods
+		Plots.plot!(s_range_2,
+					smoothing(benchmark[:optimal_choices][t,:,"c"], common_span),
+					label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Optimal consumption",
+				title = "Approximation", legend = false)
+
+	# Full-Numerical solution: 
+
+		plot_c_star_numerical = 
+		Plots.plot(s_range_2,
+				   smoothing(numerical[:optimal_choices][1,:,"c"], common_span),
+				   label = "Period: 1",
+				   xaxis = "Initial savings",
+				   yaxis = "Consumption")
+	
+	for t in 1:nperiods#10:10:nperiods
+		Plots.plot!(s_range_2,
+					smoothing(numerical[:optimal_choices][t,:,"c"], common_span),
+					label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Optimal consumption",
+				title = "Numerical solution", legend = false)
+	
+	Plots.plot(plot_c_star_approximation,plot_c_star_numerical)
+end
+
+# ╔═╡ de9778bf-f42a-45bb-aaf4-4d2fa25641ea
+begin 
+	p_c_a_b = Plots.plot(
+			  xaxis = "Initial endowment", 
+			  yaxis = "Consumption",
+	title = "Approximation")
+
+	for T in 20:20:100
+		low = T - 19
+		tmp = 0
+		for t in low:T
+			tmp = tmp .+ benchmark[:optimal_choices][t,:,"c"].array
+		end
+		tmp = tmp ./ (T-low)
+	Plots.plot!(s_range_2,tmp, label = "$low, $T")
+	end
+
+	p_c_a_n = Plots.plot(
+			  xaxis = "Initial endowment", 
+			  yaxis = "Consumption",
+	title = "Numerical solution")
+
+	for T in 20:20:100
+		low = T - 19
+		tmp = 0
+		for t in low:T
+			tmp = tmp .+ numerical[:optimal_choices][t,:,"c"].array
+		end
+		tmp = tmp ./ (T-low)
+	Plots.plot!(s_range_2,tmp, label = "$low, $T", legend = false)
+	end
+
+	Plots.plot(p_c_a_b,p_c_a_n)
+end
+
+# ╔═╡ 98bda9bb-ec29-4387-ad60-411006a9f309
+begin 
+	consumption_1_approximation = Plots.plot(s_range_2,
+				   benchmark[:optimal_choices][1,:,"c"],
+				   label = "Period: 1",
+				 primary = false,
+				   xaxis = "Initial savings",
+				   yaxis = "Consumption",
+			  title = "Approximation")
+
+	consumption_1_numerical = Plots.plot(s_range_2,
+				   numerical[:optimal_choices][1,:,"c"],
+				   label = "Period: 1",
+				 primary = false,
+				   xaxis = "Initial savings",
+				   yaxis = "Consumption",
+			  title = "Numerical solution")
+
+	Plots.plot(consumption_1_approximation,consumption_1_numerical)
+end
+
+# ╔═╡ 5e5cb6db-def1-4ac0-9fb7-51584d91970b
+begin 
+	plotly()
+
+	# Approximation: 
+
+	plot_sprime_star_approximation = Plots.plot(s_range_2,
+								  smoothing(benchmark[:optimal_choices][1,:,"sprime"], common_span))
+	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
+	for t in 1:nperiods # [50,80,100,104]
+	 	Plots.plot!(s_range_2,
+					smoothing(benchmark[:optimal_choices][t,:,:][:,"sprime"], common_span), label = "Period: $t")
+	end
+	Plots.plot!(title = "Approximation", legend = false)
+
+	# Numerical solution: 
+
+
+	plot_sprime_star_numerical = Plots.plot(s_range_2,
+								  smoothing(numerical[:optimal_choices][1,:,"sprime"], common_span))
+	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
+	for t in 1:nperiods # [50,80,100,104]
+	 	Plots.plot!(s_range_2,
+					smoothing(numerical[:optimal_choices][t,:,:][:,"sprime"], common_span), label = "Period: $t")
+	end
+	Plots.plot!(title = "Numerical solution", legend = false)
+	
+	# Ploting both:
+	Plots.plot(plot_sprime_star_approximation,plot_sprime_star_numerical)
+end
+
+# ╔═╡ 3f59166b-a09b-490e-87f4-7f2ccc57d154
+begin 
+	p_sprime_a = Plots.plot(
+			  xaxis = "Initial endowment", 
+			  yaxis = "Savings",
+	title = "Approximation")
+
+	for T in 20:20:100
+		low = T - 19
+		tmp = 0
+		for t in low:T
+			tmp = tmp .+ benchmark[:optimal_choices][t,:,"sprime"].array
+		end
+		tmp = tmp ./ (T-low)
+	Plots.plot!(s_range_2,tmp, label = "$low, $T")
+	end
+
+	p_sprime_n = Plots.plot(
+			  xaxis = "Initial endowment", 
+			  yaxis = "Savings",
+	title = "Numerical solution")
+
+	for T in 20:20:100
+		low = T - 19
+		tmp = 0
+		for t in low:T
+			tmp = tmp .+ numerical[:optimal_choices][t,:,"sprime"].array
+		end
+		tmp = tmp ./ (T-low)
+	Plots.plot!(s_range_2,tmp, label = "$low, $T", legend = false)
+	end
+
+	Plots.plot(p_sprime_a,p_sprime_n)
+end
+
+# ╔═╡ d4784e37-86a4-49d5-91bb-b68dc0ec7d24
+begin
+	old_age = 60
+	
+	savings_2_approximation = Plots.plot(s_range_2,
+			   benchmark[:optimal_choices][1,:,"sprime"],
+			   label = "Period: 1",
+			   xaxis = "Initial savings",
+			   yaxis = "Savings at next period",
+			   legend = false,
+			   title = "Approximation")
+	
+	Plots.plot!(s_range_2,
+			   benchmark[:optimal_choices][old_age,:,"sprime"], 
+			   label = "Period $old_age")
+
+	savings_2_numerical = Plots.plot(s_range_2,
+			   numerical[:optimal_choices][1,:,"sprime"],
+			   label = "Period: 1",
+			   xaxis = "Initial savings",
+			   yaxis = "Savings at next period",
+			   legend = false,
+			   title = "Numerical solution")
+	
+	Plots.plot!(s_range_2,
+			   numerical[:optimal_choices][old_age,:,"sprime"], 
+			   label = "Period $old_age")
+
+	Plots.plot(savings_2_approximation,savings_2_numerical)
+end
+
+# ╔═╡ 5508a281-254d-4d67-ab3d-ad32b2ff67f3
+begin 
+	plotly()
+	
+	budget_constraint_approximation = 
+		Plots.plot(s_range_2,benchmark[:budget_balance][1,:], label = "Period 1")
+	
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Budget surplus",
+				title = "Approximation",
+				legend = false)
+	
+	for t in 1:nperiods
+	 	Plots.plot!(s_range_2,benchmark[:budget_balance][t,:], label = "Period: $t")
+	end
+
+	budget_constraint_numerical_solution = 
+		Plots.plot(s_range_2,numerical[:budget_balance][1,:], label = "Period 1")
+	
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Budget surplus",
+				title = "Numerical solution",
+				legend = false)
+	
+	for t in 1:nperiods
+	 	Plots.plot!(s_range_2,numerical[:budget_balance][t,:], label = "Period: $t")
+	end
+	
+	Plots.plot(budget_constraint_approximation,budget_constraint_numerical_solution)
+end
+
+
+# ╔═╡ 7fde6bdb-b9cc-4ca3-827f-8aaa4f03a82a
+begin 
+	Plots.gr()
+	budget_clearing_1_approximation = Plots.plot(s_range_2,
+			   benchmark[:budget_balance][1,:],
+			   label = "Period 1",
+			 primary = false,
+			   xaxis = "Initial savings", 
+			   yaxis = "Budget surplus", 
+			   title = "Approximation")
+
+	budget_clearing_1_numerical = Plots.plot(s_range_2,
+			   numerical[:budget_balance][1,:],
+			   label = "Period 1",
+			 primary = false,
+			   xaxis = "Initial savings", 
+			   yaxis = "Budget surplus", 
+			   title = "Numerical solution")
+
+	Plots.plot(budget_clearing_1_approximation,budget_clearing_1_numerical)
+end
+
+# ╔═╡ 34210909-d7ea-4609-804a-729302bc504f
+begin 
+	plotly()
+
+	c103n = numerical[:optimal_choices][103,:,"c"].array
+	c104n = numerical[:optimal_choices][104,:,"c"].array
+
+	l103n = lstar.(c103)
+	l104n = lstar.(c104)
+
+	Plots.plot(xaxis = "Labor",
+			   yaxis = "Consumption")
+	
+	Plots.plot!(s_range_2,
+			smoothing(c103,common_span),
+			label 	= "Model - period 103")
+	
+	c_FOC1_lastn = (1 .* l103n.^φ .* (1 ./ survival_probability[2][103])^(-1)) .^ (-1/ρ)
+
+	Plots.plot!(s_range_2,
+				smoothing(c_FOC1_lastn,common_span),
+				label 	= "FOC 1")
+	
+	c_FOC2_103n = Array{Float64}(undef,length(c104))
+	
+	c_FOC2_103n = 
+		(β *
+			survival_probability[1][104] .*
+			(c104n .^ (-ρ)) .*
+			(1+small_r[104])) .^ (-1/ρ)
+
+	Plots.plot!(s_range_2,
+				smoothing(c_FOC2_103n,common_span),
+				label = "FOC 2 - Euler 103")
+
+	# Plots.plot!(s_range_2,
+	# 			smoothing(c104,common_span),
+	# 			label = "Model - last period")
+end
+
+# ╔═╡ 47f718c2-55a3-4424-9f29-e6fdf8361ea5
+begin 
+	plotly()
+
+	# Approximation model: 
+	
+	plot_l_star_approximation = 
+		Plots.plot(s_range_2,
+				   smoothing(optimal_labor.(benchmark_c[1,:].array,
+										   1 ./ mean(cp_benchmark_i[2][1])), common_span),
+				   label = "Period: 1",
+				   xaxis = "Initial savings",
+				   yaxis = "Labor supply")
+	
+	for t in 1:nperiods#10:10:nperiods
+		Plots.plot!(s_range_2,
+					smoothing(optimal_labor.(benchmark_c[t,:].array,
+											 1 ./ mean(cp_benchmark_i[2][t])), common_span),
+					label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Labor supply",
+				title = "Approximation", legend = false)
+
+	# Full-Numerical solution: 
+
+		plot_l_star_numerical = 
+		Plots.plot(s_range_2,
+				   smoothing(numerical[:optimal_choices][1,:,"l"], common_span),
+				   label = "Period: 1",
+				   xaxis = "Initial savings",
+				   yaxis = "Labor supply")
+	
+	for t in 1:nperiods#10:10:nperiods
+		Plots.plot!(s_range_2,
+					smoothing(numerical[:optimal_choices][t,:,"l"], common_span),
+					label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Labor supply",
+				title = "Numerical solution", legend = false)
+	
+	Plots.plot(plot_l_star_approximation,
+			   plot_l_star_numerical)
+end
+
+# ╔═╡ b8835098-8093-44f9-8d7c-d96116b3bec3
+mean(cp_benchmark_i[2][1])
+
+# ╔═╡ 88d25fb0-861f-4969-a887-ea93a555637c
+begin 
+
+	Plots.plotly()
+	
+	p_l_a_b = Plots.plot(
+			  xaxis = "Initial endowment", 
+			  yaxis = "Labor",
+	title = "Approximation")
+
+	for T in 20:20:100
+		low = T - 19
+		tmp = 0
+		for t in low:T
+			tmp = tmp .+
+				optimal_labor.(benchmark_c[t,:].array,
+											 1 / mean(cp_benchmark_i[2][t]))
+		end
+		tmp = tmp ./ (T - low)
+	Plots.plot!(s_range_2,tmp, label = "$low, $T", )
+	end
+
+	p_l_a_n = Plots.plot(
+			  xaxis = "Initial endowment", 
+			  yaxis = "Labor",
+	title = "Numerical solution")
+
+	for T in 20:20:100
+		low = T - 19
+		tmp = 0
+		for t in 1:T
+			tmp = tmp .+ numerical[:optimal_choices][t,:,"l"].array
+		end
+		tmp = tmp ./ T
+	Plots.plot!(s_range_2,tmp, label = "$low, $T", legend = false)
+	end
+
+	Plots.plot(p_l_a_b,p_l_a_n)
+end
+
+# ╔═╡ eded5fad-0403-4d39-9480-992f556a9aed
+optimal_labor.(benchmark_c[1,:].array, 1 / mean(cp_benchmark_i[2][1]))
+
+# ╔═╡ 46ff7619-926c-445d-abf5-7bad5878169f
+begin 
+	plotly()
+	
+	z_benchmark 				= 1 ./ mean(cp_benchmark_i[2])
+	labor_range_plot			= 0.00:0.05:2
+				  
+	c1 				= benchmark[:optimal_choices][1,:,"c"].array
+					
+	c2 				= benchmark[:optimal_choices][2,:,"c"].array
+					
+	l1 				= optimal_labor.(c1,z_benchmark[1])
+	l2 				= optimal_labor.(c1,z_benchmark[2])
+
+	Plots.plot(xaxis = "Labor",
+			   yaxis = "Consumption")
+	
+	# Plots.plot!(s_range_2,
+	# 		smoothing(c1,common_span),
+	# 		label 	= "Model - period 1")
+
+
+	
+	c_FOC1 = (l1.^φ .* (z_benchmark[1])^(-1)) .^ (-1/ρ)
+
+	Plots.plot!(labor_range_plot,
+				smoothing(c_FOC1,common_span),
+				label 	= "FOC 1")
+	
+	c_FOC2 = Array{Float64}(undef,length(c2))
+	
+	c_FOC2 = 
+		(β *
+			survival_probability[1][1] .*
+			(c2 .^ (-ρ)) .*
+			survival_probability[2][1] .*
+			(1+small_r[2])) .^ (-1/ρ)
+
+	Plots.plot!(labor_range_plot,
+				smoothing(c_FOC2,common_span),
+				label = "FOC 2 - Euler")
+
+	Plots.plot!(labor_range_plot,
+				smoothing(c2,common_span),
+				label = "Model - period 2")
 end
 
 # ╔═╡ 7435b69e-a57a-44d2-8978-622f9f4236d3
@@ -4724,8 +5033,11 @@ version = "1.8.1+0"
 # ╠═b7f90644-d4fe-4cb7-a60e-5ab180a35d50
 # ╠═2336c8fd-263f-42c2-85d4-2b5a64f11a69
 # ╠═7829dd48-681f-4fa1-93f9-9107848e0a98
+# ╠═79568db0-f75f-4352-8495-0e2d7c804e6f
 # ╠═babfe2e0-19b6-4a22-bc4f-74716ec50ec9
+# ╠═88c4dc0b-ff13-4af6-9e8e-a784b9c860b7
 # ╠═e512be5c-ef0d-4595-b516-d9117e703153
+# ╠═628855ff-2c30-4960-afe9-27210c45fdbe
 # ╠═d4a5c3bc-4b3a-4936-adc9-68412109626c
 # ╠═a32b576d-44c3-4f09-93b3-3386dd1ee1de
 # ╠═96e9ea8a-129c-4ab3-a2c3-c947fe4a83b8
@@ -4758,13 +5070,15 @@ version = "1.8.1+0"
 # ╠═abda697c-044b-4b42-b386-aab9226b755a
 # ╠═a12ccacc-e6be-44bf-a46f-d513a5d3376d
 # ╟─1dabd52f-2e78-40a1-b8dc-d213fdf673a2
-# ╠═78e8a9b6-fdfd-4b9c-914e-413037fc08de
+# ╟─78e8a9b6-fdfd-4b9c-914e-413037fc08de
 # ╟─e29e2ee8-1e85-4236-96ca-47962898e105
 # ╟─b04ea071-adf7-4d2b-9ad9-2acb6338c321
 # ╠═32daa090-3c9a-4d9f-b1a2-d969cf4e6966
 # ╠═0dcbe2c1-2ed3-4911-bafe-09e76f269153
 # ╠═e3c5099c-063c-4809-943f-557cf5269691
 # ╠═ad02c350-0b75-49d7-8aad-253dd61e0062
+# ╠═3f4ee3c5-a87b-4f66-a6a5-4992d15784b7
+# ╠═47a68901-649f-4e8f-9589-425bd695fa3b
 # ╠═b55356ef-c4d8-4533-b90a-d2ba2adbbfc3
 # ╠═db51d7d8-6e3c-46c6-bf80-47d72cdb097e
 # ╠═2648949a-69c4-4981-912b-99f707b8b07d
@@ -4776,8 +5090,12 @@ version = "1.8.1+0"
 # ╠═fbf795ba-0065-4e35-944e-36762dff99fd
 # ╠═da863575-eeeb-44b1-a9d4-edd92ffb09ca
 # ╟─e029f368-ec95-4317-8e87-2153ace4c123
+# ╟─ba4edf7b-f17e-4a4d-87c0-4bb262a4c025
 # ╠═5c51eae5-c28e-4be1-8a5c-61ca8038f1c5
 # ╠═cc131fbc-a2d2-42af-8160-b22e32aac512
+# ╟─6fc2b02b-a505-4ce5-a504-f2549c66c290
+# ╠═28700efa-39fc-4628-aab5-b2822fa97c9d
+# ╠═d50ed00c-e9b1-4d84-8994-073d03b3bb10
 # ╠═0c94843d-2572-4713-bbaf-44952f398e73
 # ╠═a98ee210-bc95-4bbc-ac68-77724de41d62
 # ╠═f65052f6-d532-426e-b4cc-a755d9955ae4
@@ -4788,9 +5106,18 @@ version = "1.8.1+0"
 # ╠═f5052cbb-d54f-4b74-a57d-959578a989f6
 # ╟─47fab280-4f42-412d-ad35-adf8fa2e988f
 # ╠═0a0cb7c1-99ac-41db-8061-480090fd44f6
+# ╠═de9778bf-f42a-45bb-aaf4-4d2fa25641ea
 # ╠═98bda9bb-ec29-4387-ad60-411006a9f309
+# ╟─3a74fdf2-87da-48fd-80fa-8936747a2448
+# ╠═6ee4f2fe-284b-4e48-88bf-fefaf7a7dfc6
+# ╠═beb2f153-922c-4a0b-b602-3066806678f2
+# ╠═47f718c2-55a3-4424-9f29-e6fdf8361ea5
+# ╠═b8835098-8093-44f9-8d7c-d96116b3bec3
+# ╠═88d25fb0-861f-4969-a887-ea93a555637c
+# ╠═eded5fad-0403-4d39-9480-992f556a9aed
 # ╟─aef9601d-f05e-4995-937f-b1b9cb140e73
 # ╠═5e5cb6db-def1-4ac0-9fb7-51584d91970b
+# ╠═3f59166b-a09b-490e-87f4-7f2ccc57d154
 # ╠═d4784e37-86a4-49d5-91bb-b68dc0ec7d24
 # ╟─5cae56c7-c5ba-447b-a9ea-ef7f1ad99dfe
 # ╠═5508a281-254d-4d67-ab3d-ad32b2ff67f3
