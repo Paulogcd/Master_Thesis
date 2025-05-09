@@ -21,6 +21,7 @@ begin
 	using Loess
 	using Random
 	using JLD2
+	using Interpolations
 	TableOfContents(title = "Empirical model 1")
 end
 
@@ -81,7 +82,7 @@ begin
 end
 
 # ╔═╡ 2c6a9943-dbcc-44c6-8f84-7035cf920208
-md""" ## Minnesota Federal Bank Data """
+md""" ## FRED Data """
 
 # ╔═╡ 69649ff8-e60a-42d8-9f55-c291d6602ca2
 begin 
@@ -90,6 +91,17 @@ begin
 	Plots.plot(gdp.Year,gdp.GDP, legend = false, 
 			  xaxis = "Year", yaxis = "GDP", title = "USA GDP in Billion dollars")
 	# gdp[gdp.Year .== 2020,:GDP][1]
+end
+
+# ╔═╡ a681cb8d-14a2-4315-a25e-bc58c7618923
+begin 
+	Plots.gr()
+	interest_rate = CSV.read("interest_rate.csv", DataFrame)
+	Plots.plot(interest_rate.observation_date,
+			   interest_rate.FEDFUNDS, 
+			  xaxis = "Date", 
+			  yaxis = "Interst Rate", 
+			  title = "Interest Rate of the U.S. Federal Bank")
 end
 
 # ╔═╡ 5a8a26ec-4d3c-4d8e-a709-f2a4fab66801
@@ -1393,6 +1405,18 @@ begin
 	typical_productivity 	= [exp(0.1*x - 0.001*x^2) for x in 1:nperiods]
 end
 
+# ╔═╡ 2cb34078-622f-442a-8695-fc8ed2ae4504
+begin 
+	historical_r 	= interest_rate.FEDFUNDS
+	interpolated_r 	= Interpolations.interpolate(historical_r,
+										  BSpline(Quadratic()))
+	
+	Plots.plot(interest_rate.observation_date, 
+	 		   interpolated_r)
+
+	mean(interpolated_r)
+end
+
 # ╔═╡ 6fc2b02b-a505-4ce5-a504-f2549c66c290
 md"""Now, we are going to set:
 
@@ -1488,7 +1512,7 @@ md"""The increasing distance with time between the two results is normal: it ref
 
 Since we have a power $-\frac{1}{\rho}$, an increase in the main term will dercease the final results, thus making the models results smaller than the FOC without the $\gamma$."""
 
-# ╔═╡ 383d864d-310a-4e98-be68-48801a1c3a9d
+# ╔═╡ 83809ebb-94ba-4c27-bb59-5f6520c6fa12
 begin
 		ρ = 1.50::Float64 
 		φ = 2.00::Float64
@@ -1498,11 +1522,6 @@ end
 begin 
 	optimal_labor(c,z) = (c ^(-ρ)*(z))^(1/φ)
 end
-
-# ╔═╡ b9259bf1-e248-4ba7-bd9c-ae6094e368dd
-md"""
-The following could be useful to identify the lagrangien multiplicator:
-"""
 
 # ╔═╡ c3acbb4e-1330-4c7d-9875-fc89d8a35453
 md""" # Conclusion: Aggregate effect of health 
@@ -1935,7 +1954,7 @@ begin
 
 	dynamic_r = ((1 .- survival_probability[:probability_history]) ./ (survival_probability[:probability_history]))
 
-	small_r = (fill(0.05,nperiods))
+	small_r = (fill(mean(interpolated_r)/100,nperiods))
 	
 end
 
@@ -2148,74 +2167,6 @@ end
 begin
 	benchmark_c = benchmark[:optimal_choices][:,:,"c"]
 	# optimal_labor.(benchmark_c[1,:].array,1)
-end
-
-# ╔═╡ a99f953d-2df4-4f30-9ca4-d3302f56571f
-begin 
-	plotly()
-
-	lstar(c) = (c ^(-ρ)*(1 ./ survival_probability[2][1])/1)^(1/φ)
-
-	
-	plot_l_star = Plots.plot(s_range_2,
-							 smoothing(lstar.(benchmark[:optimal_choices][1,:,"c"].array),
-									   common_span),
-							 label = "Period: 1",
-							 xaxis = "Initial savings",
-							 yaxis = "Labor supply")
-	
-	for t in 1:nperiods
-		Plots.plot!(s_range_2,
-					smoothing(lstar.(benchmark[:optimal_choices][t,:,"c"].array), common_span),
-					label = "Period: $t")
-	end
-
-	Plots.plot!(xaxis = "Initial savings",
-				yaxis = "Labor supply",
-				title = "Labor supply policy",
-				legend = false)
-
-	Plots.plot(plot_l_star)
-end
-
-# ╔═╡ ae13c7ba-e907-4655-b2b9-4c34f373f9c4
-begin 
-	plotly()
-
-	c103 = benchmark[:optimal_choices][103,:,"c"].array
-	c104 = benchmark[:optimal_choices][104,:,"c"].array
-
-	l103 = lstar.(c103)
-	l104 = lstar.(c104)
-
-	Plots.plot(xaxis = "Labor",
-			   yaxis = "Consumption")
-	
-	Plots.plot!(s_range_2,
-			smoothing(c103,common_span),
-			label 	= "Model - period 103")
-	
-	c_FOC1_last = (1 .* l103.^φ .* (1 ./ survival_probability[2][103])^(-1)) .^ (-1/ρ)
-
-	Plots.plot!(s_range_2,
-				smoothing(c_FOC1_last,common_span),
-				label 	= "FOC 1")
-	
-	c_FOC2_103 = Array{Float64}(undef,length(c104))
-	
-	c_FOC2_103 = 
-		(β *
-			survival_probability[1][104] .*
-			(c104 .^ (-ρ)) .*
-			(1+small_r[104])) .^ (-1/ρ)
-
-	Plots.plot!(s_range_2,
-				smoothing(c_FOC2_103,common_span),
-				label = "FOC 2 - Euler 103")
-
-	# Plots.plot!(s_range_2,
-	# 			smoothing(c104,common_span),
-	# 			label = "Model - last period")
 end
 
 # ╔═╡ 25b0c3e1-eca9-4e09-9d06-e302f517e485
@@ -2520,46 +2471,6 @@ begin
 	Plots.plot(budget_clearing_1_approximation,budget_clearing_1_numerical)
 end
 
-# ╔═╡ 34210909-d7ea-4609-804a-729302bc504f
-begin 
-	plotly()
-
-	c103n = numerical[:optimal_choices][103,:,"c"].array
-	c104n = numerical[:optimal_choices][104,:,"c"].array
-
-	l103n = lstar.(c103)
-	l104n = lstar.(c104)
-
-	Plots.plot(xaxis = "Labor",
-			   yaxis = "Consumption")
-	
-	Plots.plot!(s_range_2,
-			smoothing(c103,common_span),
-			label 	= "Model - period 103")
-	
-	c_FOC1_lastn = (1 .* l103n.^φ .* (1 ./ survival_probability[2][103])^(-1)) .^ (-1/ρ)
-
-	Plots.plot!(s_range_2,
-				smoothing(c_FOC1_lastn,common_span),
-				label 	= "FOC 1")
-	
-	c_FOC2_103n = Array{Float64}(undef,length(c104))
-	
-	c_FOC2_103n = 
-		(β *
-			survival_probability[1][104] .*
-			(c104n .^ (-ρ)) .*
-			(1+small_r[104])) .^ (-1/ρ)
-
-	Plots.plot!(s_range_2,
-				smoothing(c_FOC2_103n,common_span),
-				label = "FOC 2 - Euler 103")
-
-	# Plots.plot!(s_range_2,
-	# 			smoothing(c104,common_span),
-	# 			label = "Model - last period")
-end
-
 # ╔═╡ 47f718c2-55a3-4424-9f29-e6fdf8361ea5
 begin 
 	plotly()
@@ -2700,51 +2611,6 @@ begin
 	
 end
 
-# ╔═╡ 46ff7619-926c-445d-abf5-7bad5878169f
-begin 
-	plotly()
-
-				  
-	c1 				= benchmark[:optimal_choices][1,:,"c"].array
-					
-	c2 				= benchmark[:optimal_choices][2,:,"c"].array
-					
-	l1 				= optimal_labor.(c1,z_benchmark[1])
-	l2 				= optimal_labor.(c1,z_benchmark[2])
-
-	Plots.plot(xaxis = "Labor",
-			   yaxis = "Consumption")
-	
-	# Plots.plot!(s_range_2,
-	# 		smoothing(c1,common_span),
-	# 		label 	= "Model - period 1")
-
-
-	
-	c_FOC1 = (l1.^φ .* (z_benchmark[1])^(-1)) .^ (-1/ρ)
-
-	Plots.plot!(labor_range_plot,
-				smoothing(c_FOC1,common_span),
-				label 	= "FOC 1")
-	
-	c_FOC2 = Array{Float64}(undef,length(c2))
-	
-	c_FOC2 = 
-		(β *
-			survival_probability[1][1] .*
-			(c2 .^ (-ρ)) .*
-			survival_probability[2][1] .*
-			(1+small_r[2])) .^ (-1/ρ)
-
-	Plots.plot!(labor_range_plot,
-				smoothing(c_FOC2,common_span),
-				label = "FOC 2 - Euler")
-
-	Plots.plot!(labor_range_plot,
-				smoothing(c2,common_span),
-				label = "Model - period 2")
-end
-
 # ╔═╡ b750b8c1-655b-4fb6-a3f8-1aae1a0e9485
 begin 
 	
@@ -2817,7 +2683,7 @@ begin
 
 		Plots.plot!(s_range_2,
 		c_benchmark[other_period,:],
-		label = "A - FOC 2")
+		label = "A - Results")
 	
 	
 end
@@ -2996,6 +2862,7 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
+Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
 JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
 Loess = "4345ca2d-374a-55d4-8d30-97f9976e7612"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
@@ -3012,6 +2879,7 @@ CSV = "~0.10.15"
 CategoricalArrays = "~0.10.8"
 DataFrames = "~1.7.0"
 GLM = "~1.9.0"
+Interpolations = "~0.15.1"
 JLD2 = "~0.5.12"
 Loess = "~0.6.4"
 MLJ = "~0.20.7"
@@ -3029,7 +2897,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "3ecf56c5d9102eca22be22e96ec4ff5740b57720"
+project_hash = "cb3ac54723c0f1f1e2072ae482834a28fa1e90c6"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "e2478490447631aedba0823d4d7a80b2cc8cdb32"
@@ -3161,6 +3029,12 @@ version = "1.1.1"
     Metal = "dde4c033-4e86-420c-a63e-0dd931031962"
     OpenCL = "08131aa3-fb12-5dee-8b74-c09406e224a2"
     oneAPI = "8f75cd03-7ff8-4ecb-9b8f-daf728133b1b"
+
+[[deps.AxisAlgorithms]]
+deps = ["LinearAlgebra", "Random", "SparseArrays", "WoodburyMatrices"]
+git-tree-sha1 = "01b8ccb13d68535d73d2b0c23e39bd23155fb712"
+uuid = "13072b0f-2c55-5437-9ae7-d433b7a33950"
+version = "1.1.0"
 
 [[deps.BangBang]]
 deps = ["Accessors", "ConstructionBase", "InitialValues", "LinearAlgebra"]
@@ -3794,6 +3668,16 @@ deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 version = "1.11.0"
 
+[[deps.Interpolations]]
+deps = ["Adapt", "AxisAlgorithms", "ChainRulesCore", "LinearAlgebra", "OffsetArrays", "Random", "Ratios", "Requires", "SharedArrays", "SparseArrays", "StaticArrays", "WoodburyMatrices"]
+git-tree-sha1 = "88a101217d7cb38a7b481ccd50d21876e1d1b0e0"
+uuid = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
+version = "0.15.1"
+weakdeps = ["Unitful"]
+
+    [deps.Interpolations.extensions]
+    InterpolationsUnitfulExt = "Unitful"
+
 [[deps.InverseFunctions]]
 git-tree-sha1 = "a779299d77cd080bf77b97535acecd73e1c5e5cb"
 uuid = "3587e190-3f89-42d0-90ee-14403ec27112"
@@ -4245,6 +4129,15 @@ version = "0.10.3"
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
 
+[[deps.OffsetArrays]]
+git-tree-sha1 = "117432e406b5c023f665fa73dc26e79ec3630151"
+uuid = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
+version = "1.17.0"
+weakdeps = ["Adapt"]
+
+    [deps.OffsetArrays.extensions]
+    OffsetArraysAdaptExt = "Adapt"
+
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "887579a3eb005446d514ab7aeac5d1d027658b8f"
@@ -4492,6 +4385,16 @@ deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 version = "1.11.0"
 
+[[deps.Ratios]]
+deps = ["Requires"]
+git-tree-sha1 = "1342a47bf3260ee108163042310d26f2be5ec90b"
+uuid = "c84ed2f1-dad5-54f0-aa8e-dbefe2724439"
+version = "0.4.5"
+weakdeps = ["FixedPointNumbers"]
+
+    [deps.Ratios.extensions]
+    RatiosFixedPointNumbersExt = "FixedPointNumbers"
+
 [[deps.RecipesBase]]
 deps = ["PrecompileTools"]
 git-tree-sha1 = "5c3d09cc4f31f5fc6af001c250bf1278733100ff"
@@ -4575,6 +4478,11 @@ deps = ["ConstructionBase", "Future", "MacroTools", "StaticArraysCore"]
 git-tree-sha1 = "c5391c6ace3bc430ca630251d02ea9687169ca68"
 uuid = "efcf1570-3423-57d1-acb7-fd33fddbac46"
 version = "1.1.2"
+
+[[deps.SharedArrays]]
+deps = ["Distributed", "Mmap", "Random", "Serialization"]
+uuid = "1a1011a3-84de-559e-8e89-a11a2f7dc383"
+version = "1.11.0"
 
 [[deps.ShiftedArrays]]
 git-tree-sha1 = "503688b59397b3307443af35cd953a13e8005c16"
@@ -4887,6 +4795,12 @@ git-tree-sha1 = "b1be2855ed9ed8eac54e5caff2afcdb442d52c23"
 uuid = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
 version = "1.4.2"
 
+[[deps.WoodburyMatrices]]
+deps = ["LinearAlgebra", "SparseArrays"]
+git-tree-sha1 = "c1a7aa6219628fcd757dede0ca95e245c5cd9511"
+uuid = "efce3f68-66dc-5838-9240-27a6d6f5f9b6"
+version = "1.0.0"
+
 [[deps.WorkerUtilities]]
 git-tree-sha1 = "cd1659ba0d57b71a464a29e64dbc67cfe83d54e7"
 uuid = "76eceee3-57b5-4d4a-8e66-0e911cebbf60"
@@ -5167,8 +5081,9 @@ version = "1.8.1+0"
 # ╟─5ad9efa0-a367-4643-88e3-d0fe69d8132a
 # ╠═ea58fb60-fdd3-4d00-b7fe-ceafe869adf0
 # ╠═8141f03e-7a82-4b90-9a5d-427201b3be45
-# ╟─2c6a9943-dbcc-44c6-8f84-7035cf920208
+# ╠═2c6a9943-dbcc-44c6-8f84-7035cf920208
 # ╠═69649ff8-e60a-42d8-9f55-c291d6602ca2
+# ╠═a681cb8d-14a2-4315-a25e-bc58c7618923
 # ╟─5a8a26ec-4d3c-4d8e-a709-f2a4fab66801
 # ╟─b28eb188-6d11-43ef-86d1-cb739dab4646
 # ╠═b7f90644-d4fe-4cb7-a60e-5ab180a35d50
@@ -5211,7 +5126,7 @@ version = "1.8.1+0"
 # ╠═abda697c-044b-4b42-b386-aab9226b755a
 # ╠═a12ccacc-e6be-44bf-a46f-d513a5d3376d
 # ╟─1dabd52f-2e78-40a1-b8dc-d213fdf673a2
-# ╠═78e8a9b6-fdfd-4b9c-914e-413037fc08de
+# ╟─78e8a9b6-fdfd-4b9c-914e-413037fc08de
 # ╟─e29e2ee8-1e85-4236-96ca-47962898e105
 # ╟─b04ea071-adf7-4d2b-9ad9-2acb6338c321
 # ╠═32daa090-3c9a-4d9f-b1a2-d969cf4e6966
@@ -5233,6 +5148,7 @@ version = "1.8.1+0"
 # ╟─e029f368-ec95-4317-8e87-2153ace4c123
 # ╟─ba4edf7b-f17e-4a4d-87c0-4bb262a4c025
 # ╠═5c51eae5-c28e-4be1-8a5c-61ca8038f1c5
+# ╠═2cb34078-622f-442a-8695-fc8ed2ae4504
 # ╠═cc131fbc-a2d2-42af-8160-b22e32aac512
 # ╟─6fc2b02b-a505-4ce5-a504-f2549c66c290
 # ╠═28700efa-39fc-4628-aab5-b2822fa97c9d
@@ -5272,12 +5188,7 @@ version = "1.8.1+0"
 # ╠═cc5b3b39-a6de-4868-9973-1c95db09b98a
 # ╠═0824953d-089a-414d-b634-ad123e347e22
 # ╠═cd14fc7e-c14a-4334-8e8d-57f76f2a60f0
-# ╠═383d864d-310a-4e98-be68-48801a1c3a9d
-# ╠═a99f953d-2df4-4f30-9ca4-d3302f56571f
-# ╟─b9259bf1-e248-4ba7-bd9c-ae6094e368dd
-# ╠═46ff7619-926c-445d-abf5-7bad5878169f
-# ╠═ae13c7ba-e907-4655-b2b9-4c34f373f9c4
-# ╠═34210909-d7ea-4609-804a-729302bc504f
+# ╠═83809ebb-94ba-4c27-bb59-5f6520c6fa12
 # ╟─c3acbb4e-1330-4c7d-9875-fc89d8a35453
 # ╠═4258e19c-4277-428a-9164-3d8615520ad0
 # ╠═7435b69e-a57a-44d2-8978-622f9f4236d3

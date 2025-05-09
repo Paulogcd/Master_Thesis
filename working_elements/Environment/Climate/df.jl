@@ -33,9 +33,34 @@ end
 
 # Average months, to get value per year:
 begin
-    temperature = combine(groupby(temperature, :Year), [:annual_average, :five_annual_average] .=> mean .=> [:av_annual_t, :av_5_annual_t])
-    temperature = DataFrame(temperature)
+    t1 = combine(groupby(temperature, :Year),
+    [:annual_average, :five_annual_average] .=> mean .=> [:av_annual_t, :av_5_annual_t])
+    t1 = DataFrame(t1)
+
+    t2 = combine(groupby(temperature, :Year),
+    ["Annual anomaly (1)", "Annual anomaly (2)"] .=> mean .=> ["Annual_lower_anomaly", "Annual_upper_anomaly"])
+    t2 = DataFrame(t2)
+    
+    temperature = leftjoin(t1,t2, on = :Year)
 end
+tp = temperature[temperature.Year .>= 1900, :]
+
+Plots.plot(tp.Year, tp.av_annual_t)
+
+mid = (tp.Annual_lower_anomaly .+
+    tp.Annual_upper_anomaly) ./ 2   #the midpoints (usually representing mean values)
+w = (tp.Annual_upper_anomaly .- tp.Annual_lower_anomaly) ./ 2     #the vertical deviation around the means
+
+plot(tp.Year,
+    tp.av_annual_t,
+    ribbon = w ,
+    fillalpha = 0.35,
+    c = 1, lw = 2,
+    legend = :topleft,
+    label = "Mean")
+
+# plot!(tp.Year,tp.Annual_upper_anomaly, line = :scatter, msw = 0, ms = 2.5, label = "Lower bound")
+# plot!(tp.Year,tp.Annual_lower_anomaly, line = :scatter, msw = 0, ms = 2.5, label = "Upper bound")
 
 # describe(temperature)
 
