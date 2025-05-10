@@ -417,52 +417,6 @@ md""" ## Simulations
 
 If now we use the above estimated functions, we obtain: """
 
-# ╔═╡ 6c5c973f-9197-4114-9924-8e7a299b1472
-begin 
-	""" 
-	The survival function returns the probability of survival given age, current health, annual temperature, and GDP. 
-		
-		function survival(;Age::Int64,
-			Health::Int64,
-			Temperature::Float64,
-			GDP::Float64)::Float64
-	
-	"""
-	function survival(;Age::Int64,
-					  Health::Int64,
-					  Temperature::Float64,
-					  GDP::Float64)::Float64
-
-		# For reminder: 
-		# model_health_age_temperature_gdp =
-		# GLM.glm(@formula(Status ~
-		# 				 	Age +
-		# 					Health +
-		# 					av_annual_t + 
-		# 					GDP
-		# 					),
-		# 		DF, Bernoulli(), LogitLink())
-
-		data = DataFrame(Age = Age, 
-						Health = Health, 
-						av_annual_t = Temperature, 
-						GDP = GDP)
-
-		result = GLM.predict(model_health_age_temperature_gdp,data)
-
-		# result = Float64.(result)
-
-		result = result[1]
-		
-		return result
-	end
-end
-
-# ╔═╡ d7ba6c4c-0f80-453b-a893-648d80b0c9b3
-begin 
-	survival(Age = 99, Health = 3, Temperature = 0.62, GDP = 2200.0)
-end
-
 # ╔═╡ 919c1aae-4e9b-489f-9950-17d11f59555c
 begin 
 	"""
@@ -503,168 +457,11 @@ begin
 		
 end
 
-# ╔═╡ 22019072-9fa5-40a3-bb22-89696e19a2d5
-begin 	
-	""" 
-	The function `population_simulation` allows for a simulation of the evolution of a population of size `N` for `T` periods, given a weather and a GDP path.
-		
-		population_simulation(;N::Int64,
-							   T::Int64,
-							   weather_history::Vector{Float64},
-							   GDP::Vector{Float64})
-	"""
-	function population_simulation(;N::Int64,
-								   T::Int64,
-								   weather_history::Vector{Float64},
-								   GDP::Vector{Float64})::NamedTuple
-
-		# Initialisation:
-		collective_age 						= []
-		collective_living_history 			= []
-		collective_health_history 			= []
-		collective_probability_history 		= []
-		
-		Threads.@threads for i in 1:N # For each individual
-			
-			# Initialisation of individual results:
-			individual_living_history 			= zeros(T)
-			individual_health_history 			= zeros(T)
-			individual_probability_history 		= zeros(T) # Setting it to 0 makes r ≠ Inf
-
-			individual_past_health 				= 1 	# Excellent health
-			cumulative_survival_prob 			= 1 	# Birth probability
-	
-			for t in 1:T # For each period 
-		    
-			    # Age : 
-			    age = t
-			    
-			    # The weather comes from the weather history
-			    weather_t = weather_history[t]
-			    
-			    # Health status :
-					# probability of being in good health: 
-					individual_pgh = health(Age 		= age, 
-											Health_t_1 	= individual_past_health,
-											Temperature = weather_t)::Vector{Float64}
-				
-					# Health status draw:
-					individual_health_t = 	
-						sample(1:5,Weights(individual_pgh))
-
-					# We add it to the history
-					individual_health_history[t] = individual_health_t
-					# The current health becomes the past one for next period
-					individual_past_health = individual_health_t
-	
-			    # Living status : 
-				
-					annual_survival = survival(Age 			= age,
-											 Health 		= individual_health_t, 
-											 Temperature 	= weather_t,
-											 GDP 			= GDP[t])::Float64
-				
-            		cumulative_survival_prob = 
-						cumulative_survival_prob * annual_survival
-
-					individual_probability_history[t] = cumulative_survival_prob
-				
-				    # Realisation : 
-					individual_living_status = 
-						rand(Binomial(1,cumulative_survival_prob))#*individual_pd_2))
-
-				# Possible alternative formulation: 
-					# if rand() > cumulative_survival_prob
-					# 	individual_living_status = 0
-					# else
-					# 	individual_living_status = 1
-					# end
-
-					# Into its history :
-					individual_living_history[t] = individual_living_status
-
-				# When death comes : 
-				if individual_living_status == 0
-					push!(collective_age, age)
-				    push!(collective_living_history, individual_living_history)
-					push!(collective_health_history, individual_health_history)
-					push!(collective_probability_history, individual_probability_history)
-					break
-				end
-				
-			end # End of loop over periods
-			
-		end # End of loop over individuals
-
-		results = (;weather_history,
-				   collective_age,
-				   collective_living_history,
-				   collective_health_history, 
-				  collective_probability_history)
-		println("Life expectancy in this population: ", mean(collective_age))
-		
-		return(results)
-	end
-end 
-
-# ╔═╡ 410fe8b7-79a4-44b6-abfa-42f8c0e0aa60
-begin 
-	println("Age 80 survival: ", survival(Age=100, Health=3, Temperature=2.0, GDP=21354.0))
-	println("Age 90 survival: ", survival(Age=100, Health=3, Temperature=1.0, GDP=21354.0))
-	println("Age 100 survival: ", survival(Age=100, Health=3, Temperature=0.61, GDP=21354.0))
-end
-
-# ╔═╡ ffe1f6bb-e4b6-4f61-9468-2009244b607f
-begin 
-	periods 			= 110
-	fixed_temperature_1 = 0.61 # 2018
-	fixed_temperature_2 = 0.71 # 0.10 increase from 2018
-	
-	population_1 = population_simulation(N 	= 1_000,
-						  T 				= periods, 
-						  weather_history 	= fill(fixed_temperature_1,periods),
-						  GDP 				= fill(gdp[gdp.Year .== 2020,:GDP][1], periods))
-	population_2 = population_simulation(N 	= 1_000,
-						  T 				= periods, 
-						  weather_history 	= fill(fixed_temperature_2,periods),
-						  GDP 				= fill(gdp[gdp.Year .== 2020,:GDP][1], periods))
-	
-end
-
 # ╔═╡ 520abb10-18f1-4747-8d72-b5749834d713
 md""" The life expectancy is coherent with the descriptive statistics of the data. Also, it's important to remember that the life expenctancy of an individual in 1950 (average year minus average age) was 69 years old. This discrepancy with the current life expectancy (77 years old) is due to the year of birth of the individuals observed by the HRS data. """
 
 # ╔═╡ b3dd0d43-dd39-4b2a-9f16-7ecb1f6646c9
 Random.seed!(1234);
-
-# ╔═╡ abda697c-044b-4b42-b386-aab9226b755a
-begin 
-	Plots.gr()
-	
-	cls1 	= []
-	for i in 1:length(population_1[:collective_living_history])
-		tmp = population_1[:collective_living_history][i]
-		push!(cls1,tmp)
-	end
-
-	Plot1 	= Plots.plot(1:periods,sum(cls1[:, 1]),
-						 # legend = false, 
-						 label = "Average temperature = $fixed_temperature_1")
-
-	cls2 	= []
-	for i in 1:length(population_2[:collective_living_history])
-		tmp = population_2[:collective_living_history][i]
-		push!(cls2,tmp)
-	end
-
-	Plots.plot!(1:periods, sum(cls2[:, 1]),
-						 # legend = false,
-						 label = "Average temperature = $fixed_temperature_2")
-	Plots.plot!(xaxis = "Time",
-		yaxis = "Population",
-		title = "Evolution of population: constant temperatures")
-	
-end 
 
 # ╔═╡ 1dabd52f-2e78-40a1-b8dc-d213fdf673a2
 md""" # Maximisation problem 
@@ -794,112 +591,6 @@ budget_surplus(c = 10.00,
 			   s = 1.00,
 			   z = 1.00,
 			   r = (1-0.8)/0.8)
-
-# ╔═╡ e3c5099c-063c-4809-943f-557cf5269691
-begin 
-	"""
-	The function `individual_probability_simulation` allows to simulate survival probability without actually drawing a survival status. It is used in the Numerical methods solving process.
-
-		individual_probability_simulation(;T::Integer,
-								   temperature_path::Vector{Float64},
-								   GDP_path::Vector{Float64})::Vector{Float64}
-
-	This is useful for the computation of the interest rate at each period.
-	
-	"""
-	function individual_probability_simulation(;T::Integer,
-								   temperature_path::Vector{Float64},
-								   GDP_path::Vector{Float64})
-		
-		# Initialization: 
-		probability_history = Vector{Float64}(undef,T)
-		health_history 		= Vector{Float64}(undef,T)
-
-		individual_past_health 				= 1 	# Excellent health
-		cumulative_survival_prob 			= 1 	# Birth probability
-		
-		for t in 1:T
-			# Age : 
-			age = t
-			    
-			# The weather comes from the weather history
-			weather_t = temperature_path[t]
-			    
-			# Health status :
-				# probability of being in good health: 
-				individual_pgh = health(Age 		= age, 
-										Health_t_1 	= individual_past_health,
-										Temperature = weather_t)::Vector{Float64}
-			
-				# Health status draw:
-				individual_health_t = 	
-					sample(1:5,Weights(individual_pgh))
-
-				# We add it to the history
-				# individual_health_history[t] = individual_health_t
-				# The current health becomes the past one for next period
-				individual_past_health = individual_health_t
-				health_history[t] = individual_past_health
-
-			# Living status : 
-			
-			annual_survival = survival(Age 			= age,
-									 Health 		= individual_health_t, 
-									 Temperature 	= weather_t,
-									 GDP 			= GDP_path[t])::Float64
-		
-			cumulative_survival_prob = 
-				cumulative_survival_prob * annual_survival
-
-			probability_history[t] = cumulative_survival_prob
-		end
-		return (;probability_history,health_history)
-	end
-end
-
-# ╔═╡ ad02c350-0b75-49d7-8aad-253dd61e0062
-individual_probability_simulation(T = 100,
-					  temperature_path = 0.61 .* ones(100),
-					  GDP_path = fill(gdp[gdp.Year .== 2020, :GDP][1],100))
-
-# ╔═╡ 3f4ee3c5-a87b-4f66-a6a5-4992d15784b7
-begin 
-	"""
-	The function `collective_probability_simulation` allows to simulate survival probability without actually drawing a survival status, for a population. It is used in the numerical methods solving process.
-
-		collective_probability_simulation(;N::Integer,
-									T::Integer,
-									temperature_path::Vector{Float64},
-									GDP_path::Vector{Float64})::Vector{Float64}
-
-	
-	"""
-	function collective_probability_simulation(;N::Integer, 
-											   T::Integer,
-											   temperature_path::Vector{Float64},
-											   GDP_path::Vector{Float64})
-
-		collective_probability = Vector{Array}(undef,N)
-		collective_health = Vector{Array}(undef,N)
-		
-		Threads.@threads for n in 1:N
-			
-			tmp = individual_probability_simulation(T = T, 
-											 temperature_path = temperature_path,
-											 GDP_path = GDP_path)
-			
-			collective_probability[n] 	= tmp[1]
-			collective_health[n] 		= tmp[2]
-		end
-		
-		return (;collective_probability,collective_health)
-	end
-end
-
-# ╔═╡ 47a68901-649f-4e8f-9589-425bd695fa3b
-cp = collective_probability_simulation(N = 200, T = 100,
-					  temperature_path = 0.61 .* ones(100),
-					  GDP_path = fill(gdp[gdp.Year .== 2020, :GDP][1],100))
 
 # ╔═╡ b55356ef-c4d8-4533-b90a-d2ba2adbbfc3
 begin 
@@ -1726,26 +1417,6 @@ begin
 	mean(interpolated_r)
 end
 
-# ╔═╡ cc131fbc-a2d2-42af-8160-b22e32aac512
-begin 
-	s_range_2 			= 0.00:0.1:2.00
-	sprime_range_2 		= s_range_2
-	growing_temperature = collect(range(start = 0.61,
-										stop = 2.00,
-										length = nperiods))
-	Stable_GDP 			= gdp[gdp.Year .== 2020, :GDP][1]
-
-	survival_probability =
-		individual_probability_simulation(T = nperiods, 
-										  temperature_path = growing_temperature,
-										  GDP_path = fill(Stable_GDP,nperiods))
-
-	dynamic_r = ((1 .- survival_probability[:probability_history]) ./ (survival_probability[:probability_history]))
-
-	small_r = (fill(mean(interpolated_r)/100,nperiods))
-	
-end
-
 # ╔═╡ 6fc2b02b-a505-4ce5-a504-f2549c66c290
 md"""Now, we are going to set:
 
@@ -1765,40 +1436,6 @@ begin
 	good_scenario = collect(range(start = 0.61,
 										stop = 2.00,
 										length = nperiods))
-end
-
-# ╔═╡ f65052f6-d532-426e-b4cc-a755d9955ae4
-begin 
-	@time benchmark = backwards(s_range			= s_range_2,
-							sprime_range		= s_range_2,
-							consumption_range 	= 0:0.01:consumption_max,
-							# labor_range			= 0.00:0.05:2,
-							nperiods 			= nperiods,
-							r 					= small_r,
-							z 					= 1 ./ mean(cp_benchmark_i[2]),
-							w 					= growing_temperature,
-							proba_survival 		= mean(cp_benchmark_i[1]),
-							h 					= 2 .* ones(nperiods),
-							ρ 					= 1.50,
-							φ 					= 2.00,
-							β 					= 0.96)
-end
-
-# ╔═╡ 25b0c3e1-eca9-4e09-9d06-e302f517e485
-begin 
-	@time numerical = backwards_numerical(s_range = s_range_2,
-							sprime_range		= s_range_2,
-							consumption_range 	= 0:0.01:consumption_max,
-							labor_range			= 0.00:0.05:2,
-							nperiods 			= nperiods,
-							r 					= small_r,
-							z 					= 1 ./ mean(cp_benchmark_i[2]),
-							w 					= growing_temperature,
-							proba_survival 		= mean(cp_benchmark_i[1]),
-							h 					= 2 .* ones(nperiods),
-							ρ 					= 1.50,
-							φ 					= 2.00,
-							β 					= 0.96)
 end
 
 # ╔═╡ 96445695-d923-44bd-8c68-d89fd974dc13
@@ -1827,142 +1464,8 @@ common_span = 0.99
 # ╔═╡ d523f5d5-113b-44a0-a631-b05acc1a408a
 md""" ### Value function"""
 
-# ╔═╡ f5052cbb-d54f-4b74-a57d-959578a989f6
-begin 
-	plotly()
-
-	# Approximation: 
-	plot_Vstar_approximation =
-		Plots.plot(s_range_2,benchmark[:Vstar][1,:], label = "Period: 1")
-	
-	for t in 1:nperiods
-		Plots.plot!(s_range_2,benchmark[:Vstar][t,:], label = "Period: $t")
-	end
-	
-	Plots.plot!(xaxis = "Initial savings" , yaxis = "Value function")
-	
-	Plots.plot!(legend = false, title = "Approximation")
-
-	# Numerical: 
-
-	plot_Vstar_numerical =
-		Plots.plot(s_range_2,numerical[:Vstar][1,:], label = "Period: 1")
-	
-	for t in 1:nperiods
-		Plots.plot!(s_range_2,numerical[:Vstar][t,:], label = "Period: $t")
-	end
-	
-	Plots.plot!(xaxis = "Initial savings" , yaxis = "Value function")
-	
-	Plots.plot!(legend = false, title = "Numerical solution")
-
-	Plots.plot(plot_Vstar_approximation,plot_Vstar_numerical)
-	
-end
-
 # ╔═╡ 47fab280-4f42-412d-ad35-adf8fa2e988f
 md""" ### Consumption"""
-
-# ╔═╡ 0a0cb7c1-99ac-41db-8061-480090fd44f6
-begin 
-	plotly()
-
-	# Approximation model: 
-	
-	plot_c_star_approximation = 
-		Plots.plot(s_range_2,
-				   smoothing(benchmark[:optimal_choices][1,:,"c"], common_span),
-				   label = "Period: 1",
-				   xaxis = "Initial savings",
-				   yaxis = "Consumption")
-	
-	for t in 1:nperiods#10:10:nperiods
-		Plots.plot!(s_range_2,
-					smoothing(benchmark[:optimal_choices][t,:,"c"], common_span),
-					label = "Period: $t")
-	end
-
-	Plots.plot!(xaxis = "Initial savings",
-				yaxis = "Optimal consumption",
-				title = "Approximation", legend = false)
-
-	# Full-Numerical solution: 
-
-		plot_c_star_numerical = 
-		Plots.plot(s_range_2,
-				   smoothing(numerical[:optimal_choices][1,:,"c"], common_span),
-				   label = "Period: 1",
-				   xaxis = "Initial savings",
-				   yaxis = "Consumption")
-	
-	for t in 1:nperiods#10:10:nperiods
-		Plots.plot!(s_range_2,
-					smoothing(numerical[:optimal_choices][t,:,"c"], common_span),
-					label = "Period: $t")
-	end
-
-	Plots.plot!(xaxis = "Initial savings",
-				yaxis = "Optimal consumption",
-				title = "Numerical solution", legend = false)
-	
-	Plots.plot(plot_c_star_approximation,plot_c_star_numerical)
-end
-
-# ╔═╡ de9778bf-f42a-45bb-aaf4-4d2fa25641ea
-begin 
-	p_c_a_b = Plots.plot(
-			  xaxis = "Initial endowment", 
-			  yaxis = "Consumption",
-	title = "Approximation")
-
-	for T in 20:20:100
-		low = T - 19
-		tmp = 0
-		for t in low:T
-			tmp = tmp .+ benchmark[:optimal_choices][t,:,"c"].array
-		end
-		tmp = tmp ./ (T-low)
-	Plots.plot!(s_range_2,tmp, label = "$low, $T")
-	end
-
-	p_c_a_n = Plots.plot(
-			  xaxis = "Initial endowment", 
-			  yaxis = "Consumption",
-	title = "Numerical solution")
-
-	for T in 20:20:100
-		low = T - 19
-		tmp = 0
-		for t in low:T
-			tmp = tmp .+ numerical[:optimal_choices][t,:,"c"].array
-		end
-		tmp = tmp ./ (T-low)
-	Plots.plot!(s_range_2,tmp, label = "$low, $T", legend = false)
-	end
-
-	Plots.plot(p_c_a_b,p_c_a_n)
-end
-
-# ╔═╡ 98bda9bb-ec29-4387-ad60-411006a9f309
-begin 
-	consumption_1_approximation = Plots.plot(s_range_2,
-				   benchmark[:optimal_choices][1,:,"c"],
-				   label = "Period: 1",
-				 primary = false,
-				   xaxis = "Initial savings",
-				   yaxis = "Consumption",
-			  title = "Approximation")
-
-	consumption_1_numerical = Plots.plot(s_range_2,
-				   numerical[:optimal_choices][1,:,"c"],
-				   label = "Period: 1",
-				 primary = false,
-				   xaxis = "Initial savings",
-				   yaxis = "Consumption",
-			  title = "Numerical solution")
-
-	Plots.plot(consumption_1_approximation,consumption_1_numerical)
-end
 
 # ╔═╡ 3a74fdf2-87da-48fd-80fa-8936747a2448
 md""" ### Labor 
@@ -1971,171 +1474,14 @@ md""" ### Labor
 The first algorithm uses the first F.O.C. condition to set a fixed value of the labor. Therefore, we are going to use the formula to retrieve the value of labor supplied, based on the chosen consumption.
 """
 
-# ╔═╡ beb2f153-922c-4a0b-b602-3066806678f2
-begin
-	benchmark_c = benchmark[:optimal_choices][:,:,"c"]
-	# optimal_labor.(benchmark_c[1,:].array,1)
-end
-
 # ╔═╡ aef9601d-f05e-4995-937f-b1b9cb140e73
 md""" ### Savings"""
-
-# ╔═╡ 5e5cb6db-def1-4ac0-9fb7-51584d91970b
-begin 
-	plotly()
-
-	# Approximation: 
-
-	plot_sprime_star_approximation = Plots.plot(s_range_2,
-								  smoothing(benchmark[:optimal_choices][1,:,"sprime"], common_span))
-	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
-	for t in 1:nperiods # [50,80,100,104]
-	 	Plots.plot!(s_range_2,
-					smoothing(benchmark[:optimal_choices][t,:,:][:,"sprime"], common_span), label = "Period: $t")
-	end
-	Plots.plot!(title = "Approximation", legend = false)
-
-	# Numerical solution: 
-
-
-	plot_sprime_star_numerical = Plots.plot(s_range_2,
-								  smoothing(numerical[:optimal_choices][1,:,"sprime"], common_span))
-	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
-	for t in 1:nperiods # [50,80,100,104]
-	 	Plots.plot!(s_range_2,
-					smoothing(numerical[:optimal_choices][t,:,:][:,"sprime"], common_span), label = "Period: $t")
-	end
-	Plots.plot!(title = "Numerical solution", legend = false)
-	
-	# Ploting both:
-	Plots.plot(plot_sprime_star_approximation,plot_sprime_star_numerical)
-end
-
-# ╔═╡ 3f59166b-a09b-490e-87f4-7f2ccc57d154
-begin 
-	p_sprime_a = Plots.plot(
-			  xaxis = "Initial endowment", 
-			  yaxis = "Savings",
-	title = "Approximation")
-
-	for T in 20:20:100
-		low = T - 19
-		tmp = 0
-		for t in low:T
-			tmp = tmp .+ benchmark[:optimal_choices][t,:,"sprime"].array
-		end
-		tmp = tmp ./ (T-low)
-	Plots.plot!(s_range_2,tmp, label = "$low, $T")
-	end
-
-	p_sprime_n = Plots.plot(
-			  xaxis = "Initial endowment", 
-			  yaxis = "Savings",
-	title = "Numerical solution")
-
-	for T in 20:20:100
-		low = T - 19
-		tmp = 0
-		for t in low:T
-			tmp = tmp .+ numerical[:optimal_choices][t,:,"sprime"].array
-		end
-		tmp = tmp ./ (T-low)
-	Plots.plot!(s_range_2,tmp, label = "$low, $T", legend = false)
-	end
-
-	Plots.plot(p_sprime_a,p_sprime_n)
-end
-
-# ╔═╡ d4784e37-86a4-49d5-91bb-b68dc0ec7d24
-begin
-	old_age = 60
-	
-	savings_2_approximation = Plots.plot(s_range_2,
-			   benchmark[:optimal_choices][1,:,"sprime"],
-			   label = "Period: 1",
-			   xaxis = "Initial savings",
-			   yaxis = "Savings at next period",
-			   legend = false,
-			   title = "Approximation")
-	
-	Plots.plot!(s_range_2,
-			   benchmark[:optimal_choices][old_age,:,"sprime"], 
-			   label = "Period $old_age")
-
-	savings_2_numerical = Plots.plot(s_range_2,
-			   numerical[:optimal_choices][1,:,"sprime"],
-			   label = "Period: 1",
-			   xaxis = "Initial savings",
-			   yaxis = "Savings at next period",
-			   legend = false,
-			   title = "Numerical solution")
-	
-	Plots.plot!(s_range_2,
-			   numerical[:optimal_choices][old_age,:,"sprime"], 
-			   label = "Period $old_age")
-
-	Plots.plot(savings_2_approximation,savings_2_numerical)
-end
 
 # ╔═╡ 5cae56c7-c5ba-447b-a9ea-ef7f1ad99dfe
 md""" ### Budget clearing
 
 Finally, we can control that the budget constraint is binding. The following value should be close to 0. """
 
-
-# ╔═╡ 5508a281-254d-4d67-ab3d-ad32b2ff67f3
-begin 
-	plotly()
-	
-	budget_constraint_approximation = 
-		Plots.plot(s_range_2,benchmark[:budget_balance][1,:], label = "Period 1")
-	
-	Plots.plot!(xaxis = "Initial savings",
-				yaxis = "Budget surplus",
-				title = "Approximation",
-				legend = false)
-	
-	for t in 1:nperiods
-	 	Plots.plot!(s_range_2,benchmark[:budget_balance][t,:], label = "Period: $t")
-	end
-
-	budget_constraint_numerical_solution = 
-		Plots.plot(s_range_2,numerical[:budget_balance][1,:], label = "Period 1")
-	
-	Plots.plot!(xaxis = "Initial savings",
-				yaxis = "Budget surplus",
-				title = "Numerical solution",
-				legend = false)
-	
-	for t in 1:nperiods
-	 	Plots.plot!(s_range_2,numerical[:budget_balance][t,:], label = "Period: $t")
-	end
-	
-	Plots.plot(budget_constraint_approximation,budget_constraint_numerical_solution)
-end
-
-
-# ╔═╡ 7fde6bdb-b9cc-4ca3-827f-8aaa4f03a82a
-begin 
-	Plots.gr()
-	budget_clearing_1_approximation = Plots.plot(s_range_2,
-			   benchmark[:budget_balance][1,:],
-			   label = "Period 1",
-			 primary = false,
-			   xaxis = "Initial savings", 
-			   yaxis = "Budget surplus", 
-			   title = "Approximation")
-
-	budget_clearing_1_numerical = Plots.plot(s_range_2,
-			   numerical[:budget_balance][1,:],
-			   label = "Period 1",
-			 primary = false,
-			   xaxis = "Initial savings", 
-			   yaxis = "Budget surplus", 
-			   title = "Numerical solution")
-
-	Plots.plot(budget_clearing_1_approximation,budget_clearing_1_numerical)
-end
 
 # ╔═╡ 5ee88736-733b-480a-b9e2-929408cef55f
 md""" ## Comparison with analytical results 
@@ -2196,43 +1542,6 @@ Another approach would be a comparison through individual simulations, to assess
 
 """
 
-# ╔═╡ 4258e19c-4277-428a-9164-3d8615520ad0
-begin 
-	"""
-	This function returns a probability of survival for each period, given: 
-
-	- A number of periods,
-	- A temperature path,
-	- A GDP path, 
-	
-		probability_path(;nperiods::Integer,
-			temperature_start::Float64,
-			temperature_stop::Float64,
-			GDP_start::Float64,
-			GDP_stop::Float64)
-	"""
-	function probability_path(;nperiods::Integer,
-							  temperature_start::Float64,
-							  temperature_stop::Float64, 
-							 GDP_start::Float64,
-							 GDP_stop::Float64)
-		
-		temperature_path = range(start 	= temperature_start,
-								 stop 	= temperature_stop,
-								 length = nperiods)
-
-		GDP_path = range(start 	= GDP_start,
-						 stop 	= GDP_stop,
-						 length = nperiods)
-
-		survival_probabilities =
-			individual_probability_simulation(T = nperiods,
-											  temperature_path = collect(temperature_path),
-											  GDP_path = collect(GDP_path))[:probability_history]
-		return survival_probabilities
-	end
-end
-
 # ╔═╡ 6502e5f8-56b4-4f57-8851-91b826c45bbf
 begin 
 	GDP_2010 = gdp[gdp.Year .== 2010, :GDP][1]
@@ -2255,8 +1564,8 @@ begin
 		GLM.glm(@formula(Status ~
 						 	Age +
 							Health +
-							av_annual_t 
-							#Age * Health * av_annual_t
+							av_annual_t
+							# Age * Health * av_annual_t
 							# Health * av_annual_t +
 							# Age * av_annual_t
 							# When including GDP, the solver does not converge
@@ -2319,6 +1628,372 @@ end
 
 # ╔═╡ d7c398ec-4325-40ae-8d71-1aa306830131
 model_health_age_temperature_gdp
+
+# ╔═╡ 6c5c973f-9197-4114-9924-8e7a299b1472
+begin 
+	""" 
+	The survival function returns the probability of survival given age, current health, annual temperature, and GDP. 
+		
+		function survival(;Age::Int64,
+			Health::Int64,
+			Temperature::Float64,
+			GDP::Float64)::Float64
+	
+	"""
+	function survival(;Age::Int64,
+					  Health::Int64,
+					  Temperature::Float64,
+					  GDP::Float64)::Float64
+
+		# For reminder: 
+		# model_health_age_temperature_gdp =
+		# GLM.glm(@formula(Status ~
+		# 				 	Age +
+		# 					Health +
+		# 					av_annual_t + 
+		# 					GDP
+		# 					),
+		# 		DF, Bernoulli(), LogitLink())
+
+		data = DataFrame(Age = Age, 
+						Health = Health, 
+						av_annual_t = Temperature, 
+						GDP = GDP)
+
+		result = GLM.predict(model_health_age_temperature_gdp,data)
+
+		# result = Float64.(result)
+
+		result = result[1]
+		
+		return result
+	end
+end
+
+# ╔═╡ d7ba6c4c-0f80-453b-a893-648d80b0c9b3
+begin 
+	survival(Age = 99, Health = 3, Temperature = 0.62, GDP = 2200.0)
+end
+
+# ╔═╡ 22019072-9fa5-40a3-bb22-89696e19a2d5
+begin 	
+	""" 
+	The function `population_simulation` allows for a simulation of the evolution of a population of size `N` for `T` periods, given a weather and a GDP path.
+		
+		population_simulation(;N::Int64,
+							   T::Int64,
+							   weather_history::Vector{Float64},
+							   GDP::Vector{Float64})
+	"""
+	function population_simulation(;N::Int64,
+								   T::Int64,
+								   weather_history::Vector{Float64},
+								   GDP::Vector{Float64})::NamedTuple
+
+		# Initialisation:
+		collective_age 						= []
+		collective_living_history 			= []
+		collective_health_history 			= []
+		collective_probability_history 		= []
+		
+		Threads.@threads for i in 1:N # For each individual
+			
+			# Initialisation of individual results:
+			individual_living_history 			= zeros(T)
+			individual_health_history 			= zeros(T)
+			individual_probability_history 		= zeros(T) # Setting it to 0 makes r ≠ Inf
+
+			individual_past_health 				= 1 	# Excellent health
+			cumulative_survival_prob 			= 1 	# Birth probability
+	
+			for t in 1:T # For each period 
+		    
+			    # Age : 
+			    age = t
+			    
+			    # The weather comes from the weather history
+			    weather_t = weather_history[t]
+			    
+			    # Health status :
+					# probability of being in good health: 
+					individual_pgh = health(Age 		= age, 
+											Health_t_1 	= individual_past_health,
+											Temperature = weather_t)::Vector{Float64}
+				
+					# Health status draw:
+					individual_health_t = 	
+						sample(1:5,Weights(individual_pgh))
+
+					# We add it to the history
+					individual_health_history[t] = individual_health_t
+					# The current health becomes the past one for next period
+					individual_past_health = individual_health_t
+	
+			    # Living status : 
+				
+					annual_survival = survival(Age 			= age,
+											 Health 		= individual_health_t, 
+											 Temperature 	= weather_t,
+											 GDP 			= GDP[t])::Float64
+				
+            		cumulative_survival_prob = 
+						cumulative_survival_prob * annual_survival
+
+					individual_probability_history[t] = cumulative_survival_prob
+				
+				    # Realisation : 
+					individual_living_status = 
+						rand(Binomial(1,cumulative_survival_prob))#*individual_pd_2))
+
+				# Possible alternative formulation: 
+					# if rand() > cumulative_survival_prob
+					# 	individual_living_status = 0
+					# else
+					# 	individual_living_status = 1
+					# end
+
+					# Into its history :
+					individual_living_history[t] = individual_living_status
+
+				# When death comes : 
+				if individual_living_status == 0
+					push!(collective_age, age)
+				    push!(collective_living_history, individual_living_history)
+					push!(collective_health_history, individual_health_history)
+					push!(collective_probability_history, individual_probability_history)
+					break
+				end
+				
+			end # End of loop over periods
+			
+		end # End of loop over individuals
+
+		results = (;weather_history,
+				   collective_age,
+				   collective_living_history,
+				   collective_health_history, 
+				  collective_probability_history)
+		println("Life expectancy in this population: ", mean(collective_age))
+		
+		return(results)
+	end
+end 
+
+# ╔═╡ ffe1f6bb-e4b6-4f61-9468-2009244b607f
+begin 
+	periods 			= 110
+	fixed_temperature_1 = 0.61 # 2018
+	fixed_temperature_2 = 0.71 # 0.10 increase from 2018
+	
+	population_1 = population_simulation(N 	= 1_000,
+						  T 				= periods, 
+						  weather_history 	= fill(fixed_temperature_1,periods),
+						  GDP 				= fill(gdp[gdp.Year .== 2020,:GDP][1], periods))
+	population_2 = population_simulation(N 	= 1_000,
+						  T 				= periods, 
+						  weather_history 	= fill(fixed_temperature_2,periods),
+						  GDP 				= fill(gdp[gdp.Year .== 2020,:GDP][1], periods))
+	
+end
+
+# ╔═╡ abda697c-044b-4b42-b386-aab9226b755a
+begin 
+	Plots.gr()
+	
+	cls1 	= []
+	for i in 1:length(population_1[:collective_living_history])
+		tmp = population_1[:collective_living_history][i]
+		push!(cls1,tmp)
+	end
+
+	Plot1 	= Plots.plot(1:periods,sum(cls1[:, 1]),
+						 # legend = false, 
+						 label = "Average temperature = $fixed_temperature_1")
+
+	cls2 	= []
+	for i in 1:length(population_2[:collective_living_history])
+		tmp = population_2[:collective_living_history][i]
+		push!(cls2,tmp)
+	end
+
+	Plots.plot!(1:periods, sum(cls2[:, 1]),
+						 # legend = false,
+						 label = "Average temperature = $fixed_temperature_2")
+	Plots.plot!(xaxis = "Time",
+		yaxis = "Population",
+		title = "Evolution of population: constant temperatures")
+	
+end 
+
+# ╔═╡ 410fe8b7-79a4-44b6-abfa-42f8c0e0aa60
+begin 
+	println("Age 80 survival: ", survival(Age=100, Health=3, Temperature=2.0, GDP=21354.0))
+	println("Age 90 survival: ", survival(Age=100, Health=3, Temperature=1.0, GDP=21354.0))
+	println("Age 100 survival: ", survival(Age=100, Health=3, Temperature=0.61, GDP=21354.0))
+end
+
+# ╔═╡ e3c5099c-063c-4809-943f-557cf5269691
+begin 
+	"""
+	The function `individual_probability_simulation` allows to simulate survival probability without actually drawing a survival status. It is used in the Numerical methods solving process.
+
+		individual_probability_simulation(;T::Integer,
+								   temperature_path::Vector{Float64},
+								   GDP_path::Vector{Float64})::Vector{Float64}
+
+	This is useful for the computation of the interest rate at each period.
+	
+	"""
+	function individual_probability_simulation(;T::Integer,
+								   temperature_path::Vector{Float64},
+								   GDP_path::Vector{Float64})
+		
+		# Initialization: 
+		probability_history = Vector{Float64}(undef,T)
+		health_history 		= Vector{Float64}(undef,T)
+
+		individual_past_health 				= 1 	# Excellent health
+		cumulative_survival_prob 			= 1 	# Birth probability
+		
+		for t in 1:T
+			# Age : 
+			age = t
+			    
+			# The weather comes from the weather history
+			weather_t = temperature_path[t]
+			    
+			# Health status :
+				# probability of being in good health: 
+				individual_pgh = health(Age 		= age, 
+										Health_t_1 	= individual_past_health,
+										Temperature = weather_t)::Vector{Float64}
+			
+				# Health status draw:
+				individual_health_t = 	
+					sample(1:5,Weights(individual_pgh))
+
+				# We add it to the history
+				# individual_health_history[t] = individual_health_t
+				# The current health becomes the past one for next period
+				individual_past_health = individual_health_t
+				health_history[t] = individual_past_health
+
+			# Living status : 
+			
+			annual_survival = survival(Age 			= age,
+									 Health 		= individual_health_t, 
+									 Temperature 	= weather_t,
+									 GDP 			= GDP_path[t])::Float64
+		
+			cumulative_survival_prob = 
+				cumulative_survival_prob * annual_survival
+
+			probability_history[t] = cumulative_survival_prob
+		end
+		return (;probability_history,health_history)
+	end
+end
+
+# ╔═╡ ad02c350-0b75-49d7-8aad-253dd61e0062
+individual_probability_simulation(T = 100,
+					  temperature_path = 0.61 .* ones(100),
+					  GDP_path = fill(gdp[gdp.Year .== 2020, :GDP][1],100))
+
+# ╔═╡ 3f4ee3c5-a87b-4f66-a6a5-4992d15784b7
+begin 
+	"""
+	The function `collective_probability_simulation` allows to simulate survival probability without actually drawing a survival status, for a population. It is used in the numerical methods solving process.
+
+		collective_probability_simulation(;N::Integer,
+									T::Integer,
+									temperature_path::Vector{Float64},
+									GDP_path::Vector{Float64})::Vector{Float64}
+
+	
+	"""
+	function collective_probability_simulation(;N::Integer, 
+											   T::Integer,
+											   temperature_path::Vector{Float64},
+											   GDP_path::Vector{Float64})
+
+		collective_probability = Vector{Array}(undef,N)
+		collective_health = Vector{Array}(undef,N)
+		
+		Threads.@threads for n in 1:N
+			
+			tmp = individual_probability_simulation(T = T, 
+											 temperature_path = temperature_path,
+											 GDP_path = GDP_path)
+			
+			collective_probability[n] 	= tmp[1]
+			collective_health[n] 		= tmp[2]
+		end
+		
+		return (;collective_probability,collective_health)
+	end
+end
+
+# ╔═╡ 47a68901-649f-4e8f-9589-425bd695fa3b
+cp = collective_probability_simulation(N = 200, T = 100,
+					  temperature_path = 0.61 .* ones(100),
+					  GDP_path = fill(gdp[gdp.Year .== 2020, :GDP][1],100))
+
+# ╔═╡ cc131fbc-a2d2-42af-8160-b22e32aac512
+begin 
+	s_range_2 			= 0.00:0.1:2.00
+	sprime_range_2 		= s_range_2
+	growing_temperature = collect(range(start = 0.61,
+										stop = 2.00,
+										length = nperiods))
+	Stable_GDP 			= gdp[gdp.Year .== 2020, :GDP][1]
+
+	survival_probability =
+		individual_probability_simulation(T = nperiods, 
+										  temperature_path = growing_temperature,
+										  GDP_path = fill(Stable_GDP,nperiods))
+
+	dynamic_r = ((1 .- survival_probability[:probability_history]) ./ (survival_probability[:probability_history]))
+
+	small_r = (fill(mean(interpolated_r)/100,nperiods))
+	
+end
+
+# ╔═╡ 4258e19c-4277-428a-9164-3d8615520ad0
+begin 
+	"""
+	This function returns a probability of survival for each period, given: 
+
+	- A number of periods,
+	- A temperature path,
+	- A GDP path, 
+	
+		probability_path(;nperiods::Integer,
+			temperature_start::Float64,
+			temperature_stop::Float64,
+			GDP_start::Float64,
+			GDP_stop::Float64)
+	"""
+	function probability_path(;nperiods::Integer,
+							  temperature_start::Float64,
+							  temperature_stop::Float64, 
+							 GDP_start::Float64,
+							 GDP_stop::Float64)
+		
+		temperature_path = range(start 	= temperature_start,
+								 stop 	= temperature_stop,
+								 length = nperiods)
+
+		GDP_path = range(start 	= GDP_start,
+						 stop 	= GDP_stop,
+						 length = nperiods)
+
+		survival_probabilities =
+			individual_probability_simulation(T = nperiods,
+											  temperature_path = collect(temperature_path),
+											  GDP_path = collect(GDP_path))[:probability_history]
+		return survival_probabilities
+	end
+end
 
 # ╔═╡ 7e61cdcc-3764-4cb8-b426-05939fc8e966
 begin 
@@ -2469,6 +2144,331 @@ begin
 			   color = "green")
 
 	Plots.plot!(xaxis = "Year", yaxis = "Health average", legend = :bottomright)
+end
+
+# ╔═╡ f65052f6-d532-426e-b4cc-a755d9955ae4
+begin 
+	@time benchmark = backwards(s_range			= s_range_2,
+							sprime_range		= s_range_2,
+							consumption_range 	= 0:0.01:consumption_max,
+							# labor_range			= 0.00:0.05:2,
+							nperiods 			= nperiods,
+							r 					= small_r,
+							z 					= 1 ./ mean(cp_benchmark_i[2]),
+							w 					= growing_temperature,
+							proba_survival 		= mean(cp_benchmark_i[1]),
+							h 					= 2 .* ones(nperiods),
+							ρ 					= 1.50,
+							φ 					= 2.00,
+							β 					= 0.96)
+end
+
+# ╔═╡ beb2f153-922c-4a0b-b602-3066806678f2
+begin
+	benchmark_c = benchmark[:optimal_choices][:,:,"c"]
+	# optimal_labor.(benchmark_c[1,:].array,1)
+end
+
+# ╔═╡ 25b0c3e1-eca9-4e09-9d06-e302f517e485
+begin 
+	@time numerical = backwards_numerical(s_range = s_range_2,
+							sprime_range		= s_range_2,
+							consumption_range 	= 0:0.01:consumption_max,
+							labor_range			= 0.00:0.05:2,
+							nperiods 			= nperiods,
+							r 					= small_r,
+							z 					= 1 ./ mean(cp_benchmark_i[2]),
+							w 					= growing_temperature,
+							proba_survival 		= mean(cp_benchmark_i[1]),
+							h 					= 2 .* ones(nperiods),
+							ρ 					= 1.50,
+							φ 					= 2.00,
+							β 					= 0.96)
+end
+
+# ╔═╡ f5052cbb-d54f-4b74-a57d-959578a989f6
+begin 
+	plotly()
+
+	# Approximation: 
+	plot_Vstar_approximation =
+		Plots.plot(s_range_2,benchmark[:Vstar][1,:], label = "Period: 1")
+	
+	for t in 1:nperiods
+		Plots.plot!(s_range_2,benchmark[:Vstar][t,:], label = "Period: $t")
+	end
+	
+	Plots.plot!(xaxis = "Initial savings" , yaxis = "Value function")
+	
+	Plots.plot!(legend = false, title = "Approximation")
+
+	# Numerical: 
+
+	plot_Vstar_numerical =
+		Plots.plot(s_range_2,numerical[:Vstar][1,:], label = "Period: 1")
+	
+	for t in 1:nperiods
+		Plots.plot!(s_range_2,numerical[:Vstar][t,:], label = "Period: $t")
+	end
+	
+	Plots.plot!(xaxis = "Initial savings" , yaxis = "Value function")
+	
+	Plots.plot!(legend = false, title = "Numerical solution")
+
+	Plots.plot(plot_Vstar_approximation,plot_Vstar_numerical)
+	
+end
+
+# ╔═╡ 0a0cb7c1-99ac-41db-8061-480090fd44f6
+begin 
+	plotly()
+
+	# Approximation model: 
+	
+	plot_c_star_approximation = 
+		Plots.plot(s_range_2,
+				   smoothing(benchmark[:optimal_choices][1,:,"c"], common_span),
+				   label = "Period: 1",
+				   xaxis = "Initial savings",
+				   yaxis = "Consumption")
+	
+	for t in 1:nperiods#10:10:nperiods
+		Plots.plot!(s_range_2,
+					smoothing(benchmark[:optimal_choices][t,:,"c"], common_span),
+					label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Optimal consumption",
+				title = "Approximation", legend = false)
+
+	# Full-Numerical solution: 
+
+		plot_c_star_numerical = 
+		Plots.plot(s_range_2,
+				   smoothing(numerical[:optimal_choices][1,:,"c"], common_span),
+				   label = "Period: 1",
+				   xaxis = "Initial savings",
+				   yaxis = "Consumption")
+	
+	for t in 1:nperiods#10:10:nperiods
+		Plots.plot!(s_range_2,
+					smoothing(numerical[:optimal_choices][t,:,"c"], common_span),
+					label = "Period: $t")
+	end
+
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Optimal consumption",
+				title = "Numerical solution", legend = false)
+	
+	Plots.plot(plot_c_star_approximation,plot_c_star_numerical)
+end
+
+# ╔═╡ de9778bf-f42a-45bb-aaf4-4d2fa25641ea
+begin 
+	p_c_a_b = Plots.plot(
+			  xaxis = "Initial endowment", 
+			  yaxis = "Consumption",
+	title = "Approximation")
+
+	for T in 20:20:100
+		low = T - 19
+		tmp = 0
+		for t in low:T
+			tmp = tmp .+ benchmark[:optimal_choices][t,:,"c"].array
+		end
+		tmp = tmp ./ (T-low)
+	Plots.plot!(s_range_2,tmp, label = "$low, $T")
+	end
+
+	p_c_a_n = Plots.plot(
+			  xaxis = "Initial endowment", 
+			  yaxis = "Consumption",
+	title = "Numerical solution")
+
+	for T in 20:20:100
+		low = T - 19
+		tmp = 0
+		for t in low:T
+			tmp = tmp .+ numerical[:optimal_choices][t,:,"c"].array
+		end
+		tmp = tmp ./ (T-low)
+	Plots.plot!(s_range_2,tmp, label = "$low, $T", legend = false)
+	end
+
+	Plots.plot(p_c_a_b,p_c_a_n)
+end
+
+# ╔═╡ 98bda9bb-ec29-4387-ad60-411006a9f309
+begin 
+	consumption_1_approximation = Plots.plot(s_range_2,
+				   benchmark[:optimal_choices][1,:,"c"],
+				   label = "Period: 1",
+				 primary = false,
+				   xaxis = "Initial savings",
+				   yaxis = "Consumption",
+			  title = "Approximation")
+
+	consumption_1_numerical = Plots.plot(s_range_2,
+				   numerical[:optimal_choices][1,:,"c"],
+				   label = "Period: 1",
+				 primary = false,
+				   xaxis = "Initial savings",
+				   yaxis = "Consumption",
+			  title = "Numerical solution")
+
+	Plots.plot(consumption_1_approximation,consumption_1_numerical)
+end
+
+# ╔═╡ 5e5cb6db-def1-4ac0-9fb7-51584d91970b
+begin 
+	plotly()
+
+	# Approximation: 
+
+	plot_sprime_star_approximation = Plots.plot(s_range_2,
+								  smoothing(benchmark[:optimal_choices][1,:,"sprime"], common_span))
+	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
+	for t in 1:nperiods # [50,80,100,104]
+	 	Plots.plot!(s_range_2,
+					smoothing(benchmark[:optimal_choices][t,:,:][:,"sprime"], common_span), label = "Period: $t")
+	end
+	Plots.plot!(title = "Approximation", legend = false)
+
+	# Numerical solution: 
+
+
+	plot_sprime_star_numerical = Plots.plot(s_range_2,
+								  smoothing(numerical[:optimal_choices][1,:,"sprime"], common_span))
+	Plots.plot!(label = "Period: 1", xaxis = "Initial savings", yaxis = "Savings at next period")
+	for t in 1:nperiods # [50,80,100,104]
+	 	Plots.plot!(s_range_2,
+					smoothing(numerical[:optimal_choices][t,:,:][:,"sprime"], common_span), label = "Period: $t")
+	end
+	Plots.plot!(title = "Numerical solution", legend = false)
+	
+	# Ploting both:
+	Plots.plot(plot_sprime_star_approximation,plot_sprime_star_numerical)
+end
+
+# ╔═╡ 3f59166b-a09b-490e-87f4-7f2ccc57d154
+begin 
+	p_sprime_a = Plots.plot(
+			  xaxis = "Initial endowment", 
+			  yaxis = "Savings",
+	title = "Approximation")
+
+	for T in 20:20:100
+		low = T - 19
+		tmp = 0
+		for t in low:T
+			tmp = tmp .+ benchmark[:optimal_choices][t,:,"sprime"].array
+		end
+		tmp = tmp ./ (T-low)
+	Plots.plot!(s_range_2,tmp, label = "$low, $T")
+	end
+
+	p_sprime_n = Plots.plot(
+			  xaxis = "Initial endowment", 
+			  yaxis = "Savings",
+	title = "Numerical solution")
+
+	for T in 20:20:100
+		low = T - 19
+		tmp = 0
+		for t in low:T
+			tmp = tmp .+ numerical[:optimal_choices][t,:,"sprime"].array
+		end
+		tmp = tmp ./ (T-low)
+	Plots.plot!(s_range_2,tmp, label = "$low, $T", legend = false)
+	end
+
+	Plots.plot(p_sprime_a,p_sprime_n)
+end
+
+# ╔═╡ d4784e37-86a4-49d5-91bb-b68dc0ec7d24
+begin
+	old_age = 60
+	
+	savings_2_approximation = Plots.plot(s_range_2,
+			   benchmark[:optimal_choices][1,:,"sprime"],
+			   label = "Period: 1",
+			   xaxis = "Initial savings",
+			   yaxis = "Savings at next period",
+			   legend = false,
+			   title = "Approximation")
+	
+	Plots.plot!(s_range_2,
+			   benchmark[:optimal_choices][old_age,:,"sprime"], 
+			   label = "Period $old_age")
+
+	savings_2_numerical = Plots.plot(s_range_2,
+			   numerical[:optimal_choices][1,:,"sprime"],
+			   label = "Period: 1",
+			   xaxis = "Initial savings",
+			   yaxis = "Savings at next period",
+			   legend = false,
+			   title = "Numerical solution")
+	
+	Plots.plot!(s_range_2,
+			   numerical[:optimal_choices][old_age,:,"sprime"], 
+			   label = "Period $old_age")
+
+	Plots.plot(savings_2_approximation,savings_2_numerical)
+end
+
+# ╔═╡ 5508a281-254d-4d67-ab3d-ad32b2ff67f3
+begin 
+	plotly()
+	
+	budget_constraint_approximation = 
+		Plots.plot(s_range_2,benchmark[:budget_balance][1,:], label = "Period 1")
+	
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Budget surplus",
+				title = "Approximation",
+				legend = false)
+	
+	for t in 1:nperiods
+	 	Plots.plot!(s_range_2,benchmark[:budget_balance][t,:], label = "Period: $t")
+	end
+
+	budget_constraint_numerical_solution = 
+		Plots.plot(s_range_2,numerical[:budget_balance][1,:], label = "Period 1")
+	
+	Plots.plot!(xaxis = "Initial savings",
+				yaxis = "Budget surplus",
+				title = "Numerical solution",
+				legend = false)
+	
+	for t in 1:nperiods
+	 	Plots.plot!(s_range_2,numerical[:budget_balance][t,:], label = "Period: $t")
+	end
+	
+	Plots.plot(budget_constraint_approximation,budget_constraint_numerical_solution)
+end
+
+
+# ╔═╡ 7fde6bdb-b9cc-4ca3-827f-8aaa4f03a82a
+begin 
+	Plots.gr()
+	budget_clearing_1_approximation = Plots.plot(s_range_2,
+			   benchmark[:budget_balance][1,:],
+			   label = "Period 1",
+			 primary = false,
+			   xaxis = "Initial savings", 
+			   yaxis = "Budget surplus", 
+			   title = "Approximation")
+
+	budget_clearing_1_numerical = Plots.plot(s_range_2,
+			   numerical[:budget_balance][1,:],
+			   label = "Period 1",
+			 primary = false,
+			   xaxis = "Initial savings", 
+			   yaxis = "Budget surplus", 
+			   title = "Numerical solution")
+
+	Plots.plot(budget_clearing_1_approximation,budget_clearing_1_numerical)
 end
 
 # ╔═╡ 47f718c2-55a3-4424-9f29-e6fdf8361ea5

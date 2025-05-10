@@ -13,6 +13,8 @@ begin
 	using PlutoUI
 	using OrdinalMultinomialModels
 	using MLJ,MLJModels, MLJLinearModels
+	using Base.Threads
+	using Chain
 	TableOfContents()
 end
 
@@ -47,6 +49,10 @@ begin
 	temperature_2014 = Float64(temperature[temperature.Year .== 2014, :av_annual_t][1])
 
 	# GDP: 
+	GDP_2002 = gdp[gdp.Year .== 2002, :GDP][1]
+	GDP_2004 = gdp[gdp.Year .== 2004, :GDP][1]
+	GDP_2006 = gdp[gdp.Year .== 2006, :GDP][1]
+	GDP_2008 = gdp[gdp.Year .== 2008, :GDP][1]
 	GDP_2010 = gdp[gdp.Year .== 2010, :GDP][1]
 	GDP_2012 = gdp[gdp.Year .== 2012, :GDP][1]
 	GDP_2014 = gdp[gdp.Year .== 2014, :GDP][1]
@@ -104,6 +110,8 @@ begin
 	df_2010_2014 	= leftjoin(df_2012_2014, df_2010, on = :ID, makeunique=true)
 	df_2008_2012 	= leftjoin(df_2010_2012, df_2008, on = :ID, makeunique=true)
 	df_2006_2010 	= leftjoin(df_2008_2010, df_2006, on = :ID, makeunique=true)
+	df_2004_2008 	= leftjoin(df_2006_2008, df_2004, on = :ID, makeunique=true)
+	df_2002_2006 	= leftjoin(df_2004_2006, df_2002, on = :ID, makeunique=true)
 	
 	df_3 			= vcat(df_2018_2022,
 				df_2016_2020,
@@ -111,12 +119,106 @@ begin
 				df_2012_2016, 
 				df_2010_2014, 
 				df_2008_2012, 
-				df_2006_2010)
+				df_2006_2010,
+			   df_2004_2008,
+			  df_2002_2006)
 	
 	df_3 			= dropmissing!(df_3)
 	df_3[:,:] 		= convert.(Float64, df_3[:,:])
 	describe(df_3)
 
+end
+
+# ╔═╡ 55ed8865-42e9-4eb5-97fe-ccec752585f5
+function compute_life_expectancy(df::DataFrame; 
+                                age_col=:Age, 
+                                status_col=:Status, 
+                                year_col=:Year)
+    # Step 1: Calculate mortality rates (qx) by age
+    life_table = @chain df begin
+        groupby(age_col)
+        combine(status_col => (s -> 1 - mean(s)) => :qx)
+        sort(age_col)
+    end
+
+    # Step 2: Compute survival function (lx)
+    life_table.lx = [1.0; cumprod(1 .- life_table.qx[1:end-1])]
+
+    # Step 3: Approximate person-years lived (Lx)
+    life_table.Lx = life_table.lx .* (1 .- 0.5 .* life_table.qx)
+
+    # Step 4: Compute Tx (total remaining person-years)
+    life_table.Tx = reverse(cumsum(reverse(life_table.Lx)))
+
+    # Step 5: Life expectancy (ex)
+    life_table.ex = life_table.Tx ./ life_table.lx
+
+    return life_table
+end
+
+
+# ╔═╡ fdeee5c8-4129-4817-bd5b-0e4be4f05615
+begin 
+	life_table = compute_life_expectancy(df)
+	Plots.plot(life_table.Age,life_table.Lx)
+end
+
+# ╔═╡ 72fa74cb-ecc5-4ea8-ad9e-bdef04f85d85
+life_table
+
+# ╔═╡ 2d7e7c3a-1e4b-48e7-b2ab-34bd589b1ee7
+function compute_life_expectancy2(df::DataFrame; max_age=110)
+    # Group by age, calculate qx
+    life_table = combine(groupby(df, :Age), :Status => (s -> 1 - mean(s)) => :qx)
+    life_table = sort!(life_table, :Age)
+    
+    # Handle censoring (if age > max observed age, assume qx = 1.0)
+    age_range = minimum(df.Age):maximum(df.Age)
+    complete_ages = DataFrame(Age=age_range)
+    life_table = leftjoin(complete_ages, life_table, on=:Age)
+    life_table.qx[ismissing.(life_table.qx)] .= 1.0
+    
+    # Smooth qx (e.g., rolling mean)
+    life_table.qx = runmean(life_table.qx, 3)  # Requires `rollingfunctions` package
+    
+    # Compute lx, Tx, ex
+    life_table.lx = cumprod([1.0; 1 .- life_table.qx[1:end-1]])
+    life_table.Lx = life_table.lx .* (1 .- 0.5 .* life_table.qx)
+    life_table.Tx = reverse(cumsum(reverse(life_table.Lx)))
+    life_table.ex = life_table.Tx ./ life_table.lx
+    
+    return life_table
+end
+
+# ╔═╡ 335782bf-c42d-4b7a-b1f6-06759ca55e73
+life_table2 = compute_life_expectancy2(df)
+
+# ╔═╡ df928406-9f77-4972-8d72-3b49519341ce
+begin 
+	println(mean(df_2018.Age .* df_2018.Status))
+	println(mean(df_2016.Age .* df_2016.Status))
+	println(mean(df_2014.Age .* df_2014.Status))
+	println(mean(df_2012.Age .* df_2012.Status))
+	println(mean(df_2010.Age .* df_2010.Status))
+	println(mean(df_2008.Age .* df_2008.Status))
+	println(mean(df_2006.Age .* df_2006.Status))
+	println(mean(df_2004.Age .* df_2004.Status))
+	println(mean(df_2002.Age .* df_2002.Status))
+	
+	# size(df_2016)
+end
+
+# ╔═╡ 8130496a-62c2-444e-8706-6bd968476c5b
+begin 
+	println(mean(df_2018.Age))
+	println(mean(df_2016.Age))
+	println(mean(df_2014.Age))
+	println(mean(df_2012.Age))
+	println(mean(df_2010.Age))
+	println(mean(df_2008.Age))
+	println(mean(df_2006.Age))
+	println(mean(df_2004.Age))
+	println(mean(df_2002.Age))
 end
 
 # ╔═╡ 847e50b4-c2dd-4ca5-82f9-34877cc2b533
@@ -131,11 +233,11 @@ md"""Using GLM to run a logistic regression to explain the status (binary variab
 
 # ╔═╡ e919a64d-22d0-4d3f-832d-17c41c04e56d
 begin 
-	f_1 	= @formula(Status ~ Age + Health_1 + av_annual_t)
-	f_1_i 	= @formula(Status ~ Age + Health_1 + Age * Health_1 * av_annual_t)
-	f_2 	= @formula(Status ~ Age + Health_1 + Health_2 + av_annual_t)
-	f_2_i 	= @formula(Status ~ Age + Health_1 + Health_2 + Age * Health_1 * Health_2 * av_annual_t)
-	model_1 = GLM.glm(f_2, 
+	# f_1 	= @formula(Status ~ Age + Health_1 + av_annual_t)
+	# f_1_i 	= @formula(Status ~ Age + Health_1 + Age * Health_1 * av_annual_t)
+	# f_2 	= @formula(Status ~ Age + Health_1 + Health_2 + av_annual_t)
+	# f_2_i 	= @formula(Status ~ Age + Health_1 + Health_2 + Age * Health_1 * Health_2 * av_annual_t)
+	model_1 = GLM.glm(@formula(Status ~ Age + Health_1 + Health_2 + av_annual_t), 
 		   df_3_v1, Bernoulli(), LogitLink())
 end
 
@@ -144,7 +246,12 @@ md"""Using a Ordinal Multinomial model to explain health (between 1 and 6) with 
 
 # ╔═╡ 311afd03-8c75-469a-868c-2e32efa66dca
 begin 
-	model_2 = OrdinalMultinomialModels.polr(f_2, df_3, LogitLink())
+	O_f_1 = @formula(Health ~ Age + av_annual_t + Health_1)
+	O_f_1_i = @formula(Health ~ Age + av_annual_t + Health_1 + Age * Health_1)
+	O_f_2 = @formula(Health ~ Age + av_annual_t + Health_1 + Health_2)
+	O_f_2_i = @formula(Health ~ Age + av_annual_t + Health_1 + Health_2 + 
+			Age * av_annual_range * Health_1 * Health_2)
+	model_2 = OrdinalMultinomialModels.polr(O_f_2, df_3, LogitLink())
 end
 
 # ╔═╡ 6abe16b9-6d8b-4cfc-998e-5a48891311a7
@@ -172,8 +279,8 @@ begin
     X_encoded       = MLJ.transform(mach_encoder, X)
 
     # Create and fit the model
-    model           = MultinomialClassifier(penalty=:none)
-    mach            = machine(model, X_encoded, y)
+    model_MLJ           = MultinomialClassifier(penalty=:none)
+    mach            = machine(model_MLJ, X_encoded, y)
     MLJ.fit!(mach)
 
     probabilities   = MLJ.predict(mach, X_encoded)
@@ -255,28 +362,403 @@ begin
 	Plots.plot!(legend = :bottomleft)
 end
 
+# ╔═╡ dc167cec-f639-4983-85f6-ee0a1f981b11
+typeof(model_1)
+
+# ╔═╡ 2cff6cb9-9a47-40ae-b7ee-610373fd7760
+md"""With the Ordinal Multinomial Regression package, we obtain the following predictions (for the mode of the health status each period):"""
+
 # ╔═╡ a1ad1b8e-20b5-49f6-9fda-0525f33deeca
 begin 
-	pv2  = OrdinalMultinomialModels.predict(model_2,Poor)
-    fv2  = OrdinalMultinomialModels.predict(model_2,Fair)
-    gv2  = OrdinalMultinomialModels.predict(model_2,Good)
-    vgv2 = OrdinalMultinomialModels.predict(model_2,VeryGood)
-    ev2  = OrdinalMultinomialModels.predict(model_2,Excellent)
+	pv2  = OrdinalMultinomialModels.predict(model_2,Poor, kind=:probs)
+    fv2  = OrdinalMultinomialModels.predict(model_2,Fair,kind=:probs)
+    gv2  = OrdinalMultinomialModels.predict(model_2,Good,kind=:probs)
+    vgv2 = OrdinalMultinomialModels.predict(model_2,VeryGood,kind=:probs)
+    ev2  = OrdinalMultinomialModels.predict(model_2,Excellent,kind=:probs)
 	
-	Plots.plot(pv2, label = "Poor - 2")
-	Plots.plot!(fv2, label = "Fair - 2")
-	Plots.plot!(gv2, label = "Good - 2")
-	Plots.plot!(vgv2, label = "Very good - 2")
-	Plots.plot!(ev2, label = "Excellent - 2")
+	Plots.plot(pv2[:,6], label = "Poor - 2")
+	Plots.plot!(fv2[:,6], label = "Fair - 2")
+	Plots.plot!(gv2[:,6], label = "Good - 2")
+	Plots.plot!(vgv2[:,6], label = "Very good - 2")
+	Plots.plot!(ev2[:,6], label = "Excellent - 2")
+	# pv2[:,6]
 end
 
-# ╔═╡ 840bb025-713c-4b10-91df-e09249603817
+# ╔═╡ 95f4b2b1-2752-466f-8337-9cd8056b96be
+println(typeof(model_2))
 
+# ╔═╡ c9aad45e-85ac-43ef-a0a4-e398867378ee
+md""" # Population simulation"""
+
+# ╔═╡ 1b836d8f-e0b8-41d0-b814-4c49046defa5
+begin 
+	""" 
+	The survival function returns the probability of survival given age, current health, annual temperature, and GDP. 
+		
+		survival(;Age::Int64,
+					Health::Int64,
+					Health_1::Int64,
+					Health_2::Int64,
+					Temperature::Float64,
+					GDP::Float64,
+					model)::Float64
+	
+	"""
+	function survival(;Age::Int64,
+					  Health::Number,
+					  Health_1::Number,
+					  Health_2::Number,
+					  Temperature::Float64,
+					  GDP::Float64,
+					  model)::Float64
+
+		# For reminder: 
+		# model_health_age_temperature_gdp =
+		# GLM.glm(@formula(Status ~
+		# 				 	Age +
+		# 					Health +
+		# 					av_annual_t + 
+		# 					GDP
+		# 					),
+		# 		DF, Bernoulli(), LogitLink())
+
+		data = DataFrame(Age = Age,
+						 Health = Health,
+						 Health_1 = Health_1,
+						 Health_2 = Health_2,
+						 av_annual_t = Temperature,
+						 GDP = GDP)
+
+		result = GLM.predict(model,data)
+
+		# result = Float64.(result)
+
+		result = result[1]
+		
+		return result
+	end
+end
+
+# ╔═╡ 9c11c269-a66e-4434-b0e2-e4826672ee2f
+survival(Age = 50, Health = 2, Health_1 = 2, Health_2 = 5,
+		Temperature= temperature_2016, 
+		GDP = GDP_2016, 
+		model = model_1)
+
+# ╔═╡ 22ed4447-9356-42b3-8f9b-227dbcc4f6ec
+begin 
+	"""
+	The function `health` returns a 5 elements vector for the transition probabilities of each of the health status.
+
+			function health(;Age::Int64,
+					Health_t_1::Int64,
+					Temperature::Float64)::Vector{Float64}
+	"""
+	function health(;Age::Int64,
+					Health_1::Number,
+					Health_2::Number,
+					Temperature::Float64,
+					GDP::Float64,
+					model::StatsModels.TableRegressionModel)
+
+		health_t_categories = categorical([1,2,3,4,5,6])
+		        
+			# Create a DataFrame with fixed Health_1 and temperature
+        	data = DataFrame(
+        	    Health_1   = Health_1,
+        	    Health_2   = Health_2,
+        	    av_annual_t  = Temperature,
+				GDP = GDP,
+        	    Age        = Age)
+        	
+		# Align categorical levels
+		# plot_data.Health_1 = categorical(plot_data.Health_1)
+		# levels!(plot_data.Health_1, health_t_categories) # Force same levels
+		
+		# plot_data_encoded = MLJ.transform(mach_encoder, plot_data) #? 
+        
+        # Get predicted probabilities
+        # probs = MLJ.predict(mach, plot_data_encoded) #? 
+
+        # Reshape probabilities into a 5 sized vector
+        # prob_matrix =
+		# 	reshape([p.prob_given_ref[l] for p in probs, l in health_t_categories],
+         #    (length(health_t_categories)))
+
+		
+
+		# return prob_matrix
+
+		GLM.predict(model, data)
+
+	end
+		
+end
+
+# ╔═╡ 09faaaf1-bd9a-412b-9f6e-197a83e787bc
+model_2
+
+# ╔═╡ df91b026-9aa4-4c14-ba3a-9fbb9ac21693
+health(Age = 10,
+	   Health_1=2.00,
+	   Health_2=3.00,
+	   Temperature=0.61,
+	   GDP = GDP_2016,
+	   model=model_2)
+
+# ╔═╡ 840bb025-713c-4b10-91df-e09249603817
+begin 	
+	""" 
+	The function `population_simulation` allows for a simulation of the evolution of a population of size `N` for `T` periods, given a weather and a GDP path.
+		
+		population_simulation(;N::Int64,
+							   T::Int64,
+							   weather_history::Vector{Float64},
+							   GDP::Vector{Float64})
+	"""
+	function population_simulation(;N::Int64,
+								   T::Int64,
+								   weather_history::Vector{Float64},
+								   GDP::Vector{Float64},
+								model::StatsModels.TableRegressionModel)::NamedTuple
+
+		# Initialisation:
+		collective_age 						= []
+		collective_living_history 			= []
+		collective_health_history 			= []
+		collective_probability_history 		= []
+		
+		for i in 1:N # For each individual
+			
+			# Initialisation of individual results:
+			individual_living_history 			= zeros(T)
+			individual_health_history 			= zeros(T)
+			individual_probability_history 		= zeros(T)
+
+			global individual_past_health 		= 1 	# Excellent health
+			cumulative_survival_prob 			= 1 	# Birth probability
+	
+			for t in 1:T # For each period 
+		    
+			    # Age : 
+			    age = t
+			    
+			    # The weather comes from the weather history
+			    weather_t = weather_history[t]
+			    
+			    # Health status :
+					if t == 1
+						individual_health_t = health(Age 		= age, 
+											Health_1 	= 1,
+											Health_2 	= 1,
+											Temperature = weather_t, 
+										 	GDP 	= GDP[t],
+												model = model)[1]
+					elseif t == 2
+						individual_health_t = health(Age 		= age, 
+											Health_1 	= individual_health_history[t-1],
+											Health_2 	= 1,
+											Temperature = weather_t, 
+											 GDP 	= GDP[t],
+													model = model)[1]
+					else 
+						individual_health_t = health(Age 		= age, 
+											Health_1 	= individual_health_history[t-1],
+											Health_2 	= individual_health_history[t-2],
+											Temperature = weather_t, 
+											 GDP 	= GDP[t],
+												model = model)[1]
+					end
+				
+
+					# History
+					individual_health_history[t] = individual_health_t
+					
+					# The current health becomes the past one for next period
+					individual_past_health = individual_health_t
+	
+			    # Living status : 
+					if t == 1
+						annual_survival = 
+						survival(Age 			= age,
+								 Health 		= individual_health_t, 
+								 Health_1 		= 1, 
+								 Health_2 		= 1, 
+								 Temperature 	= weather_t,
+								 GDP 			= GDP[t],
+								model 			= model)::Float64
+					elseif t == 2
+						annual_survival = 
+						survival(Age 			= age,
+								 Health 		= individual_health_t, 
+								 Health_1 		= individual_health_history[t-1], 
+								 Health_2 		= 1, 
+								 Temperature 	= weather_t,
+								 GDP 			= GDP[t],
+								model 			= model)::Float64
+					else 
+						annual_survival = 
+						survival(Age 			= age,
+								 Health 		= individual_health_t, 
+								 Health_1 		= individual_health_history[t-1], 
+								 Health_2 		= individual_health_history[t-2], 
+								 Temperature 	= weather_t,
+								 GDP 			= GDP[t],
+								model 			= model)::Float64
+					end
+
+				
+            		cumulative_survival_prob = 
+						cumulative_survival_prob * annual_survival
+
+					individual_probability_history[t] = cumulative_survival_prob
+				
+				    # Realisation : 
+					individual_living_status = 
+						rand(Binomial(1,cumulative_survival_prob))
+
+					# History :
+					individual_living_history[t] = individual_living_status
+
+				# When death comes : 
+				if individual_living_status == 0
+					push!(collective_age, age)
+				    push!(collective_living_history, individual_living_history)
+					push!(collective_health_history, individual_health_history)
+					push!(collective_probability_history, individual_probability_history)
+					break
+				end
+				
+			end # End of loop over periods
+			
+		end # End of loop over individuals
+
+		life_expectancy = mean(collective_age)
+
+		results = (;weather_history,
+				   collective_age,
+				   collective_living_history,
+				   collective_health_history,
+				   collective_probability_history,
+				   life_expectancy)
+		println("Life expectancy in this population: ", life_expectancy)
+		
+		return(results)
+	end
+end 
+
+# ╔═╡ 39312a1a-b7e8-486a-9f97-f4b425da4319
+	population_1 = population_simulation(N 	= 1_000,
+						  T 				= 110, 
+						  weather_history 	= fill(temperature_2016,110),
+						  GDP 				= fill(GDP_2016, 110), 
+										model = model_1)
+
+# ╔═╡ afa393e9-25c5-4beb-b66d-8de8b7b63cb4
+md""" # Matching the moment 
+
+We are now going to systematically assess the models, and chose the one that matches the most closely the life expectancy. 
+
+First, let us define some regression specifications: """
+
+# ╔═╡ a092602a-f016-4433-8267-44ca8f748352
+begin 
+	f_1 	= @formula(Status ~ Age + Health_1 + av_annual_t)
+	f_1_i 	= @formula(Status ~ Age + Health_1 + Age * Health_1 * av_annual_t)
+	f_2 	= @formula(Status ~ Age + Health_1 + Health_2 + av_annual_t)
+	f_2_i 	= @formula(Status ~ Age + Health_1 + Health_2 + Age * Health_1 * Health_2 * av_annual_t)
+	f_3 	= @formula(Status ~ Age + Health_1 + Health_2 + av_annual_t + GDP)
+	f_3_i 	= @formula(Status ~ Age + Health_1 + Health_2 + av_annual_t + GDP + 
+		Age * Health_1 * Health_2 * av_annual_t * GDP)
+
+	formulae = [f_1,f_1_i,f_2,f_2_i,f_3,f_3_i]
+	model = Array{Any}(undef,length(formulae),3)
+
+	nothing
+	
+end
+
+# ╔═╡ 6cc424a8-95fa-4599-9fce-10f3f97f413b
+md""" Now, if we try to compare the different estimates, we obtain: """
+
+# ╔═╡ 14a02c57-2034-4971-8254-2594830f1f1c
+begin 
+	
+	Threads.@threads for (index,formula) in collect(enumerate(formulae))
+		
+		model[index,1] = GLM.glm(formula, df_3,
+				Bernoulli(), LogitLink())
+		
+		model[index,2] = population_simulation(N 	= 100,
+						  T 				= 110, 
+						  weather_history 	= fill(temperature_2016,110),
+						  GDP 				= fill(GDP_2016, 110), 
+										model = model[index,1])[:life_expectancy]
+
+		model[index,3] = formula
+	end
+
+	results = DataFrame(Model = 1:length(formulae), 
+					   Life = model[:,2])
+
+	results 
+end
+
+# ╔═╡ e5a42b59-92e0-4579-a08d-bca0432898d3
+describe(df_3)
+
+# ╔═╡ 53a1d4a8-9e23-42af-ab58-3d2fff741301
+md"""let us say that the average lifetime income in the USA is 1.4 million dollars."""
+
+# ╔═╡ 79316756-2308-43d4-8a36-c12b1e09d966
+# ╠═╡ disabled = true
+#=╠═╡
+begin 
+	F_1 	= @formula(Health ~ Age + Health_1 + av_annual_t)
+	F_1_i 	= @formula(Health ~ Age + Health_1 + Age * Health_1 * av_annual_t)
+	F_2 	= @formula(Health ~ Age + Health_1 + Health_2 + av_annual_t)
+	F_2_i 	= @formula(Health ~ Age + Health_1 + Health_2 + Age * Health_1 * Health_2 * av_annual_t)
+	F_3 	= @formula(Health ~ Age + Health_1 + Health_2 + av_annual_t + GDP)
+	F_3_i 	= @formula(Health ~ Age + Health_1 + Health_2 + av_annual_t + GDP + 
+		Age * Health_1 * Health_2 * av_annual_t * GDP)
+
+	Formulae = [F_1,
+				F_1_i,
+				F_2,
+				F_2_i,
+				F_3,
+				F_3_i]
+
+	Model = Array{Any}(undef,length(Formulae),2)
+	
+	for (index,Formula) in collect(enumerate(Formulae))
+		Model[index,1] = OrdinalMultinomialModels.polr(Formula, df_3, LogitLink())
+		
+		Model[index,2] = population_simulation(N 	= 10_000,
+						  T 				= 110, 
+						  weather_history 	= fill(temperature_2016,110),
+						  GDP 				= fill(GDP_2016, 110), 
+										model = Model[index,1])[:life_expectancy]
+
+			# model_2 = OrdinalMultinomialModels.polr(O_f_2, df_3, LogitLink())
+
+	
+	end
+
+	Results = DataFrame(Model = 1:length(Formulae), 
+					   Life = Model[:,2])
+
+	Results 
+	
+
+end
+  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+Chain = "8be319e6-bccf-4806-a6f7-6fae938471bc"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
@@ -288,6 +770,7 @@ PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
 CSV = "~0.10.15"
+Chain = "~0.6.0"
 DataFrames = "~1.7.0"
 GLM = "~1.9.0"
 MLJ = "~0.20.7"
@@ -304,7 +787,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "3d228e38fe229216ad93fc1640719f3dd28dfb75"
+project_hash = "cf5c2e9f94278b5f031fa96a678d2053a378743b"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "e2478490447631aedba0823d4d7a80b2cc8cdb32"
@@ -527,6 +1010,11 @@ version = "0.1.15"
 
     [deps.CategoricalDistributions.weakdeps]
     UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
+
+[[deps.Chain]]
+git-tree-sha1 = "9ae9be75ad8ad9d26395bf625dea9beac6d519f1"
+uuid = "8be319e6-bccf-4806-a6f7-6fae938471bc"
+version = "0.6.0"
 
 [[deps.ChainRulesCore]]
 deps = ["Compat", "LinearAlgebra"]
@@ -2576,6 +3064,13 @@ version = "1.8.1+0"
 # ╟─0a0e89be-066b-4017-9720-a419e85223c5
 # ╠═868bd2fa-76da-48c5-a1cd-5de83ed1a1eb
 # ╠═1ec9fae1-07c6-4e24-a07f-2b7c158dea6f
+# ╠═55ed8865-42e9-4eb5-97fe-ccec752585f5
+# ╠═fdeee5c8-4129-4817-bd5b-0e4be4f05615
+# ╠═72fa74cb-ecc5-4ea8-ad9e-bdef04f85d85
+# ╠═2d7e7c3a-1e4b-48e7-b2ab-34bd589b1ee7
+# ╠═335782bf-c42d-4b7a-b1f6-06759ca55e73
+# ╠═df928406-9f77-4972-8d72-3b49519341ce
+# ╠═8130496a-62c2-444e-8706-6bd968476c5b
 # ╠═847e50b4-c2dd-4ca5-82f9-34877cc2b533
 # ╟─fc2c3fb0-50df-49c2-933b-28e1ddf405d9
 # ╠═e919a64d-22d0-4d3f-832d-17c41c04e56d
@@ -2586,7 +3081,24 @@ version = "1.8.1+0"
 # ╠═650955cf-6398-4f8c-bb95-b012092263e0
 # ╟─24565fb8-d76b-42d8-aaeb-7ef79f9c465c
 # ╠═cea9844c-844d-4a0c-9ae7-5cf36ceb7f92
-# ╟─a1ad1b8e-20b5-49f6-9fda-0525f33deeca
+# ╠═dc167cec-f639-4983-85f6-ee0a1f981b11
+# ╟─2cff6cb9-9a47-40ae-b7ee-610373fd7760
+# ╠═a1ad1b8e-20b5-49f6-9fda-0525f33deeca
+# ╠═95f4b2b1-2752-466f-8337-9cd8056b96be
+# ╟─c9aad45e-85ac-43ef-a0a4-e398867378ee
+# ╠═1b836d8f-e0b8-41d0-b814-4c49046defa5
+# ╠═9c11c269-a66e-4434-b0e2-e4826672ee2f
+# ╠═22ed4447-9356-42b3-8f9b-227dbcc4f6ec
+# ╠═09faaaf1-bd9a-412b-9f6e-197a83e787bc
+# ╠═df91b026-9aa4-4c14-ba3a-9fbb9ac21693
 # ╠═840bb025-713c-4b10-91df-e09249603817
+# ╠═39312a1a-b7e8-486a-9f97-f4b425da4319
+# ╟─afa393e9-25c5-4beb-b66d-8de8b7b63cb4
+# ╠═a092602a-f016-4433-8267-44ca8f748352
+# ╟─6cc424a8-95fa-4599-9fce-10f3f97f413b
+# ╠═14a02c57-2034-4971-8254-2594830f1f1c
+# ╠═e5a42b59-92e0-4579-a08d-bca0432898d3
+# ╠═53a1d4a8-9e23-42af-ab58-3d2fff741301
+# ╠═79316756-2308-43d4-8a36-c12b1e09d966
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
