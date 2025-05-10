@@ -28,22 +28,22 @@ begin
 end
 
 # Cleaning data and coding health = 6 for dead individuals
-# begin 
-#     clean_health = function(DF::DataFrame,COLUMN::AbstractString)
-#         DF = DF[DF[:,COLUMN] .!= -8, :]
-#         DF = DF[DF[:,COLUMN] .!= 8, :]
-#         DF = DF[DF[:,COLUMN] .!= 9, :]
-#         return DF
-#     end
-#     df[df.Status .== 0,:Health] .= 6
-#     
-#     df
-# 
-#     df = dropmissing!(df)
-#     df = clean_health(df,"Health")
-# 
-#     describe(df)
-# end
+begin 
+    clean_health = function(DF::DataFrame,COLUMN::AbstractString)
+        DF = DF[DF[:,COLUMN] .!= -8, :]
+        DF = DF[DF[:,COLUMN] .!= 8, :]
+        DF = DF[DF[:,COLUMN] .!= 9, :]
+        return DF
+    end
+    df[df.Status .== 0,:Health] .= 6
+    
+    df
+
+    df = dropmissing!(df)
+    df = clean_health(df,"Health")
+
+    describe(df)
+end
 
 # Creating file: 
 begin 
