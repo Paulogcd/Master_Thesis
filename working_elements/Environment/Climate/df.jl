@@ -3,6 +3,7 @@ begin
     using Statistics
     using CSV
     using DataFrames
+    using Plots
 end
 
 # Loading: 
@@ -51,13 +52,15 @@ mid = (tp.Annual_lower_anomaly .+
     tp.Annual_upper_anomaly) ./ 2   #the midpoints (usually representing mean values)
 w = (tp.Annual_upper_anomaly .- tp.Annual_lower_anomaly) ./ 2     #the vertical deviation around the means
 
-plot(tp.Year,
+tp_plot =plot(tp.Year,
     tp.av_annual_t,
     ribbon = w ,
     fillalpha = 0.35,
     c = 1, lw = 2,
-    legend = :topleft,
+    legend = false, #:topleft,
     label = "Mean")
+
+savefig("working_elements/Draft/output/figure_1.png")
 
 # plot!(tp.Year,tp.Annual_upper_anomaly, line = :scatter, msw = 0, ms = 2.5, label = "Lower bound")
 # plot!(tp.Year,tp.Annual_lower_anomaly, line = :scatter, msw = 0, ms = 2.5, label = "Upper bound")
