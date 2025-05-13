@@ -1,0 +1,64 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global}
+    \entry{Wooldridge_2010}{book}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=e1a12645ebf63b6026d769777854e35d}{%
+           family={Wooldridge},
+           familyi={W\bibinitperiod},
+           given={Jefrey\bibnamedelima M.},
+           giveni={J\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {The MIT Press}%
+      }
+      \strng{namehash}{e1a12645ebf63b6026d769777854e35d}
+      \strng{fullhash}{e1a12645ebf63b6026d769777854e35d}
+      \strng{bibnamehash}{e1a12645ebf63b6026d769777854e35d}
+      \strng{authorbibnamehash}{e1a12645ebf63b6026d769777854e35d}
+      \strng{authornamehash}{e1a12645ebf63b6026d769777854e35d}
+      \strng{authorfullhash}{e1a12645ebf63b6026d769777854e35d}
+      \field{sortinit}{W}
+      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The second edition of this acclaimed graduate text provides a unified treatment of two methods used in contemporary econometric research, cross section and data panel methods. By focusing on assumptions that can be given behavioral content, the book maintains an appropriate level of rigor while emphasizing intuitive thinking. The analysis covers both linear and nonlinear models, including models with dynamics and/or individual heterogeneity. In addition to general estimation frameworks (particular methods of moments and maximum likelihood), specific linear and nonlinear methods are covered in detail, including probit and logit models and their multivariate, Tobit models, models for count data, censored and missing data schemes, causal (or treatment) effects, and duration analysis.Econometric Analysis of Cross Section and Panel Data was the first graduate econometrics text to focus on microeconomic data structures, allowing assumptions to be separated into population and sampling assumptions. This second edition has been substantially updated and revised. Improvements include a broader class of models for missing data problems; more detailed treatment of cluster problems, an important topic for empirical researchers; expanded discussion of "generalized instrumental variables" (GIV) estimation; new coverage (based on the author's own recent research) of inverse probability weighting; a more complete framework for estimating treatment effects with panel data, and a firmly established link between econometric approaches to nonlinear panel data and the "generalized estimating equation" literature popular in statistics and other fields. New attention is given to explaining when particular econometric methods can be applied; the goal is not only to tell readers what does work, but why certain "obvious" procedures do not. The numerous included exercises, both theoretical and computer-based, allow the reader to extend methods covered in the text and discover new insights.}
+      \field{isbn}{9780262232586}
+      \field{title}{Econometric Analysis of Cross Section and Panel Data}
+      \field{urlday}{13}
+      \field{urlmonth}{5}
+      \field{urlyear}{2025}
+      \field{year}{2010}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb http://www.jstor.org/stable/j.ctt5hhcfr
+      \endverb
+      \verb{url}
+      \verb http://www.jstor.org/stable/j.ctt5hhcfr
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

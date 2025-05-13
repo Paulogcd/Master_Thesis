@@ -8,13 +8,24 @@
 \usepackage{array}
 \usepackage{booktabs}
 
+% Bibliography:
+\usepackage[style=authoryear]{biblatex}
+\addbibresource{references.bib}
+% To compile:
+% pdflatex main.tex
+% biber main
+% pdflatex main.tex
+% pdflatex main.tex
 
+% Graphics: 
 \graphicspath{ {./output/} }
 
+% Author and Title:
 \author{Paulo Gugelmo Cavalheiro Dias}
 \title{Master Thesis: Climate change economic effect on health through temperature}
 
 \begin{document}
+
 
 \maketitle
 
@@ -117,7 +128,7 @@ As such, the probability of an individual to be alive at period $t$ is:
 
 \subsection{Data}
 
-Three main datasets were used to estimate the mentioned relationships: 
+Three main datasets were used to estimate these relationships: 
 the Health and Retirement Study (HRS) dataset for
 health status and survival,
 the Berkeley Earth dataset,
@@ -126,7 +137,47 @@ other economic variables.
 
 \subsubsection{HRS Data}
 
-The HRS data 
+The HRS has a main survey performed every two years on a panel of individuals in the United States of America (U.S.A.). 
+An exit survey occurs in parallel, that targets individuals identified as dead, in which questions are asked to relatives.
+The exit survey was used to identify dead individual, for which the living status was noted as $0$ at the year of the survey. 
+Dead individuals were kept in the final analyzed dataset if they had been observed in the immediate previous survey. 
+To avoid mortality effects of the COVID-19, the latest year selected for this study was 2018.
+Due to different encoding, the 2000 and prior surveys were not taken into account. 
+
+Four variables were used in this dataset: Year of the survey, age of individuals, health status and living status.
+The age of individuals was determined based on the year of birth question, that was substracted to the year of the survey. 
+The health status was identified through the self-reported health.
+This measure is less precise than alternative composites, based on weighted average of specific questions of health, 
+but perform well enough \b{CITATION} and is more tractable.
+
+In the HRS data, health status can take eight possible values: 
+
+% \begin{itemize}
+%     \item 1: Excellent
+%     \item 2: Very Good
+%     \item 3: Good
+%     \item 4: Fair
+%     \item 5: Poor
+%     \item 8, -8, or 9: Non Available, Not answered, or refused to answer
+% \end{itemize}
+
+
+- 1: Excellent
+
+- 2: Very Good
+
+- 3: Good
+
+- 4: Fair
+
+- 5: Poor
+
+- 8, -8, or 9: Non Available, Not answered, or refused to answer
+
+
+
+Living status was written as $1$ if the individuals were present in the main survey, and $0$ if they were in the exit survey.
+The health status of dead individuals was the same as in their last survey. 
 
 \begin{tabular}{ccccc}
     \toprule
@@ -144,6 +195,12 @@ The HRS data
 
 \subsubsection{Climate Data}
 
+The climate data of Berkeley Earth was used to collect information
+on average annual or pluriannual global temperature on land. 
+For each month, from 1880 to 2022, two anomaly extrema values are given. 
+They correspond to ... and can be seen as confidence interval for the
+average temperature. 
+
 \begin{figure}[h]
     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png}
     \caption{Average annual temperature from the Berkeley Dataset}
@@ -151,6 +208,12 @@ The HRS data
     The light blue area is delimited by the anomalies extrema of each year, and
     the dark blue line represents the average of the anomalies.
 \end{figure}
+
+\subsubsection{Economic Data}
+
+Finally, the FRED data was used to get two economic variables. 
+First, the annual Gross Domestic Product (GDP) of the USA. 
+Second, the interest rate, whose average is then used to calibrate the economic model.
 
 \subsection{Methods}
 
@@ -160,10 +223,14 @@ The HRS dataset provides rich information regarding the health status of individ
 To make use of the five different values of the self reported health, it was therefore decided not to
 recode the variables into a binary health status variable $H\in\{Bad, Good\}$. 
 
+Several methods were considered to estimate the relationship between current health and past health and other covariates. 
+Given that health is here an discrete, ordinal variable, ordered response models were considered.
+The ordered logit and ordered probit models were selected, due to their simplicity and broad usage \parencite{Wooldridge_2010}.
+
 \subsubsection{Living Status}
 
 The living status variable, being binary, did not represent a challenge
-as great as the health transition estimation. 
+as great as the health transition estimation.
 
 A simple logistic regression on age and health status yields findings similar with the
 rest of the literature. 
@@ -190,17 +257,17 @@ $$u(c_{t},l_{t}) = \frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\va
 
 With : 
 
--  $c$  the consumption
+-  $c_{t}$  the consumption
 
--  $l$  the quantity of labor supply provided by the agent
+-  $l_{t}$  the quantity of labor supply provided by the agent
 
--  $h$  the health status
+-  $h_{t}$  the health status
 
--  $w$  the weather variable, which is here temperature
+-  $w_{t}$  the weather variable, which is here temperature
 
--  $\xi$ the labor disutility coefficient
+-  $\xi_{t}$ the labor disutility coefficient
 
-The agent is subject to: 
+The agent is subject to the following budget constraint:
 
 $$c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})$$
 
@@ -218,9 +285,9 @@ With:
 
 -  $r_{t}$ the interest rate at period $t$
 
-Also, let us define the borrowing constraint as: 
+Also, agents are subject to the following borrowing constraint, defined as: 
 
-$$s_{t+1}\geq \underline{s}, \forall t$$
+$$s_{t+1}\geq \underline{s}, \forall t \in [\![1,T]\!]$$
 
 \subsection{Numerical methods}
 
@@ -229,6 +296,8 @@ $$s_{t+1}\geq \underline{s}, \forall t$$
 \section{Conclusion}
 
 \section{References}
+
+\printbibliography
 
 \section{Appendix}
 
