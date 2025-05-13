@@ -2,6 +2,7 @@ begin
     using CSV
     using DataFrames
     using GLM
+	default(fontfamily = "Times")
 end
 
 df = CSV.read("working_elements/Empirical_models/data.csv", DataFrame)

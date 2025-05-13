@@ -8,18 +8,18 @@
 \contentsline {subsubsection}{\numberline {2.2.1}History vectors}{3}{}%
 \contentsline {subsubsection}{\numberline {2.2.2}Health Status}{3}{}%
 \contentsline {subsubsection}{\numberline {2.2.3}Living Status}{3}{}%
-\contentsline {subsection}{\numberline {2.3}Data}{3}{}%
+\contentsline {subsection}{\numberline {2.3}Data}{4}{}%
 \contentsline {subsubsection}{\numberline {2.3.1}HRS Data}{4}{}%
-\contentsline {subsubsection}{\numberline {2.3.2}Climate Data}{4}{}%
-\contentsline {subsubsection}{\numberline {2.3.3}Economic Data}{5}{}%
-\contentsline {subsection}{\numberline {2.4}Methods}{5}{}%
-\contentsline {subsubsection}{\numberline {2.4.1}Health Transition}{5}{}%
-\contentsline {subsubsection}{\numberline {2.4.2}Living Status}{6}{}%
-\contentsline {subsection}{\numberline {2.5}Estimates}{6}{}%
-\contentsline {section}{\numberline {3}Model}{6}{}%
-\contentsline {subsection}{\numberline {3.1}Baseline specification }{6}{}%
-\contentsline {subsection}{\numberline {3.2}Numerical methods}{7}{}%
-\contentsline {section}{\numberline {4}Results}{7}{}%
-\contentsline {section}{\numberline {5}Conclusion}{7}{}%
-\contentsline {section}{\numberline {6}References}{7}{}%
-\contentsline {section}{\numberline {7}Appendix}{7}{}%
+\contentsline {subsubsection}{\numberline {2.3.2}Climate Data}{5}{}%
+\contentsline {subsubsection}{\numberline {2.3.3}Economic Data}{6}{}%
+\contentsline {subsection}{\numberline {2.4}Methods}{6}{}%
+\contentsline {subsubsection}{\numberline {2.4.1}Health Transition}{6}{}%
+\contentsline {subsubsection}{\numberline {2.4.2}Living Status}{7}{}%
+\contentsline {subsection}{\numberline {2.5}Estimates}{7}{}%
+\contentsline {section}{\numberline {3}Model}{7}{}%
+\contentsline {subsection}{\numberline {3.1}Baseline specification }{7}{}%
+\contentsline {subsection}{\numberline {3.2}Numerical methods}{8}{}%
+\contentsline {section}{\numberline {4}Results}{8}{}%
+\contentsline {section}{\numberline {5}Conclusion}{8}{}%
+\contentsline {section}{\numberline {6}References}{8}{}%
+\contentsline {section}{\numberline {7}Appendix}{8}{}%

@@ -2,6 +2,9 @@ begin
     using Plots
     using DataFrames
     using Latexify
+    using StatsPlots
+    using Formatting
+    default(fontfamily = "Times")
 end
 
 # Files
@@ -59,4 +62,70 @@ begin
     d
 end 
 
-latexify(d; env = :table, booktabs = true, latex = false, fmt="%.2f" ) |> print
+begin 
+    # Plots.histogram(DF.Age)
+    
+    N = zeros(length(unique(DF.Year)))
+    N_1 = zeros(length(unique(DF.Year)))
+    N_2 = zeros(length(unique(DF.Year)))
+    N_3 = zeros(length(unique(DF.Year)))
+    N_4 = zeros(length(unique(DF.Year)))
+    N_5 = zeros(length(unique(DF.Year)))
+    
+    Years = unique(DF.Year)
+    Years = string.(Years)
+    push!(Years)
+
+    Ns = [N,
+        N_1,
+        N_2, 
+        N_3, 
+        N_4, 
+        N_5]
+
+    for (index,year) in enumerate(unique(DF.Year))
+        N[index] = nrow(DF[DF.Year .== year,:])
+        N_1[index] = nrow(DF[DF.Year .== year .&& DF.Health .== 1,:])
+        N_2[index] = nrow(DF[DF.Year .== year .&& DF.Health .== 2,:])
+        N_3[index] = nrow(DF[DF.Year .== year .&& DF.Health .== 3,:])
+        N_4[index] = nrow(DF[DF.Year .== year .&& DF.Health .== 4,:])
+        N_5[index] = nrow(DF[DF.Year .== year .&& DF.Health .== 5,:])
+    end
+    
+    results = DataFrame(Year = Years, 
+        N1 = N_1, 
+        N2 = N_2, 
+        N3 = N_3, 
+        N4 = N_4, 
+        N5 = N_5, 
+        Total = N)
+    results_2 = results[:,Not(:Total,:Year)]
+    results_2 = Matrix(results_2)
+
+    # values = Matrix(results[:, [:N1, :N2, :N3, :N4, :N5]])
+
+    # Stacked barplot
+    StatsPlots.groupedbar(
+        string.(results.Year),  # x-axis labels as strings
+        results_2,
+        # yticks = (0:1000:10_000, [string(tick) for tick in 0:1000:25_000]),
+        label = ["Excellent" "Very Good" "Good" "Fair" "Poor"],
+        bar_position = :stack,
+        # xlabel = "Year",
+        # ylabel = "Counts",
+        legend = :outerright,
+        yformatter = :plain,
+        # size = (1600, 800),
+        size = (2400, 1600),
+        legendfontsize = 24,
+        guidefontsize = 28,
+        tickfontsize = 20,
+        # bar_width=0.7, 
+        # bottom_margin = 40,   # <-- add this line
+        fontfamily = "Times"
+    )
+end
+    
+savefig("working_elements/Draft/output/histogram_1.png")
+
+# latexify(d; env = :table, booktabs = true, latex = false, fmt="%.2f" ) |> print

@@ -3,6 +3,7 @@ begin
     using CSV
     using DataFrames
     using Plots
+    default(fontfamily = "Times")
 end
 
 pwd() 

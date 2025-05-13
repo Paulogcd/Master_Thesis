@@ -19,6 +19,7 @@
 
 % Graphics: 
 \graphicspath{ {./output/} }
+\usepackage{float} % to force location of pictures, use "H"
 
 % Author and Title:
 \author{Paulo Gugelmo Cavalheiro Dias}
@@ -103,6 +104,11 @@ Generically, we can therefore write:
     H_{t}\sim f_{h}(\mathcal{H}_{t-1},\mathcal{W}_t)
 \end{equation}
 
+Also, it follows that: 
+
+\begin{equation}
+    \mathcal{H}_{t} = (H_{1},...,H_{t})
+\end{equation}
 
 \subsubsection{Living Status}
 
@@ -137,29 +143,22 @@ other economic variables.
 
 \subsubsection{HRS Data}
 
-The HRS has a main survey performed every two years on a panel of individuals in the United States of America (U.S.A.). 
+The HRS has a main survey performed every two years on a panel of individuals in the United States of America (USA). 
 An exit survey occurs in parallel, that targets individuals identified as dead, in which questions are asked to relatives.
 The exit survey was used to identify dead individual, for which the living status was noted as $0$ at the year of the survey. 
 Dead individuals were kept in the final analyzed dataset if they had been observed in the immediate previous survey. 
 To avoid mortality effects of the COVID-19, the latest year selected for this study was 2018.
 Due to different encoding, the 2000 and prior surveys were not taken into account. 
 
-Four variables were used in this dataset: Year of the survey, age of individuals, health status and living status.
+Four variables were used in this dataset: Year of the survey, age of individuals, living status, and health status.
 The age of individuals was determined based on the year of birth question, that was substracted to the year of the survey. 
+Living status was encoded as $1$ if an individuals was present in the main survey, and $0$ if they were in the exit survey.
+The health status of dead individuals was encoded as the same as in the previous survey. 
 The health status was identified through the self-reported health.
 This measure is less precise than alternative composites, based on weighted average of specific questions of health, 
-but perform well enough \b{CITATION} and is more tractable.
+but perform well enough and is more tractable.
 
 In the HRS data, health status can take eight possible values: 
-
-% \begin{itemize}
-%     \item 1: Excellent
-%     \item 2: Very Good
-%     \item 3: Good
-%     \item 4: Fair
-%     \item 5: Poor
-%     \item 8, -8, or 9: Non Available, Not answered, or refused to answer
-% \end{itemize}
 
 
 - 1: Excellent
@@ -172,26 +171,18 @@ In the HRS data, health status can take eight possible values:
 
 - 5: Poor
 
-- 8, -8, or 9: Non Available, Not answered, or refused to answer
+- 8, -8, or 9: Non Available, Not answered, or refused to answer\footnote{This last category was removed from the final analyzed dataset.}\\
 
 
 
-Living status was written as $1$ if the individuals were present in the main survey, and $0$ if they were in the exit survey.
-The health status of dead individuals was the same as in their last survey. 
 
-\begin{tabular}{ccccc}
-    \toprule
-    variable & mean & min & median & max\\
-    \midrule
-    Year & 2010.28 & 2002.00 & 2010.00 & 2018.00\\
-    Age & 68.11 & 11.00 & 67.00 & 112.00\\
-    Health & 2.95 & 1.00 & 3.00 & 5.00\\
-    Status & 0.96 & 0.00 & 1.00 & 1.00\\
-    GDP & 15759.15 & 10929.11 & 15048.97 & 20656.52\\
-    Temperature & 0.55 & 0.40 & 0.52 & 0.73\\
-    \bottomrule
-\end{tabular}
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png}
+    \caption{Health Status distribution per Year, from the HRS data}
     
+    
+\end{figure}
 
 \subsubsection{Climate Data}
 
@@ -201,7 +192,7 @@ For each month, from 1880 to 2022, two anomaly extrema values are given.
 They correspond to ... and can be seen as confidence interval for the
 average temperature. 
 
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png}
     \caption{Average annual temperature from the Berkeley Dataset}
     
@@ -224,8 +215,8 @@ To make use of the five different values of the self reported health, it was the
 recode the variables into a binary health status variable $H\in\{Bad, Good\}$. 
 
 Several methods were considered to estimate the relationship between current health and past health and other covariates. 
-Given that health is here an discrete, ordinal variable, ordered response models were considered.
-The ordered logit and ordered probit models were selected, due to their simplicity and broad usage \parencite{Wooldridge_2010}.
+Given that health is here an discrete, ordinal variable, ordered response models were chosen.
+More specifically, the ordered logit and ordered probit models were selected, due to their simplicity and broad usage \parencite{Wooldridge_2010}.
 
 \subsubsection{Living Status}
 
@@ -235,7 +226,7 @@ as great as the health transition estimation.
 A simple logistic regression on age and health status yields findings similar with the
 rest of the literature. 
 
-\begin{figure}[ht]
+\begin{figure}[H]
     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png}
     \caption{Annual probability of survival as a function of age and health status}
 \end{figure}

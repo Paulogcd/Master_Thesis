@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.16)  13 MAY 2025 12:00
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.16)  13 MAY 2025 14:32
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -402,39 +402,46 @@ Package biblatex Info: ... and expl3
 Package: xparse 2024-02-18 L3 Experimental document command parser
 )
 Package: blx-case-expl3 2023/03/05 v3.19 expl3 case changing code for biblatex
-))
-\@quotelevel=\count407
-\@quotereset=\count408
+)) (/usr/local/texlive/2024/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count407
+\float@exts=\toks27
+\float@box=\box56
+\@float@everytoks=\toks28
+\@floatcapt=\box57
+)
+\@quotelevel=\count408
+\@quotereset=\count409
  (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
  (/usr/local/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count409
+\scratchcounter=\count410
 \scratchdimen=\dimen172
-\scratchbox=\box56
-\nofMPsegments=\count410
-\nofMParguments=\count411
-\everyMPshowfont=\toks27
-\MPscratchCnt=\count412
+\scratchbox=\box58
+\nofMPsegments=\count411
+\nofMParguments=\count412
+\everyMPshowfont=\toks29
+\MPscratchCnt=\count413
 \MPscratchDim=\dimen173
-\MPnumerator=\count413
-\makeMPintoPDFobject=\count414
-\everyMPtoPDFconversion=\toks28
+\MPnumerator=\count414
+\makeMPintoPDFobject=\count415
+\everyMPtoPDFconversion=\toks30
 ) (/usr/local/texlive/2024/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
@@ -454,13 +461,13 @@ Package biblatex Info: Automatic encoding selection.
 Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'main.bbl' found.
  (./main.bbl)
-Package biblatex Info: Reference section=0 on input line 27.
-Package biblatex Info: Reference segment=0 on input line 27.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 30.
+Package biblatex Info: Reference section=0 on input line 28.
+Package biblatex Info: Reference segment=0 on input line 28.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 31.
  (/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 30.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 31.
  (/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (./main.toc)
@@ -470,22 +477,28 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
  [1
 
 {/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
-</Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png, id=24, 602.25pt x 401.5pt>
+Underfull \hbox (badness 10000) in paragraph at lines 174--175
+
+ []
+
+</Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png, id=24, 2409.0pt x 1606.0pt>
+File: /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png Graphic file (type png)
+<use /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png>
+Package pdftex.def Info: /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png  used on input line 181.
+(pdftex.def)             Requested size: 345.0pt x 229.98463pt.
+[4]
+</Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png, id=30, 602.25pt x 401.5pt>
 File: /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png Graphic file (type png)
 <use /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png>
-Package pdftex.def Info: /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png  used on input line 205.
+Package pdftex.def Info: /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png  used on input line 196.
 (pdftex.def)             Requested size: 345.0pt x 230.00912pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[4] [5 </Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png>]
-</Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png, id=31, 602.25pt x 401.5pt>
+ [5 </Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png>] [6 </Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png>]
+</Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png, id=37, 602.25pt x 401.5pt>
 File: /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png Graphic file (type png)
 <use /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png>
-Package pdftex.def Info: /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png  used on input line 239.
+Package pdftex.def Info: /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png  used on input line 230.
 (pdftex.def)             Requested size: 345.0pt x 230.00912pt.
- [6 </Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png>] [7] (./main.aux)
+ [7 </Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png>] [8] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
@@ -495,18 +508,18 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 10461 strings out of 474116
- 196776 string characters out of 5743682
- 1937187 words of memory out of 5000000
- 32717 multiletter control sequences out of 15000+600000
+ 10539 strings out of 474116
+ 198508 string characters out of 5743682
+ 1936187 words of memory out of 5000000
+ 32791 multiletter control sequences out of 15000+600000
  566747 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 66i,6n,81p,2161b,1431s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on main.pdf (7 pages, 263822 bytes).
+ 66i,8n,81p,2161b,1431s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on main.pdf (8 pages, 354644 bytes).
 PDF statistics:
- 115 PDF objects out of 1000 (max. 8388607)
- 69 compressed objects within 1 object stream
+ 129 PDF objects out of 1000 (max. 8388607)
+ 77 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 16 words of extra memory for PDF output out of 10000 (max. 10000000)
 

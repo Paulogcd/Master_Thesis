@@ -602,7 +602,7 @@ begin
                                 Status = zeros(length(ID_2006_d)))
 
         df_2004_a = DataFrame(ID        = ID_2004_a,
-                                Year    = fill(2006, length(ID_2004_a)), 
+                                Year    = fill(2004, length(ID_2004_a)), 
                                 Age     = age_2004_a,
                                 Health  = health_rate_2004_a, 
                                 Status  = ones(length(ID_2004_a)))
