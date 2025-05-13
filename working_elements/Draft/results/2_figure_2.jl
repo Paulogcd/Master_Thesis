@@ -111,15 +111,29 @@ begin
     vgv = GLM.predict(model_health_age_temperature_gdp,VeryGood)
     ev  = GLM.predict(model_health_age_temperature_gdp,Excellent)
 
-    Plots.plot(pv, label = "Poor")
-    Plots.plot!(fv, label = "Fair")
-    Plots.plot!(gv, label = "Good")
-    Plots.plot!(vgv, label = "Very good")
-    Plots.plot!(ev, label = "Excellent")
+    Plots.plot(pv, 		label = "Poor", 		linewidth=5)
+    Plots.plot!(fv, 	label = "Fair", 		linewidth=5)
+    Plots.plot!(gv, 	label = "Good", 		linewidth=5)
+    Plots.plot!(vgv, 	label = "Very good", 	linewidth=5)
+    Plots.plot!(ev, 	label = "Excellent",	linewidth=5)
     Plots.plot!(xaxis = "Age",
 				yaxis = "Probability")
 				# title = "Survival probability as a function of age")
 	Plots.plot!(legend = :bottomleft)
+
+	Plots.plot!(
+		size = (2400, 1600),
+		legendfontsize = 24,
+		guidefontsize = 28,
+		tickfontsize = 20,
+
+		bottom_margin = 100Plots.px,
+		top_margin = 100Plots.px,
+		left_margin = 100Plots.px,
+
+		fontfamily = "Times", 
+		# thickness_scaling = 1
+		)
 end
 
 savefig("working_elements/Draft/output/figure_2.png")

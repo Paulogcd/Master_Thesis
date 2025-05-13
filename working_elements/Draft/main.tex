@@ -7,6 +7,9 @@
 \usepackage{tabularx}
 \usepackage{array}
 \usepackage{booktabs}
+\usepackage{listings}
+\usepackage{hyperref}
+
 
 % Bibliography:
 \usepackage[style=authoryear]{biblatex}
@@ -187,10 +190,18 @@ In the HRS data, health status can take eight possible values:
 \subsubsection{Climate Data}
 
 The climate data of Berkeley Earth was used to collect information
-on average annual or pluriannual global temperature on land. 
+on average annual or pluriannual global temperature on land.
+The name of the chosen dataset was the "Land Monthly Average Temperature". 
+% This file contains a detailed summary of the land-surface average 
+% results produced by the Berkeley Averaging method.  Temperatures are 
+% in Celsius and reported as anomalies relative to the Jan 1951-Dec 1980 
+% average.  Uncertainties represent the 95% confidence interval for 
+% statistical and spatial undersampling effects.
 For each month, from 1880 to 2022, two anomaly extrema values are given. 
-They correspond to ... and can be seen as confidence interval for the
+They correspond to the 95\% confidence interval for the
 average temperature. 
+The average temperature is computed as a deviation from the average annual 
+temperature computed between Januray 1951 and December 1980. 
 
 \begin{figure}[H]
     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png}
@@ -240,7 +251,7 @@ rest of the literature.
 
 The agents maximizes: 
 
-$$ \max_{c_{t},l_{t},s_{t+1}}{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot u(c_t,l_t)\right]}$$
+$$ \max_{\{c_{t},l_{t},s_{t+1}\}_{t=1}^{100}}{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot u(c_t,l_t)\right]}$$
 
 Their utility function is: 
 
@@ -257,6 +268,11 @@ With :
 -  $w_{t}$  the weather variable, which is here temperature
 
 -  $\xi_{t}$ the labor disutility coefficient
+
+- $\rho$ the risk aversion coefficient
+
+- $\varphi$ the Frisch elasticity
+\\
 
 The agent is subject to the following budget constraint:
 
@@ -280,9 +296,180 @@ Also, agents are subject to the following borrowing constraint, defined as:
 
 $$s_{t+1}\geq \underline{s}, \forall t \in [\![1,T]\!]$$
 
+
+We can note the First Order Conditions, such that: 
+
+\begin{equation}
+    c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi} \iff
+        \begin{cases}
+        & c_t = \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}}\\ 
+        & l_{t} = \left[\frac{c_{t}^{-\rho}z_{t}\cdot}{\xi_{t}}\right]^{\frac{1}{\rho}}
+    \end{cases}
+\end{equation}
+And 
+\begin{equation}
+    c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
+\end{equation}
+
+The first corresponds to the equalization of marginal benefit and
+cost of labor, and the second corresponds to the Euler equation.
+
+The first equilbrium condition implies an within decision,
+driven by the labor disutility coefficient $\xi$ and the productivity $z$.
+There is a unique mapping between consumption and labor at any period, to 
+equalize the benefits and the costs of labor.
+
+The second equilibrium condition implies an intertemporal decision.
+The marginal utility of consumption at one period must be equal to the 
+expected marginal utility of conusmption next period, discounted by 
+the discounting factor $\beta$ and the interest rate next period $(1+r_{t+1})$, 
+plus the marginal benefit of violating the borrowing constraint at the current period. 
+
+It is now important to describe what the Expectation operator $\mathbb{E}$ entails here. 
+In a generic formulation, one could expect the uncertainty to affect the interest rate at the next period, 
+which is the reason $(1+r_{t+1})$ is within the operator.
+
+Another specification could exclude any uncertainty from 
+the interest rate. 
+The uncertainty could then come from the health and survival draw. 
+
+If the uncertainty only comes from these two draws, the expectation operator can be formalized such as: 
+
+$$\mathbb{E}\left[c_{t+1}\right] \equiv p_{t+1}(\mathcal{H}_{t},\mathcal{W}_{t}) \cdot c_{t+1}$$
+
+In this specification, the only uncertainty is whether the agent will be alive or not in next period.
+The baseline model will first focus on this simplified assumption. 
+Variations will be introduced later.
+
+\subsection{Solution Impossibility}
+
+\textbf{Proposition}
+This maximization program is impossible to solve analytically in most cases\footnote{The proof of this proposition is in the Appendix.}.
+\\
+
+If we consider the model altogether, it is impossible to describe 
+analytically the optimal policy functions of the three choice variables.
+While the entire proof is available in the appendix, a quick explanation
+is possible here.
+First, the objective functions is linear with the savings at next period $s_{t+1}$, 
+making it disappear from the F.O.C.s.
+This term requires therefore the labor and consumption policies to be solved, 
+and then plugged into the budget constraint, to have a solution. 
+However, if we try to solve the two other policy functions, 
+we end up with transcendantal equations of the form $a\cdot x^{\alpha} + b\cdot x + c = 0$, 
+with $\alpha\notin \mathbb{N}$. 
+This transcendantal equations can be overcome with specific combinations 
+of parameters, among which $\varphi = -\rho$, in which case we obtain: 
+
+$$EQUATION$$
+
+To allow for more flexibility in the resolution, the model was mainly solved
+analytically. The next section discusses the different methods used in order to do so.
+
 \subsection{Numerical methods}
 
+Several ways have been considered to solve this model numerically. 
+This section is dedicated to the presentation of the different methods
+used in order to do so. 
+First, the auxiliary functions are presented. 
+Second, the different main algorithms specifications and their performance are presented. 
+Finally, the aggregation methods and different numerical results are discussed.
+
+\subsection{Functions}
+
+- Utility function, 
+- Budget clearing function, 
+- Bellman function, 
+- Backwards function
+
+\subsection{Algorithms}
+
+This section details the different algorithms used to perform a numerical 
+solution of the model. 
+The general concept of each will be explained in words, and 
+pseudo-code will illustrate them.
+
+\subsubsection{Pure numerical value function iteration}
+
+The pure numerical value function iteration algorithm consists
+in verifying all possible 
+combination of choice variables for each level of state variable 
+to determine what is the best possible response given a certain
+amount of state variable \footnote{The different steps of the algorithms and their source code are available online.
+The steps and comments of the present work are available here: \url{https://www.paulogcd.com/Master_Thesis/},
+and the documented replication package, coded in Julia, is available here: \url{https://www.paulogcd.com/Master_Thesis_Paulogcd_2025/}.}.
+
+\begin{lstlisting}
+for t from 100 to 1
+    
+    if t is equal to 100
+        Bellman next period = zeros(length(s_range))
+    end
+
+    for s in s_range
+        for c,l,s' in ranges
+            
+            # We check if this combination of choice variable 
+            # respects the budget constraint. 
+            bc = budget_clearing(c,l,s') 
+
+            # If it does not,
+            # we set the value function to a very low number.
+            if bc < 0
+                V[index_l,index_l,index_s',index_s] = -Inf 
+            
+            # If it does, we compute the value function 
+            # for this combination of choice variables.
+            else if bc >= 0
+                V[index_c,index_l,index_sprime,index_s] =
+                    utility(c,l,s') +
+                    beta * p[t+1] * Bellman next period[s']
+            end
+        end
+        Value_function[index_s,t] = max(V[index_s])
+    end
+    Bellman_next_period = Value_function[index_s,t]
+end
+\end{lstlisting}
+
+Here, the algorithm goes through all the possible values of
+$c$, $l$, and $s'$, without using any approximation obtained 
+through the FOC mentioned above. 
+This is quite computational-intensive, but 
+has the advantage of not using analytical results, 
+which can lead to approximation depending on the resolution of the 
+ranges used.
+
+\subsubsection{F.O.C. approximated value function iteration}
+
+The FOC value function iteration algorithms make use of the two FOC
+derived in the previous section. 
+They are faster by order of magnitudes, but contain more errors.
+
+Note that it is impossible to use the second FOC, i.e. the 
+Euler equation, containing the 
+Lagrangien multiplier $\gamma_{t}$ that
+is unsolvable analytically. 
+
+\subsubsection{Interpolated algorithms}
+
+The interpolated algorithms use interpolation techniques to approximate 
+the value of the next period Bellman equation. 
+This interpolation can be implemented in the pure numerical 
+algorithm, and in the FOC-approximated ones. 
+
+They allow for a smoother shape of policy function. 
+Upon running the interpolations,
+we observe that 
+heir results on speed performance is slightly negative, 
+and their results on precision performance is ambiguous.
+
+\subsubsection{Policy iteration algorithms}
+
+
 \section{Results}
+
+
 
 \section{Conclusion}
 
@@ -291,5 +478,111 @@ $$s_{t+1}\geq \underline{s}, \forall t \in [\![1,T]\!]$$
 \printbibliography
 
 \section{Appendix}
+
+
+\subsection{Proof of Impossibility}
+
+The associated Lagrangien is: 
+\begin{equation}
+    \begin{split}
+        \mathcal{L}(c_{t},l_{t},s_{t+1};\lambda_t,\gamma_{t}) &
+        = \mathbb{E}\Big[\sum_{t=1}^{100} \beta^{t}\cdot ((\frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot\frac{l_{t}^{1+\varphi}}{1+\varphi}) \\
+        & +\lambda_{t}\cdot \left(l_{t}\cdot z_{t}+s_{t}\cdot (1+r_{t})-c_{t}-s_{t+1}\right) \\ 
+        & + \gamma_{t}\cdot \left(s_{t+1}-\underline{s}\right))\Big] \\ 
+    \end{split}
+\end{equation}
+
+The First Order Conditions are the following:
+
+
+$$\frac{\partial \mathcal{L}}{\partial c_{t}} = 0 \iff c_{t}^{-\rho} = \lambda_{t}$$
+
+
+$$\frac{\partial \mathcal{L}}{\partial l_{t}} = 0 \iff \lambda_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi}$$
+
+
+$$\frac{\partial \mathcal{L}}{\partial s_{t+1}} = 0 \iff \lambda_{t} = \beta \cdot \mathbb{E}\left[\lambda_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}$$
+
+We first note that we must obtain a closed-form solution for $c_{t}$ and $l_{t}$ to obtain 
+the optimal value of $s_{t+1}$. 
+
+Replacing the expression of $\lambda_{t}$ in the two other equation yields: 
+
+\begin{equation}
+    c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi} \iff
+        \begin{cases}
+        & c_t = \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}}\\ 
+        & l_{t} = \left[\frac{c_{t}^{-\rho}z_{t}\cdot}{\xi_{t}}\right]^{\frac{1}{\rho}}
+    \end{cases}
+\end{equation}
+And 
+\begin{equation}
+    c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
+\end{equation}
+
+Assuming that the budget constraint binds, it becomes: 
+
+$$c_{t} + s_{t+1} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})
+\iff 
+c_{t} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} 
+$$
+
+Plugging this expression into the maximization program, 
+it can therefore be rewritten such as: 
+
+\begin{equation}
+    \max_{\{l_{\text{t}},s_{t+1}\}} u(l_{\text{t}}) = \frac{\left[l_{t}\cdot z_{t} + s_{t}\cdot (1+r_{t}) - s_{t+1} \right]^{1-\rho}}{1-\rho}-
+\xi_{t}\cdot\frac{l_{t}^{1+\varphi}}{1+\varphi}
+\end{equation}
+
+The F.O.C implies: 
+
+\begin{equation}
+    l_{t}^{\varphi}\cdot \xi_{t} = \left[l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})- s_{t+1}\right]^{-\rho}\cdot z_{t}
+\end{equation}
+
+We can develop the decomposition of consumption if and only if $\rho \in \mathbb{N}$.
+Indeed, this equation is of form $x = (x-\alpha)^{\beta} \cdot z$.
+With $\beta\notin \mathbb{N}$, is a transcendantal equation.
+
+
+If we try to solve it backwards, we now go to the last period. 
+At the last period, $s_{t+1} = \underline{s}$ for sure:
+Since there is no future, 
+the agent will borrow as much as they can,
+or will at least not save anything more than what is imposed 
+by the constraint. 
+
+For simplification, let $\underline{s}$ be fixed such that: $\underline{s} = 0$.
+The new optimality condition is: 
+
+\begin{equation}
+    l_{t}^{\varphi}\cdot \xi_{t} = \left[l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})\right]^{-\rho}\cdot z_{t}
+\end{equation}
+
+This is still a transcendantl equation, and the problem remain the same.
+
+\textbf{Special cases:}
+
+Now, if we plug the F.O.C. 2, (equation 7), in the budget constraint, we obtain: 
+
+$$
+\begin{cases}
+    & c_t = \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}} \\
+    & c_{t} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} 
+\end{cases}
+$$
+
+$$\iff$$
+$$ \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} $$
+$$\iff$$
+$$ l_{t}^{-\frac{\varphi}{\rho}} \cdot \left(\frac{\xi_{t}}{z_{t}}\right)^{-\frac{1}{\rho}} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} $$
+$$\iff$$
+$$ l_{t}^{-\frac{\varphi}{\rho}} \cdot \left(\frac{\xi_{t}}{z_{t}}\right)^{-\frac{1}{\rho}} - l_{t}\cdot z_{t} - s_{t}\cdot(1+r_{t}) - s_{t+1} = 0 $$
+
+This is a transcendantal equation of form 
+$x^{\alpha}\cdot b - x\cdot y - a = 0$
+
+Which admits a solution if and only if: $\frac{\varphi}{\rho} \in \mathbb{N}$
 
 \end{document}

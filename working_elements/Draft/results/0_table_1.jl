@@ -104,28 +104,36 @@ begin
 
     # values = Matrix(results[:, [:N1, :N2, :N3, :N4, :N5]])
 
+    # Colors: 
+    colorsi = collect(palette(:RdYlGn_10, 5, rev = true))
+    colors_2d = reshape(colorsi, 1, :)
+
     # Stacked barplot
     StatsPlots.groupedbar(
         string.(results.Year),  # x-axis labels as strings
         results_2,
         # yticks = (0:1000:10_000, [string(tick) for tick in 0:1000:25_000]),
         label = ["Excellent" "Very Good" "Good" "Fair" "Poor"],
+        color = colors_2d,
+        # color = ["#1b9e77", "#d95f02", "#7570b3"],
         bar_position = :stack,
-        # xlabel = "Year",
-        # ylabel = "Counts",
+        xlabel = "Year",
+        ylabel = "Count",
         legend = :outerright,
         yformatter = :plain,
+        # color = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00"],
         # size = (1600, 800),
         size = (2400, 1600),
         legendfontsize = 24,
         guidefontsize = 28,
         tickfontsize = 20,
         # bar_width=0.7, 
-        # bottom_margin = 40,   # <-- add this line
+        bottom_margin = 100Plots.px,
+        top_margin = 100Plots.px,
+        left_margin = 100Plots.px,
         fontfamily = "Times"
     )
 end
     
 savefig("working_elements/Draft/output/histogram_1.png")
 
-# latexify(d; env = :table, booktabs = true, latex = false, fmt="%.2f" ) |> print
