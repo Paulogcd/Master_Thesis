@@ -2,7 +2,7 @@
 \contentsline {subsection}{\numberline {1.1}Introduction to the subject}{2}{subsection.1.1}%
 \contentsline {subsection}{\numberline {1.2}Related literature}{2}{subsection.1.2}%
 \contentsline {subsection}{\numberline {1.3}Research question and strategy}{2}{subsection.1.3}%
-\contentsline {section}{\numberline {2}Setting}{2}{section.2}%
+\contentsline {section}{\numberline {2}Setting}{3}{section.2}%
 \contentsline {subsection}{\numberline {2.1}Goal}{3}{subsection.2.1}%
 \contentsline {subsection}{\numberline {2.2}Formal Description}{3}{subsection.2.2}%
 \contentsline {subsubsection}{\numberline {2.2.1}History vectors}{3}{subsubsection.2.2.1}%
@@ -12,22 +12,24 @@
 \contentsline {subsubsection}{\numberline {2.3.1}HRS Data}{4}{subsubsection.2.3.1}%
 \contentsline {subsubsection}{\numberline {2.3.2}Climate Data}{5}{subsubsection.2.3.2}%
 \contentsline {subsubsection}{\numberline {2.3.3}Economic Data}{6}{subsubsection.2.3.3}%
-\contentsline {subsection}{\numberline {2.4}Methods}{6}{subsection.2.4}%
-\contentsline {subsubsection}{\numberline {2.4.1}Health Transition}{6}{subsubsection.2.4.1}%
-\contentsline {subsubsection}{\numberline {2.4.2}Living Status}{7}{subsubsection.2.4.2}%
-\contentsline {subsection}{\numberline {2.5}Estimates}{7}{subsection.2.5}%
-\contentsline {section}{\numberline {3}Model}{7}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Baseline specification }{7}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Solution Impossibility}{9}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Numerical methods}{9}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Functions}{9}{subsection.3.4}%
-\contentsline {subsection}{\numberline {3.5}Algorithms}{10}{subsection.3.5}%
-\contentsline {subsubsection}{\numberline {3.5.1}Pure numerical value function iteration}{10}{subsubsection.3.5.1}%
-\contentsline {subsubsection}{\numberline {3.5.2}F.O.C. approximated value function iteration}{11}{subsubsection.3.5.2}%
-\contentsline {subsubsection}{\numberline {3.5.3}Interpolated algorithms}{11}{subsubsection.3.5.3}%
-\contentsline {subsubsection}{\numberline {3.5.4}Policy iteration algorithms}{11}{subsubsection.3.5.4}%
-\contentsline {section}{\numberline {4}Results}{11}{section.4}%
-\contentsline {section}{\numberline {5}Conclusion}{11}{section.5}%
-\contentsline {section}{\numberline {6}References}{11}{section.6}%
-\contentsline {section}{\numberline {7}Appendix}{12}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Proof of Impossibility}{12}{subsection.7.1}%
+\contentsline {section}{\numberline {3}Estimation Methods}{6}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Health Transition}{6}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Living Status}{8}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Estimation Results}{9}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Health transition}{9}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}Survival}{9}{subsubsection.3.3.2}%
+\contentsline {section}{\numberline {4}Model}{9}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Baseline specification }{9}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Solution Impossibility}{10}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Numerical methods}{11}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Functions}{11}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Algorithms}{11}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Pure numerical value function iteration}{11}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}F.O.C. approximated value function iteration}{12}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}Interpolated algorithms}{12}{subsubsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.4}Policy iteration algorithms}{13}{subsubsection.5.2.4}%
+\contentsline {section}{\numberline {6}Results}{13}{section.6}%
+\contentsline {section}{\numberline {7}Conclusion}{13}{section.7}%
+\contentsline {section}{\numberline {8}References}{13}{section.8}%
+\contentsline {section}{\numberline {9}Appendix}{13}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Proof of Impossibility}{13}{subsection.9.1}%

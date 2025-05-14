@@ -11,6 +11,12 @@ begin
     using DataFrames
 end
 
+begin 
+    function clean_hv(VECTOR)
+        VECTOR = map(x -> ismissing(x) ? missing : ifelse.(x .== 1, 1, 0), VECTOR)
+    end
+end
+
 # 2022-2020: 
 begin 
     # Loading data:
@@ -102,27 +108,45 @@ begin
         age_of_death_2020       = 2020 .- exit_2020[!,:XRX067_R]
     end
         
-    # Defining Health status: 
+    # Defining Variables:
     begin 
         # Living:
-        health_rate_2018_a                  = data_c_2018[!,:QC001]
-        # df_2022_a = DataFrame(ID = ID_2022_a, Year = fill(2022,length(ID_2022_a)),
-        #        Age = age_2022_a, Health = health_rate_2022_a,
-        #        Status = ones(length(ID_2022_a)))
-        # Dead:
-        # ID_ppl_alive_in_2020_dead_in_2022   = intersect(ID_2020_a,ID_2022_d)
-        # data_c_2020.ID                      = ID_2020_a
         
-        df_2020_d = DataFrame(ID = ID_2020_d,
-                                Year = fill(2020, length(ID_2020_d)), 
-                                Age = age_of_death_2020,
-                                Health = fill(8,length(ID_2020_d)), # 8 is the value for "don't know/NA" in the HRS dataset
-                                Status = zeros(length(ID_2020_d)))
+        health_rate_2018_a                  = data_c_2018[!,:QC001]
+
+        blood_pressure_2018_a               = data_c_2018[!,:QC005]
+        blood_pressure_2018_a               = clean_hv(blood_pressure_2018_a)
+
+        lung_disease_2018_a                 = data_c_2018[!,:QC030]
+        lung_disease_2018_a                 = clean_hv(lung_disease_2018_a)
+        
+        hearth_condition_2018_a             = data_c_2018[!,:QC036]
+        hearth_condition_2018_a             = clean_hv(hearth_condition_2018_a)
+
+        stroke_2018_a                       = data_c_2018[!,:QC053]
+        stroke_2018_a                       = clean_hv(stroke_2018_a)
+
+        # hearth_attack_2018_a                = data_c_2018[!,:QC040] # Not usable due to too many missings.
+
+        
+        df_2020_d = DataFrame(ID        = ID_2020_d,
+                                Year    = fill(2020, length(ID_2020_d)), 
+                                Age     = age_of_death_2020,
+                                Health  = fill(8,length(ID_2020_d)), # 8 is the value for "don't know/NA" in the HRS dataset
+                                Blood_Pressure = fill(8,length(ID_2020_d)), 
+                                Lung_Disease = fill(8,length(ID_2020_d)), 
+                                Hearth_Condition = fill(8,length(ID_2020_d)), 
+                                Stroke  = fill(8,length(ID_2020_d)), 
+                                Status  = zeros(length(ID_2020_d)))
 
         df_2018_a = DataFrame(ID = ID_2018_a,
                                 Year = fill(2018, length(ID_2018_a)), 
                                 Age = age_2018_a,
                                 Health = health_rate_2018_a, 
+                                Blood_Pressure = blood_pressure_2018_a, 
+                                Lung_Disease = lung_disease_2018_a, 
+                                Hearth_Condition = hearth_condition_2018_a, 
+                                Stroke = stroke_2018_a,
                                 Status = ones(length(ID_2018_a)))
 
         # Ppl in the 2018 survey that are in exit 2020 (with health for 2018)
@@ -132,7 +156,12 @@ begin
 
         # We take the exit 2020 data, and are going to replace the Health by the previous one:
         fdf2 = filter(row -> row.ID in fdf1.ID, df_2020_d)
-        fdf2.Health = fdf1.Health
+        fdf2.Health             = fdf1.Health
+        fdf2.Blood_Pressure     = fdf1.Blood_Pressure
+        fdf2.Lung_Disease       = fdf1.Lung_Disease
+        fdf2.Hearth_Condition   = fdf1.Hearth_Condition
+        fdf2.Stroke             = fdf1.Stroke
+
         fdf2
 
         df_2020_d = fdf2
@@ -141,7 +170,6 @@ begin
         df_18_20 = unique(df_18_20)
     end
 end
-
 
 
 # 2018-2016
@@ -179,23 +207,37 @@ begin
     begin 
         # Living:
         health_rate_2016_a                  = data_c_2016[!,:PC001]
-        # df_2022_a = DataFrame(ID = ID_2022_a, Year = fill(2022,length(ID_2022_a)),
-        #        Age = age_2022_a, Health = health_rate_2022_a,
-        #        Status = ones(length(ID_2022_a)))
-        # Dead:
-        # ID_ppl_alive_in_2020_dead_in_2022   = intersect(ID_2020_a,ID_2022_d)
-        # data_c_2020.ID                      = ID_2020_a
+
+        blood_pressure_2016_a               = data_c_2016[!,:PC005]
+        blood_pressure_2016_a               = clean_hv(blood_pressure_2016_a)
+
+        lung_disease_2016_a                 = data_c_2016[!,:PC030]
+        lung_disease_2016_a                 = clean_hv(lung_disease_2016_a)
+        
+        hearth_condition_2016_a             = data_c_2016[!,:PC036]
+        hearth_condition_2016_a             = clean_hv(hearth_condition_2016_a)
+
+        stroke_2016_a                       = data_c_2016[!,:PC053]
+        stroke_2016_a                       = clean_hv(stroke_2016_a)
         
         df_2018_d = DataFrame(ID = ID_2018_d,
                                 Year = fill(2018, length(ID_2018_d)), 
                                 Age = age_of_death_2018,
                                 Health = fill(8,length(ID_2018_d)), # 8 is the value for "don't know/NA" in the HRS dataset
+                                Blood_Pressure = fill(8,length(ID_2018_d)), 
+                                Lung_Disease = fill(8,length(ID_2018_d)), 
+                                Hearth_Condition = fill(8,length(ID_2018_d)), 
+                                Stroke  = fill(8,length(ID_2018_d)),
                                 Status = zeros(length(ID_2018_d)))
 
         df_2016_a = DataFrame(ID = ID_2016_a,
                                 Year = fill(2016, length(ID_2016_a)), 
                                 Age = age_2016_a,
                                 Health = health_rate_2016_a, 
+                                Blood_Pressure = blood_pressure_2016_a, 
+                                Lung_Disease = lung_disease_2016_a, 
+                                Hearth_Condition = hearth_condition_2016_a, 
+                                Stroke = stroke_2016_a,
                                 Status = ones(length(ID_2016_a)))
 
         # Ppl in the 2018 survey that are in exit 2020 (with health for 2018)
@@ -205,13 +247,17 @@ begin
 
         # We take the exit 2020 data, and are going to replace the Health by the previous one:
         fdf2 = filter(row -> row.ID in fdf1.ID, df_2018_d)
-        fdf2.Health = fdf1.Health
-        fdf2
+        fdf2.Health             = fdf1.Health
+        fdf2.Blood_Pressure     = fdf1.Blood_Pressure
+        fdf2.Lung_Disease       = fdf1.Lung_Disease
+        fdf2.Hearth_Condition   = fdf1.Hearth_Condition
+        fdf2.Stroke             = fdf1.Stroke
 
         df_2018_d = fdf2
         
         df_16_18 = vcat(df_2016_a,df_2018_d)
         df_16_18 = unique(df_16_18)
+        df_16_18 = dropmissing(df_16_18)
     end
 end
 
@@ -254,17 +300,37 @@ begin
     begin 
         # Living:
         health_rate_2014_a                  = data_c_2014[!,:OC001]
+
+        blood_pressure_2014_a               = data_c_2014[!,:OC005]
+        blood_pressure_2014_a               = clean_hv(blood_pressure_2014_a)
+
+        lung_disease_2014_a                 = data_c_2014[!,:OC030]
+        lung_disease_2014_a                 = clean_hv(lung_disease_2014_a)
+        
+        hearth_condition_2014_a             = data_c_2014[!,:OC036]
+        hearth_condition_2014_a             = clean_hv(hearth_condition_2014_a)
+
+        stroke_2014_a                       = data_c_2014[!,:OC053]
+        stroke_2014_a                       = clean_hv(stroke_2014_a)
         
         df_2016_d = DataFrame(ID = ID_2016_d,
                                 Year = fill(2016, length(ID_2016_d)), 
                                 Age = age_of_death_2016,
                                 Health = fill(8,length(ID_2016_d)), # 8 is the value for "don't know/NA" in the HRS dataset
+                                Blood_Pressure = fill(8,length(ID_2016_d)), 
+                                Lung_Disease = fill(8,length(ID_2016_d)), 
+                                Hearth_Condition = fill(8,length(ID_2016_d)), 
+                                Stroke  = fill(8,length(ID_2016_d)),
                                 Status = zeros(length(ID_2016_d)))
 
         df_2014_a = DataFrame(ID = ID_2014_a,
                                 Year = fill(2014, length(ID_2014_a)), 
                                 Age = age_2014_a,
                                 Health = health_rate_2014_a, 
+                                Blood_Pressure = blood_pressure_2014_a, 
+                                Lung_Disease = lung_disease_2014_a, 
+                                Hearth_Condition = hearth_condition_2014_a, 
+                                Stroke = stroke_2014_a,
                                 Status = ones(length(ID_2014_a)))
 
         # Ppl in the 2018 survey that are in exit 2020 (with health for 2018)
@@ -274,13 +340,17 @@ begin
 
         # We take the exit 2020 data, and are going to replace the Health by the previous one:
         fdf2 = filter(row -> row.ID in fdf1.ID, df_2016_d)
-        fdf2.Health = fdf1.Health
-        fdf2
+        fdf2.Health             = fdf1.Health
+        fdf2.Blood_Pressure     = fdf1.Blood_Pressure
+        fdf2.Lung_Disease       = fdf1.Lung_Disease
+        fdf2.Hearth_Condition   = fdf1.Hearth_Condition
+        fdf2.Stroke             = fdf1.Stroke
 
         df_2016_d = fdf2
         
         df_14_16 = vcat(df_2014_a,df_2016_d)
         df_14_16 = unique(df_14_16)
+        df_14_16 = dropmissing(df_14_16)
     end
 end
 
@@ -323,17 +393,37 @@ begin
     begin 
         # Living:
         health_rate_2012_a                  = data_c_2012[!,:NC001]
+
+        blood_pressure_2012_a               = data_c_2012[!,:NC005]
+        blood_pressure_2012_a               = clean_hv(blood_pressure_2012_a)
+
+        lung_disease_2012_a                 = data_c_2012[!,:NC030]
+        lung_disease_2012_a                 = clean_hv(lung_disease_2012_a)
+        
+        hearth_condition_2012_a             = data_c_2012[!,:NC036]
+        hearth_condition_2012_a             = clean_hv(hearth_condition_2012_a)
+
+        stroke_2012_a                       = data_c_2012[!,:NC053]
+        stroke_2012_a                       = clean_hv(stroke_2012_a)
         
         df_2014_d = DataFrame(ID = ID_2014_d,
                                 Year = fill(2014, length(ID_2014_d)), 
                                 Age = age_of_death_2014,
                                 Health = fill(8,length(ID_2014_d)), # 8 is the value for "don't know/NA" in the HRS dataset
+                                Blood_Pressure = fill(8,length(ID_2014_d)), 
+                                Lung_Disease = fill(8,length(ID_2014_d)), 
+                                Hearth_Condition = fill(8,length(ID_2014_d)), 
+                                Stroke  = fill(8,length(ID_2014_d)),
                                 Status = zeros(length(ID_2014_d)))
 
         df_2012_a = DataFrame(ID = ID_2012_a,
                                 Year = fill(2012, length(ID_2012_a)), 
                                 Age = age_2012_a,
                                 Health = health_rate_2012_a, 
+                                Blood_Pressure = blood_pressure_2012_a, 
+                                Lung_Disease = lung_disease_2012_a, 
+                                Hearth_Condition = hearth_condition_2012_a, 
+                                Stroke = stroke_2012_a,
                                 Status = ones(length(ID_2012_a)))
 
         # Ppl in the 2018 survey that are in exit 2020 (with health for 2018)
@@ -343,13 +433,18 @@ begin
 
         # We take the exit 2020 data, and are going to replace the Health by the previous one:
         fdf2 = filter(row -> row.ID in fdf1.ID, df_2014_d)
-        fdf2.Health = fdf1.Health
-        fdf2
+        fdf2.Health             = fdf1.Health
+        fdf2.Blood_Pressure     = fdf1.Blood_Pressure
+        fdf2.Lung_Disease       = fdf1.Lung_Disease
+        fdf2.Hearth_Condition   = fdf1.Hearth_Condition
+        fdf2.Stroke             = fdf1.Stroke
+        # fdf2
 
         df_2014_d = fdf2
         
         df_12_14 = vcat(df_2012_a,df_2014_d)
         df_12_14 = unique(df_12_14)
+        df_12_14 = dropmissing(df_12_14)
     end
 end
 
@@ -388,17 +483,37 @@ begin
     begin
         # Living:
         health_rate_2010_a                  = data_c_2010[!,:MC001]
+
+        blood_pressure_2010_a               = data_c_2010[!,:MC005]
+        blood_pressure_2010_a               = clean_hv(blood_pressure_2010_a)
+
+        lung_disease_2010_a                 = data_c_2010[!,:MC030]
+        lung_disease_2010_a                 = clean_hv(lung_disease_2010_a)
+        
+        hearth_condition_2010_a             = data_c_2010[!,:MC036]
+        hearth_condition_2010_a             = clean_hv(hearth_condition_2010_a)
+
+        stroke_2010_a                       = data_c_2010[!,:MC053]
+        stroke_2010_a                       = clean_hv(stroke_2010_a)
         
         df_2012_d = DataFrame(ID = ID_2012_d,
                                 Year = fill(2012, length(ID_2012_d)), 
                                 Age = age_of_death_2012,
                                 Health = fill(8,length(ID_2012_d)), # 8 is the value for "don't know/NA" in the HRS dataset
+                                Blood_Pressure = fill(8,length(ID_2012_d)), 
+                                Lung_Disease = fill(8,length(ID_2012_d)), 
+                                Hearth_Condition = fill(8,length(ID_2012_d)), 
+                                Stroke  = fill(8,length(ID_2012_d)),
                                 Status = zeros(length(ID_2012_d)))
 
         df_2010_a = DataFrame(ID        = ID_2010_a,
                                 Year    = fill(2010, length(ID_2010_a)), 
                                 Age     = age_2010_a,
                                 Health  = health_rate_2010_a, 
+                                Blood_Pressure = blood_pressure_2010_a, 
+                                Lung_Disease = lung_disease_2010_a, 
+                                Hearth_Condition = hearth_condition_2010_a, 
+                                Stroke = stroke_2010_a,
                                 Status  = ones(length(ID_2010_a)))
 
         # Ppl in the 2018 survey that are in exit 2020 (with health for 2018)
@@ -408,13 +523,18 @@ begin
 
         # We take the exit 2020 data, and are going to replace the Health by the previous one:
         fdf2 = filter(row -> row.ID in fdf1.ID, df_2012_d)
-        fdf2.Health = fdf1.Health
+        fdf2.Health             = fdf1.Health
+        fdf2.Blood_Pressure     = fdf1.Blood_Pressure
+        fdf2.Lung_Disease       = fdf1.Lung_Disease
+        fdf2.Hearth_Condition   = fdf1.Hearth_Condition
+        fdf2.Stroke             = fdf1.Stroke
         fdf2
 
         df_2012_d = fdf2
         
         df_10_12 = vcat(df_2010_a,df_2012_d)
         df_10_12 = unique(df_10_12)
+        df_10_12 = dropmissing(df_10_12)
         # describe(df_10_12)
     end
 end
@@ -449,24 +569,44 @@ begin
 
         # Age:
         age_2008_a              = 2008 .- data_pr_2008[:,:LX067_R]
-        age_of_death_2010       = 2010 .- exit_2010[!,:WZ068_R]
+        age_of_death_2010       = 2010 .- exit_2010[:,:WX067_R]
     end
         
     # Defining Health status: 
     begin
         # Living:
         health_rate_2008_a                  = data_c_2008[!,:LC001]
+
+        blood_pressure_2008_a               = data_c_2008[!,:LC005]
+        blood_pressure_2008_a               = clean_hv(blood_pressure_2008_a)
+
+        lung_disease_2008_a                 = data_c_2008[!,:LC030]
+        lung_disease_2008_a                 = clean_hv(lung_disease_2008_a)
+        
+        hearth_condition_2008_a             = data_c_2008[!,:LC036]
+        hearth_condition_2008_a             = clean_hv(hearth_condition_2008_a)
+
+        stroke_2008_a                       = data_c_2008[!,:LC053]
+        stroke_2008_a                       = clean_hv(stroke_2008_a)
         
         df_2010_d = DataFrame(ID = ID_2010_d,
                                 Year = fill(2010, length(ID_2010_d)), 
                                 Age = age_of_death_2010,
                                 Health = fill(8,length(ID_2010_d)), # 8 is the value for "don't know/NA" in the HRS dataset
+                                Blood_Pressure = fill(8,length(ID_2010_d)), 
+                                Lung_Disease = fill(8,length(ID_2010_d)), 
+                                Hearth_Condition = fill(8,length(ID_2010_d)), 
+                                Stroke  = fill(8,length(ID_2010_d)),
                                 Status = zeros(length(ID_2010_d)))
 
         df_2008_a = DataFrame(ID        = ID_2008_a,
                                 Year    = fill(2008, length(ID_2008_a)), 
                                 Age     = age_2008_a,
                                 Health  = health_rate_2008_a, 
+                                Blood_Pressure = blood_pressure_2008_a, 
+                                Lung_Disease = lung_disease_2008_a, 
+                                Hearth_Condition = hearth_condition_2008_a, 
+                                Stroke = stroke_2008_a,
                                 Status  = ones(length(ID_2008_a)))
 
         # Ppl in the 2018 survey that are in exit 2020 (with health for 2018)
@@ -476,13 +616,18 @@ begin
 
         # We take the exit 2020 data, and are going to replace the Health by the previous one:
         fdf2 = filter(row -> row.ID in fdf1.ID, df_2010_d)
-        fdf2.Health = fdf1.Health
+        fdf2.Health             = fdf1.Health
+        fdf2.Blood_Pressure     = fdf1.Blood_Pressure
+        fdf2.Lung_Disease       = fdf1.Lung_Disease
+        fdf2.Hearth_Condition   = fdf1.Hearth_Condition
+        fdf2.Stroke             = fdf1.Stroke
         fdf2
 
         df_2010_d = fdf2
         
         df_08_10 = vcat(df_2008_a,df_2010_d)
         df_08_10 = unique(df_08_10)
+        df_08_10 = dropmissing(df_08_10)
     end
 end
 
@@ -525,17 +670,37 @@ begin
     begin
         # Living:
         health_rate_2006_a                  = data_c_2006[!,:KC001]
+
+        blood_pressure_2006_a               = data_c_2006[!,:KC005]
+        blood_pressure_2006_a               = clean_hv(blood_pressure_2006_a)
+
+        lung_disease_2006_a                 = data_c_2006[!,:KC030]
+        lung_disease_2006_a                 = clean_hv(lung_disease_2006_a)
+        
+        hearth_condition_2006_a             = data_c_2006[!,:KC036]
+        hearth_condition_2006_a             = clean_hv(hearth_condition_2006_a)
+
+        stroke_2006_a                       = data_c_2006[!,:KC053]
+        stroke_2006_a                       = clean_hv(stroke_2006_a)
         
         df_2008_d = DataFrame(ID = ID_2008_d,
                                 Year = fill(2008, length(ID_2008_d)), 
                                 Age = age_of_death_2008,
                                 Health = fill(8,length(ID_2008_d)), # 8 is the value for "don't know/NA" in the HRS dataset
+                                Blood_Pressure = fill(8,length(ID_2008_d)), 
+                                Lung_Disease = fill(8,length(ID_2008_d)), 
+                                Hearth_Condition = fill(8,length(ID_2008_d)), 
+                                Stroke  = fill(8,length(ID_2008_d)),
                                 Status = zeros(length(ID_2008_d)))
 
         df_2006_a = DataFrame(ID        = ID_2006_a,
                                 Year    = fill(2006, length(ID_2006_a)), 
                                 Age     = age_2006_a,
                                 Health  = health_rate_2006_a, 
+                                Blood_Pressure = blood_pressure_2006_a, 
+                                Lung_Disease = lung_disease_2006_a, 
+                                Hearth_Condition = hearth_condition_2006_a, 
+                                Stroke = stroke_2006_a,
                                 Status  = ones(length(ID_2006_a)))
 
         # Ppl in the 2018 survey that are in exit 2020 (with health for 2018)
@@ -545,13 +710,18 @@ begin
 
         # We take the exit 2020 data, and are going to replace the Health by the previous one:
         fdf2 = filter(row -> row.ID in fdf1.ID, df_2008_d)
-        fdf2.Health = fdf1.Health
+        fdf2.Health             = fdf1.Health
+        fdf2.Blood_Pressure     = fdf1.Blood_Pressure
+        fdf2.Lung_Disease       = fdf1.Lung_Disease
+        fdf2.Hearth_Condition   = fdf1.Hearth_Condition
+        fdf2.Stroke             = fdf1.Stroke
         fdf2
 
         df_2008_d = fdf2
         
         df_06_08 = vcat(df_2006_a,df_2008_d)
         df_06_08 = unique(df_06_08)
+        df_06_08 = dropmissing(df_06_08)
     end
 end
 
@@ -594,17 +764,37 @@ begin
     begin
         # Living:
         health_rate_2004_a                  = data_c_2004[!,:JC001]
+
+        blood_pressure_2004_a               = data_c_2004[!,:JC005]
+        blood_pressure_2004_a               = clean_hv(blood_pressure_2004_a)
+
+        lung_disease_2004_a                 = data_c_2004[!,:JC030]
+        lung_disease_2004_a                 = clean_hv(lung_disease_2004_a)
+        
+        hearth_condition_2004_a             = data_c_2004[!,:JC036]
+        hearth_condition_2004_a             = clean_hv(hearth_condition_2004_a)
+
+        stroke_2004_a                       = data_c_2004[!,:JC053]
+        stroke_2004_a                       = clean_hv(stroke_2004_a)
         
         df_2006_d = DataFrame(ID = ID_2006_d,
                                 Year = fill(2006, length(ID_2006_d)), 
                                 Age = age_of_death_2006,
                                 Health = fill(8,length(ID_2006_d)), # 8 is the value for "don't know/NA" in the HRS dataset
+                                Blood_Pressure = fill(8,length(ID_2006_d)), 
+                                Lung_Disease = fill(8,length(ID_2006_d)), 
+                                Hearth_Condition = fill(8,length(ID_2006_d)), 
+                                Stroke  = fill(8,length(ID_2006_d)),
                                 Status = zeros(length(ID_2006_d)))
 
         df_2004_a = DataFrame(ID        = ID_2004_a,
                                 Year    = fill(2004, length(ID_2004_a)), 
                                 Age     = age_2004_a,
                                 Health  = health_rate_2004_a, 
+                                Blood_Pressure = blood_pressure_2004_a, 
+                                Lung_Disease = lung_disease_2004_a, 
+                                Hearth_Condition = hearth_condition_2004_a, 
+                                Stroke = stroke_2004_a,
                                 Status  = ones(length(ID_2004_a)))
 
         # Ppl in the 2018 survey that are in exit 2020 (with health for 2018)
@@ -614,13 +804,18 @@ begin
 
         # We take the exit 2020 data, and are going to replace the Health by the previous one:
         fdf2 = filter(row -> row.ID in fdf1.ID, df_2006_d)
-        fdf2.Health = fdf1.Health
+        fdf2.Health             = fdf1.Health
+        fdf2.Blood_Pressure     = fdf1.Blood_Pressure
+        fdf2.Lung_Disease       = fdf1.Lung_Disease
+        fdf2.Hearth_Condition   = fdf1.Hearth_Condition
+        fdf2.Stroke             = fdf1.Stroke
         fdf2
 
         df_2006_d = fdf2
         
         df_04_06 = vcat(df_2004_a,df_2006_d)
         df_04_06 = unique(df_04_06)
+        df_04_06 = dropmissing(df_04_06)
     end
 end
 
@@ -640,7 +835,7 @@ begin
             data_pr_2002    = ReadStatTables.readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h02_man/H02PR_R.dta")
             data_pr_2002    = DataFrame(data_pr_2002)
         # Dead:
-        exit_2004       = ReadStatTables.readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h04_man/x04PR_R.dta")
+        exit_2004           = ReadStatTables.readstat("/Users/paulogcd/Library/Mobile Documents/com~apple~CloudDocs/Documents/Sciences_Po/Master/Data_Master_Thesis/h04_man/x04PR_R.dta")
         exit_2004           = DataFrame(exit_2004)
     end
         
@@ -659,17 +854,37 @@ begin
     begin
         # Living:
         health_rate_2002_a                  = data_c_2002[!,:HC001]
+
+        blood_pressure_2002_a               = data_c_2002[!,:HC005]
+        blood_pressure_2002_a               = clean_hv(blood_pressure_2002_a)
+
+        lung_disease_2002_a                 = data_c_2002[!,:HC030]
+        lung_disease_2002_a                 = clean_hv(lung_disease_2002_a)
+        
+        hearth_condition_2002_a             = data_c_2002[!,:HC036]
+        hearth_condition_2002_a             = clean_hv(hearth_condition_2002_a)
+
+        stroke_2002_a                       = data_c_2002[!,:HC053]
+        stroke_2002_a                       = clean_hv(stroke_2002_a)
         
         df_2004_d = DataFrame(ID = ID_2004_d,
                                 Year = fill(2004, length(ID_2004_d)), 
                                 Age = age_of_death_2004,
                                 Health = fill(8,length(ID_2004_d)), # 8 is the value for "don't know/NA" in the HRS dataset
+                                Blood_Pressure = fill(8,length(ID_2004_d)), 
+                                Lung_Disease = fill(8,length(ID_2004_d)), 
+                                Hearth_Condition = fill(8,length(ID_2004_d)), 
+                                Stroke  = fill(8,length(ID_2004_d)),
                                 Status = zeros(length(ID_2004_d)))
 
         df_2002_a = DataFrame(ID        = ID_2002_a,
                                 Year    = fill(2002, length(ID_2002_a)), 
                                 Age     = age_2002_a,
                                 Health  = health_rate_2002_a, 
+                                Blood_Pressure = blood_pressure_2002_a, 
+                                Lung_Disease = lung_disease_2002_a, 
+                                Hearth_Condition = hearth_condition_2002_a, 
+                                Stroke = stroke_2002_a,
                                 Status  = ones(length(ID_2002_a)))
 
         # Ppl in the 2018 survey that are in exit 2020 (with health for 2018)
@@ -679,14 +894,20 @@ begin
 
         # We take the exit 2020 data, and are going to replace the Health by the previous one:
         fdf2 = filter(row -> row.ID in fdf1.ID, df_2004_d)
-        fdf2.Health = fdf1.Health
+        fdf2.Health             = fdf1.Health
+        fdf2.Blood_Pressure     = fdf1.Blood_Pressure
+        fdf2.Lung_Disease       = fdf1.Lung_Disease
+        fdf2.Hearth_Condition   = fdf1.Hearth_Condition
+        fdf2.Stroke             = fdf1.Stroke
         fdf2
 
         df_2004_d = fdf2
         
         df_02_04 = vcat(df_2002_a,df_2004_d)
         df_02_04 = unique(df_02_04)
+        df_02_04 = dropmissing(df_02_04)
     end
 end
 
-df_final = vcat(df_02_04, df_04_06, df_06_08,df_08_10,df_10_12,df_12_14,df_14_16,df_16_18,df_18_20,df_20_22)
+# df_final = vcat(df_02_04, df_04_06, df_06_08,df_08_10,df_10_12,df_12_14,df_14_16,df_16_18,df_18_20,df_20_22)
+df_final = vcat(df_02_04, df_04_06, df_06_08,df_08_10,df_10_12,df_12_14,df_14_16,df_16_18,df_18_20)

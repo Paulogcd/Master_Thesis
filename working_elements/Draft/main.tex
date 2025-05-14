@@ -191,7 +191,7 @@ In the HRS data, health status can take eight possible values:
 
 The climate data of Berkeley Earth was used to collect information
 on average annual or pluriannual global temperature on land.
-The name of the chosen dataset was the "Land Monthly Average Temperature". 
+The name of the chosen dataset was the ``Land Monthly Average Temperature''. 
 % This file contains a detailed summary of the land-surface average 
 % results produced by the Berkeley Averaging method.  Temperatures are 
 % in Celsius and reported as anomalies relative to the Jan 1951-Dec 1980 
@@ -217,9 +217,9 @@ Finally, the FRED data was used to get two economic variables.
 First, the annual Gross Domestic Product (GDP) of the USA. 
 Second, the interest rate, whose average is then used to calibrate the economic model.
 
-\subsection{Methods}
+\section{Estimation Methods}
 
-\subsubsection{Health Transition}
+\subsection{Health Transition}
 
 The HRS dataset provides rich information regarding the health status of individuals. 
 To make use of the five different values of the self reported health, it was therefore decided not to
@@ -229,21 +229,130 @@ Several methods were considered to estimate the relationship between current hea
 Given that health is here an discrete, ordinal variable, ordered response models were chosen.
 More specifically, the ordered logit and ordered probit models were selected, due to their simplicity and broad usage \parencite{Wooldridge_2010}.
 
-\subsubsection{Living Status}
+For tractability and computational reasons, 
+it was chosen not to overload the function with 
+history parameters, and just to focus on recent health, 
+and on current temperature.
+Therefore, 
+$f_{h}(\mathcal{H}_{t-1},\mathcal{W}_{t})$ 
+is considered as $f_{h}(H_{t-1},{T}_{t})$ from now onwards.
 
-The living status variable, being binary, did not represent a challenge
-as great as the health transition estimation.
+Since $\Omega(H_{t}) : [\![1,5]\!]$, $f_{h}$ can be
+considered as a categorical distribution
+function\footnote{Also called generalized Bernoulli distribution, that can be represented as a Markov transition matrix.}.
+It can therefore be written as: 
 
-A simple logistic regression on age and health status yields findings similar with the
-rest of the literature. 
+\begin{equation}
+    f_{h}(H_{t-1} = j,{T}_{t}) = 
+    f_{h,j}(T_{t}), \ \forall j\in [\![1,5]\!]
+\end{equation}
+
+To estimate $f_{h,j}(T_{t})$,
+i.e. the probabilities to go to another health state
+given that $H_{t-1} = j$, 
+a first naive approach would consist 
+in running an ordinal logistic 
+regression with $H_{t}$ as the dependent 
+variable, and the with covariates including 
+the age, temperature, and control variables.
+
+There are two main issues with this regression. 
+First, there is a large amount of omitted variables
+affecting the survival probability in this formulation.
+Second, when we try to include economic variables reflecting 
+the progress in medicine, economic development, or 
+other kinds of control to take into account possible
+omitted variables, 
+we are faced with a colinearity issues
+with temperature. 
+
+Another important element to take into account to estimate 
+$f_{h}(\cdot)$ are the interaction 
+effects between the different covariates.
+For example, it seems plausible that age and previous health status interact:
+Being in ``Fair"
+health should not have the same effect on the health transition probability 
+for a 20 years old individual compared to a 80 years old individual. 
+
+To tackle these problems, it is possible to use a 
+IV-based approach to try to isolate the effect of
+temperature on health. 
+
+To do so, let us define a Health Proxy ($HP_{i,t}$) as 
+the sum of binary variables at time $t$ for individual 
+$i$ indicating if they have health issues.
+I retained four possible health accident, 
+that can all be related to exposure to 
+high levels of ambient temperature, such that: 
+
+$$
+    X_{i,t}^{h} =
+    \begin{bmatrix}
+        \text{High Blood Pressure}_{i,t} \\
+        \text{Lung Disease}_{i,t} \\ 
+        \text{Hearth Condition}_{i,t} \\ 
+        \text{Stroke}_{i,t}
+    \end{bmatrix}
+$$
+
+Formally, the Health Proxy can therefore be written as:
+
+\begin{equation}
+    HP_{i,t} = \sum_{j\in X^{h}_{i,t}} j
+\end{equation}
+
+Therefore, we can first run the following linear regression: 
+
+\begin{equation}
+    \widehat{HP}_{i,t}^{I} =  \widehat{\beta_0} +
+    \widehat{\beta_{A}} \cdot Age_{i,t} +
+    \widehat{\beta_{T}} \cdot Temperature_{t}
+\end{equation}
+
+Once we have the estimate $\widehat{HP}_{i,t}^{I}$, we can
+then run a second regression, with the transition probability 
+as the dependent variables, and with $H_{i,t-1}$ and 
+$\widehat{HP}_{i,t}^{I}$ as covariates.
+Here, the health proxy captures the effect of age and
+temperature.
+
+\subsection{Living Status}
+
+The living status variable, being binary, 
+a simple logistic regression was possible. 
+%When run on age and health
+%status, it finds similar results with the
+%rest of the literature. 
 
 \begin{figure}[H]
     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png}
     \caption{Annual probability of survival as a function of age and health status}
 \end{figure}
 
+To estimate $p_{t}(\mathcal{H}_{t},\mathcal{W}_{t})$,
+the first naive approach would have led to the same 
+problems as previously seen.
+For example, running this regression with $X$ containing only GDP, 
+we find a negative coefficient on temperature, but also with GDP. 
+This is due to the recent tendency in the USA in which the life expectancy stays 
+stable or decrease slightly, while the GDP continues to raise importantly.
 
-\subsection{Estimates}
+With $\Lambda(\cdot)$ being the logistic
+function, we could therefore run: 
+
+\begin{equation}
+    \widehat{L_{i,t}} = \Lambda \left( \widehat{\beta_0} +
+    \widehat{\beta_{H}} \cdot Health_{i,t} +
+    \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I}\right)
+\end{equation}
+
+\subsection{Estimation Results}
+
+
+
+\subsubsection{Health transition}
+
+\subsubsection{Survival}
 
 \section{Model}
 
@@ -332,7 +441,6 @@ which is the reason $(1+r_{t+1})$ is within the operator.
 Another specification could exclude any uncertainty from 
 the interest rate. 
 The uncertainty could then come from the health and survival draw. 
-
 If the uncertainty only comes from these two draws, the expectation operator can be formalized such as: 
 
 $$\mathbb{E}\left[c_{t+1}\right] \equiv p_{t+1}(\mathcal{H}_{t},\mathcal{W}_{t}) \cdot c_{t+1}$$
@@ -364,9 +472,10 @@ of parameters, among which $\varphi = -\rho$, in which case we obtain:
 $$EQUATION$$
 
 To allow for more flexibility in the resolution, the model was mainly solved
-analytically. The next section discusses the different methods used in order to do so.
+numerically.
+The next section discusses the different methods used in order to do so.
 
-\subsection{Numerical methods}
+\section{Numerical methods}
 
 Several ways have been considered to solve this model numerically. 
 This section is dedicated to the presentation of the different methods
