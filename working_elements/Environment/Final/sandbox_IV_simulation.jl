@@ -1,3 +1,5 @@
+include("sandbox_IV.jl")
+
 using Base.Threads
 
 """ Gives the HP predicted"""
@@ -78,7 +80,7 @@ function population_simulation(;N::Int64,
     collective_health_history 			= []
     collective_probability_history 		= []
     
-    for i in 1:N # For each individual
+    Threads.@threads for i in 1:N # For each individual
         
         # Initialisation of individual results:
         individual_living_history 			= zeros(T)
@@ -157,4 +159,4 @@ end
 
 population_simulation(N = 2000,
     T = 100, 
-    weather_history = zeros(100)).life_expectancy
+    weather_history = zeros(100))

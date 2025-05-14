@@ -4,6 +4,7 @@ include("data.jl")
 using GLM
 using OrdinalMultinomialModels
 using HypothesisTests
+using RegressionTables
 
 
 df.HP = df.Blood_Pressure .+ 
@@ -88,6 +89,34 @@ REG3 = GLM.glm(survival_equation,
     DF,
     Bernoulli(),
     LogitLink())
+
+# Print Regression Tables
+latex_output = regtable(REG1; 
+    stats=[:nobs, :r2],             # Show #observations and R²
+    render = LatexTable()
+)
+
+println(latex_output)
+
+
+# coefs = coef(REG2)
+# stderrs = stderror(REG2)
+# pvalues = pvalue(REG2)
+# fieldnames(typeof(REG2.model))
+
+# coef(REG2)
+# stderror(REG2)
+REG2
+
+fields(typeof(1))
+
+
+latex_output = regtable(REG2; 
+    stats=[:nobs, :r2],             # Show #observations and R²
+    render = LatexTable()
+)
+
+println(latex_output)
 
 # GLM.loglikelihood(REG3)
 # GLM.loglikelihood(REG1)

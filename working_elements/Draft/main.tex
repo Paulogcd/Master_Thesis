@@ -237,8 +237,8 @@ Therefore,
 $f_{h}(\mathcal{H}_{t-1},\mathcal{W}_{t})$ 
 is considered as $f_{h}(H_{t-1},{T}_{t})$ from now onwards.
 
-Since $\Omega(H_{t}) : [\![1,5]\!]$, $f_{h}$ can be
-considered as a categorical distribution
+Since $\Omega(H_{t}) = [\![1,5]\!]$, we can consider 
+$f_{h}$ as a categorical distribution
 function\footnote{Also called generalized Bernoulli distribution, that can be represented as a Markov transition matrix.}.
 It can therefore be written as: 
 
@@ -277,7 +277,6 @@ for a 20 years old individual compared to a 80 years old individual.
 To tackle these problems, it is possible to use a 
 IV-based approach to try to isolate the effect of
 temperature on health. 
-
 To do so, let us define a Health Proxy ($HP_{i,t}$) as 
 the sum of binary variables at time $t$ for individual 
 $i$ indicating if they have health issues.
@@ -301,7 +300,9 @@ Formally, the Health Proxy can therefore be written as:
     HP_{i,t} = \sum_{j\in X^{h}_{i,t}} j
 \end{equation}
 
-Therefore, we can first run the following linear regression: 
+We can thus first run the following linear regression,
+to estimate the marginal effect of temperature on health
+through the above mentioned health accidents:
 
 \begin{equation}
     \widehat{HP}_{i,t}^{I} =  \widehat{\beta_0} +
@@ -313,8 +314,6 @@ Once we have the estimate $\widehat{HP}_{i,t}^{I}$, we can
 then run a second regression, with the transition probability 
 as the dependent variables, and with $H_{i,t-1}$ and 
 $\widehat{HP}_{i,t}^{I}$ as covariates.
-Here, the health proxy captures the effect of age and
-temperature.
 
 \subsection{Living Status}
 
@@ -324,37 +323,121 @@ a simple logistic regression was possible.
 %status, it finds similar results with the
 %rest of the literature. 
 
-\begin{figure}[H]
-    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png}
-    \caption{Annual probability of survival as a function of age and health status}
-\end{figure}
+%\begin{figure}[H]
+%    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png}
+%    \caption{Annual probability of survival as a function of age and health status}
+%\end{figure}
 
 To estimate $p_{t}(\mathcal{H}_{t},\mathcal{W}_{t})$,
 the first naive approach would have led to the same 
 problems as previously seen.
-For example, running this regression with $X$ containing only GDP, 
+For example, running the non-IV regression with $X$ containing only GDP, 
 we find a negative coefficient on temperature, but also with GDP. 
 This is due to the recent tendency in the USA in which the life expectancy stays 
 stable or decrease slightly, while the GDP continues to raise importantly.
 
 With $\Lambda(\cdot)$ being the logistic
-function, we could therefore run: 
+function, we could therefore run the following logistic regression 
+to estimate the probability parameter $p_{i,t}$, i.e. the
+survival probability of $i$ at $t$,
+with the previous estimate $\widehat{HP}_{i,t}^{I}$: 
+
+% \begin{figure}[H]
+%     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_3.png}
+%     \caption{Annual probability of survival as a function of age and health status}
+% \end{figure}
 
 \begin{equation}
-    \widehat{L_{i,t}} = \Lambda \left( \widehat{\beta_0} +
+    \widehat{p_{i,t}} = \Lambda \left( \widehat{\beta_0} +
     \widehat{\beta_{H}} \cdot Health_{i,t} +
     \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I}\right)
 \end{equation}
 
 \subsection{Estimation Results}
 
+The first regression to explain the Health Proxy yields: 
 
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{lr}
+            \toprule
+                                    & \multicolumn{1}{c}{HP} \\ 
+            \midrule
+            (Intercept)              &              -0.487*** \\ 
+                                    &                (0.068) \\ 
+            Age                      &               0.020*** \\ 
+                                    &                (0.001) \\ 
+            Temperature              &                 -0.032 \\ 
+                                    &                (0.123) \\ 
+            Age $\times$ Temperature &                0.005** \\ 
+                                    &                (0.002) \\ 
+            \midrule
+            $N$                      &                182,947 \\ 
+            $R^2$                    &                  0.086 \\ 
+            \bottomrule
+        \end{tabular}
+        \caption{Regression of Health Proxy on Age, Temperature, and their interaction.}
+    \end{center}
+\end{table}
 
 \subsubsection{Health transition}
 
+The regression to estimate the health transition probabilities
+yields. 
+
+PLOT
+
+From these estimates, it is possible to simulate the collective 
+health trajectory of a population.
+
+PLOT
+
 \subsubsection{Survival}
 
+When taking into account the health transition estimates
+and the survival probability estimates, it is then possible
+to visualize the demographic evolution of a population trhough time.
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_3.png}
+    \caption{Annual probability of survival as a function of age and health status, obtained with $N_0$ =10 000 }
+\end{figure}
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{cc}
+            \toprule
+            $\text{Temperature}$ & $\text{Life expectancy}$\\
+            \midrule
+            $4.0$ & $48.0$\\
+            $2.0$ & $59.86$\\
+            $1.5$ & $63.95$\\
+            $0.61$ & $73.26$\\
+            $0.5 - 4$ & $57.33$\\
+            $0.5 - 2$ & $64.83$\\
+            $0.0 - 1.5$ & $69.29$\\
+            \bottomrule
+        \end{tabular}
+        \caption{Life expectancy simulations with fixed and variable temperatures.}
+    \end{center}
+\end{table}
+
+We see that the effect of temperature on life expectancy 
+is negative. 
+This is due to the double effect of temperature on 
+health transition and on survival probability.
+
+DISCUSSION
+
+These estimates are now going to be used in 
+the economic model.
+
 \section{Model}
+
+This section is dedicated to the formal description of 
+the model, as well as its analytical analysis.
+First, its main mechanisms will be explained, and then, the 
+inexistence of analytical solution in most cases will be shown.
 
 \subsection{Baseline specification }
 
@@ -449,7 +532,7 @@ In this specification, the only uncertainty is whether the agent will be alive o
 The baseline model will first focus on this simplified assumption. 
 Variations will be introduced later.
 
-\subsection{Solution Impossibility}
+\subsection{Analytical Solution Inexistence}
 
 \textbf{Proposition}
 This maximization program is impossible to solve analytically in most cases\footnote{The proof of this proposition is in the Appendix.}.
@@ -486,17 +569,88 @@ Finally, the aggregation methods and different numerical results are discussed.
 
 \subsection{Functions}
 
-- Utility function, 
-- Budget clearing function, 
-- Bellman function, 
-- Backwards function
+To proceed to a numerical solving of the model,  
+some fundamental functions were used.
+
+\begin{itemize}
+    \item \textbf{Budget clearing function: } 
+    The budget clearing function computes the amount of non used income for a 
+    set of state and choice variables. Since at optimal, the budget constraint is binding, 
+    the underlying theoreical result indicates that the budget clearing function should be 
+    zero. Given the imprecision of numerical methods, the average budget clearing function was used 
+    as a measure of the precision performance of each algorithm.
+
+    It is equal to: 
+    $$B(s_{t},l_{t},c_{t},s_{t+1})=l_{t} \cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} - c_{t}$$
+
+    \item \textbf{Bellman function: }
+    The Bellman function takes as an argument the value function next period, 
+    and maximizes the current utility plus the discounted value function next period. 
+
+    It is equal to: 
+    $$V(s_{t}) = \max_{\{c_{t},l_{t},s_{t+1}\}\in \Gamma(s_{t})} \{u(c_{t},l_{t}) + \beta \cdot V(s_{t+1})\}$$
+    With $\Gamma(s_{t})$ the feasibility set given by the state variable $s_{t}$.
+
+    \item \textbf{Backwards function: }
+    The backwards function iterates the Bellman function from the last period 
+    to the first one. In the case of policy iteration, it iterates over the 
+    policy function, and not the value function. It aggregates the optimal decisions 
+    and returns a grid of optimal choices associated to each period and state variable value.
+
+    For the pure numerical value function iteration, the backwards function is
+    as following: 
+    \begin{lstlisting}
+for t from 100 to 1
+
+    if t is equal to 100
+        Bellman next period = Vector of zeros
+    end
+
+    for s in the possible set of s
+        for c,l,s' in the feasible set of the current s value
+            
+            # We compute the budget clearing: 
+
+            bc = budget_clearing(c,l,s') 
+
+            # If it does not,
+            # we set the value function to a very low number.
+            
+            if bc < 0
+
+                V[c,l,s',s] = -Inf 
+            
+            # If it does, we compute the value function 
+            # for this combination of choice variables.
+            
+            else if bc >= 0
+
+                V[c,l,s',s] =
+                    utility(c,l,s') +
+                    beta * probability of survival *
+                    Bellman next period[s']
+            end
+        end
+        
+        # We set the value function for s and t to
+        # the maximum value found.
+        
+    end
+
+# We set the value function at next period to current one
+Bellman_next_period = Value_function[index_s,t]
+
+end
+\end{lstlisting}
+
+\end{itemize}
+
 
 \subsection{Algorithms}
 
-This section details the different algorithms used to perform a numerical 
+This section details the different algorithms
+developed to perform a numerical 
 solution of the model. 
-The general concept of each will be explained in words, and 
-pseudo-code will illustrate them.
 
 \subsubsection{Pure numerical value function iteration}
 
@@ -508,39 +662,6 @@ amount of state variable \footnote{The different steps of the algorithms and the
 The steps and comments of the present work are available here: \url{https://www.paulogcd.com/Master_Thesis/},
 and the documented replication package, coded in Julia, is available here: \url{https://www.paulogcd.com/Master_Thesis_Paulogcd_2025/}.}.
 
-\begin{lstlisting}
-for t from 100 to 1
-    
-    if t is equal to 100
-        Bellman next period = zeros(length(s_range))
-    end
-
-    for s in s_range
-        for c,l,s' in ranges
-            
-            # We check if this combination of choice variable 
-            # respects the budget constraint. 
-            bc = budget_clearing(c,l,s') 
-
-            # If it does not,
-            # we set the value function to a very low number.
-            if bc < 0
-                V[index_l,index_l,index_s',index_s] = -Inf 
-            
-            # If it does, we compute the value function 
-            # for this combination of choice variables.
-            else if bc >= 0
-                V[index_c,index_l,index_sprime,index_s] =
-                    utility(c,l,s') +
-                    beta * p[t+1] * Bellman next period[s']
-            end
-        end
-        Value_function[index_s,t] = max(V[index_s])
-    end
-    Bellman_next_period = Value_function[index_s,t]
-end
-\end{lstlisting}
-
 Here, the algorithm goes through all the possible values of
 $c$, $l$, and $s'$, without using any approximation obtained 
 through the FOC mentioned above. 
@@ -551,30 +672,38 @@ ranges used.
 
 \subsubsection{F.O.C. approximated value function iteration}
 
-The FOC value function iteration algorithms make use of the two FOC
+The FOC value function iteration algorithms
+make use of the two FOC
 derived in the previous section. 
-They are faster by order of magnitudes, but contain more errors.
+They are faster by order of magnitudes,
+but contain more errors.
 
 Note that it is impossible to use the second FOC, i.e. the 
 Euler equation, containing the 
 Lagrangien multiplier $\gamma_{t}$ that
-is unsolvable analytically. 
+is not solvable analytically. 
 
 \subsubsection{Interpolated algorithms}
 
-The interpolated algorithms use interpolation techniques to approximate 
+The interpolated algorithms 
+use interpolation techniques to approximate 
 the value of the next period Bellman equation. 
 This interpolation can be implemented in the pure numerical 
 algorithm, and in the FOC-approximated ones. 
 
-They allow for a smoother shape of policy function. 
-Upon running the interpolations,
-we observe that 
-heir results on speed performance is slightly negative, 
-and their results on precision performance is ambiguous.
+They allow for a smoother shape of policy function, 
+and are more easily graphically interpretable.
+However, 
+their results on speed
+performance is slightly worse, 
+and their results on precision
+performance is ambiguous. 
 
 \subsubsection{Policy iteration algorithms}
 
+The policy iteration algorithms use a 
+backward function iterating on the policy function, 
+and not on the value function.
 
 \section{Results}
 

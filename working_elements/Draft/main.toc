@@ -15,21 +15,21 @@
 \contentsline {section}{\numberline {3}Estimation Methods}{6}{section.3}%
 \contentsline {subsection}{\numberline {3.1}Health Transition}{6}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Living Status}{8}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Estimation Results}{9}{subsection.3.3}%
-\contentsline {subsubsection}{\numberline {3.3.1}Health transition}{9}{subsubsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3}Estimation Results}{8}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Health transition}{8}{subsubsection.3.3.1}%
 \contentsline {subsubsection}{\numberline {3.3.2}Survival}{9}{subsubsection.3.3.2}%
-\contentsline {section}{\numberline {4}Model}{9}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Baseline specification }{9}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Solution Impossibility}{10}{subsection.4.2}%
-\contentsline {section}{\numberline {5}Numerical methods}{11}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Functions}{11}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Algorithms}{11}{subsection.5.2}%
-\contentsline {subsubsection}{\numberline {5.2.1}Pure numerical value function iteration}{11}{subsubsection.5.2.1}%
-\contentsline {subsubsection}{\numberline {5.2.2}F.O.C. approximated value function iteration}{12}{subsubsection.5.2.2}%
-\contentsline {subsubsection}{\numberline {5.2.3}Interpolated algorithms}{12}{subsubsection.5.2.3}%
-\contentsline {subsubsection}{\numberline {5.2.4}Policy iteration algorithms}{13}{subsubsection.5.2.4}%
-\contentsline {section}{\numberline {6}Results}{13}{section.6}%
-\contentsline {section}{\numberline {7}Conclusion}{13}{section.7}%
-\contentsline {section}{\numberline {8}References}{13}{section.8}%
-\contentsline {section}{\numberline {9}Appendix}{13}{section.9}%
-\contentsline {subsection}{\numberline {9.1}Proof of Impossibility}{13}{subsection.9.1}%
+\contentsline {section}{\numberline {4}Model}{10}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Baseline specification }{10}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Analytical Solution Inexistence}{11}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Numerical methods}{12}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Functions}{12}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Algorithms}{14}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Pure numerical value function iteration}{14}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}F.O.C. approximated value function iteration}{14}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}Interpolated algorithms}{14}{subsubsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.4}Policy iteration algorithms}{14}{subsubsection.5.2.4}%
+\contentsline {section}{\numberline {6}Results}{15}{section.6}%
+\contentsline {section}{\numberline {7}Conclusion}{15}{section.7}%
+\contentsline {section}{\numberline {8}References}{15}{section.8}%
+\contentsline {section}{\numberline {9}Appendix}{15}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Proof of Impossibility}{15}{subsection.9.1}%
