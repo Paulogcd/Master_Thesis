@@ -24,7 +24,7 @@ HP(Age = 50, Temperature = 0.61)[1]
 
 """ Gives the survival probability """
 function instantaneous_survival(;Age::Int64,
-            Health::Int64,
+            Health::Number,
             Temperature::Float64)::Float64
 
     HP_predicted = HP(Age = Age, Temperature = Temperature)

@@ -201,9 +201,9 @@ In a general approach, we can rewrite the first equation such as:
 
 Three main datasets were used to estimate these relationships: 
 the Health and Retirement Study (HRS) dataset for
-health status and survival,
-the Berkeley Earth dataset,
-and finally the Federal Reserve Bank of Saint Louis (FRED) dataset for 
+health information and survival,
+the Berkeley Earth dataset for annual temperature,
+and the Federal Reserve Bank of Saint Louis (FRED) dataset for 
 other economic variables.
 
 \subsubsection{HRS Data}
@@ -216,9 +216,13 @@ To avoid mortality effects of the COVID-19, the latest year selected for this st
 Due to different encoding, the 2000 and prior surveys were not taken into account. 
 
 Four variables were used in this dataset: Year of the survey, age of individuals, living status, and health status.
+
 The age of individuals was determined based on the year of birth question, that was substracted to the year of the survey. 
 Living status was encoded as $1$ if an individuals was present in the main survey, and $0$ if they were in the exit survey.
 The health status of dead individuals was encoded as the same as in the previous survey. 
+The Health Proxy defined above was constitued by adding four variables,
+from the main survey, and obtained by asking individuals if they have had blood pressure,
+lung disease, hearth condition, and stroke accidents.
 The health status was identified through the self-reported health.
 This measure is less precise than alternative composites, based on weighted average of specific questions of health, 
 but perform well enough and is more tractable.
@@ -240,13 +244,9 @@ In the HRS data, health status can take eight possible values:
 
 
 
-
-
 \begin{figure}[H]
     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png}
     \caption{Health Status distribution per Year, from the HRS data}
-    
-    
 \end{figure}
 
 \subsubsection{Climate Data}
@@ -377,45 +377,6 @@ then run a second regression, with the transition probability
 as the dependent variables, and with $H_{i,t-1}$ and 
 $\widehat{HP}_{i,t}^{I}$ as covariates.
 
-The results are observable in Figure 3.
-
-\begin{figure}[H]
-    \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_1.png}
-    \caption{Transition probabilities from Excellent Health}
-    \label{fig:sfig1}
-    \end{subfigure}%
-    \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_2.png}
-    \caption{Transition probabilities from Very Good Health}
-    \label{fig:sfig2}
-    \end{subfigure}
-    \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_3.png}
-    \caption{Transition probabilities from Good Health}
-    \label{fig:sfig3}
-    \end{subfigure}
-    \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_4.png}
-    \caption{Transition probabilities from Fair Health}
-    \label{fig:sfig4}
-    \end{subfigure}
-    \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_5.png}
-    \caption{Transition probabilities from Poor Health}
-    \label{fig:sfig2}
-    \end{subfigure}
-    \caption{Transition probabilities }
-\end{figure}
-
-Building upon these estimates, it is also possible to run 
-population simulations for a given temperature scenario. 
-
 \subsection{Living Status}
 
 The living status variable, being binary, 
@@ -486,18 +447,53 @@ The first regression to explain the Health Proxy yields:
 The regression to estimate the health transition probabilities
 yields. 
 
-PLOT
+\begin{figure}[H]
+    \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_1.png}
+    \caption{Transition probabilities from Excellent Health}
+    \label{fig:sfig1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_2.png}
+    \caption{Transition probabilities from Very Good Health}
+    \label{fig:sfig2}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_3.png}
+    \caption{Transition probabilities from Good Health}
+    \label{fig:sfig3}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_4.png}
+    \caption{Transition probabilities from Fair Health}
+    \label{fig:sfig4}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_5.png}
+    \caption{Transition probabilities from Poor Health}
+    \label{fig:sfig2}
+    \end{subfigure}
+    \caption{Transition probabilities }
+\end{figure}
 
 From these estimates, it is possible to simulate the collective 
 health trajectory of a population.
 
-PLOT
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/average_health.png}
+    \caption{Annual average health status as a function of temperature scenarios.}
+\end{figure}
 
 \subsubsection{Survival}
 
 When taking into account the health transition estimates
 and the survival probability estimates, it is then possible
-to visualize the demographic evolution of a population trhough time.
+to visualize the demographic evolution of a population through time.
 
 \begin{figure}[H]
     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_3.png}
@@ -816,12 +812,55 @@ and not on the value function.
 
 \printbibliography
 
+\newpage
 \section{Appendix}
-
 
 \subsection{Proof of Impossibility}
 
-The associated Lagrangien is: 
+This section is dedicated to the proof that the maximization program
+has no analytical solution in most cases.
+
+We will show this absence of analytical solution by attempting to solve it in three different 
+ways: First by using the Budget Constraint binding, then by using the F.O.C. and the Budget Constraint,
+and lastly trying to go to the last period to solve it recursively. 
+
+\subsubsection{Maximization program}
+
+$$ \max_{\{c_{t},l_{t},s_{t+1}\}_{t=1}^{100}}
+{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot \frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\varphi}}{1+\varphi}\right]}$$
+
+Subject to budget and borrowing constraints:
+
+$$c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})$$
+
+$$s_{t+1}\geq \underline{s}, \forall t \in [\![1,100]\!]$$
+
+\subsubsection{Budget constraint binding}
+
+A first solving attempt consists in assuming that the budget constraint binds.
+We can then obtain the following expression for consumption: 
+
+$$c_{t} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1}$$
+
+Plugging it into the maximization program, we obtain:
+
+$$ \max_{\{l_{t},s_{t+1}\}_{t=1}^{100}}
+{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot \frac{\left(l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1}\right)^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\varphi}}{1+\varphi}\right]}$$
+
+The F.O.C. with respect to labor implies: 
+
+\begin{equation}
+    l_{t}^{\varphi}\cdot \xi_{t} = \left[l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})- s_{t+1}\right]^{-\rho}\cdot z_{t}
+\end{equation}
+
+We can develop the decomposition of consumption if and only if $\rho \in \mathbb{N}$.
+Indeed, this equation is of form $x = (x-\alpha)^{\beta} \cdot z$.
+With $\beta\notin \mathbb{N}$, is a transcendantal equation.
+
+\subsubsection{F.O.C. and Budget clearing}
+
+We can now try to compute the F.O.C. first, and then make use of the Budget Constraint.
+The Lagrangien function associated witht the maximization program of the agent is: 
 \begin{equation}
     \begin{split}
         \mathcal{L}(c_{t},l_{t},s_{t+1};\lambda_t,\gamma_{t}) &
@@ -833,7 +872,6 @@ The associated Lagrangien is:
 
 The First Order Conditions are the following:
 
-
 $$\frac{\partial \mathcal{L}}{\partial c_{t}} = 0 \iff c_{t}^{-\rho} = \lambda_{t}$$
 
 
@@ -844,6 +882,8 @@ $$\frac{\partial \mathcal{L}}{\partial s_{t+1}} = 0 \iff \lambda_{t} = \beta \cd
 
 We first note that we must obtain a closed-form solution for $c_{t}$ and $l_{t}$ to obtain 
 the optimal value of $s_{t+1}$. 
+Indeed, since $s_{t+1}$ is linear in $\mathcal{L}$, we would need to plug the closed-form
+solutions of $c_{t}$ and $l_{t}$ in the budget constraint. \\
 
 Replacing the expression of $\lambda_{t}$ in the two other equation yields: 
 
@@ -859,31 +899,46 @@ And
     c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
 \end{equation}
 
-Assuming that the budget constraint binds, it becomes: 
+Assuming that the budget constraint binds, it becomes, as previously seen:
 
 $$c_{t} + s_{t+1} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})
 \iff 
 c_{t} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} 
 $$
 
-Plugging this expression into the maximization program, 
-it can therefore be rewritten such as: 
+This leads to the following equation system: 
 
-\begin{equation}
-    \max_{\{l_{\text{t}},s_{t+1}\}} u(l_{\text{t}}) = \frac{\left[l_{t}\cdot z_{t} + s_{t}\cdot (1+r_{t}) - s_{t+1} \right]^{1-\rho}}{1-\rho}-
-\xi_{t}\cdot\frac{l_{t}^{1+\varphi}}{1+\varphi}
-\end{equation}
+$$
+\begin{cases}
+    & c_t = \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}} \\
+    & c_{t} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} 
+\end{cases}
+$$
 
-The F.O.C implies: 
+$$\iff$$
+$$ \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} $$
+$$\iff$$
+$$ l_{t}^{-\frac{\varphi}{\rho}} \cdot \left(\frac{\xi_{t}}{z_{t}}\right)^{-\frac{1}{\rho}} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} $$
+$$\iff$$
+$$ l_{t}^{-\frac{\varphi}{\rho}} \cdot \left(\frac{z_{t}}{\xi_{t}}\right)^{\frac{1}{\rho}} - l_{t}\cdot z_{t} - s_{t}\cdot(1+r_{t}) - s_{t+1} = 0 $$
 
-\begin{equation}
-    l_{t}^{\varphi}\cdot \xi_{t} = \left[l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})- s_{t+1}\right]^{-\rho}\cdot z_{t}
-\end{equation}
+This is a transcendantal equation of form 
+$x^{\alpha}\cdot b - x\cdot y - c = 0$,
+which admits a solution if and only if $-\frac{\varphi}{\rho} \in \mathbb{N}$.
+This condition seems unrealistic in our context: 
 
-We can develop the decomposition of consumption if and only if $\rho \in \mathbb{N}$.
-Indeed, this equation is of form $x = (x-\alpha)^{\beta} \cdot z$.
-With $\beta\notin \mathbb{N}$, is a transcendantal equation.
+\begin{itemize}
+    \item $-\varphi >0$ implies that labor has a decreasing disutility,
+    which makes the maximization program absurd.
+    \item $-\rho >0$ implies a risk-loving agent, which changes 
+    drastically the framework of our model, and would require another whole 
+    interpretation.
+\end{itemize}
 
+Note that if we set $-\rho\in\mathbb{N}$ and further develop the last equation in the 
+budget constraint binding attempt, we end up with the same condition.
+
+\subsubsection{Backwards solving attempt}
 
 If we try to solve it backwards, we now go to the last period. 
 At the last period, $s_{t+1} = \underline{s}$ for sure:
@@ -899,29 +954,8 @@ The new optimality condition is:
     l_{t}^{\varphi}\cdot \xi_{t} = \left[l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})\right]^{-\rho}\cdot z_{t}
 \end{equation}
 
-This is still a transcendantl equation, and the problem remain the same.
-
-\textbf{Special cases:}
-
-Now, if we plug the F.O.C. 2, (equation 7), in the budget constraint, we obtain: 
-
-$$
-\begin{cases}
-    & c_t = \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}} \\
-    & c_{t} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} 
-\end{cases}
-$$
-
-$$\iff$$
-$$ \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} $$
-$$\iff$$
-$$ l_{t}^{-\frac{\varphi}{\rho}} \cdot \left(\frac{\xi_{t}}{z_{t}}\right)^{-\frac{1}{\rho}} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} $$
-$$\iff$$
-$$ l_{t}^{-\frac{\varphi}{\rho}} \cdot \left(\frac{\xi_{t}}{z_{t}}\right)^{-\frac{1}{\rho}} - l_{t}\cdot z_{t} - s_{t}\cdot(1+r_{t}) - s_{t+1} = 0 $$
-
-This is a transcendantal equation of form 
-$x^{\alpha}\cdot b - x\cdot y - a = 0$
-
-Which admits a solution if and only if: $\frac{\varphi}{\rho} \in \mathbb{N}$
+Although we simplified the term at the exponential of which 
+we have $-\rho$, this is still a transcendantal equation due to the sum 
+of labor income and income coming from savings of last period, and the problem remain the same.
 
 \end{document}

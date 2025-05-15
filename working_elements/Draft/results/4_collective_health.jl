@@ -1,94 +1,70 @@
 
 include("../../Environment/Final/sandbox_IV_simulation.jl")
 
-function individual_probability_simulation(;T::Integer,
-                                temperature_path::Vector{Float64},
-                                GDP_path::Vector{Float64})
+using Plots
+default(fontfamily = "Times")
+
+age_range = collect(range(start = 1, stop = 100))
+
+N = 10_000
+T = 100
+
+function health_history(;N::Number,T::Number,weather_path::Vector)
     
-    # Initialization: 
-    probability_history = Vector{Float64}(undef,T)
-    health_history 		= Vector{Float64}(undef,T)
+    health_history                  = Array{Float64}(undef, N,T)
+    survival_probability_history    = Array{Float64}(undef, N,T)
 
-    individual_past_health 				= 1 	# Excellent health
-    cumulative_survival_prob 			= 1 	# Birth probability
-    
-    for t in 1:T
-        # Age : 
-        age = t
+    health_history[:,1] .= 1
+
+    Threads.@threads for i in 1:N
+        survival_probability_history[i,1] =
+            instantaneous_survival(Age = 1,
+                Health = health_history[i,1], 
+                Temperature = weather_path[1])
+
+        for t in 2:T
+            probabilities_health =
+                health(Health_1 = health_history[i,t-1],
+                Temperature =  weather_path[t],
+                Age = t)
+            health_history[i,t] = sample(1:5, Weights(probabilities_health))
+            survival_probability_history[i,t] =
+                instantaneous_survival(Age = t,
+                    Health = health_history[i,t], 
+                    Temperature = weather_path[t])
+            end
             
-        # The weather comes from the weather history
-        weather_t = temperature_path[t]
-            
-        # Health status :
-            # probability of being in good health: 
-            individual_pgh = health(Age 		= age, 
-                                    Health_1 	= individual_past_health,
-                                    Temperature = weather_t)::Vector{Float64}
-        
-            # Health status draw:
-            individual_health_t = 	
-                sample(1:5,Weights(individual_pgh))
-
-            # We add it to the history
-            # individual_health_history[t] = individual_health_t
-            # The current health becomes the past one for next period
-            individual_past_health = individual_health_t
-            health_history[t] = individual_past_health
-
-        # Living status : 
-        
-        annual_survival = survival(Age 			= age,
-                                    Health 		= individual_health_t, 
-                                    Temperature 	= weather_t,
-                                    GDP 			= GDP_path[t])::Float64
-    
-        # cumulative_survival_prob = 
-        #    cumulative_survival_prob * annual_survival
-            
-        cumulative_survival_prob = annual_survival
-
-        probability_history[t] = cumulative_survival_prob
-    end
-    return (;probability_history,health_history)
+        end
+    return(;survival_probability_history,health_history)
 end
 
-individual_probability_simulation(T = 10, 
-    temperature_path = zeros(10), 
-    GDP_path = fill(2000.0,10))
+weather_path_good           = collect(range(start = 0.61, stop = 2, length = 100))
+weather_path_intermediate   = collect(range(start = 0.61, stop = 3, length = 100))
+weather_path_bad            = collect(range(start = 0.61, stop = 4, length = 100))
 
-function collective_probability_simulation(;N::Integer, 
-                                            T::Integer,
-                                            temperature_path::Vector{Float64},
-                                            GDP_path::Vector{Float64})
+@time sim_good              = health_history(N = N,T = T, weather_path = weather_path_good)
+@time sim_intermediate      = health_history(N = N,T = T, weather_path = weather_path_intermediate)
+@time sim_bad               = health_history(N = N,T = T, weather_path = weather_path_bad)
 
-    collective_probability = Vector{Array}(undef,N)
-    collective_health = Vector{Array}(undef,N)
-    
-    Threads.@threads for n in 1:N
-        
-        tmp = individual_probability_simulation(T = T, 
-                                            temperature_path = temperature_path,
-                                            GDP_path = GDP_path)
-        
-        collective_probability[n] 	= tmp[1]
-        collective_health[n] 		= tmp[2]
-    end
-    
-    return (;collective_probability,collective_health)
-end
+average_health_1            = mean.(sim_good.health_history[:,t] for t in 1:T)
+average_health_2            = mean.(sim_intermediate.health_history[:,t] for t in 1:T)
+average_health_3            = mean.(sim_bad.health_history[:,t] for t in 1:T)
 
+Plots.plot(age_range, average_health_1, label = "Optimistic scenario", linewidth = 5, color = "green")
+Plots.plot!(age_range, average_health_2, label = "Median scenario", linewidth = 5, color = "orange")
+Plots.plot!(age_range, average_health_3, label = "Pessimistic scenario", linewidth = 5, color = "red")
+Plots.plot!(xaxis = "Year", yaxis = "Average Health")
 
-cp_benchmark_b = collective_probability_simulation(N = 20_000,
-                                T = nperiods,
-                                temperature_path = bad_scenario,
-                                GDP_path = fill(GDP_2018,nperiods))
+Plots.plot!(
+        size = (2400, 1600),
+        legendfontsize = 25,
+        guidefontsize = 45,
+        tickfontsize = 30,
 
-cp_benchmark_i = collective_probability_simulation(N = 20_000,
-                                T = nperiods,
-                                temperature_path = intermediate_scenario,
-                                GDP_path = fill(GDP_2018,nperiods))
+        bottom_margin = 100Plots.px,
+        top_margin = 100Plots.px,
+        left_margin = 100Plots.px, 
+        color = ["green", "blue", "orange","red"])
 
-cp_benchmark_g = collective_probability_simulation(N = 20_000,
-                                T = nperiods,
-                                temperature_path = good_scenario,
-                                GDP_path = fill(GDP_2018,nperiods))
+savefig("working_elements/Draft/output/average_health.png")
+
