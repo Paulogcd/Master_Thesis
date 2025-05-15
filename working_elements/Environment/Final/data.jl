@@ -44,3 +44,5 @@ begin
     CSV.write("working_elements/Empirical_models/temperature.csv", temperature)
     CSV.write("working_elements/Empirical_models/gdp.csv", gdp)
 end
+
+println("data.jl DONE")

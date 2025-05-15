@@ -157,6 +157,8 @@ function population_simulation(;N::Int64,
     return(results)
 end
 
-population_simulation(N = 2000,
-    T = 100, 
-    weather_history = zeros(100))
+# population_simulation(N = 2000,
+#     T = 100, 
+#     weather_history = zeros(100))
+
+println("sandbox_IV_simulation.jl DONE")

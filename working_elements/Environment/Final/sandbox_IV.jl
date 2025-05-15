@@ -63,7 +63,7 @@ DF = vcat(df_2022_2020,
 
 DF = dropmissing!(DF)
 
-describe(DF)
+# describe(DF)
 # Regression:
 equ8bis_formula = @formula(Health ~
     Health_1 + HP_predicted + #  + Age + 
@@ -91,12 +91,12 @@ REG3 = GLM.glm(survival_equation,
     LogitLink())
 
 # Print Regression Tables
-latex_output = regtable(REG1; 
-    stats=[:nobs, :r2],             # Show #observations and R²
-    render = LatexTable()
-)
+# latex_output = regtable(REG1; 
+#     stats=[:nobs, :r2],             # Show #observations and R²
+#     render = LatexTable()
+# )
 
-println(latex_output)
+# println(latex_output)
 
 
 # coefs = coef(REG2)
@@ -108,7 +108,7 @@ println(latex_output)
 # stderror(REG2)
 # REG2
 
-REG2
+#  REG2
 
 # latex_output = regtable(REG2; 
 #     stats=[:nobs, :r2],             # Show #observations and R²
@@ -120,3 +120,7 @@ REG2
 # GLM.loglikelihood(REG3)
 # GLM.loglikelihood(REG1)
 
+df = nothing 
+DF = nothing 
+
+println("sandbox_IV.jl DONE")
