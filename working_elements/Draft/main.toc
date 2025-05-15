@@ -33,11 +33,12 @@
 \contentsline {subsection}{\numberline {5.4}Policy Function Results}{21}{subsection.5.4}%
 \contentsline {section}{\numberline {6}Results}{21}{section.6}%
 \contentsline {subsection}{\numberline {6.1}Lifetime income}{21}{subsection.6.1}%
-\contentsline {section}{\numberline {7}Discussion}{21}{section.7}%
-\contentsline {section}{\numberline {8}References}{21}{section.8}%
-\contentsline {section}{\numberline {9}Appendix}{22}{section.9}%
-\contentsline {subsection}{\numberline {9.1}Proof of Impossibility}{22}{subsection.9.1}%
-\contentsline {subsubsection}{\numberline {9.1.1}Maximization program}{22}{subsubsection.9.1.1}%
-\contentsline {subsubsection}{\numberline {9.1.2}Budget constraint binding}{22}{subsubsection.9.1.2}%
-\contentsline {subsubsection}{\numberline {9.1.3}F.O.C. and Budget clearing}{23}{subsubsection.9.1.3}%
-\contentsline {subsubsection}{\numberline {9.1.4}Backwards solving attempt}{24}{subsubsection.9.1.4}%
+\contentsline {subsection}{\numberline {6.2}Comparison}{22}{subsection.6.2}%
+\contentsline {section}{\numberline {7}Discussion}{22}{section.7}%
+\contentsline {section}{\numberline {8}References}{22}{section.8}%
+\contentsline {section}{\numberline {9}Appendix}{23}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Proof of Impossibility}{23}{subsection.9.1}%
+\contentsline {subsubsection}{\numberline {9.1.1}Maximization program}{23}{subsubsection.9.1.1}%
+\contentsline {subsubsection}{\numberline {9.1.2}Budget constraint binding}{23}{subsubsection.9.1.2}%
+\contentsline {subsubsection}{\numberline {9.1.3}F.O.C. and Budget clearing}{24}{subsubsection.9.1.3}%
+\contentsline {subsubsection}{\numberline {9.1.4}Backwards solving attempt}{25}{subsubsection.9.1.4}%
