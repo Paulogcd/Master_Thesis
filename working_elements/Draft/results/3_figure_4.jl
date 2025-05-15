@@ -70,22 +70,22 @@ end
 # pwd()
 # savefig("working_elements/Draft/output/figure_3.png")
 
-function produce_life_expectancy_table(populations)
-    
-    results = DataFrame(Temperature = [],
-        Life_expectancy = [])
-
-    for population in populations 
-
-        temperature = unique(population.temperature)[1]
-        life_expectancy = population.result.life_expectancy
-        to_add = DataFrame(Temperature = temperature,
-        Life_expectancy = life_expectancy)
-        results = vcat(to_add,results)
-
-    end
-    return(results)
-end
+# function produce_life_expectancy_table(populations)
+#     
+#     results = DataFrame(Temperature = [],
+#         Life_expectancy = [])
+# 
+#     for population in populations 
+# 
+#         temperature = unique(population.temperature)[1]
+#         life_expectancy = population.result.life_expectancy
+#         to_add = DataFrame(Temperature = temperature,
+#         Life_expectancy = life_expectancy)
+#         results = vcat(to_add,results)
+# 
+#     end
+#     return(results)
+# end
 
 # life_expectancy_table_1 = produce_life_expectancy_table(populations_1)
 # rename!(life_expectancy_table_1, ["Temperature","Life expectancy"])

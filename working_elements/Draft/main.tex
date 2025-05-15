@@ -10,6 +10,9 @@
 \usepackage{listings}
 \usepackage{hyperref}
 
+% For jump lines in tabular names
+\usepackage{makecell}
+
 % Multiple plots.
 %\usepackage[demo]{graphicx}
 \usepackage{subcaption}
@@ -647,12 +650,8 @@ However, if we try to solve the two other policy functions,
 we end up with transcendantal equations of the form $a\cdot x^{\alpha} + b\cdot x + c = 0$, 
 with $\alpha\notin \mathbb{N}$. 
 This transcendantal equations can be overcome with specific combinations 
-of parameters, among which $\varphi = -\rho$, in which case we obtain: 
-
-$$EQUATION$$
-
-To allow for more flexibility in the resolution, the model was mainly solved
-numerically.
+of parameters, but these are however absurd in our context.
+This inexistence of analytical solution calls henceforth for a numerical solving of the model.
 The next section discusses the different methods used in order to do so.
 
 \section{Numerical methods}
@@ -666,8 +665,9 @@ Finally, the aggregation methods and different numerical results are discussed.
 
 \subsection{Functions}
 
-To proceed to a numerical solving of the model,  
-some fundamental functions were used.
+This subsection is dedicated to the description of the 
+fundamental programmatic functions that were used to solve the model
+numerically. 
 
 \begin{itemize}
     \item \textbf{Budget clearing function: } 
@@ -696,7 +696,8 @@ some fundamental functions were used.
 
     For the pure numerical value function iteration, the backwards function is
     as following: 
-    \begin{lstlisting}
+    \begin{figure}[H]
+    \begin{lstlisting}[basicstyle=\small]
 for t from 100 to 1
 
     if t is equal to 100
@@ -739,6 +740,8 @@ Bellman_next_period = Value_function[index_s,t]
 
 end
 \end{lstlisting}
+\caption{Pseudo-code of the backward function.}
+\end{figure}
 
 \end{itemize}
 
@@ -746,8 +749,12 @@ end
 \subsection{Algorithms}
 
 This section details the different algorithms
-developed to perform a numerical 
-solution of the model. 
+built upon the above-mentioned fundamental functions.
+Indeed, if one can think of the pure numerical value function iteration to solve 
+the model, multiple approaches exist, that vary depending on the targeted tradeoff 
+between precision performance and speed performance\footnote{For more information, the different steps of the algorithms and their source code are available online.
+The steps and comments of the present work are available here: \url{https://www.paulogcd.com/Master_Thesis/},
+and the documented replication package, coded in Julia, is available here: \url{https://www.paulogcd.com/Master_Thesis_Paulogcd_2025/}.}. 
 
 \subsubsection{Pure numerical value function iteration}
 
@@ -755,9 +762,7 @@ The pure numerical value function iteration algorithm consists
 in verifying all possible 
 combination of choice variables for each level of state variable 
 to determine what is the best possible response given a certain
-amount of state variable \footnote{The different steps of the algorithms and their source code are available online.
-The steps and comments of the present work are available here: \url{https://www.paulogcd.com/Master_Thesis/},
-and the documented replication package, coded in Julia, is available here: \url{https://www.paulogcd.com/Master_Thesis_Paulogcd_2025/}.}.
+amount of state variable.
 
 Here, the algorithm goes through all the possible values of
 $c$, $l$, and $s'$, without using any approximation obtained 
@@ -769,16 +774,17 @@ ranges used.
 
 \subsubsection{F.O.C. approximated value function iteration}
 
-The FOC value function iteration algorithms
-make use of the two FOC
-derived in the previous section. 
-They are faster by order of magnitudes,
-but contain more errors.
-
-Note that it is impossible to use the second FOC, i.e. the 
+The FOC approximated value function iteration algorithms
+make use of the two expression of consumption and labor supply 
+derived from the FOC
+seen in the previous section. 
+They are faster by order of magnitudes when compared to the pure numerical 
+value function iteration algorithm,
+but contain more errors, measured by the budget clearing function\footnote{Note that it is impossible to use the second FOC, i.e. the 
 Euler equation, containing the 
-Lagrangien multiplier $\gamma_{t}$ that
-is not solvable analytically. 
+Lagrangien multiplier $\gamma_{t}$. 
+However, the numerical solving process 
+allows for an estimation of $\gamma_{t}$.}.
 
 \subsubsection{Interpolated algorithms}
 
@@ -789,24 +795,48 @@ This interpolation can be implemented in the pure numerical
 algorithm, and in the FOC-approximated ones. 
 
 They allow for a smoother shape of policy function, 
-and are more easily graphically interpretable.
-However, 
-their results on speed
+and have graphical results that are more easily interpretable.
+However, their speed
 performance is slightly worse, 
-and their results on precision
+and the effect of interpolation on precision
 performance is ambiguous. 
 
-\subsubsection{Policy iteration algorithms}
+% \subsubsection{Policy iteration algorithms}
+% 
+% The policy iteration algorithms use a 
+% backward function iterating on the policy function, 
+% and not on the value function.
 
-The policy iteration algorithms use a 
-backward function iterating on the policy function, 
-and not on the value function.
+\subsection{Performance}
+
+\begin{figure}[H]
+    \begin{tabular}{cccc}
+    \toprule
+    Algorithm & Error & Time (in seconds) & Memory (in Mb)\\
+    \midrule
+    \makecell{Pure Numerical Value \\ Function Iteration} & 0.0179 & 0.6604 & 1033.4409\\
+    \\
+    \makecell{FOC approximation 1 \\ (fixing labor supply)} & 0.042 & 0.2506 & 98.1834\\
+    \\
+    \makecell{FOC approximation 2 \\ (fixing consumption)} & 0.042 & 0.0188 & 55.6981\\
+    \bottomrule
+    \end{tabular}
+    \caption{Algorithms and their performance}
+\end{figure}
+
+\subsection{Policy Function Results}
+
+- Consumption policy 
+
+- Labor supply policy 
+
+- Savings policy
 
 \section{Results}
 
+\subsection{Lifetime income}
 
-
-\section{Conclusion}
+\section{Discussion}
 
 \section{References}
 
@@ -956,6 +986,7 @@ The new optimality condition is:
 
 Although we simplified the term at the exponential of which 
 we have $-\rho$, this is still a transcendantal equation due to the sum 
-of labor income and income coming from savings of last period, and the problem remain the same.
+of labor income and income coming from savings of last period, 
+and the problem remain the same.
 
 \end{document}
