@@ -2,6 +2,7 @@ begin
     using CSV
     using DataFrames
     using GLM
+	using Plots
 	default(fontfamily = "Times")
 end
 
@@ -111,7 +112,7 @@ begin
     vgv = GLM.predict(model_health_age_temperature_gdp,VeryGood)
     ev  = GLM.predict(model_health_age_temperature_gdp,Excellent)
 
-    Plots.plot(pv, 		label = "Poor", 		linewidth=5)
+    Plots.plot(pv, 		label = "Poor", 		 )
     Plots.plot!(fv, 	label = "Fair", 		linewidth=5)
     Plots.plot!(gv, 	label = "Good", 		linewidth=5)
     Plots.plot!(vgv, 	label = "Very good", 	linewidth=5)

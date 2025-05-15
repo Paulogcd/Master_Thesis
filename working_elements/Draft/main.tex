@@ -10,6 +10,10 @@
 \usepackage{listings}
 \usepackage{hyperref}
 
+% Multiple plots.
+%\usepackage[demo]{graphicx}
+\usepackage{subcaption}
+
 
 % Bibliography:
 \usepackage[style=authoryear]{biblatex}
@@ -33,45 +37,105 @@
 
 \maketitle
 
+\newpage
 \tableofcontents
 
+\newpage
 \section{Introduction}
+Temperature is a fundamental component of the
+physical environment, shaping human activity
+across multiple dimensions. As climate change
+alters the global distribution of temperature,
+there is growing concern about its broader
+economic consequences. While substantial
+attention has been given to the direct effects
+of temperature on labor productivity,
+agricultural yields, and conflict, less
+is understood about how temperature-driven
+changes in health may propagate through the
+economy over the long run.
 
-\subsection{Introduction to the subject}
-
-Climate change is projected to strongly impact temperature distribution in the upcoming century. 
-Therefore, it is important to try to identify the different effects of temperature on the economy.
-One of the particular effect channels is health. 
-How will temperature change affect the health status of the population, and therefore the economic production?
+Health is a critical input into individual
+well-being and economic performance.
+Variations in temperature can influence
+the incidence and severity of disease,
+the functioning of the human body, and
+the demand for medical services. These
+effects, in turn, may alter labor supply,
+human capital accumulation, and lifetime
+income trajectories. Understanding the
+economic cost associated with these health
+effects is essential for quantifying the
+full burden of climate change and for
+informing effective adaptation policy.
 
 \subsection{Related literature}
 
-In order to study this question, 
+This paper contributes to three main strands of literature: health economics, the economics of climate change, and the intersection of climate and health. Each of these fields provides foundational insights but leaves open important questions regarding the long-run economic consequences of temperature-induced health variation.
 
-The relationship between temperature, health, and economics is deeply intricated 
-in several literature fields. 
+\subsubsection{Health Economics}
 
-First, since the 2000s, the relationship on how climate and economics are intertwined has been studied in a more climate-related literature.
+A large literature has documented the central role of health
+in shaping economic behavior over the life cycle.
+De Nardi et al. (2023) demonstrate that health status
+significantly affects labor supply, retirement decisions,
+and savings dynamics, establishing health as a key determinant
+of productivity and economic welfare.
+Beyond contemporaneous productivity effects,
+poor health imposes substantial intertemporal costs.
+Both De Nardi et al. (2023) and Capatina (2015) quantify
+the lifetime income and utility losses associated with
+adverse health trajectories, emphasizing the compounding
+nature of health shocks over the life course.
 
-Second, health economics has identified important findings in the last years.
+\subsubsection{Climate and Economics}
 
-- Health economics: 
-    - Health and productivity.
-    - Health and life expectancy.
-- Climate and economics: 
-    - Hotter temperature and conflicts. 
+The economic impacts of climate change are multifaceted, with temperature emerging as a particularly influential channel. Burke et al. (2015) document substantial aggregate output losses associated with rising temperatures, particularly in countries with limited adaptive capacity. More recently, Bilal and Kanzig (2024, 2025) show that temperature shocks have asset-pricing implications, underscoring the forward-looking nature of climate risks.
 
+At the same time, the literature has explored how extreme heat may exacerbate social and political instability. Burke, Hsiang, and Miguel (2015) provide compelling evidence that hotter temperatures increase the likelihood of conflict in developing countries, suggesting that the consequences of climate change extend well beyond output measures. Importantly, adaptation has been shown to significantly mitigate the economic burden of climate shocks. Carleton et al. (2022) estimate the global mortality consequences of warming while explicitly accounting for adaptation costs and benefits, illustrating how policy and behavioral responses shape climate damages.
+
+From a methodological standpoint, the empirical identification of climate impacts presents persistent challenges. Deryugina and Hsiang (2017), Hsiang (2016), and Nordhaus (2019) all highlight the difficulties of isolating causal effects in the presence of spatial and temporal heterogeneity. Bilal and Kanzig (2024, 2025) further emphasize the econometric complexity involved in measuring forward-looking responses to climate risks.
+
+\subsubsection{Climate and Health}
+
+A growing body of work links temperature variation to health outcomes. Barreca et al. (2016) show that the temperature-mortality relationship in the U.S. has declined substantially over the twentieth century, pointing to significant adaptation in developed economies. Nevertheless, the potential for major health shocks remains. The IPCC (2022, Chapter 7) outlines the anticipated health risks under various warming scenarios, concluding that climate-related health burdens are likely to intensify even in high-income countries.
+
+\subsubsection{Gap in the Literature}
+
+While prior research has examined the contemporaneous
+effects of temperature on economic output, and others
+have quantified the cost of poor health on lifetime
+economic outcomes, little is known about how
+temperature-induced health variation translates
+into long-run income losses at the individual level.
+Moreover, existing work often abstracts from or aggregates
+over individual responses.
+
+This Master Thesis addresses this gap by quantifying
+the lifetime economic cost of temperature-driven health
+deterioration in the context of the USA,
+under current levels of adaptation and within a
+structural life-cycle framework of individual decision-making.
 
 \subsection{Research question and strategy}
 
-The goal of this Master Thesis is to propose a simple approach to model the effect
-of temperature on the health of individuals, and subsequently on the economy. 
+The economic consequences of temperature-induced health variation reflect a fundamental tradeoff embedded in individual decision-making. Higher temperatures can deteriorate health outcomes, impairing both physical capacity and cognitive functioning, which in turn depresses labor productivity and expected longevity. These changes can have long-lasting effects on income profiles, particularly when health deteriorates early in life.
 
-In order to achieve this, two main parts are identified. 
+Yet even in the absence of institutional responses or targeted health investments, individuals may adjust their economic behavior in response to deteriorating health. A worsening health trajectory may lead agents to reoptimize by altering labor supply, savings, or consumption paths. These behavioral responses—though constrained—can partially absorb the economic shock. The key question is then whether such individual adjustments are sufficient to mitigate the lifetime income loss induced by temperature-related health shocks, or whether the long-run economic cost remains substantial despite endogenous reoptimization.
 
-First, an empirical part studying the link between temperature and health will be done. 
+This tension motivates the central research question of this paper:
+How do temperature-induced health shocks affect individuals’ lifetime income, when only individual-level behavioral responses are allowed, and what are the economic mechanisms through which these effects propagate?
 
-Second, a macroeconomic model is presented to explain the economic mechanisms that will be affected by the identified empirical relationships.
+To address this question, the analysis proceeds in two stages.
+First, an empirical investigation quantifies the causal impact of temperature variation on individual health status.
+Using micro-level data, the analysis estimates how both short-term and sustained exposure to high temperatures affect health outcomes across demographic groups and age cohorts.
+
+Second, these empirical estimates are embedded into a structural, life-cycle model of individual behavior.
+In the model, health enters as a state variable that evolves over time and affects both survival and future health probability distribution.
+Individuals maximize lifetime utility by choosing labor supply and consumption paths, taking health dynamics as exogenous but responsive to temperature.
+Crucially, the model does not incorporate health investment or collective adaptation, isolating the role of individual optimization.
+
+By simulating the model under alternative temperature scenarios, the analysis computes the long-run income losses attributable to temperature-induced health shocks. These results yield a quantitative assessment of the intertemporal economic cost of climate-related health deterioration, under a benchmark of minimal adaptation.
 
 \section{Setting}
 
@@ -82,8 +146,6 @@ Then, the data used will be presented and discussed.
 The methods used to estimate the functional forms of the relationships will then be 
 presented, and will be refered as the specific case of this work.
 Finally, results of the estimation process of these relationships will be presented and discussed.
-
-\subsection{Goal}
 
 \subsection{Formal Description}
 
@@ -129,11 +191,11 @@ In a general approach, we can rewrite the first equation such as:
     L_{t} \sim \mathcal{B}(p_{t}(\mathcal{H}_t,\mathcal{W}_t))
 \end{equation}
 
-As such, the probability of an individual to be alive at period $t$ is: 
-
-\begin{equation}
-    Pr(L_t = 1 | \mathcal{H}_t,\mathcal{W}_t ) = \prod_{j = 1}^{t} p_{j}(\mathcal{H}_j,\mathcal{W}_j)
-\end{equation}
+% As such, the probability of an individual to be alive at period $t$ is: 
+% 
+% \begin{equation}
+%     Pr(L_t = 1 | \mathcal{H}_t,\mathcal{W}_t ) = \prod_{j = 1}^{t} p_{j}(\mathcal{H}_j,\mathcal{W}_j)
+% \end{equation}
 
 \subsection{Data}
 
@@ -314,6 +376,45 @@ Once we have the estimate $\widehat{HP}_{i,t}^{I}$, we can
 then run a second regression, with the transition probability 
 as the dependent variables, and with $H_{i,t-1}$ and 
 $\widehat{HP}_{i,t}^{I}$ as covariates.
+
+The results are observable in Figure 3.
+
+\begin{figure}[H]
+    \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_1.png}
+    \caption{Transition probabilities from Excellent Health}
+    \label{fig:sfig1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_2.png}
+    \caption{Transition probabilities from Very Good Health}
+    \label{fig:sfig2}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_3.png}
+    \caption{Transition probabilities from Good Health}
+    \label{fig:sfig3}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_4.png}
+    \caption{Transition probabilities from Fair Health}
+    \label{fig:sfig4}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_5.png}
+    \caption{Transition probabilities from Poor Health}
+    \label{fig:sfig2}
+    \end{subfigure}
+    \caption{Transition probabilities }
+\end{figure}
+
+Building upon these estimates, it is also possible to run 
+population simulations for a given temperature scenario. 
 
 \subsection{Living Status}
 

@@ -106,17 +106,16 @@ println(latex_output)
 
 # coef(REG2)
 # stderror(REG2)
+# REG2
+
 REG2
 
-fields(typeof(1))
+# latex_output = regtable(REG2; 
+#     stats=[:nobs, :r2],             # Show #observations and R²
+#     render = LatexTable()
+# )
 
-
-latex_output = regtable(REG2; 
-    stats=[:nobs, :r2],             # Show #observations and R²
-    render = LatexTable()
-)
-
-println(latex_output)
+# println(latex_output)
 
 # GLM.loglikelihood(REG3)
 # GLM.loglikelihood(REG1)

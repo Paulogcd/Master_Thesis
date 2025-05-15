@@ -25,6 +25,11 @@ pop_3_1 = produce_population(fixed_temperature_3)
 pop_4_1 = produce_population(fixed_temperature_4)
 pop_5_1 = produce_population(fixed_temperature_5)
 
+# keys(pop_2_1)
+# keys(pop_2_1.result)
+# pop_2_1.result.collective_health_history
+# mean(pop_2_1.result.collective_health_history)
+
 function produce_graph(populations)
     
     result_plot = Plots.plot(xaxis = "Time",
