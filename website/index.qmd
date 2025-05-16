@@ -7,6 +7,8 @@ dedicated to my Master Thesis.
 
 ____
 
+My submitted Master Thesis is available [here](./resources/main.pdf).
+
 ## Overview
 
 I would like to study the economic effect of temperature variations induced by climate change on health.
