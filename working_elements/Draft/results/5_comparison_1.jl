@@ -1,23 +1,19 @@
-include("numerical_algorithms_0.jl")
-
-using NamedArrays
-
 # Pure numerical value function iteration - No interpolation
 function Bellman_numerical(;s_range::AbstractRange,
-                    sprime_range::AbstractRange,
-                    consumption_range::AbstractRange,
-                    labor_range::AbstractRange,
-                    value_function_nextperiod::Any,
-                    β 					= 0.96::Float64, 
-                    z 					= 1.00::Float64,
-                    ρ 					= 1.5::Float64,
-                    φ 					= 2.00::Float64,
-                    proba_survival 		= 0.90::Float64,
-                    r 					= ((1-0.9)/0.9)::Float64,
-                    w 					= 0.00::Float64,
-                    h 					= 2.00::Float64,
-                    return_full_grid 	= true::Bool, 
-                    return_budget_balance = true::Bool)::NamedTuple
+                sprime_range::AbstractRange,
+                consumption_range::AbstractRange,
+                labor_range::AbstractRange,
+                value_function_nextperiod::Any,
+                β 					= 0.96::Float64, 
+                z 					= 1.00::Float64,
+                ρ 					= 1.5::Float64,
+                φ 					= 2.00::Float64,
+                proba_survival 		= 0.90::Float64,
+                r 					= ((1-0.9)/0.9)::Float64,
+                w 					= 0.00::Float64,
+                h 					= 2.00::Float64,
+                return_full_grid 	= true::Bool, 
+                return_budget_balance = true::Bool)::NamedTuple
 
     @assert length(value_function_nextperiod) == length(s_range) "The value function of the next period has the wrong length."
 
@@ -312,32 +308,3 @@ function backwards_numerical(;s_range::AbstractRange,
     end
 
 end
-
-pure_numerical_no_interpolation = backwards_numerical(s_range = s_range_2,
-                        sprime_range		= s_range_2,
-                        consumption_range 	= consumption_range,
-                        labor_range			= labor_range,
-                        nperiods 			= T,
-                        r 					= small_r,
-                        z 					= z,
-                        w 					= weather_path_intermediate,
-                        proba_survival 		= average_proba_intermediate,
-                        h 					= average_health_intermediate,
-                        ρ 					= 1.50,
-                        φ 					= 2.00,
-                        β 					= β)
-
-# Lifetime income and scaling:
-lifetime_income_normalized = compute_lifetime_income(
-    pure_numerical_no_interpolation.optimal_choices,
-    s_range_2,
-    z,
-    average_proba_intermediate,
-    small_r,
-    0.00)
-
-scaling_factor = 1_450_000 / lifetime_income_normalized
-s_range_scaled = s_range_2 .* scaling_factor
-consumption_range_scaled = range(0.0, stop=5.0*scaling_factor, length=200)  # 200 points
-z_scaled = z .* scaling_factor  # Rescale wages
-

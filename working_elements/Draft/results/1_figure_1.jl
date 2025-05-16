@@ -8,6 +8,7 @@ end
 
 pwd() 
 
+default(fontfamily = "Times")
 temperature = CSV.read("working_elements/Empirical_models/temperature.csv", DataFrame)
 
 tp = temperature[temperature.Year .>= 1900, :]
@@ -30,8 +31,8 @@ tp_plot = Plots.plot(tp.Year,
 
     size = (2400, 1600),
     legendfontsize = 24,
-    guidefontsize = 28,
-    tickfontsize = 20,
+    guidefontsize = 40,
+    tickfontsize = 40,
 
     bottom_margin = 100Plots.px,
     top_margin = 100Plots.px,

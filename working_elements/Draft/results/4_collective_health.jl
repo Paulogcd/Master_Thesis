@@ -51,7 +51,7 @@ average_health_2            = mean.(sim_intermediate.health_history[:,t] for t i
 average_health_3            = mean.(sim_bad.health_history[:,t] for t in 1:T)
 
 Plots.plot(age_range, average_health_1, label = "Optimistic scenario", linewidth = 5, color = "green")
-Plots.plot!(age_range, average_health_2, label = "Median scenario", linewidth = 5, color = "orange")
+Plots.plot!(age_range, average_health_2, label = "Intermediate scenario", linewidth = 5, color = "orange")
 Plots.plot!(age_range, average_health_3, label = "Pessimistic scenario", linewidth = 5, color = "red")
 Plots.plot!(xaxis = "Year", yaxis = "Average Health")
 

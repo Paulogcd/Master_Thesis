@@ -19,16 +19,6 @@ function produce_population(temperature)
     return (;result,temperature)
 end
 
-# pop_1_1 = produce_population(fixed_temperature_1)
-# pop_2_1 = produce_population(fixed_temperature_2)
-# pop_3_1 = produce_population(fixed_temperature_3)
-# pop_4_1 = produce_population(fixed_temperature_4)
-# pop_5_1 = produce_population(fixed_temperature_5)
-
-# keys(pop_2_1)
-# keys(pop_2_1.result)
-# pop_2_1.result.collective_health_history
-# mean(pop_2_1.result.collective_health_history)
 
 function produce_graph(populations)
     
@@ -111,9 +101,11 @@ populations_2 = [pop_1_2,
     pop_2_2,
     pop_3_2]
 
-population = pop_1_2
+# population = pop_1_2
 
-keys(population)
+# keys(population)
+
+age_range = 1:100
 
 function produce_graph(populations)
     
@@ -139,9 +131,9 @@ function produce_graph(populations)
 
     Plots.plot!(
         size = (2400, 1600),
-        legendfontsize = 25,
-        guidefontsize = 45,
-        tickfontsize = 30,
+        legendfontsize = 40,
+        guidefontsize = 40,
+        tickfontsize = 40,
 
         bottom_margin = 100Plots.px,
         top_margin = 100Plots.px,

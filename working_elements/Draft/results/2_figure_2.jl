@@ -124,9 +124,9 @@ begin
 
 	Plots.plot!(
 		size = (2400, 1600),
-		legendfontsize = 24,
-		guidefontsize = 28,
-		tickfontsize = 20,
+		legendfontsize = 40,
+		guidefontsize = 40,
+		tickfontsize = 40,
 
 		bottom_margin = 100Plots.px,
 		top_margin = 100Plots.px,
@@ -137,4 +137,4 @@ begin
 		)
 end
 
-savefig("working_elements/Draft/output/figure_2.png")
+# savefig("working_elements/Draft/output/figure_2.png")

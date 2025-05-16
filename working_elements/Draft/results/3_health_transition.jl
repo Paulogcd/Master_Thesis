@@ -6,7 +6,7 @@ using OrdinalMultinomialModels
 Plots.gr()
 default(fontfamily = "Times")
 default(linewidth=5)
-default(titlefont=font(40,"Times"))
+default(titlefont=font("Times"))
 
 # Plot the 5 plots of health transition probabilities,
 # for a fixed level of temperature. 
@@ -29,8 +29,8 @@ Plots.plot!(age_range,predicted_probabilities_excellent[:,2], label = "Very Good
 Plots.plot!(age_range,predicted_probabilities_excellent[:,3], label = "Good",       color = colors[3])
 Plots.plot!(age_range,predicted_probabilities_excellent[:,4], label = "Fair",       color = colors[4])
 Plots.plot!(age_range,predicted_probabilities_excellent[:,5], label = "Poor",       color = colors[5])
-Plots.plot!(xaxis = "Age", yaxis = "Probability", legend = false)
-Plots.plot!(title = "Transition probabilities from Excellent Health")
+Plots.plot!(xaxis = "Age", yaxis = "Probability", legend = :right) #, legend = false)
+# Plots.plot!(title = "Transition probabilities from Excellent Health")
 
 # Very Good:
 
@@ -46,8 +46,8 @@ Plots.plot!(age_range,predicted_probabilities_very_good[:,2], label = "Very Good
 Plots.plot!(age_range,predicted_probabilities_very_good[:,3], label = "Good", color = colors[3])
 Plots.plot!(age_range,predicted_probabilities_very_good[:,4], label = "Fair", color = colors[4])
 Plots.plot!(age_range,predicted_probabilities_very_good[:,5], label = "Poor", color = colors[5])
-Plots.plot!(xaxis = "Age", yaxis = "Probability", legend = false)
-Plots.plot!(title = "Transition probabilities from Very Good Health")
+Plots.plot!(xaxis = "Age", yaxis = "Probability", legend = :left)
+# Plots.plot!(title = "Transition probabilities from Very Good Health")
 
 # Good:
 
@@ -63,8 +63,8 @@ Plots.plot!(age_range,predicted_probabilities_good[:,2], label = "Very Good", co
 Plots.plot!(age_range,predicted_probabilities_good[:,3], label = "Good", color = colors[3])
 Plots.plot!(age_range,predicted_probabilities_good[:,4], label = "Fair", color = colors[4])
 Plots.plot!(age_range,predicted_probabilities_good[:,5], label = "Poor", color = colors[5])
-Plots.plot!(xaxis = "Age", yaxis = "Probability", legend = false)
-Plots.plot!(title = "Transition probabilities from Good Health")
+Plots.plot!(xaxis = "Age", yaxis = "Probability", legend = :left)
+# Plots.plot!(title = "Transition probabilities from Good Health")
 
 # Fair:
 
@@ -81,7 +81,7 @@ Plots.plot!(age_range,predicted_probabilities_fair[:,3], label = "Good", color =
 Plots.plot!(age_range,predicted_probabilities_fair[:,4], label = "Fair", color = colors[4])
 Plots.plot!(age_range,predicted_probabilities_fair[:,5], label = "Poor", color = colors[5])
 Plots.plot!(xaxis = "Age", yaxis = "Probability", legend = false)
-Plots.plot!(title = "Transition probabilities from Fair Health")
+# Plots.plot!(title = "Transition probabilities from Fair Health")
 
 # Poor:
 
@@ -97,8 +97,8 @@ Plots.plot!(age_range,predicted_probabilities_poor[:,2], label = "Very Good", co
 Plots.plot!(age_range,predicted_probabilities_poor[:,3], label = "Good", color = colors[3])
 Plots.plot!(age_range,predicted_probabilities_poor[:,4], label = "Fair", color = colors[4])
 Plots.plot!(age_range,predicted_probabilities_poor[:,5], label = "Poor", color = colors[5])
-Plots.plot!(xaxis = "Age", yaxis = "Probability", legend = :outerright)
-Plots.plot!(title = "Transition probabilities from Poor Health")
+Plots.plot!(xaxis = "Age", yaxis = "Probability", legend = :topleft)
+# Plots.plot!(title = "Transition probabilities from Poor Health")
 
 
 health_transition_plots = [Plot_Excellent,
@@ -111,10 +111,10 @@ for (i,plot) in enumerate(health_transition_plots)
     
     Plots.plot(plot, 
     
-    size = (2400, 2000),
-    legendfontsize = 24,
-    guidefontsize = 28,
-    tickfontsize = 20,
+    size = (2400, 1600),
+    legendfontsize = 40,
+    guidefontsize = 40,
+    tickfontsize = 40,
 
     bottom_margin = 100Plots.px,
     top_margin = 100Plots.px,

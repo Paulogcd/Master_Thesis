@@ -326,22 +326,3 @@ function backwards_FOC_approximation_1(;s_range::AbstractRange,
 
 end
 
-
-approximation_FOC_1_no_interpolation = @timed let 
-    approximation_FOC_1_no_interpolation = backwards_FOC_approximation_1(s_range = s_range_2,
-                        sprime_range		= s_range_2,
-                        consumption_range 	= consumption_range,
-                        # labor_range			= labor_range,
-                        nperiods 			= T,
-                        r 					= small_r,
-                        z 					= ones(T),
-                        w 					= weather_path_intermediate,
-                        proba_survival 		= average_proba_intermediate,
-                        h 					= average_health_intermediate,
-                        ρ 					= 1.50,
-                        φ 					= 2.00,
-                        β 					= 0.96)
-end
-
-approximation_FOC_1_no_interpolation = performance_metrics(approximation_FOC_1_no_interpolation)
-approximation_FOC_1_no_interpolation

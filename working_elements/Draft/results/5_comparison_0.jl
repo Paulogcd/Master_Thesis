@@ -116,36 +116,41 @@ end
 N = 10_000
 T = 100
 
-weather_path_good           = collect(range(start = 0.61, stop = 2, length = 100))
-weather_path_intermediate   = collect(range(start = 0.61, stop = 3, length = 100))
-weather_path_bad            = collect(range(start = 0.61, stop = 4, length = 100))
+weather_path_boomer             = collect(range(start = 0.01, stop = 1.5, length = 100))
+weather_path_good               = collect(range(start = 0.61, stop = 2, length = 100))
+weather_path_intermediate       = collect(range(start = 0.61, stop = 3, length = 100))
+weather_path_bad                = collect(range(start = 0.61, stop = 4, length = 100))
 
-@time sim_good              = health_history(N = N,T = T, weather_path = weather_path_good)
-@time sim_intermediate      = health_history(N = N,T = T, weather_path = weather_path_intermediate)
-@time sim_bad               = health_history(N = N,T = T, weather_path = weather_path_bad)
+@time sim_boomer                = health_history(N = N,T = T, weather_path = weather_path_boomer)
+@time sim_good                  = health_history(N = N,T = T, weather_path = weather_path_good)
+@time sim_intermediate          = health_history(N = N,T = T, weather_path = weather_path_intermediate)
+@time sim_bad                   = health_history(N = N,T = T, weather_path = weather_path_bad)
 
+average_health_boomer             = mean.(sim_boomer.health_history[:,t] for t in 1:T)
 average_health_good             = mean.(sim_good.health_history[:,t] for t in 1:T)
 average_health_intermediate     = mean.(sim_intermediate.health_history[:,t] for t in 1:T)
 average_health_bad              = mean.(sim_bad.health_history[:,t] for t in 1:T)
 
+average_proba_boomer              = mean.(sim_boomer.survival_probability_history[:,t] for t in 1:T)
 average_proba_good              = mean.(sim_good.survival_probability_history[:,t] for t in 1:T)
 average_proba_intermediate      = mean.(sim_intermediate.survival_probability_history[:,t] for t in 1:T)
 average_proba_bad               = mean.(sim_bad.survival_probability_history[:,t] for t in 1:T)
 
-sim_good            = nothing 
-sim_intermediate    = nothing 
-sim_bad             = nothing
+sim_boomer              = nothing 
+sim_good                = nothing 
+sim_intermediate        = nothing 
+sim_bad                 = nothing
 
 # Range parameters: 
 
 s_range_2 			= 0.00:0.05:2.00 # 0.00:100:5_000 # 0.00:0.10:2.00 # 20
 sprime_range_2 		= s_range_2 # 20 
 consumption_range   = 0.00:0.10:3.00 # 0.00:100:4_000 # 0.00:0.10:3.00 # 30
-small_r = (fill(0.0178583,T))
-labor_range = 0.00:0.01:1.1 # 0.00:40:2_080 # 0.00:0.10:2.00 # 20
+small_r             = (fill(0.0178583,T))
+labor_range         = 0.00:0.01:1.1 # 0.00:40:2_080 # 0.00:0.10:2.00 # 20
 z = ones(T)
 
 # β = 0.99
 β = 1/(1+0.0178583)
 
-println("numerical_algorithms_0.jl DONE")
+println("5_comparison_0.jl DONE")

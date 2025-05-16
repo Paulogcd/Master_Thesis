@@ -8,7 +8,8 @@
 \usepackage{array}
 \usepackage{booktabs}
 \usepackage{listings}
-\usepackage{hyperref}
+% \usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 
 % For jump lines in tabular names
 \usepackage{makecell}
@@ -142,285 +143,213 @@ By simulating the model under alternative temperature scenarios, the analysis co
 
 \section{Setting}
 
-This section is dedicated to the presentation of the general setting
-in which individuals live in this model.
-First, the relationships between the different elements in a general framework will be presented.
-Then, the data used will be presented and discussed. 
-The methods used to estimate the functional forms of the relationships will then be 
-presented, and will be refered as the specific case of this work.
-Finally, results of the estimation process of these relationships will be presented and discussed.
+This section introduces the dynamic environment in which individuals evolve over time. 
+We provide a formal description of the mechanisms governing health and survival outcomes in response to exogenous weather realizations. 
+The framework abstracts from individual choices and focuses on the stochastic processes linking temperature exposure, health dynamics, and mortality risk.
 
-\subsection{Formal Description}
+In each period, individuals are exposed to a realization of weather conditions.
+Conditional on this realization and their past health trajectory, they draw a new health status and face a probability of survival into the next period.
+These outcomes evolve according to reduced-form transition functions, which will later be estimated empirically.
 
-At each period, an exogenous weather realization occurs, and individuals draw a health and living status. 
+The section proceeds as follows.
+The first subsection introduces the formal structure of the health and survival processes.
+The second subsection presents the individual-level panel data used to estimate these relationships in the subsequent section.
 
-\subsubsection{History vectors}
+\subsection{Formal Description}\label{formal_description}
 
-In a general framework, we can think of the health of an individual at time $t$ as a vector $\mathcal{H}_t\in \mathbb{R}^{t}$ containing
-all the health status of the individual throughout their life.
-Similarily, we can think of the weather experienced by an individual at time $t$ as a vector $\mathcal{W}_t\in \mathbb{R}^{t}$ containing
-all the weather conditions experienced by the same individual throughout their life.
+\subsubsection{History Vectors}
+
+We begin by describing the framework in general terms, abstracting from empirical constraints. In this general formulation, an individual’s health at time $t$ is modeled as part of a history vector $\mathcal{H}_t \in \Omega(H)^t$, which records the sequence of health states experienced from the first period up to time $t$:
+\[
+\mathcal{H}_t = (H_1, H_2, \dots, H_t).
+\]
+
+Similarly, the sequence of weather conditions encountered by an individual is captured by a weather history vector $\mathcal{W}_t \in \Omega(W)^t$:
+\[
+\mathcal{W}_t = (W_1, W_2, \dots, W_t).
+\]
+
+These vectors serve to characterize the information available for determining health and survival outcomes at time $t$.
 
 \subsubsection{Health Status}
 
-Let $H_{t}\in\Omega(H)$ be a random variable denoting the health status of an individual at time $t$.
-The functional form of its distribution $f_{h}$ will depend on its sample space $\Omega(H)$. 
-The past health history and the temperature also affect the probability distribution of health status.
-Generically, we can therefore write: 
+Let $H_t \in \Omega(H)$ denote the health status of an individual at time $t$, where $\Omega(H)$ is a finite, ordered set representing possible health states. The evolution of health over time is governed by a stochastic process, with the distribution of $H_t$ depending on the individual's prior health trajectory and experienced weather conditions.
 
-\begin{equation}
-    H_{t}\sim f_{h}(\mathcal{H}_{t-1},\mathcal{W}_t)
-\end{equation}
-
-Also, it follows that: 
-
-\begin{equation}
-    \mathcal{H}_{t} = (H_{1},...,H_{t})
-\end{equation}
+Formally, we model health status at time $t$ as a random draw from a conditional distribution:
+\[
+H_t \sim f_h(\mathcal{H}_{t-1}, \mathcal{W}_t),
+\]
+where $f_h$ is a transition function mapping past health and current weather exposure into a probability distribution over $\Omega(H)$.
 
 \subsubsection{Living Status}
 
-Let $L_{t}\in\{0,1\}$ be a random binary variable denoting the living status of an individual at time $t$.
-It is determined by a Bernoulli distribution with parameter $p_t$ such that: 
+Let $L_t \in \{0,1\}$ denote the living status of an individual at time $t$, where $L_t = 1$ indicates survival and $L_t = 0$ indicates death in that period. Survival is modeled as a Bernoulli random variable with success probability $p_t$:
+\[
+L_t \sim \mathcal{B}(p_t).
+\]
 
-\begin{equation}
-    L_{t} \sim \mathcal{B}(p_{t})
-\end{equation}
+In the general framework, we allow the survival probability $p_t$ to depend on an individual's full health history $\mathcal{H}_t$ and weather exposure $\mathcal{W}_t$. Accordingly, we write:
+\[
+L_t \sim \mathcal{B}(p_t(\mathcal{H}_t, \mathcal{W}_t)).
+\]
 
-The probability parameter $p_{t}$ depends on their health, age, and temperature.
-In a general approach, we can rewrite the first equation such as: 
+This specification captures the idea that survival probabilities may be shaped by accumulated health conditions as well as contemporaneous or historical weather shocks.
 
-\begin{equation}
-    L_{t} \sim \mathcal{B}(p_{t}(\mathcal{H}_t,\mathcal{W}_t))
-\end{equation}
+In the general setting, we allow the full health and weather histories to influence subsequent transitions.
+However, in the empirical implementation presented later, we impose simplifying assumptions, such as using only recent health status and contemporaneous weather conditions, 
+to improve tractability and address data limitations.
 
-% As such, the probability of an individual to be alive at period $t$ is: 
-% 
-% \begin{equation}
-%     Pr(L_t = 1 | \mathcal{H}_t,\mathcal{W}_t ) = \prod_{j = 1}^{t} p_{j}(\mathcal{H}_j,\mathcal{W}_j)
-% \end{equation}
+\subsection{Data}\label{data}
 
-\subsection{Data}
-
-Three main datasets were used to estimate these relationships: 
-the Health and Retirement Study (HRS) dataset for
-health information and survival,
-the Berkeley Earth dataset for annual temperature,
-and the Federal Reserve Bank of Saint Louis (FRED) dataset for 
-other economic variables.
+This study combines three primary data sources to estimate the
+relationship between temperature, health, and survival outcomes.
+Individual-level health and mortality information is drawn from
+the Health and Retirement Study (HRS).
+Annual temperature data are obtained from the Berkeley Earth Surface Temperature project.
+Macroeconomic variables are sourced from the Federal Reserve Bank of St. Louis (FRED) database.
 
 \subsubsection{HRS Data}
+This study uses data from the Health and Retirement Study (HRS), a biennial panel survey of individuals aged 50 and older in the United States. In addition to the core survey, the HRS includes an exit interview administered to proxies of respondents who have died since the last wave. The exit survey is used to identify deceased individuals, whose living status is recorded as 0 in the year of death.
 
-The HRS has a main survey performed every two years on a panel of individuals in the United States of America (USA). 
-An exit survey occurs in parallel, that targets individuals identified as dead, in which questions are asked to relatives.
-The exit survey was used to identify dead individual, for which the living status was noted as $0$ at the year of the survey. 
-Dead individuals were kept in the final analyzed dataset if they had been observed in the immediate previous survey. 
-To avoid mortality effects of the COVID-19, the latest year selected for this study was 2018.
-Due to different encoding, the 2000 and prior surveys were not taken into account. 
+Individuals are included in the analytical sample if they were observed in the wave immediately preceding their death. To avoid confounding effects related to COVID-19 mortality, the sample is restricted to survey waves up to and including 2018. Surveys from 2000 and earlier are excluded due to inconsistent variable coding.
+\\
 
-Four variables were used in this dataset: Year of the survey, age of individuals, living status, and health status.
+The final dataset includes the following variables: survey year, individual age, living status, and health status.
+Age is computed as the difference between the survey year and the respondent’s reported year of birth.
+Living status is coded as 1 if the individual appears in the main survey and 0 if they appear only in the exit survey.
+Health status for deceased individuals is imputed from their most recent observation prior to death.
 
-The age of individuals was determined based on the year of birth question, that was substracted to the year of the survey. 
-Living status was encoded as $1$ if an individuals was present in the main survey, and $0$ if they were in the exit survey.
-The health status of dead individuals was encoded as the same as in the previous survey. 
-The Health Proxy defined above was constitued by adding four variables,
-from the main survey, and obtained by asking individuals if they have had blood pressure,
-lung disease, hearth condition, and stroke accidents.
-The health status was identified through the self-reported health.
-This measure is less precise than alternative composites, based on weighted average of specific questions of health, 
-but perform well enough and is more tractable.
+Health is proxied using a self-reported categorical measure consistently
+available across all survey waves. Respondents are asked to classify their
+general health into one of five categories: \textit{Excellent}, \textit{Very Good},
+\textit{Good}, \textit{Fair}, or \textit{Poor}.
+Responses coded as 8, –8, or 9, corresponding to missing, non-response, or refusal, 
+were excluded from the final sample.
+They represented less than 30 observations in total and are not expected to materially affect the analysis.
+Although self-reported health lacks the precision of composite indices based on clinical markers,
+prior studies have shown it to be highly correlated with both morbidity and mortality.
+Its availability across all waves and simplicity of interpretation make
+it a tractable measure of overall health status in this context.
 
-In the HRS data, health status can take eight possible values: 
+In addition, the secondary health proxy, $HP_{i,t}$, is constructed using
+binary indicators for four self-reported chronic conditions: \textit{high blood pressure},
+\textit{lung disease}, \textit{heart condition}, and \textit{stroke}.
+\\ 
 
-
-- 1: Excellent
-
-- 2: Very Good
-
-- 3: Good
-
-- 4: Fair
-
-- 5: Poor
-
-- 8, -8, or 9: Non Available, Not answered, or refused to answer\footnote{This last category was removed from the final analyzed dataset.}\\
-
+Figure 1 provides an overview of the health status distribution over time.
+Each bar corresponds to a survey wave, with segment colors indicating the number of individuals reporting each health status category.
+Unlike proportion-based plots, which normalize distributions, this count-based representation highlights both the evolution of health composition and the variation in the number of observations across survey waves.
 
 
 \begin{figure}[H]
     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png}
-    \caption{Health Status distribution per Year, from the HRS data}
+    \caption{Health Status distribution per Year, from the HRS data.}
 \end{figure}
 
 \subsubsection{Climate Data}
 
-The climate data of Berkeley Earth was used to collect information
-on average annual or pluriannual global temperature on land.
-The name of the chosen dataset was the ``Land Monthly Average Temperature''. 
-% This file contains a detailed summary of the land-surface average 
-% results produced by the Berkeley Averaging method.  Temperatures are 
-% in Celsius and reported as anomalies relative to the Jan 1951-Dec 1980 
-% average.  Uncertainties represent the 95% confidence interval for 
-% statistical and spatial undersampling effects.
-For each month, from 1880 to 2022, two anomaly extrema values are given. 
-They correspond to the 95\% confidence interval for the
-average temperature. 
-The average temperature is computed as a deviation from the average annual 
-temperature computed between Januray 1951 and December 1980. 
+Temperature data are drawn from the Berkeley Earth project’s \textit{Land Monthly Average Temperature} dataset, which reports monthly global land surface temperature anomalies through time.
+Anomalies are measured relative to the 1951–1980 baseline, with 95\% confidence bounds provided for each month.
+Figure 2 shows the upward trend in global average land temperature over time.
+
+The analysis uses global average annual temperature as the climatic variable.
+This measure offers a tractable and transparent proxy, avoiding the complexity of regional variation while remaining informative.
+
+Four temperature trajectories are considered for simulation.
+The \textit{historical path} rises from 0 to 1.5°C between the mid-20th and mid-21st century. Three additional scenarios, drawn from IPCC projections for 2000–2100 and starting at 0.5°C, reflect broader possibilities: a \textit{pessimistic path} reaching 4°C, an \textit{intermediate path} reaching 3°C, and an \textit{optimistic path} stabilizing at 2°C.
+These benchmark paths allow for structured comparisons of long-run effects on health and income.
 
 \begin{figure}[H]
+    \centering
     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png}
-    \caption{Average annual temperature from the Berkeley Dataset}
-    
-    The light blue area is delimited by the anomalies extrema of each year, and
-    the dark blue line represents the average of the anomalies.
+    \caption{Evolution of Global Average Annual Temperature (1900–2022)}
+    \caption*{\small The dark blue line plots the global average temperature anomaly relative to the 1951–1980 baseline.
+    The light blue shaded area shows the 95\% confidence interval around each year’s estimate, as provided by the Berkeley Earth dataset.}
 \end{figure}
 
 \subsubsection{Economic Data}
 
-Finally, the FRED data was used to get two economic variables. 
-First, the annual Gross Domestic Product (GDP) of the USA. 
-Second, the interest rate, whose average is then used to calibrate the economic model.
+Finally, economic data from the Federal Reserve Bank of St. Louis (FRED) are used for two purposes. 
+Annual U.S. Gross Domestic Product (GDP) figures are employed in preliminary estimation exercises, 
+while the long-run average interest rate is used to calibrate the discount factor in the economic model.
 
-\section{Estimation Methods}
+\section{Estimation of Health and Survival Dynamics}
+
+This section presents the empirical framework used to estimate
+the relationships between temperature,
+individual health trajectories, and survival probabilities.
+Using microdata from the Health and Retirement Study (HRS),
+we focus on modeling health transitions and mortality risk
+as functions of recent health status, temperature exposure, and age.
+
+We begin by modeling health dynamics through an ordered response approach that
+leverages the five-category self-reported health variable.
+We then estimate survival probabilities using a binary outcome model,
+again accounting for health and temperature effects.
+To address concerns of omitted variable bias and potential collinearity, 
+we introduce a Health Proxy, which allows for a tractable way to represent how
+temperature might affect transitions via acute health risks. 
+
+The resulting estimates capture a reduced-form
+effect of climate variation on health and survival,
+through a group of health risk,
+and serve as key inputs for the economic
+model introduced in the next section.
 
 \subsection{Health Transition}
 
-The HRS dataset provides rich information regarding the health status of individuals. 
-To make use of the five different values of the self reported health, it was therefore decided not to
-recode the variables into a binary health status variable $H\in\{Bad, Good\}$. 
+The Health and Retirement Study (HRS) provides detailed longitudinal data on individuals’ self-reported health, captured across five ordered categories.
+To preserve the richness of this variable, it is not recoded into a binary indicator (e.g., “Good” vs. “Bad”) but retained in its full ordinal form, with $H \in \{1,\dots,5\}$ representing states from “Excellent” to “Poor” health.
 
-Several methods were considered to estimate the relationship between current health and past health and other covariates. 
-Given that health is here an discrete, ordinal variable, ordered response models were chosen.
-More specifically, the ordered logit and ordered probit models were selected, due to their simplicity and broad usage \parencite{Wooldridge_2010}.
+Given the ordered and discrete nature of the outcome, health transitions are modeled using ordered response models—specifically, the ordered logit and ordered probit—due to their tractability and widespread use in the literature.
 
-For tractability and computational reasons, 
-it was chosen not to overload the function with 
-history parameters, and just to focus on recent health, 
-and on current temperature.
-Therefore, 
-$f_{h}(\mathcal{H}_{t-1},\mathcal{W}_{t})$ 
-is considered as $f_{h}(H_{t-1},{T}_{t})$ from now onwards.
+For computational and identification reasons, we restrict the information set determining current health status to the most recent lag and contemporaneous temperature. That is, rather than modeling the full dependence $f_h(\mathcal{H}_{t-1}, \mathcal{W}_{t})$, we simplify the transition function to:
+\[
+f_{h}(H_{t-1}, T_{t}),
+\]
+where $T_t$ is the average annual temperature at time $t$.
 
-Since $\Omega(H_{t}) = [\![1,5]\!]$, we can consider 
-$f_{h}$ as a categorical distribution
-function\footnote{Also called generalized Bernoulli distribution, that can be represented as a Markov transition matrix.}.
-It can therefore be written as: 
+Since health status takes values in a finite, ordered set, $f_h$ defines a categorical distribution (sometimes referred to as a generalized Bernoulli), and can be expressed as a transition function indexed by previous health status:
+\[
+f_{h}(H_{t-1} = j, T_{t}) = f_{h,j}(T_{t}), \quad \forall j \in \{1,\dots,5\}.
+\]
 
-\begin{equation}
-    f_{h}(H_{t-1} = j,{T}_{t}) = 
-    f_{h,j}(T_{t}), \ \forall j\in [\![1,5]\!]
-\end{equation}
+To estimate these transition probabilities, one could consider a direct ordered logistic regression with $H_t$ as the dependent variable, and age, temperature, and other controls as covariates. However, this naive approach faces two major challenges. First, omitted variable bias: many unobserved factors, such as access to care or behavioral choices, can affect both health and survival. Second, collinearity: economic controls (such as GDP or health expenditures) are often strongly correlated with temperature trends, making it difficult to isolate causal effects.
 
-To estimate $f_{h,j}(T_{t})$,
-i.e. the probabilities to go to another health state
-given that $H_{t-1} = j$, 
-a first naive approach would consist 
-in running an ordinal logistic 
-regression with $H_{t}$ as the dependent 
-variable, and the with covariates including 
-the age, temperature, and control variables.
+Moreover, interaction effects between covariates are likely important.
+For example, the impact of a given health state on future transitions may differ substantially by age: 
+“Fair” health at age 30 has different implications than at age 80.
 
-There are two main issues with this regression. 
-First, there is a large amount of omitted variables
-affecting the survival probability in this formulation.
-Second, when we try to include economic variables reflecting 
-the progress in medicine, economic development, or 
-other kinds of control to take into account possible
-omitted variables, 
-we are faced with a colinearity issues
-with temperature. 
+To address these concerns, we introduce an two-staged-regression inspired strategy.
 
-Another important element to take into account to estimate 
-$f_{h}(\cdot)$ are the interaction 
-effects between the different covariates.
-For example, it seems plausible that age and previous health status interact:
-Being in ``Fair"
-health should not have the same effect on the health transition probability 
-for a 20 years old individual compared to a 80 years old individual. 
+We define a composite health shock measure, the \textit{Health Proxy} ($HP_{i,t}$), capturing the burden of recent temperature-sensitive health incidents.
+This proxy is constructed as the sum of binary indicators for the presence of the following four health conditions:
+\textit{High blood pressure},
+\textit{Lung disease},
+\textit{Heart condition},
+\textit{Stroke}.
+Formally:
+\[
+HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}
+\]
 
-To tackle these problems, it is possible to use a 
-IV-based approach to try to isolate the effect of
-temperature on health. 
-To do so, let us define a Health Proxy ($HP_{i,t}$) as 
-the sum of binary variables at time $t$ for individual 
-$i$ indicating if they have health issues.
-I retained four possible health accident, 
-that can all be related to exposure to 
-high levels of ambient temperature, such that: 
+We first estimate a linear model for $HP_{i,t}$ as a function of age and temperature:
+\[
+\widehat{HP}_{i,t}^{I} = \widehat{\beta_0} + \widehat{\beta_A} \cdot \text{Age}_{i,t} + \widehat{\beta_T} \cdot T_t + \widehat{\beta_{A \times T}} \cdot (\text{Age}_{i,t} \times T_t)
+\]
 
-$$
-    X_{i,t}^{h} =
-    \begin{bmatrix}
-        \text{High Blood Pressure}_{i,t} \\
-        \text{Lung Disease}_{i,t} \\ 
-        \text{Hearth Condition}_{i,t} \\ 
-        \text{Stroke}_{i,t}
-    \end{bmatrix}
-$$
+This first-stage regression provides a filtered proxy for temperature-induced health risks, which is then used in a second regression to estimate health transition probabilities. Specifically, we regress the probability of transitioning to a new health state on previous health status and the predicted health proxy $\widehat{HP}_{i,t}^{I}$, thus controlling for age and filtering out temperature's indirect effects via acute health events.
+This two-step strategy allows us to better identify the effect of 
+temperature on acute health state dynamics 
+while mitigating omitted variable bias and accounting for age interactions.
+\\
 
-Formally, the Health Proxy can therefore be written as:
-
-\begin{equation}
-    HP_{i,t} = \sum_{j\in X^{h}_{i,t}} j
-\end{equation}
-
-We can thus first run the following linear regression,
-to estimate the marginal effect of temperature on health
-through the above mentioned health accidents:
-
-\begin{equation}
-    \widehat{HP}_{i,t}^{I} =  \widehat{\beta_0} +
-    \widehat{\beta_{A}} \cdot Age_{i,t} +
-    \widehat{\beta_{T}} \cdot Temperature_{t}
-\end{equation}
-
-Once we have the estimate $\widehat{HP}_{i,t}^{I}$, we can
-then run a second regression, with the transition probability 
-as the dependent variables, and with $H_{i,t-1}$ and 
-$\widehat{HP}_{i,t}^{I}$ as covariates.
-
-\subsection{Living Status}
-
-The living status variable, being binary, 
-a simple logistic regression was possible. 
-%When run on age and health
-%status, it finds similar results with the
-%rest of the literature. 
-
-%\begin{figure}[H]
-%    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_2.png}
-%    \caption{Annual probability of survival as a function of age and health status}
-%\end{figure}
-
-To estimate $p_{t}(\mathcal{H}_{t},\mathcal{W}_{t})$,
-the first naive approach would have led to the same 
-problems as previously seen.
-For example, running the non-IV regression with $X$ containing only GDP, 
-we find a negative coefficient on temperature, but also with GDP. 
-This is due to the recent tendency in the USA in which the life expectancy stays 
-stable or decrease slightly, while the GDP continues to raise importantly.
-
-With $\Lambda(\cdot)$ being the logistic
-function, we could therefore run the following logistic regression 
-to estimate the probability parameter $p_{i,t}$, i.e. the
-survival probability of $i$ at $t$,
-with the previous estimate $\widehat{HP}_{i,t}^{I}$: 
-
-% \begin{figure}[H]
-%     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_3.png}
-%     \caption{Annual probability of survival as a function of age and health status}
-% \end{figure}
-
-\begin{equation}
-    \widehat{p_{i,t}} = \Lambda \left( \widehat{\beta_0} +
-    \widehat{\beta_{H}} \cdot Health_{i,t} +
-    \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I}\right)
-\end{equation}
-
-\subsection{Estimation Results}
-
-The first regression to explain the Health Proxy yields: 
+The first-stage regression results, presented in Table 1, provide empirical support for the construction of the Health Proxy as a function of age, temperature, and their interaction.
+As expected, age is a strong and significant predictor of acute health conditions, with each additional year associated with a 0.02 increase in the composite health burden measure ($p < 0.001$).
+The standalone effect of temperature is negative but statistically insignificant, suggesting that average annual temperature alone does not systematically explain acute health conditions in this sample.
+However, the interaction term between age and temperature is positive and statistically significant at the 1\% level.
+This indicates that the effect of temperature on health burden intensifies with age—a key channel motivating the use of $\widehat{HP}_{i,t}^I$ as a mediator in the second stage.
+While the model explains only a modest portion of the variance in health conditions ($R^2 = 0.086$), this is expected given the many unobserved factors—such as genetic predisposition, lifestyle, or access to care—that drive acute health events. However, our primary goal is not to fully explain health shocks, but rather to isolate the marginal effects of temperature and age. In that respect, the significant interaction between age and temperature supports the interpretation of the Health Proxy as a temperature-sensitive health shock, particularly among older individuals.
 
 \begin{table}[H]
     \begin{center}
@@ -445,89 +374,81 @@ The first regression to explain the Health Proxy yields:
     \end{center}
 \end{table}
 
-\subsubsection{Health transition}
 
-The regression to estimate the health transition probabilities
-yields. 
+\paragraph{Estimated Health Transition Probabilities.}
+The two following figures depict the estimated probabilities of transitioning across self-reported health states as a function of age, conditional on the current health status.
+The five health categories considered are \textit{Excellent}, \textit{Very Good}, \textit{Good}, \textit{Fair}, and \textit{Poor}.
+These transition probabilities provide a dynamic picture of health deterioration (or improvement) over the life cycle.
+For clarity purposes, temperature was not included in these graphics to avoid 3D plotting.
+\footnote{Further graphical representations of transition probabilities are available in the Appendix.}
+\\
 
-\begin{figure}[H]
-    \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_1.png}
-    \caption{Transition probabilities from Excellent Health}
-    \label{fig:sfig1}
-    \end{subfigure}%
-    \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_2.png}
-    \caption{Transition probabilities from Very Good Health}
-    \label{fig:sfig2}
-    \end{subfigure}
-    \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_3.png}
-    \caption{Transition probabilities from Good Health}
-    \label{fig:sfig3}
-    \end{subfigure}
-    \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_4.png}
-    \caption{Transition probabilities from Fair Health}
-    \label{fig:sfig4}
-    \end{subfigure}
-    \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/health_transition_5.png}
-    \caption{Transition probabilities from Poor Health}
-    \label{fig:sfig2}
-    \end{subfigure}
-    \caption{Transition probabilities }
-\end{figure}
+From excellent health, the probability of
+remaining in this health state declines steadily with age, while the proba
+bility of transitioning to Very Good health increases. Transitions to lower
+health states (Good, Fair, Poor) remain unlikely but grow slowly over
+time. This indicates that while aging naturally erodes top health status,
+the decline is gradual and dominated by moves to slightly lower but still
+positive states.
 
-From these estimates, it is possible to simulate the collective 
-health trajectory of a population.
-
-\begin{figure}[H]
-    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/average_health.png}
-    \caption{Annual average health status as a function of temperature scenarios.}
-\end{figure}
-
-\subsubsection{Survival}
-
-When taking into account the health transition estimates
-and the survival probability estimates, it is then possible
-to visualize the demographic evolution of a population through time.
-
-\begin{figure}[H]
-    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_3.png}
-    \caption{Annual probability of survival as a function of age and health status, obtained with $N_0$ =10 000 }
-\end{figure}
-
-\begin{table}[H]
+\begin{figure}[H]\label{fig:health_transition_1}
     \begin{center}
-        \begin{tabular}{cc}
-            \toprule
-            $\text{Temperature}$ & $\text{Life expectancy}$\\
-            \midrule
-            $4.0$ & $48.0$\\
-            $2.0$ & $59.86$\\
-            $1.5$ & $63.95$\\
-            $0.61$ & $73.26$\\
-            $0.5 - 4$ & $57.33$\\
-            $0.5 - 2$ & $64.83$\\
-            $0.0 - 1.5$ & $69.29$\\
-            \bottomrule
-        \end{tabular}
-        \caption{Life expectancy simulations with fixed and variable temperatures.}
+        \includegraphics[width=\linewidth]{output/health_transition_1.png}
+        \caption{Transition probabilities from Excellent Health}    
     \end{center}
-\end{table}
+\end{figure}
 
-We see that the effect of temperature on life expectancy 
-is negative. 
-This is due to the double effect of temperature on 
-health transition and on survival probability.
+In the opposite case, the probability of remaining in \textit{Poor} health increases markedly with age, surpassing 60\% by age 100.
+Improvements to better health categories become virtually negligible with age, suggesting that \textit{Poor} health is largely an absorbing state for older individuals.
+\begin{figure}\label{fig:health_transition_5}
+    \begin{center}
+        \includegraphics[width=\linewidth]{output/health_transition_5.png}
+        \caption{Transition probabilities from Poor Health}   
+    \end{center} 
+\end{figure}
 
-DISCUSSION
+
+
+
+These estimated transition probabilities highlight the persistent and age-dependent nature of health status. They support the modeling assumption of a health process that becomes increasingly inertial with age, and they reflect the empirical reality that upward health mobility becomes rarer in older populations. This framework is essential for evaluating how external shocks—such as temperature-driven health shocks—interact with baseline health dynamics across the life cycle.
+Based on these estimates, 
+it is alread possible to perform 
+simulations of different groups of individuals with specific temperature trajectories. 
+\footnote{A specific illustration is available in the Appendix.}
+
+\subsection{Living Status}
+The binary nature of the living status variable allows for a straightforward application of logistic regression.
+
+To estimate the survival probability \( p_t(\mathcal{H}_t, \mathcal{W}_t) \), a naive regression approach would encounter similar issues to those previously discussed.
+For instance, estimating a regression using only GDP as a covariate leads to a negative coefficient not only on temperature but also on GDP.
+This counterintuitive result reflects a recent trend in the United States, where GDP has continued to grow substantially, while life expectancy has remained stagnant or slightly declined.
+As such, preliminary results showed the necessity of adapting the regression specification, as it is done by the Health Proxy $HP_{i,t}$, as explained above.
+
+Using the logistic function \( \Lambda(\cdot) \), we estimate the individual survival probability \( p_{i,t} \) at time \( t \) via the following specification, which incorporates the previously estimated health proxy \( \widehat{HP}_{i,t}^{I} \):
+
+\begin{equation}
+    \widehat{p_{i,t}} = \Lambda \left( \widehat{\beta_0} +
+    \widehat{\beta_{H}} \cdot Health_{i,t} +
+    \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I} \right)
+\end{equation}
+
+By combining the health transition probabilities with these survival probability estimates, we can simulate and visualize the demographic dynamics of a population over time.
+This is illustrated in the next figure, which shows the annual survival probability as a function of both age and health status, based on an initial population of \( N_0 = 10{,}000 \).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_3.png}
+    \caption{Annual probability of survival as a function of age and health status, obtained with \( N_0 = 10{,}000 \).}
+    \label{survival_probability}
+\end{figure}
+
+Higher temperatures can exacerbate acute health conditions, particularly among vulnerable populations such as the elderly or those with pre-existing health issues.
+For instance, extreme heat has been linked to cardiovascular stress, respiratory complications, and increased incidence of heat-related illnesses.
+These acute conditions can accelerate transitions from better to worse health states and elevate mortality risk.
+Furthermore, temperature interacts with age in a non-linear fashion. Older individuals generally have reduced thermoregulatory capacity, making them more susceptible to heat stress.
+As a result, even moderate increases in temperature can disproportionately affect their survival probabilities and hasten deterioration in health status.
+Therefore, the negative coefficient on temperature is not merely a statistical artifact but reflects real physiological and epidemiological mechanisms.
+This compound influence (affecting both the likelihood of transitioning to a worse health state and the immediate probability of survival) drives the overall negative relationship between temperature and life expectancy observed in our model.
 
 These estimates are now going to be used in 
 the economic model.
@@ -563,7 +484,7 @@ With :
 
 - $\rho$ the risk aversion coefficient
 
-- $\varphi$ the Frisch elasticity
+- $\varphi$ the Frisch elasticity of Labor supply.
 \\
 
 The agent is subject to the following budget constraint:
@@ -627,10 +548,6 @@ The uncertainty could then come from the health and survival draw.
 If the uncertainty only comes from these two draws, the expectation operator can be formalized such as: 
 
 $$\mathbb{E}\left[c_{t+1}\right] \equiv p_{t+1}(\mathcal{H}_{t},\mathcal{W}_{t}) \cdot c_{t+1}$$
-
-In this specification, the only uncertainty is whether the agent will be alive or not in next period.
-The baseline model will first focus on this simplified assumption. 
-Variations will be introduced later.
 
 \subsection{Analytical Solution Inexistence}
 
@@ -801,12 +718,6 @@ performance is slightly worse,
 and the effect of interpolation on precision
 performance is ambiguous. 
 
-% \subsubsection{Policy iteration algorithms}
-% 
-% The policy iteration algorithms use a 
-% backward function iterating on the policy function, 
-% and not on the value function.
-
 \subsection{Performance}
 
 \begin{figure}[H]
@@ -821,7 +732,8 @@ performance is ambiguous.
     \makecell{FOC approximation 2 \\ (fixing consumption)} & 0.042 & 0.0188 & 55.6981\\
     \bottomrule
     \end{tabular}
-    \caption{Algorithms and their performance.\\ These results were obtained from small value grids.}
+    \caption{Algorithms and their performance.\\
+    These results were obtained from reduced ranges, but scale exponentially.}
 \end{figure}
 
 \subsection{Policy Function Results}
@@ -829,33 +741,65 @@ performance is ambiguous.
 This subsection is dedicated to the presentation of the policy function 
 results from the numerical methods. 
 
-The calibration was as following: 
+The calibration was done following
+the used in the found literature, 
+and in order to make the numerical resolution possible.
+The interest rate and discount factor were obtained after averaging
+the past interest rate, from the FRED data mentioned previously.
 
-rho = 1.5
-varphi = 2.00 
-beta = 0.96
-r = 0.17...
+\begin{table}[H]
+\centering
+\caption{Model Parameter Values}
+\label{tab:parameters}
+\begin{tabular}{lc}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Risk aversion coefficient ($\rho$) & 1.50 \\
+Labor supply Frisch elasticity ($\varphi$) & 2.00 \\
+Discount factor ($\beta$) & $\frac{1}{1+r} \approx 0.9825$ \\
+Annual interest rate ($r$) &  $0.0178$ (1.78\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-- Consumption policy 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/consumption_policy.png}
+    \caption{Consumption policy per age category obtained from the pure numerical value function iteration}
+    \label{fig:consumption_policy}
+\end{figure}
 
-% \begin{figure}[H]
-%     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png}
-%     \caption{Health Status distribution per Year, from the HRS data}
-% \end{figure}
 
-- Labor supply policy 
+The labor policy shows the increasing effect of age on
+the elasticity between savings and labor income, due to
+decreasing survival probabilities.
 
-% \begin{figure}[H]
-%     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png}
-%     \caption{Health Status distribution per Year, from the HRS data}
-% \end{figure}
+The savings policy is decreasing with age,
+reflecting the lower survival probabitilies as the agents 
+become older. 
+In the last years, the agents desave, and tend to consume everything they have left. 
 
-- Savings policy
 
-% \begin{figure}[H]
-%     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png}
-%     \caption{Health Status distribution per Year, from the HRS data}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/labor_policy.png}
+        \caption{Labor policy per age category}
+        \label{fig:labor_policy}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/savings_policy.png}
+        \caption{Savings policy per age category}
+        \label{fig:savings_policy}
+    \end{minipage}
+\end{figure}
+
+
+
 
 \section{Results}
 
@@ -868,21 +812,112 @@ To perform a comparison between different temperatures scenarios,
 we first need to precisely characterized the comparison reference, 
 i.e. the lifetime income.
 
-A model was first run for a temperature path going from 0.00 to 1.50. 
+A simulation was conducted using a projected temperature trajectory ranging from 0.00 to 1.50 degrees Celsius. This range approximately reflects the temperature increase experienced by the cohort born in the 1950s.
 
-From \url{https://pmc.ncbi.nlm.nih.gov/articles/PMC4534330/#S8}, 
-we know that the lifetime income for individuals born in the 1950s 
-having less than 
-High School (LTHS) education is 1,178,000 for men and 586,000 for women (in 2020 dollars).
-1,178,000 for men and 586,000, i.e. an average of 882\ 000 2020 dollars. 
+According to data from PMCID: PMC4534330, the estimated lifetime earnings (in 2020 dollars) for individuals with less than a high school education (LTHS) are \$1,178,000 for men and \$586,000 for women, yielding an average of approximately \$882,000.
+For high school graduates, the corresponding figures are \$1,825,000 for men and \$1,351,000 for women.
 
-This lifetime income was then... 
+In light of these benchmarks, a reference value of \$1.45 million was selected to represent a moderate level of lifetime earnings. This serves as the baseline for estimating the economic consequences of temperature-related health shocks over the lifespan of this cohort.
 
+It is important to note, however, that this estimate likely understates the true cost of such shocks. The Health and Retirement Study (HRS) data used in the health transition modeling includes a broader and more educated sample than the average LTHS population. Numerous studies have established that higher educational attainment is associated with improved health outcomes and longer life expectancy. As a result, the health impacts derived from the HRS data are expected to be less severe than those experienced by less educated individuals. Consequently, the simulated economic burden associated with temperature-induced health deterioration may be conservatively estimated.
 \subsection{Comparison}
+
+This subsection is dedicated to the comparison between 
+populations having different temperature trajectories. 
+
+First, survival probabilities will be compared, 
+then, the policy functions will be compared (consumption, labor, savings). 
+Finally, the lifetime income will be compared.
+
+The 4 temperature trajectories compared are: 
+
+\begin{itemize}
+    \item The past temperature trajectory: From 0.01 to 1.5
+    \item The optimistic scenario: From 0.61 to 2.0
+    \item The intermediate scenario: From 0.61 to 3.0 
+    \item The pessimistic scenario: From 0.61 to 4.0 
+\end{itemize}
+
+\subsubsection{Demographic comparison}
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/demographic_comparison.png}
+    \caption{Savings policy per age category obtained from the pure numerical value function iteration}
+\end{figure}
+
+\subsubsection{Policy functions comparison}
+
+One possible way to compare policy functions across populations are 
+the computation of a policy function average throughout all ages. 
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/consumption_comparison.png}
+    \caption{Consumption policy comparison}
+\end{figure}
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/labor_comparison.png}
+    \caption{Labor policy comparison}
+\end{figure}
+
+The comparison of optimal policy paths across varying temperature trajectories reveals a discernible deadweight loss attributable to demographic dynamics.
+Specifically, this loss arises from temperature-induced shifts in survival probabilities over time.
+As higher temperatures adversely affect health transitions and increase mortality risk (particularly among older or more vulnerable individuals) the resulting demographic structure alters the expected lifetime utility and economic behavior of agents.
+
+This demographic distortion reduces the effectiveness of policy instruments optimized under baseline conditions, thereby generating inefficiencies.
+The magnitude of the deadweight loss reflects both the direct impact of elevated temperatures on survival probabilities and the indirect effect on population composition, labor force participation, and the intertemporal allocation of resources. In this context, the demographic channel becomes a critical mechanism through which climate change translates into long-term economic costs, even in the absence of immediate productivity shocks.
+
+\subsubsection{Lifetime income comparison}
+
+The deterioration in lifetime income resulting from temperature-related health shocks is substantial and operates through multiple, compounding channels. Elevated temperatures are empirically associated with a higher incidence of acute health events—such as cardiovascular and respiratory crises—that not only increase short-term morbidity and mortality but also reduce long-term functional capacity. These effects are particularly pronounced among older adults and individuals in fragile health, whose ability to remain in the labor force or engage in productive activities declines disproportionately.
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/lifetime_income_comparison.png}
+    \caption{Expected lifetime labor income, at each period.}
+\end{figure}
+
+Simulations suggest that even modest increases in average temperature over the life course can translate into significant reductions in expected lifetime income.
+This arises not only from premature mortality but also from suboptimal health states that lower utility and earning potential throughout the individual’s remaining life. Therefore, the macroeconomic cost of climate-related health deterioration should be understood as not merely a public health challenge but a fundamental constraint on human capital and economic resilience.
+In this sense, the lifetime income loss induced by change in survival probabilities due to acute health conditions provoked by temperature changes amounts to approximately \$110,000 of 2020, when taking the lifetime income of the High School Graduates of the 1950s generation (\$1.45 Mio) as the reference point.
 
 \section{Discussion}
 
-All the critiques go here. 
+This paper quantifies the lifetime economic cost of temperature-induced health deterioration by integrating empirical estimates of health and survival dynamics into a structural life-cycle model. The results highlight two key mechanisms: (1) temperature-driven health shocks reduce survival probabilities, particularly among older and vulnerable populations, and (2) these shocks propagate through individual adjustments in labor supply, savings, and consumption, culminating in significant lifetime income losses (approximately \$110,000 per capita under pessimistic warming scenarios).
+
+The estimated policy functions align with life-cycle theory: savings peak in mid-life and decumulate with age, while labor supply declines as health deteriorates.
+This attempts to complement the literature on climate-economy feedbacks (Burke et al., 2015; Bilal \& Kanzig, 2024) by isolating the role of health-mediated channels absent collective adaptation.
+
+The empirical health transitions, estimated via a two-stage ordered-response framework, confirm that temperature exacerbates acute conditions (e.g., cardiovascular stress) and accelerates transitions to poorer health states.
+This mirrors findings by Barreca et al. (2016) on temperature-mortality adaptation but extends them to the economic individual choices.
+
+\subsection{Limitations}
+
+This present work suffers however from multiple methodological limitations.
+
+First, by its health measure methodology. 
+This limitation is twofolds. 
+First, due to the reliance on the Self-Reported Health.
+This reliance may understate severe clinical conditions.
+Future work could integrate biomarkers (e.g., NHANES data) to capture latent health risks.
+Second, due to the limitations of the proposed and used Health Proxy,
+that does not capture fully neither isolate perfectly the effect of temperature on health.
+
+Another important limitation of this work comes from its integration of temperature variability:
+Using annual averages masks acute shocks (e.g., heatwaves), which may have nonlinear effects on health (IPCC, 2022).
+High-frequency data could refine the health proxy.
+
+The third major flaw of this work is its abstraction from general equilibrium effects (e.g., wage adjustments, health investment).
+A richer framework could include endogenous labor demand or public adaptation policies.
+
+Finally, it could be interesting to introduce educational heterogeneity for two reasons. 
+Not only would it create heterogeneity at the productivity level, but it would also interact with 
+the health and survival probabilities.
+Furthermore, the baseline lifetime income estimate (\$1.45M) likely understates costs for less-educated groups, who face higher climate vulnerability (Deryugina \& Hsiang, 2017).
+Disaggregating by socioeconomic status could be a priority for future research.
+
+By bridging health dynamics, macroeconomic economics, and dynamic optimization together,
+the present work propose a framework in which temperature-induced health shocks impose
+economically meaningful costs through both mortality and morbidity.
 
 \section{References}
 
@@ -890,6 +925,36 @@ All the critiques go here.
 
 \newpage
 \section{Appendix}
+
+\subsection{Health Transition Probabilities}
+
+\begin{figure}[H]\label{fig:health_transition_2}
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{output/health_transition_2.png}
+        \caption{Transition probabilities from Very Good Health}    
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]\label{fig:health_transition_3}
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{output/health_transition_3.png}
+        \caption{Transition probabilities from Good Health}  
+    \end{center}  
+\end{figure}
+
+\begin{figure}[H]\label{fig:health_transition_4}
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{output/health_transition_4.png}
+        \caption{Transition probabilities from Fair Health}    
+    \end{center}
+\end{figure}
+
+\subsection{Health simulation}
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/average_health.png}
+    \caption{Annual average health status as a function of temperature scenarios.}
+\end{figure}
 
 \subsection{Proof of Impossibility}
 
