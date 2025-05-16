@@ -1,0 +1,593 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{cms/global//global/global}
+    \entry{Bilal_Kanzig_2024}{report}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=229bf95376e215257a9510090546be88}{%
+           family={Bilal},
+           familyi={B\bibinitperiod},
+           given={Adrien},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=a06cbc1c351bf734532b6e2ed87a694c}{%
+           family={Känzig},
+           familyi={K\bibinitperiod},
+           given={Diego\bibnamedelima R.},
+           giveni={D\bibinitperiod\bibinitdelim R\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{institution}{1}{%
+        {National Bureau of Economic Research, Inc}%
+      }
+      \strng{namehash}{999c5806c45c0b3fcd8a60a19ad8445a}
+      \strng{fullhash}{999c5806c45c0b3fcd8a60a19ad8445a}
+      \strng{bibnamehash}{999c5806c45c0b3fcd8a60a19ad8445a}
+      \strng{authorbibnamehash}{999c5806c45c0b3fcd8a60a19ad8445a}
+      \strng{authornamehash}{999c5806c45c0b3fcd8a60a19ad8445a}
+      \strng{authorfullhash}{999c5806c45c0b3fcd8a60a19ad8445a}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This paper estimates that the macroeconomic damages from climate change are six times larger than previously thought. Exploiting natural global temperature variability, we find that 1°C warming reduces world GDP by 12\%. Global temperature correlates strongly with extreme climatic events, unlike country-level temperature used in previous work, explaining our larger estimate. We use this evidence to estimate damage functions in a neoclassical growth model. Business-as-usual warming implies a 25\% present welfare loss and a Social Cost of Carbon of $1,367 per ton. These impacts suggest that unilateral decarbonization policy is cost-effective for large countries such as the United States.}
+      \field{month}{5}
+      \field{number}{32450}
+      \field{title}{{The Macroeconomic Impact of Climate Change: Global vs. Local Temperature}}
+      \field{type}{NBER Working Papers}
+      \field{year}{2024}
+      \verb{urlraw}
+      \verb https://ideas.repec.org/p/nbr/nberwo/32450.html
+      \endverb
+      \verb{url}
+      \verb https://ideas.repec.org/p/nbr/nberwo/32450.html
+      \endverb
+    \endentry
+    \entry{Burke_et_al_2015}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=cc8245e7c2a58c63604e2816e127e747}{%
+           family={Burke},
+           familyi={B\bibinitperiod},
+           given={Marshall},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=9c37f9be8b7b6442deeabe02fddb8480}{%
+           family={Hsiang},
+           familyi={H\bibinitperiod},
+           given={Solomon\bibnamedelima M.},
+           giveni={S\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=14378045148a3551d5999a9b70b40ffe}{%
+           family={Miguel},
+           familyi={M\bibinitperiod},
+           given={Edward},
+           giveni={E\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{ef393d41e2f467cb5c55a87f83ad45da}
+      \strng{fullhash}{ef393d41e2f467cb5c55a87f83ad45da}
+      \strng{bibnamehash}{ef393d41e2f467cb5c55a87f83ad45da}
+      \strng{authorbibnamehash}{ef393d41e2f467cb5c55a87f83ad45da}
+      \strng{authornamehash}{ef393d41e2f467cb5c55a87f83ad45da}
+      \strng{authorfullhash}{ef393d41e2f467cb5c55a87f83ad45da}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{author}
+      \field{abstract}{Economic productivity is shown to peak at an annual average temperature of 13 °C and decline at high temperatures, indicating that climate change is expected to lower global incomes more than 20\% by 2100.}
+      \field{journaltitle}{Nature}
+      \field{month}{11}
+      \field{number}{7577}
+      \field{title}{{Global non-linear effect of temperature on economic production}}
+      \field{volume}{527}
+      \field{year}{2015}
+      \field{pages}{235\bibrangedash 239}
+      \range{pages}{5}
+      \verb{doi}
+      \verb 10.1038/nature15725
+      \endverb
+      \verb{urlraw}
+      \verb https://ideas.repec.org/a/nat/nature/v527y2015i7577d10.1038_nature15725.html
+      \endverb
+      \verb{url}
+      \verb https://ideas.repec.org/a/nat/nature/v527y2015i7577d10.1038_nature15725.html
+      \endverb
+    \endentry
+    \entry{Capatina_2015}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=407fb91e78a138899a5bf199213ccf0b}{%
+           family={Capatina},
+           familyi={C\bibinitperiod},
+           given={Elena},
+           giveni={E\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{407fb91e78a138899a5bf199213ccf0b}
+      \strng{fullhash}{407fb91e78a138899a5bf199213ccf0b}
+      \strng{bibnamehash}{407fb91e78a138899a5bf199213ccf0b}
+      \strng{authorbibnamehash}{407fb91e78a138899a5bf199213ccf0b}
+      \strng{authornamehash}{407fb91e78a138899a5bf199213ccf0b}
+      \strng{authorfullhash}{407fb91e78a138899a5bf199213ccf0b}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{author}
+      \field{journaltitle}{Journal of Monetary Economics}
+      \field{title}{Life-cycle effects of health risk}
+      \field{volume}{74}
+      \field{year}{2015}
+      \field{pages}{67\bibrangedash 88}
+      \range{pages}{22}
+    \endentry
+    \entry{Carleton_et_al_2022}{article}{}
+      \name{author}{16}{}{%
+        {{un=0,uniquepart=base,hash=018534f758197968a8b7506e5afd1259}{%
+           family={Carleton},
+           familyi={C\bibinitperiod},
+           given={Tamma},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ebc18fbce5ee96bcbbb0264c8a8fd5ff}{%
+           family={Jina},
+           familyi={J\bibinitperiod},
+           given={Amir},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=f16ab0909021bc30b4563eb4d6956894}{%
+           family={Delgado},
+           familyi={D\bibinitperiod},
+           given={Michael},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=23e2201fd0a08bee5f8f929d238f6472}{%
+           family={Greenstone},
+           familyi={G\bibinitperiod},
+           given={Michael},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=1936129a2f4d64b1c5f6439712cc2c45}{%
+           family={Houser},
+           familyi={H\bibinitperiod},
+           given={Trevor},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=3ea5cf7eb9e01013d277e8a0c5855194}{%
+           family={Hsiang},
+           familyi={H\bibinitperiod},
+           given={Solomon},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c98b376966766c3e05ce404c21e8e956}{%
+           family={Hultgren},
+           familyi={H\bibinitperiod},
+           given={Andrew},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=4391c3436abcd53bbd7c83a3a5021ceb}{%
+           family={Kopp},
+           familyi={K\bibinitperiod},
+           given={Robert\bibnamedelima E},
+           giveni={R\bibinitperiod\bibinitdelim E\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ddafad0766e37d7ca74b8821a07bad4f}{%
+           family={McCusker},
+           familyi={M\bibinitperiod},
+           given={Kelly\bibnamedelima E},
+           giveni={K\bibinitperiod\bibinitdelim E\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=fd1f35afadd7e7fc3eb3ee53771b943e}{%
+           family={Nath},
+           familyi={N\bibinitperiod},
+           given={Ishan},
+           giveni={I\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=67d7b2fbad3cb18760ce34cb797c49e3}{%
+           family={Rising},
+           familyi={R\bibinitperiod},
+           given={James},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=020712cb80f8a098be3293e9f042c195}{%
+           family={Rode},
+           familyi={R\bibinitperiod},
+           given={Ashwin},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=59b125d87dcbed2f1f88fac1053d4684}{%
+           family={Seo},
+           familyi={S\bibinitperiod},
+           given={Hee\bibnamedelima Kwon},
+           giveni={H\bibinitperiod\bibinitdelim K\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=b3d4816f43724e0aecaf2e934a1a7c98}{%
+           family={Viaene},
+           familyi={V\bibinitperiod},
+           given={Arvid},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5d66da39b62cada70c9632ce3c2fc395}{%
+           family={Yuan},
+           familyi={Y\bibinitperiod},
+           given={Jiacan},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=7e742782a767fd6f83d50eefbe75bcee}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={Alice\bibnamedelima Tianbo},
+           giveni={A\bibinitperiod\bibinitdelim T\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{6cb2fe924e30d64264d337be205895b5}
+      \strng{fullhash}{7c48a009b12e00504f86c0bf6c03abcd}
+      \strng{bibnamehash}{729fbc5a5615a55e7ba82d08d08ae7fe}
+      \strng{authorbibnamehash}{729fbc5a5615a55e7ba82d08d08ae7fe}
+      \strng{authornamehash}{6cb2fe924e30d64264d337be205895b5}
+      \strng{authorfullhash}{7c48a009b12e00504f86c0bf6c03abcd}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{author}
+      \field{abstract}{Using 40 countries’ subnational data, we estimate age-specific mortality-temperature relationships and extrapolate them to countries without data today and into a future with climate change. We uncover a U-shaped relationship where extre6me cold and hot temperatures increase mortality rates, especially for the elderly. Critically, this relationship is flattened by higher incomes and adaptation to local climate. Using a revealed-preference approach to recover unobserved adaptation costs, we estimate that the mean global increase in mortality risk due to climate change, accounting for adaptation benefits and costs, is valued at roughly 3.2\% of global GDP in 2100 under a high-emissions scenario. Notably, today’s cold locations are projected to benefit, while today’s poor and hot locations have large projected damages. Finally, our central estimates indicate that the release of an additional ton of CO2 today will cause mortality-related damages of \$36.6 under a high-emissions scenario, with an interquartile range accounting for both econometric and climate uncertainty of [−\$7.8, \$73.0]. These empirically grounded estimates exceed the previous literature’s estimates by an order of magnitude.}
+      \field{issn}{0033-5533}
+      \field{journaltitle}{The Quarterly Journal of Economics}
+      \field{month}{04}
+      \field{number}{4}
+      \field{title}{Valuing the Global Mortality Consequences of Climate Change Accounting for Adaptation Costs and Benefits*}
+      \field{volume}{137}
+      \field{year}{2022}
+      \field{pages}{2037\bibrangedash 2105}
+      \range{pages}{69}
+      \verb{doi}
+      \verb 10.1093/qje/qjac020
+      \endverb
+      \verb{eprint}
+      \verb https://academic.oup.com/qje/article-pdf/137/4/2037/51054116/qjac020.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1093/qje/qjac020
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1093/qje/qjac020
+      \endverb
+    \endentry
+    \entry{DeNardi2023}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=3a53ea3d177f4d4cc4507daa01cf004c}{%
+           family={De\bibnamedelima Nardi},
+           familyi={D\bibinitperiod\bibinitdelim N\bibinitperiod},
+           given={Mariacristina},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=bfccb8d5993f306fd849662a23e081e0}{%
+           family={Pashchenko},
+           familyi={P\bibinitperiod},
+           given={Svetlana},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=fd83ade0c24d11ebed0db4102dfcf4c4}{%
+           family={Porapakkarm},
+           familyi={P\bibinitperiod},
+           given={Ponpoje},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Oxford University Press UK}%
+      }
+      \strng{namehash}{e54f3ce42aac00767071cd527066300d}
+      \strng{fullhash}{e54f3ce42aac00767071cd527066300d}
+      \strng{bibnamehash}{e54f3ce42aac00767071cd527066300d}
+      \strng{authorbibnamehash}{e54f3ce42aac00767071cd527066300d}
+      \strng{authornamehash}{e54f3ce42aac00767071cd527066300d}
+      \strng{authorfullhash}{e54f3ce42aac00767071cd527066300d}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{author}
+      \field{journaltitle}{Review of Economic Studies}
+      \field{number}{3}
+      \field{title}{The lifetime costs of bad health}
+      \field{volume}{92}
+      \field{year}{2025}
+      \field{pages}{1987\bibrangedash 2026}
+      \range{pages}{40}
+    \endentry
+    \entry{Deryugina_Hsiang_2017}{report}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=684704b0c69ed5b5bac03d67ab1abf46}{%
+           family={Deryugina},
+           familyi={D\bibinitperiod},
+           given={Tatyana},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=3ea5cf7eb9e01013d277e8a0c5855194}{%
+           family={Hsiang},
+           familyi={H\bibinitperiod},
+           given={Solomon},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{institution}{1}{%
+        {National Bureau of Economic Research, Inc}%
+      }
+      \strng{namehash}{0de5862298fe0a151239ad3f429edbcc}
+      \strng{fullhash}{0de5862298fe0a151239ad3f429edbcc}
+      \strng{bibnamehash}{0de5862298fe0a151239ad3f429edbcc}
+      \strng{authorbibnamehash}{0de5862298fe0a151239ad3f429edbcc}
+      \strng{authornamehash}{0de5862298fe0a151239ad3f429edbcc}
+      \strng{authorfullhash}{0de5862298fe0a151239ad3f429edbcc}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We develop an empirical approach to value changes to a climate in terms of total market output given optimal factor allocations in general equilibrium. Our approach accounts for unobservable heterogeneity across locations as well as the costs and benefits of adaptation in climates of arbitrary dimension. Importantly, we demonstrate that the Envelope Theorem implies the marginal product of a long-run climate can be exactly identified using only idiosyncratic weather variation. We apply this method to the temperature climate of the modern United States and find that, despite evidence that populations adapt, the marginal product of temperature has remained unchanged during 1970-2010, with high temperatures having low net value. Integrating marginal products recovers a value function for temperature, describing the causal effect of non-marginal climate changes net of adaptive re-optimization. We use this value function to consider the influence of temperature in the current cross-section and a future climate change scenario.}
+      \field{month}{11}
+      \field{number}{24072}
+      \field{title}{{The Marginal Product of Climate}}
+      \field{type}{NBER Working Papers}
+      \field{year}{2017}
+      \verb{urlraw}
+      \verb https://ideas.repec.org/p/nbr/nberwo/24072.html
+      \endverb
+      \verb{url}
+      \verb https://ideas.repec.org/p/nbr/nberwo/24072.html
+      \endverb
+    \endentry
+    \entry{Hsiang_2016}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=3ea5cf7eb9e01013d277e8a0c5855194}{%
+           family={Hsiang},
+           familyi={H\bibinitperiod},
+           given={Solomon},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{3ea5cf7eb9e01013d277e8a0c5855194}
+      \strng{fullhash}{3ea5cf7eb9e01013d277e8a0c5855194}
+      \strng{bibnamehash}{3ea5cf7eb9e01013d277e8a0c5855194}
+      \strng{authorbibnamehash}{3ea5cf7eb9e01013d277e8a0c5855194}
+      \strng{authornamehash}{3ea5cf7eb9e01013d277e8a0c5855194}
+      \strng{authorfullhash}{3ea5cf7eb9e01013d277e8a0c5855194}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{author}
+      \field{abstract}{Identifying the effect of climate on societies is central to understanding historical economic development, designing modern policies that react to climatic events, and managing future global climate change. Here, I review, synthesize, and interpret recent advances in methods used to measure effects of climate on social and economic outcomes. Because weather variation plays a large role in recent progress, I formalize the relationship between climate and weather from an econometric perspective and discuss the use of these two factors as identifying variation, highlighting trade-offs between key assumptions in different research designs and deriving conditions when weather variation exactly identifies the effects of climate. I then describe recent advances, such as the parameterization of climate variables from a social perspective, use of nonlinear models with spatial and temporal displacement, characterization of uncertainty, measurement of adaptation, cross-study comparison, and use of empirical estimates to project the impact of future climate change. I conclude by discussing remaining methodological challenges.}
+      \field{journaltitle}{Annual Review of Resource Economics}
+      \field{month}{10}
+      \field{number}{1}
+      \field{title}{{Climate Econometrics}}
+      \field{volume}{8}
+      \field{year}{2016}
+      \field{pages}{43\bibrangedash 75}
+      \range{pages}{33}
+      \verb{urlraw}
+      \verb https://ideas.repec.org/a/anr/reseco/v8y2016p43-75.html
+      \endverb
+      \verb{url}
+      \verb https://ideas.repec.org/a/anr/reseco/v8y2016p43-75.html
+      \endverb
+      \keyw{climate change; weather; disasters; causal inference}
+    \endentry
+    \entry{doi:10.1126/science.1235367}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=9c37f9be8b7b6442deeabe02fddb8480}{%
+           family={Hsiang},
+           familyi={H\bibinitperiod},
+           given={Solomon\bibnamedelima M.},
+           giveni={S\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=cc8245e7c2a58c63604e2816e127e747}{%
+           family={Burke},
+           familyi={B\bibinitperiod},
+           given={Marshall},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=14378045148a3551d5999a9b70b40ffe}{%
+           family={Miguel},
+           familyi={M\bibinitperiod},
+           given={Edward},
+           giveni={E\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{6bc126099407023129823644f7d6abb2}
+      \strng{fullhash}{6bc126099407023129823644f7d6abb2}
+      \strng{bibnamehash}{6bc126099407023129823644f7d6abb2}
+      \strng{authorbibnamehash}{6bc126099407023129823644f7d6abb2}
+      \strng{authornamehash}{6bc126099407023129823644f7d6abb2}
+      \strng{authorfullhash}{6bc126099407023129823644f7d6abb2}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{author}
+      \field{abstract}{Knowledge silos can hinder attempts to explore questions of interest across many disciplines. Hsiang et al. (p. 1235367, published online 1 August) provide a meta-analysis of data from disciplines as disparate as archaeology and psychology to examine the relation between climate and conflict. Overall, warmer temperatures or extremes of rainfall can be causally associated with changes in interpersonal violence and in civil war. Across disciplinary boundaries, recently published evidence links climate change to increased violent conflict. A rapidly growing body of research examines whether human conflict can be affected by climatic changes. Drawing from archaeology, criminology, economics, geography, history, political science, and psychology, we assemble and analyze the 60 most rigorous quantitative studies and document, for the first time, a striking convergence of results. We find strong causal evidence linking climatic events to human conflict across a range of spatial and temporal scales and across all major regions of the world. The magnitude of climate’s influence is substantial: for each one standard deviation (1σ) change in climate toward warmer temperatures or more extreme rainfall, median estimates indicate that the frequency of interpersonal violence rises 4\% and the frequency of intergroup conflict rises 14\%. Because locations throughout the inhabited world are expected to warm 2σ to 4σ by 2050, amplified rates of human conflict could represent a large and critical impact of anthropogenic climate change.}
+      \field{journaltitle}{Science}
+      \field{number}{6151}
+      \field{title}{Quantifying the Influence of Climate on Human Conflict}
+      \field{volume}{341}
+      \field{year}{2013}
+      \field{pages}{1235367}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1126/science.1235367
+      \endverb
+      \verb{eprint}
+      \verb https://www.science.org/doi/pdf/10.1126/science.1235367
+      \endverb
+      \verb{urlraw}
+      \verb https://www.science.org/doi/abs/10.1126/science.1235367
+      \endverb
+      \verb{url}
+      \verb https://www.science.org/doi/abs/10.1126/science.1235367
+      \endverb
+    \endentry
+    \entry{Nordhaus_2019}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=40dcb9fc2a0831e94042521edc33d29e}{%
+           family={Nordhaus},
+           familyi={N\bibinitperiod},
+           given={William},
+           giveni={W\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{40dcb9fc2a0831e94042521edc33d29e}
+      \strng{fullhash}{40dcb9fc2a0831e94042521edc33d29e}
+      \strng{bibnamehash}{40dcb9fc2a0831e94042521edc33d29e}
+      \strng{authorbibnamehash}{40dcb9fc2a0831e94042521edc33d29e}
+      \strng{authornamehash}{40dcb9fc2a0831e94042521edc33d29e}
+      \strng{authorfullhash}{40dcb9fc2a0831e94042521edc33d29e}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{author}
+      \field{abstract}{William D. Nordhaus delivered his Prize Lecture on 8 December 2018 at the Aula Magna, Stockholm University.<br><small>(This abstract was borrowed from another version of this item.)</small>}
+      \field{journaltitle}{American Economic Review}
+      \field{month}{6}
+      \field{number}{6}
+      \field{title}{{Climate Change: The Ultimate Challenge for Economics}}
+      \field{volume}{109}
+      \field{year}{2019}
+      \field{pages}{1991\bibrangedash 2014}
+      \range{pages}{24}
+      \verb{urlraw}
+      \verb https://ideas.repec.org/a/aea/aecrev/v109y2019i6p1991-2014.html
+      \endverb
+      \verb{url}
+      \verb https://ideas.repec.org/a/aea/aecrev/v109y2019i6p1991-2014.html
+      \endverb
+    \endentry
+    \entry{Lifetime_income}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=50332678be8e65cb57dbf95625d7e1ee}{%
+           family={Tamborini},
+           familyi={T\bibinitperiod},
+           given={Christopher},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=6a0815820079044d495a6c4857301eb2}{%
+           family={Kim},
+           familyi={K\bibinitperiod},
+           given={ChangHwan},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=bf6eac5d9c498e9e70c92bf88a1aa42f}{%
+           family={Sakamoto},
+           familyi={S\bibinitperiod},
+           given={Arthur},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{2f21b3e72e02c21c9bfbe358ac433eb2}
+      \strng{fullhash}{2f21b3e72e02c21c9bfbe358ac433eb2}
+      \strng{bibnamehash}{2f21b3e72e02c21c9bfbe358ac433eb2}
+      \strng{authorbibnamehash}{2f21b3e72e02c21c9bfbe358ac433eb2}
+      \strng{authornamehash}{2f21b3e72e02c21c9bfbe358ac433eb2}
+      \strng{authorfullhash}{2f21b3e72e02c21c9bfbe358ac433eb2}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{author}
+      \field{abstract}{Differences in lifetime earnings by educational attainment have been of great research and policy interest. Although a large literature examines earnings differences by educational attainment, research on lifetime earnings—which refers to total accumulated earnings from entry into the labor market until retirement—remains limited because of the paucity of adequate data. Using data that match respondents in the Survey of Income and Program Participation to their longitudinal tax earnings as recorded by the Social Security Administration, we estimate the 50-year work career effects of education on lifetime earnings for men and women. By overcoming the purely synthetic cohort approach, our results provide a more realistic appraisal of actual patterns of lifetime earnings. Detailed estimates are provided for gross lifetime earnings by education; net lifetime earnings after controlling for covariates associated with the probability of obtaining a bachelor’s degree; and the net present 50-year lifetime value of education at age 20. In addition, we provide estimates that include individuals with zero earnings and disability. We also assess the adequacy of the purely synthetic cohort approach, which uses age differences in earnings observed in cross-sectional surveys to approximate lifetime earnings. Overall, our results confirm the persistent positive effects of higher education on earnings over different stages of the work career and over a lifetime, but also reveal notably smaller net effects on lifetime earnings compared with previously reported estimates. We discuss the implications of these and other findings. Copyright Population Association of America 2015}
+      \field{journaltitle}{Demography}
+      \field{month}{8}
+      \field{number}{4}
+      \field{title}{{Education and Lifetime Earnings in the United States}}
+      \field{volume}{52}
+      \field{year}{2015}
+      \field{pages}{1383\bibrangedash 1407}
+      \range{pages}{25}
+      \verb{doi}
+      \verb 10.1007/s13524-015-0407-0
+      \endverb
+      \verb{urlraw}
+      \verb https://ideas.repec.org/a/spr/demogr/v52y2015i4p1383-1407.html
+      \endverb
+      \verb{url}
+      \verb https://ideas.repec.org/a/spr/demogr/v52y2015i4p1383-1407.html
+      \endverb
+      \keyw{Lifetime earnings; Survey of Income and Program Participation; Economic returns to college; Semi-syn}
+    \endentry
+    \entry{Wooldridge_2010}{book}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=e1a12645ebf63b6026d769777854e35d}{%
+           family={Wooldridge},
+           familyi={W\bibinitperiod},
+           given={Jefrey\bibnamedelima M.},
+           giveni={J\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {The MIT Press}%
+      }
+      \strng{namehash}{e1a12645ebf63b6026d769777854e35d}
+      \strng{fullhash}{e1a12645ebf63b6026d769777854e35d}
+      \strng{bibnamehash}{e1a12645ebf63b6026d769777854e35d}
+      \strng{authorbibnamehash}{e1a12645ebf63b6026d769777854e35d}
+      \strng{authornamehash}{e1a12645ebf63b6026d769777854e35d}
+      \strng{authorfullhash}{e1a12645ebf63b6026d769777854e35d}
+      \field{sortinit}{W}
+      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The second edition of this acclaimed graduate text provides a unified treatment of two methods used in contemporary econometric research, cross section and data panel methods. By focusing on assumptions that can be given behavioral content, the book maintains an appropriate level of rigor while emphasizing intuitive thinking. The analysis covers both linear and nonlinear models, including models with dynamics and/or individual heterogeneity. In addition to general estimation frameworks (particular methods of moments and maximum likelihood), specific linear and nonlinear methods are covered in detail, including probit and logit models and their multivariate, Tobit models, models for count data, censored and missing data schemes, causal (or treatment) effects, and duration analysis.Econometric Analysis of Cross Section and Panel Data was the first graduate econometrics text to focus on microeconomic data structures, allowing assumptions to be separated into population and sampling assumptions. This second edition has been substantially updated and revised. Improvements include a broader class of models for missing data problems; more detailed treatment of cluster problems, an important topic for empirical researchers; expanded discussion of "generalized instrumental variables" (GIV) estimation; new coverage (based on the author's own recent research) of inverse probability weighting; a more complete framework for estimating treatment effects with panel data, and a firmly established link between econometric approaches to nonlinear panel data and the "generalized estimating equation" literature popular in statistics and other fields. New attention is given to explaining when particular econometric methods can be applied; the goal is not only to tell readers what does work, but why certain "obvious" procedures do not. The numerous included exercises, both theoretical and computer-based, allow the reader to extend methods covered in the text and discover new insights.}
+      \field{isbn}{9780262232586}
+      \field{title}{Econometric Analysis of Cross Section and Panel Data}
+      \field{urlday}{13}
+      \field{urlmonth}{5}
+      \field{urlyear}{2025}
+      \field{year}{2010}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb http://www.jstor.org/stable/j.ctt5hhcfr
+      \endverb
+      \verb{url}
+      \verb http://www.jstor.org/stable/j.ctt5hhcfr
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

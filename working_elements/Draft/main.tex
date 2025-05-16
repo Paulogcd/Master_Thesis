@@ -20,7 +20,9 @@
 
 
 % Bibliography:
-\usepackage[style=authoryear]{biblatex}
+%\usepackage[style=authoryear]{biblatex}
+\usepackage[authordate,bibencoding=auto,strict,backend=biber,natbib]{biblatex-chicago}
+%\usepackage{natbib}
 \addbibresource{references.bib}
 % To compile:
 % pdflatex main.tex
@@ -81,24 +83,32 @@ This paper contributes to three main strands of literature: health economics, th
 
 A large literature has documented the central role of health
 in shaping economic behavior over the life cycle.
-De Nardi et al. (2023) demonstrate that health status
+Some studies \citep{DeNardi2023} demonstrate that health status
 significantly affects labor supply, retirement decisions,
 and savings dynamics, establishing health as a key determinant
 of productivity and economic welfare.
 Beyond contemporaneous productivity effects,
 poor health imposes substantial intertemporal costs.
-Both De Nardi et al. (2023) and Capatina (2015) quantify
+Both \citep{DeNardi2023} and \citep{Capatina_2015} quantify
 the lifetime income and utility losses associated with
 adverse health trajectories, emphasizing the compounding
 nature of health shocks over the life course.
 
 \subsubsection{Climate and Economics}
 
-The economic impacts of climate change are multifaceted, with temperature emerging as a particularly influential channel. Burke et al. (2015) document substantial aggregate output losses associated with rising temperatures, particularly in countries with limited adaptive capacity. More recently, Bilal and Kanzig (2024, 2025) show that temperature shocks have asset-pricing implications, underscoring the forward-looking nature of climate risks.
+The economic impacts of climate change are multifaceted, with temperature emerging as a particularly influential channel.
+\citep{Burke_et_al_2015} document substantial aggregate output losses associated with rising temperatures, particularly in countries with limited adaptive capacity.
+More recently, \citep{Bilal_Kanzig_2024} show that temperature shocks have asset-pricing implications, underscoring the forward-looking nature of climate risks.
 
-At the same time, the literature has explored how extreme heat may exacerbate social and political instability. Burke, Hsiang, and Miguel (2015) provide compelling evidence that hotter temperatures increase the likelihood of conflict in developing countries, suggesting that the consequences of climate change extend well beyond output measures. Importantly, adaptation has been shown to significantly mitigate the economic burden of climate shocks. Carleton et al. (2022) estimate the global mortality consequences of warming while explicitly accounting for adaptation costs and benefits, illustrating how policy and behavioral responses shape climate damages.
+At the same time, the literature has explored how extreme heat may exacerbate social and political instability.
+\citep{doi:10.1126/science.1235367} provide compelling evidence that hotter temperatures increase the likelihood of conflict in developing countries, suggesting that the consequences of climate change extend well beyond output measures.
+Importantly, adaptation has been shown to significantly mitigate the economic burden of climate shocks. 
+\citep{Carleton_et_al_2022} estimate the global mortality consequences of warming while explicitly accounting for adaptation costs and benefits, illustrating how policy and behavioral responses shape climate damages.
 
-From a methodological standpoint, the empirical identification of climate impacts presents persistent challenges. Deryugina and Hsiang (2017), Hsiang (2016), and Nordhaus (2019) all highlight the difficulties of isolating causal effects in the presence of spatial and temporal heterogeneity. Bilal and Kanzig (2024, 2025) further emphasize the econometric complexity involved in measuring forward-looking responses to climate risks.
+From a methodological standpoint, the empirical identification of climate impacts presents persistent challenges.
+\citep{Deryugina_Hsiang_2017}, \citep{Hsiang_2016},
+and \citep{Nordhaus_2019} all highlight the difficulties of isolating causal effects in the presence of spatial and temporal heterogeneity.
+\citep{Bilal_Kanzig_2024} further emphasize the econometric complexity involved in measuring forward-looking responses to climate risks.
 
 \subsubsection{Climate and Health}
 
@@ -231,7 +241,7 @@ prior studies have shown it to be highly correlated with both morbidity and mort
 Its availability across all waves and simplicity of interpretation make
 it a tractable measure of overall health status in this context.
 
-In addition, the secondary health proxy, $HP_{i,t}$, is constructed using
+In addition, a secondary health proxy, $HP_{i,t}$, is constructed using
 binary indicators for four self-reported chronic conditions: \textit{high blood pressure},
 \textit{lung disease}, \textit{heart condition}, and \textit{stroke}.
 \\ 
@@ -301,7 +311,8 @@ model introduced in the next section.
 The Health and Retirement Study (HRS) provides detailed longitudinal data on individuals’ self-reported health, captured across five ordered categories.
 To preserve the richness of this variable, it is not recoded into a binary indicator (e.g., “Good” vs. “Bad”) but retained in its full ordinal form, with $H \in \{1,\dots,5\}$ representing states from “Excellent” to “Poor” health.
 
-Given the ordered and discrete nature of the outcome, health transitions are modeled using ordered response models—specifically, the ordered logit and ordered probit—due to their tractability and widespread use in the literature.
+Given the ordered and discrete nature of the outcome, health transitions are modeled using ordered response models. 
+Specifically, the ordered logit, due to its tractability and widespread use in the literature \cite{Wooldridge_2010}.
 
 For computational and identification reasons, we restrict the information set determining current health status to the most recent lag and contemporaneous temperature. That is, rather than modeling the full dependence $f_h(\mathcal{H}_{t-1}, \mathcal{W}_{t})$, we simplify the transition function to:
 \[
@@ -320,7 +331,7 @@ Moreover, interaction effects between covariates are likely important.
 For example, the impact of a given health state on future transitions may differ substantially by age: 
 “Fair” health at age 30 has different implications than at age 80.
 
-To address these concerns, we introduce an two-staged-regression inspired strategy.
+To address these concerns, we introduce a two-staged-regression inspired strategy.
 
 We define a composite health shock measure, the \textit{Health Proxy} ($HP_{i,t}$), capturing the burden of recent temperature-sensitive health incidents.
 This proxy is constructed as the sum of binary indicators for the presence of the following four health conditions:
@@ -408,8 +419,6 @@ Improvements to better health categories become virtually negligible with age, s
 \end{figure}
 
 
-
-
 These estimated transition probabilities highlight the persistent and age-dependent nature of health status. They support the modeling assumption of a health process that becomes increasingly inertial with age, and they reflect the empirical reality that upward health mobility becomes rarer in older populations. This framework is essential for evaluating how external shocks—such as temperature-driven health shocks—interact with baseline health dynamics across the life cycle.
 Based on these estimates, 
 it is alread possible to perform 
@@ -458,11 +467,11 @@ the economic model.
 This section is dedicated to the formal description of 
 the model, as well as its analytical analysis.
 First, its main mechanisms will be explained, and then, the 
-inexistence of analytical solution in most cases will be shown.
+nonexistence of analytical solution in most cases will be shown.
 
 \subsection{Baseline specification }
 
-The agents maximizes: 
+The agents maximize: 
 
 $$ \max_{\{c_{t},l_{t},s_{t+1}\}_{t=1}^{100}}{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot u(c_t,l_t)\right]}$$
 
@@ -516,7 +525,7 @@ We can note the First Order Conditions, such that:
     c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi} \iff
         \begin{cases}
         & c_t = \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}}\\ 
-        & l_{t} = \left[\frac{c_{t}^{-\rho}z_{t}\cdot}{\xi_{t}}\right]^{\frac{1}{\rho}}
+        & l_{t} = \left[\frac{c_{t}^{-\rho}z_{t}\cdot}{\xi_{t}}\right]^{\frac{1}{\varphi}}
     \end{cases}
 \end{equation}
 And 
@@ -527,14 +536,14 @@ And
 The first corresponds to the equalization of marginal benefit and
 cost of labor, and the second corresponds to the Euler equation.
 
-The first equilbrium condition implies an within decision,
+The first equilibrium condition implies an within decision,
 driven by the labor disutility coefficient $\xi$ and the productivity $z$.
 There is a unique mapping between consumption and labor at any period, to 
 equalize the benefits and the costs of labor.
 
 The second equilibrium condition implies an intertemporal decision.
 The marginal utility of consumption at one period must be equal to the 
-expected marginal utility of conusmption next period, discounted by 
+expected marginal utility of consumption next period, discounted by 
 the discounting factor $\beta$ and the interest rate next period $(1+r_{t+1})$, 
 plus the marginal benefit of violating the borrowing constraint at the current period. 
 
@@ -549,7 +558,7 @@ If the uncertainty only comes from these two draws, the expectation operator can
 
 $$\mathbb{E}\left[c_{t+1}\right] \equiv p_{t+1}(\mathcal{H}_{t},\mathcal{W}_{t}) \cdot c_{t+1}$$
 
-\subsection{Analytical Solution Inexistence}
+\subsection{Analytical Solution nonexistence}
 
 \textbf{Proposition}
 This maximization program is impossible to solve analytically in most cases\footnote{The proof of this proposition is in the Appendix.}.
@@ -564,11 +573,11 @@ making it disappear from the F.O.C.s.
 This term requires therefore the labor and consumption policies to be solved, 
 and then plugged into the budget constraint, to have a solution. 
 However, if we try to solve the two other policy functions, 
-we end up with transcendantal equations of the form $a\cdot x^{\alpha} + b\cdot x + c = 0$, 
+we end up with transcendental equations of the form $a\cdot x^{\alpha} + b\cdot x + c = 0$, 
 with $\alpha\notin \mathbb{N}$. 
-This transcendantal equations can be overcome with specific combinations 
+These transcendental equations can be overcome with specific combinations 
 of parameters, but these are however absurd in our context.
-This inexistence of analytical solution calls henceforth for a numerical solving of the model.
+This nonexistence of analytical solution calls therefore for a numerical solving of the model.
 The next section discusses the different methods used in order to do so.
 
 \section{Numerical methods}
@@ -590,7 +599,7 @@ numerically.
     \item \textbf{Budget clearing function: } 
     The budget clearing function computes the amount of non used income for a 
     set of state and choice variables. Since at optimal, the budget constraint is binding, 
-    the underlying theoreical result indicates that the budget clearing function should be 
+    the underlying theoretical result indicates that the budget clearing function should be 
     zero. Given the imprecision of numerical methods, the average budget clearing function was used 
     as a measure of the precision performance of each algorithm.
 
@@ -695,11 +704,11 @@ The FOC approximated value function iteration algorithms
 make use of the two expression of consumption and labor supply 
 derived from the FOC
 seen in the previous section. 
-They are faster by order of magnitudes when compared to the pure numerical 
+They are faster by orders of magnitudes when compared to the pure numerical 
 value function iteration algorithm,
 but contain more errors, measured by the budget clearing function\footnote{Note that it is impossible to use the second FOC, i.e. the 
 Euler equation, containing the 
-Lagrangien multiplier $\gamma_{t}$. 
+Lagrangian multiplier $\gamma_{t}$. 
 However, the numerical solving process 
 allows for an estimation of $\gamma_{t}$.}.
 
@@ -814,12 +823,13 @@ i.e. the lifetime income.
 
 A simulation was conducted using a projected temperature trajectory ranging from 0.00 to 1.50 degrees Celsius. This range approximately reflects the temperature increase experienced by the cohort born in the 1950s.
 
-According to data from PMCID: PMC4534330, the estimated lifetime earnings (in 2020 dollars) for individuals with less than a high school education (LTHS) are \$1,178,000 for men and \$586,000 for women, yielding an average of approximately \$882,000.
+According to data from \cite{Lifetime_income}, the estimated lifetime earnings (in 2020 dollars) for individuals with less than a high school education (LTHS) are \$1,178,000 for men and \$586,000 for women, yielding an average of approximately \$882,000.
 For high school graduates, the corresponding figures are \$1,825,000 for men and \$1,351,000 for women.
 
 In light of these benchmarks, a reference value of \$1.45 million was selected to represent a moderate level of lifetime earnings. This serves as the baseline for estimating the economic consequences of temperature-related health shocks over the lifespan of this cohort.
 
 It is important to note, however, that this estimate likely understates the true cost of such shocks. The Health and Retirement Study (HRS) data used in the health transition modeling includes a broader and more educated sample than the average LTHS population. Numerous studies have established that higher educational attainment is associated with improved health outcomes and longer life expectancy. As a result, the health impacts derived from the HRS data are expected to be less severe than those experienced by less educated individuals. Consequently, the simulated economic burden associated with temperature-induced health deterioration may be conservatively estimated.
+
 \subsection{Comparison}
 
 This subsection is dedicated to the comparison between 
@@ -842,8 +852,14 @@ The 4 temperature trajectories compared are:
 
 \begin{figure}[H]
     \includegraphics[width=\textwidth]{/Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/demographic_comparison.png}
-    \caption{Savings policy per age category obtained from the pure numerical value function iteration}
+    \caption{Survival probability comparison}
 \end{figure}
+
+The following demographic comparison illustrates the heterogeneous impact of varying temperature trajectories on population survival probabilities across the life cycle.
+The depicted survival curves reveal a clear downward shift and accelerated decline under more adverse climate scenarios (intermediate and pessimistic), particularly at older ages.
+This suggests a significant temperature-induced mortality risk, consistent with findings in environmental epidemiology linking higher temperatures to increased incidence of acute health events and exacerbated chronic conditions.
+The divergence in survival probabilities across the simulated temperature paths underscores the substantial demographic consequences of unchecked climate change, implying a contraction in expected lifespan and a potential alteration of the age structure of the population.
+These demographic shifts, in turn, have profound implications for labor supply, human capital accumulation, and the sustainability of social insurance systems, as explored further in the subsequent analysis of policy functions and lifetime income.
 
 \subsubsection{Policy functions comparison}
 
@@ -860,12 +876,12 @@ the computation of a policy function average throughout all ages.
     \caption{Labor policy comparison}
 \end{figure}
 
-The comparison of optimal policy paths across varying temperature trajectories reveals a discernible deadweight loss attributable to demographic dynamics.
+The comparison of optimal policy paths across varying temperature trajectories reveals a discernible loss attributable to demographic dynamics.
 Specifically, this loss arises from temperature-induced shifts in survival probabilities over time.
 As higher temperatures adversely affect health transitions and increase mortality risk (particularly among older or more vulnerable individuals) the resulting demographic structure alters the expected lifetime utility and economic behavior of agents.
 
 This demographic distortion reduces the effectiveness of policy instruments optimized under baseline conditions, thereby generating inefficiencies.
-The magnitude of the deadweight loss reflects both the direct impact of elevated temperatures on survival probabilities and the indirect effect on population composition, labor force participation, and the intertemporal allocation of resources. In this context, the demographic channel becomes a critical mechanism through which climate change translates into long-term economic costs, even in the absence of immediate productivity shocks.
+The magnitude of the loss reflects both the direct impact of elevated temperatures on survival probabilities and the indirect effect on population composition, labor force participation, and the intertemporal allocation of resources. In this context, the demographic channel becomes a critical mechanism through which climate change translates into long-term economic costs, even in the absence of immediate productivity shocks.
 
 \subsubsection{Lifetime income comparison}
 
@@ -996,12 +1012,12 @@ The F.O.C. with respect to labor implies:
 
 We can develop the decomposition of consumption if and only if $\rho \in \mathbb{N}$.
 Indeed, this equation is of form $x = (x-\alpha)^{\beta} \cdot z$.
-With $\beta\notin \mathbb{N}$, is a transcendantal equation.
+With $\beta\notin \mathbb{N}$, is a transcendental equation.
 
 \subsubsection{F.O.C. and Budget clearing}
 
 We can now try to compute the F.O.C. first, and then make use of the Budget Constraint.
-The Lagrangien function associated witht the maximization program of the agent is: 
+The Lagrangian function associated witht the maximization program of the agent is: 
 \begin{equation}
     \begin{split}
         \mathcal{L}(c_{t},l_{t},s_{t+1};\lambda_t,\gamma_{t}) &
@@ -1032,7 +1048,7 @@ Replacing the expression of $\lambda_{t}$ in the two other equation yields:
     c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi} \iff
         \begin{cases}
         & c_t = \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}}\\ 
-        & l_{t} = \left[\frac{c_{t}^{-\rho}z_{t}\cdot}{\xi_{t}}\right]^{\frac{1}{\rho}}
+        & l_{t} = \left[\frac{c_{t}^{-\rho}z_{t}\cdot}{\xi_{t}}\right]^{\frac{1}{\varphi}}
     \end{cases}
 \end{equation}
 And 
@@ -1063,7 +1079,7 @@ $$ l_{t}^{-\frac{\varphi}{\rho}} \cdot \left(\frac{\xi_{t}}{z_{t}}\right)^{-\fra
 $$\iff$$
 $$ l_{t}^{-\frac{\varphi}{\rho}} \cdot \left(\frac{z_{t}}{\xi_{t}}\right)^{\frac{1}{\rho}} - l_{t}\cdot z_{t} - s_{t}\cdot(1+r_{t}) - s_{t+1} = 0 $$
 
-This is a transcendantal equation of form 
+This is a transcendental equation of form 
 $x^{\alpha}\cdot b - x\cdot y - c = 0$,
 which admits a solution if and only if $-\frac{\varphi}{\rho} \in \mathbb{N}$.
 This condition seems unrealistic in our context: 
@@ -1096,7 +1112,7 @@ The new optimality condition is:
 \end{equation}
 
 Although we simplified the term at the exponential of which 
-we have $-\rho$, this is still a transcendantal equation due to the sum 
+we have $-\rho$, this is still a transcendental equation due to the sum 
 of labor income and income coming from savings of last period, 
 and the problem remain the same.
 
