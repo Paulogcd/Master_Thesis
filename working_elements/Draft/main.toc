@@ -37,12 +37,12 @@
 \contentsline {subsubsection}{\numberline {6.2.3}Lifetime income comparison}{27}{subsubsection.6.2.3}%
 \contentsline {section}{\numberline {7}Discussion}{28}{section.7}%
 \contentsline {subsection}{\numberline {7.1}Limitations}{29}{subsection.7.1}%
-\contentsline {section}{\numberline {8}References}{29}{section.8}%
-\contentsline {section}{\numberline {9}Appendix}{31}{section.9}%
-\contentsline {subsection}{\numberline {9.1}Health Transition Probabilities}{31}{subsection.9.1}%
-\contentsline {subsection}{\numberline {9.2}Health simulation}{32}{subsection.9.2}%
-\contentsline {subsection}{\numberline {9.3}Proof of Impossibility}{32}{subsection.9.3}%
-\contentsline {subsubsection}{\numberline {9.3.1}Maximization program}{32}{subsubsection.9.3.1}%
-\contentsline {subsubsection}{\numberline {9.3.2}Budget constraint binding}{33}{subsubsection.9.3.2}%
-\contentsline {subsubsection}{\numberline {9.3.3}F.O.C. and Budget clearing}{33}{subsubsection.9.3.3}%
-\contentsline {subsubsection}{\numberline {9.3.4}Backwards solving attempt}{35}{subsubsection.9.3.4}%
+\contentsline {section}{\numberline {8}References}{30}{section.8}%
+\contentsline {section}{\numberline {9}Appendix}{32}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Health Transition Probabilities}{32}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Health simulation}{33}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Proof of Impossibility}{33}{subsection.9.3}%
+\contentsline {subsubsection}{\numberline {9.3.1}Maximization program}{33}{subsubsection.9.3.1}%
+\contentsline {subsubsection}{\numberline {9.3.2}Budget constraint binding}{34}{subsubsection.9.3.2}%
+\contentsline {subsubsection}{\numberline {9.3.3}F.O.C. and Budget clearing}{34}{subsubsection.9.3.3}%
+\contentsline {subsubsection}{\numberline {9.3.4}Backwards solving attempt}{36}{subsubsection.9.3.4}%

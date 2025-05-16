@@ -40,6 +40,6 @@ tp_plot = Plots.plot(tp.Year,
 
     fontfamily = "Times")
 
-plot!(xaxis = "Year", yaxis = "Temperature")
+Plots.plot!(xaxis = "Year", yaxis = "Temperature")
 
 savefig("working_elements/Draft/output/figure_1.png")

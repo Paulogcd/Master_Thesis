@@ -4980,6 +4980,7 @@
     <bcf:citekey order="11" intorder="1">Bilal_Kanzig_2024</bcf:citekey>
     <bcf:citekey order="12" intorder="1">Wooldridge_2010</bcf:citekey>
     <bcf:citekey order="13" intorder="1">Lifetime_income</bcf:citekey>
+    <bcf:citekey order="14" intorder="1">Nordhaus_2019</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="cms">

@@ -18,6 +18,7 @@
 %\usepackage[demo]{graphicx}
 \usepackage{subcaption}
 
+%\usepackage[symbol]{footmisc}
 
 % Bibliography:
 %\usepackage[style=authoryear]{biblatex}
@@ -42,6 +43,23 @@
 
 
 \maketitle
+
+\begin{abstract}
+    This paper examines the long-term economic impact of climate change on individuals through the channel of temperature-induced health deterioration. Using a structural life-cycle model calibrated with empirical health transition data, it simulates how rising temperatures affect survival probabilities, health status, and economic behavior—specifically labor supply, consumption, and savings—across different climate scenarios. The results show that higher temperatures reduce life expectancy and lead to earlier and more severe health shocks, which in turn lower lifetime income. Under pessimistic warming scenarios, the estimated loss in lifetime earnings reaches approximately \$110,000 per person. While the model abstracts from general equilibrium effects and relies on self-reported health data, it highlights the significant economic cost of climate change operating through individual health risks.
+    \footnote{
+    % Despite all hardships, this work is done at last.
+    I thank Jeanne Commault for her peerless guidance, without which I would not have been able to do a fraction of the present work. 
+    I thank Paul Bouscasse for his literature advices and hints that brought me to my final subject.
+    I thank Moshe Buchinsky for his help and for enduring the incredible number of erroneous econometric specifications I showed him.
+    I thank Nathanaël and Jean for interesting (but often cryptic) collective monologs about our different thesis.
+    I thank my fateful admission error.
+    I thank the Julia Lang and its community (and Pluto.jl) for the fun I had programming.
+    I thank the French Republic for everything it gave me.
+    I thank my past self for holding on, and chosing this Master, where I learnt so much.
+    I thank my parents for having traveled so far, and sacrified so much.
+    Despite all this help, I probably managed to forget some remaining errors...
+    Dear readers, please forgive me.}
+\end{abstract}
 
 \newpage
 \tableofcontents
@@ -908,15 +926,21 @@ This mirrors findings by Barreca et al. (2016) on temperature-mortality adaptati
 
 \subsection{Limitations}
 
-This present work suffers however from multiple methodological limitations.
+Nonetheless, this present work suffers from multiple methodological limitations.
 
-First, by its health measure methodology. 
-This limitation is twofolds. 
+First, by its econometrical strategy to assess the relationships between health, temperature, and survival.
+Nordhaus called Climate Change "The Ultimate Challenge for Economics" \citep{Nordhaus_2019}, did the current work manage to tackle it? 
+Needless to say, the econometric strategy of the current work is far from being flawless.
+The use of two estimates in the detailed three stages regression approach still does not eliminate estimation bias.
+
+Two other elements add up to the inherent econometric hurdle of temperature causal inference 
 First, due to the reliance on the Self-Reported Health.
 This reliance may understate severe clinical conditions.
 Future work could integrate biomarkers (e.g., NHANES data) to capture latent health risks.
 Second, due to the limitations of the proposed and used Health Proxy,
 that does not capture fully neither isolate perfectly the effect of temperature on health.
+
+At this stage, it is important to acknowledge that, while the proposed estimation strategy may be subject to bias and potential collinearity with omitted variables, it nonetheless serves a meaningful purpose within the context of the model. Although establishing strict causal inference is constrained by data limitations and identification challenges, the estimated relationships still offer valuable descriptive insights into the dynamics between temperature and health outcomes. In this regard, the economic model built upon these estimators provides a credible framework for exploring and quantifying the broader economic consequences of temperature-induced health shocks. Rather than seeking definitive causal claims, the model emphasizes the structural and behavioral implications of observed patterns, thereby offering a clearer understanding of how environmental stressors translate into long-term economic costs.
 
 Another important limitation of this work comes from its integration of temperature variability:
 Using annual averages masks acute shocks (e.g., heatwaves), which may have nonlinear effects on health (IPCC, 2022).
@@ -931,13 +955,9 @@ the health and survival probabilities.
 Furthermore, the baseline lifetime income estimate (\$1.45M) likely understates costs for less-educated groups, who face higher climate vulnerability (Deryugina \& Hsiang, 2017).
 Disaggregating by socioeconomic status could be a priority for future research.
 
-By bridging health dynamics, macroeconomic economics, and dynamic optimization together,
-the present work propose a framework in which temperature-induced health shocks impose
-economically meaningful costs through both mortality and morbidity.
-
 \section{References}
 
-\printbibliography
+\printbibliography[heading=none]
 
 \newpage
 \section{Appendix}
@@ -977,7 +997,7 @@ economically meaningful costs through both mortality and morbidity.
 This section is dedicated to the proof that the maximization program
 has no analytical solution in most cases.
 
-We will show this absence of analytical solution by attempting to solve it in three different 
+Iwill show this absence of analytical solution by attempting to solve it in three different 
 ways: First by using the Budget Constraint binding, then by using the F.O.C. and the Budget Constraint,
 and lastly trying to go to the last period to solve it recursively. 
 
