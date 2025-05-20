@@ -19,7 +19,6 @@ function produce_population(temperature)
     return (;result,temperature)
 end
 
-
 function produce_graph(populations)
     
     result_plot = Plots.plot(xaxis = "Time",

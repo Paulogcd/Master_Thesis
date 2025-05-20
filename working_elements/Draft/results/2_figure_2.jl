@@ -9,7 +9,8 @@ end
 df = CSV.read("working_elements/Empirical_models/data.csv", DataFrame)
 gdp = CSV.read("working_elements/Empirical_models/gdp.csv", DataFrame)
 
-df = df[df.Year .>= 2018,:]
+df = df[df.Year .<= 2018,:]
+df
 
 begin 
 	"""
@@ -73,6 +74,8 @@ begin
 							# Age * Health
 						),
 				DF, Bernoulli(), LogitLink())
+	
+	save_regression(model_health_age_temperature_gdp,"extra_health_survival")
 
     Poor        =
 		DataFrame(Age = age_range,

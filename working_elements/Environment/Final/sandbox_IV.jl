@@ -56,6 +56,8 @@ df_2012 = DF[DF[:,:Year] .== 2012,:]
 df_2010 = DF[DF[:,:Year] .== 2010,:]
 df_2008 = DF[DF[:,:Year] .== 2008,:]
 df_2006 = DF[DF[:,:Year] .== 2006,:]
+df_2004 = DF[DF[:,:Year] .== 2004,:]
+df_2002 = DF[DF[:,:Year] .== 2002,:]
 
 # df_2022_2020 = leftjoin(df_2022,df_2020, on = :ID, makeunique=true)
 df_2020_2018 = leftjoin(df_2020,df_2018, on = :ID, makeunique=true)
@@ -64,6 +66,9 @@ df_2016_2014 = leftjoin(df_2016,df_2014, on = :ID, makeunique=true)
 df_2014_2012 = leftjoin(df_2014,df_2012, on = :ID, makeunique=true)
 df_2012_2010 = leftjoin(df_2012,df_2010, on = :ID, makeunique=true)
 df_2010_2008 = leftjoin(df_2010,df_2008, on = :ID, makeunique=true)
+df_2008_2006 = leftjoin(df_2008,df_2006, on = :ID, makeunique=true)
+df_2006_2004 = leftjoin(df_2006,df_2004, on = :ID, makeunique=true)
+df_2004_2002 = leftjoin(df_2004,df_2002, on = :ID, makeunique=true)
 
 DF = vcat(# df_2022_2020,
         df_2020_2018,
@@ -71,7 +76,10 @@ DF = vcat(# df_2022_2020,
         df_2016_2014, 
         df_2014_2012,
         df_2012_2010,
-        df_2010_2008)
+        df_2010_2008, 
+        df_2008_2006,
+        df_2006_2004,
+        df_2004_2002)
 
 DF = dropmissing!(DF)
 
@@ -104,7 +112,7 @@ REG3 = GLM.glm(survival_equation,
     Bernoulli(),
     LogitLink())
 
-save_regression(REG3,"regression_2")
+save_regression(REG3,"regression_3")
 
 # Print Regression Tables
 # latex_output = regtable(REG1; 

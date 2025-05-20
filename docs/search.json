@@ -1,31 +1,31 @@
 [
   {
-    "objectID": "references.html",
-    "href": "references.html",
-    "title": "References",
+    "objectID": "Presentation/presentation.html#introduction",
+    "href": "Presentation/presentation.html#introduction",
+    "title": "Master Thesis: The effect of temperature variation induced health transition on economics",
+    "section": "Introduction",
+    "text": "Introduction\n\\[\\mathbb{E} = c_{t+1}\\]"
+  },
+  {
+    "objectID": "Presentation/presentation.html#some-3d-plot",
+    "href": "Presentation/presentation.html#some-3d-plot",
+    "title": "Master Thesis: The effect of temperature variation induced health transition on economics",
+    "section": "Some 3D plot",
+    "text": "Some 3D plot"
+  },
+  {
+    "objectID": "Presentation/presentation.html#interactive-3d-plot",
+    "href": "Presentation/presentation.html#interactive-3d-plot",
+    "title": "Master Thesis: The effect of temperature variation induced health transition on economics",
+    "section": "Interactive 3D Plot",
+    "text": "Interactive 3D Plot\n\n\n┌ Warning: Failed to load integration with PlotlyBase & PlotlyKaleido.\n│   exception =\n│    ArgumentError: Package PlotlyKaleido not found in current path.\n│    - Run `import Pkg; Pkg.add(\"PlotlyKaleido\")` to install the PlotlyKaleido package.\n│    Stacktrace:\n│      [1] macro expansion\n│        @ ./loading.jl:2296 [inlined]\n│      [2] macro expansion\n│        @ ./lock.jl:273 [inlined]\n│      [3] __require(into::Module, mod::Symbol)\n│        @ Base ./loading.jl:2271\n│      [4] #invoke_in_world#3\n│        @ ./essentials.jl:1089 [inlined]\n│      [5] invoke_in_world\n│        @ ./essentials.jl:1086 [inlined]\n│      [6] require(into::Module, mod::Symbol)\n│        @ Base ./loading.jl:2260\n│      [7] top-level scope\n│        @ ~/.julia/packages/Plots/Ec1L1/src/backends.jl:569\n│      [8] eval\n│        @ ./boot.jl:430 [inlined]\n│      [9] _initialize_backend(pkg::Plots.PlotlyBackend)\n│        @ Plots ~/.julia/packages/Plots/Ec1L1/src/backends.jl:567\n│     [10] backend(pkg::Plots.PlotlyBackend)\n│        @ Plots ~/.julia/packages/Plots/Ec1L1/src/backends.jl:245\n│     [11] plotly()\n│        @ Plots ~/.julia/packages/Plots/Ec1L1/src/backends.jl:86\n│     [12] top-level scope\n│        @ ~/Documents/Master_Thesis/website/Presentation/presentation.qmd:35\n│     [13] eval\n│        @ ./boot.jl:430 [inlined]\n│     [14] (::QuartoNotebookWorker.var\"#15#16\"{Module, Expr})()\n│        @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:222\n│     [15] (::QuartoNotebookWorker.Packages.IOCapture.var\"#5#9\"{DataType, QuartoNotebookWorker.var\"#15#16\"{Module, Expr}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{IOStream}, IOContext{Base.PipeEndpoint}})()\n│        @ QuartoNotebookWorker.Packages.IOCapture ~/.julia/packages/IOCapture/Y5rEA/src/IOCapture.jl:170\n│     [16] with_logstate(f::QuartoNotebookWorker.Packages.IOCapture.var\"#5#9\"{DataType, QuartoNotebookWorker.var\"#15#16\"{Module, Expr}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{IOStream}, IOContext{Base.PipeEndpoint}}, logstate::Base.CoreLogging.LogState)\n│        @ Base.CoreLogging ./logging/logging.jl:522\n│     [17] with_logger(f::Function, logger::Base.CoreLogging.ConsoleLogger)\n│        @ Base.CoreLogging ./logging/logging.jl:632\n│     [18] capture(f::QuartoNotebookWorker.var\"#15#16\"{Module, Expr}; rethrow::Type, color::Bool, passthrough::Bool, capture_buffer::IOBuffer, io_context::Vector{Pair{Symbol, Any}})\n│        @ QuartoNotebookWorker.Packages.IOCapture ~/.julia/packages/IOCapture/Y5rEA/src/IOCapture.jl:167\n│     [19] capture\n│        @ ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:248 [inlined]\n│     [20] io_capture(f::Function; cell_options::Dict{String, Any}, kws::@Kwargs{rethrow::DataType, color::Bool, io_context::Vector{Pair{Symbol, Any}}})\n│        @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:250\n│     [21] io_capture\n│        @ ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:246 [inlined]\n│     [22] include_str(mod::Module, code::String; file::String, line::Int64, cell_options::Dict{String, Any})\n│        @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:201\n│     [23] #invokelatest#2\n│        @ ./essentials.jl:1057 [inlined]\n│     [24] invokelatest\n│        @ ./essentials.jl:1052 [inlined]\n│     [25] #6\n│        @ ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:18 [inlined]\n│     [26] with_inline_display(f::QuartoNotebookWorker.var\"#6#7\"{String, String, Int64, Dict{String, Any}}, cell_options::Dict{String, Any})\n│        @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/InlineDisplay.jl:26\n│     [27] _render_thunk(thunk::Function, code::String, cell_options::Dict{String, Any}, is_expansion_ref::Base.RefValue{Bool}; inline::Bool)\n│        @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:43\n│     [28] _render_thunk\n│        @ ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:35 [inlined]\n│     [29] #render#5\n│        @ ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:15 [inlined]\n│     [30] render(code::String, file::String, line::Int64, cell_options::Dict{String, Any})\n│        @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:1\n│     [31] render(::String, ::Vararg{Any}; kwargs::@Kwargs{})\n│        @ Main ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/worker.jl:30\n│     [32] top-level scope\n│        @ none:1\n│     [33] eval\n│        @ ./boot.jl:430 [inlined]\n│     [34] (::Main.var\"#7#10\")(chan::Channel{Any})\n│        @ Main ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/worker.jl:13\n│     [35] (::Base.var\"#739#740\"{Main.var\"#7#10\", Channel{Any}})()\n│        @ Base ./channels.jl:142\n└ @ Plots ~/.julia/packages/Plots/Ec1L1/src/backends.jl:577"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
     "section": "",
-    "text": "Here are some of the important bibliographical references I use in the development of my conceptual framework:\n\nDe Nardi et al., 2024: The Lifetime Costs of Bad Health, The Review of Economic Studies. The authors use PSID data to identify different “health types”, that can predict most of the health history through the life of an individual. They point out that a Markov process of order 1 is not enough to capture the change of health status, although using higher orders is resources demanding. THey include a structural model in which they study economic choices of agents, and include several features such as medical insurance and retirement. The article is available here.\nCarleton et al., 2022: Valuing the Global Mortality Consequences of Climate Change Accounting for Adaptation Costs and Benefits, The Quarterly Journal of Economics. The authors include the income as a parameter in the mortality-temperature function, which seems necessary, and develop a conceptual framework to take into account adaptation. The article is available here.\nGould et al., 2024, Temperature extremes impact mortality and morbidity differently, NBER Working Papers. The authors use a Californian dataset including visits at emergency departments to study the response of health to temperature. They also try to differentiate between morbidity, understood as the general state of health, and mortality, associated to the death rate. They point out that the morbidity, for which they use non fatal events leading to an emergency department visit, react differently than mortality. The article is available here."
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Modelling climate impact on economy through health",
-    "section": "",
-    "text": "Hello, I am Paulo Gugelmo Cavalheiro Dias, a student in the Master of Research in Economics at Sciences Po, and this webpage is dedicated to my Master Thesis.\nMy submitted Master Thesis is available here."
-  },
-  {
-    "objectID": "index.html#overview",
-    "href": "index.html#overview",
-    "title": "Modelling climate impact on economy through health",
-    "section": "Overview",
-    "text": "Overview\nI would like to study the economic effect of temperature variations induced by climate change on health.\nSchematically, I would like to inquire about the red links in the following diagram:\n\n\n\n\n\nflowchart LR\n  A[Climate change] --&gt; B[Temperature distribution]\n  B --&gt; C[Other variables]\n  B --&gt; D[Health of individuals] \n  D --&gt; E[Economic production]\n  C --&gt; E\n\nlinkStyle default stroke:black\nlinkStyle 2 stroke:red\nlinkStyle 3 stroke:red\nstyle D color:red\n\nclassDef linkLabel fill:none,stroke:none;\n\n\n\n\n\n\nA rich literature has identified several channels through which temperature can affect economy, among which we can mention:\n\nMortality\n\nPotential heatwaves could increase the mortality rates, especially for very young or elderly populations.\n\nMorbidity\n\nTemperature shifts could affect the quality of live through a degraded health status.\n\nLabor productivity\n\nHigher or more varying temperatures could reduce the labor productivity for blue and white collars.\n\nAreas liveability\n\nSome regions will become too hot to live in and will cause migration.\n\nCapital productivity\n\nCertain equipements and machines require some temperature to be useable.\n\n\nIn this context, the potential effect of temperature shifts on health is of particular importance. Indeed, not only does it affect the general quality of people’s life, imply new public policy trade-off in the health sector, but it also has several impacts at the individual level. From an economic perspective, expected changes in temperature distribution could lead not only to aggregated utility shocks through a change in global life conditions, but could also lead to different individual choices in terms of labor supply and savings. Given the existing findings, it is also very important to take into consideration the potential interaction effects of these temperature deviation with variable creating heterogeneity in the population, such as base health types, initial income and/or wealth, etc."
-  },
-  {
-    "objectID": "index.html#on-this-website",
-    "href": "index.html#on-this-website",
-    "title": "Modelling climate impact on economy through health",
-    "section": "On this website",
-    "text": "On this website\nFor now, you can find different versions of previous or current prototypic models I am working on in the models page.\nYou can also find my last empirical model here.\nAs I will advance on my Master Thesis, I will try to add additional material, such as work on the literature and empirical data analysis.\nMore will come soon!"
+    "text": "This page is under construction.\nI am Paulo Gugelmo Cavalheiro Dias, and this is the website dedicated to my Master Thesis.\nMy aim with this website is to better communicate my work and ideas. More will come soon !"
   },
   {
     "objectID": "fm_models.html",
@@ -63,10 +63,38 @@
     "text": "Others\nThe demographics notebook can be found here.\nI am also working on some model visualisation. A notebook about it can be found here."
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Modelling climate impact on economy through health",
     "section": "",
-    "text": "This page is under construction.\nI am Paulo Gugelmo Cavalheiro Dias, and this is the website dedicated to my Master Thesis.\nMy aim with this website is to better communicate my work and ideas. More will come soon !"
+    "text": "Hello, I am Paulo Gugelmo Cavalheiro Dias, a student in the Master of Research in Economics at Sciences Po, and this webpage is dedicated to my Master Thesis.\nMy submitted Master Thesis is available here.\nMy presentation slides (currently under work) are available here."
+  },
+  {
+    "objectID": "index.html#overview",
+    "href": "index.html#overview",
+    "title": "Modelling climate impact on economy through health",
+    "section": "Overview",
+    "text": "Overview\nI would like to study the economic effect of temperature variations induced by climate change on health.\nSchematically, I would like to inquire about the red links in the following diagram:\n\n\n\n\n\nflowchart LR\n  A[Climate change] --&gt; B[Temperature distribution]\n  B --&gt; C[Other variables]\n  B --&gt; D[Health of individuals] \n  D --&gt; E[Economic production]\n  C --&gt; E\n\nlinkStyle default stroke:black\nlinkStyle 2 stroke:red\nlinkStyle 3 stroke:red\nstyle D color:red\n\nclassDef linkLabel fill:none,stroke:none;\n\n\n\n\n\n\nA rich literature has identified several channels through which temperature can affect economy, among which we can mention:\n\nMortality\n\nPotential heatwaves could increase the mortality rates, especially for very young or elderly populations.\n\nMorbidity\n\nTemperature shifts could affect the quality of live through a degraded health status.\n\nLabor productivity\n\nHigher or more varying temperatures could reduce the labor productivity for blue and white collars.\n\nAreas liveability\n\nSome regions will become too hot to live in and will cause migration.\n\nCapital productivity\n\nCertain equipements and machines require some temperature to be useable.\n\n\nIn this context, the potential effect of temperature shifts on health is of particular importance. Indeed, not only does it affect the general quality of people’s life, imply new public policy trade-off in the health sector, but it also has several impacts at the individual level. From an economic perspective, expected changes in temperature distribution could lead not only to aggregated utility shocks through a change in global life conditions, but could also lead to different individual choices in terms of labor supply and savings. Given the existing findings, it is also very important to take into consideration the potential interaction effects of these temperature deviation with variable creating heterogeneity in the population, such as base health types, initial income and/or wealth, etc."
+  },
+  {
+    "objectID": "index.html#on-this-website",
+    "href": "index.html#on-this-website",
+    "title": "Modelling climate impact on economy through health",
+    "section": "On this website",
+    "text": "On this website\nFor now, you can find different versions of previous or current prototypic models I am working on in the models page.\nYou can also find my last empirical model here.\nAs I will advance on my Master Thesis, I will try to add additional material, such as work on the literature and empirical data analysis.\nMore will come soon!"
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Here are some of the important bibliographical references I use in the development of my conceptual framework:\n\nDe Nardi et al., 2024: The Lifetime Costs of Bad Health, The Review of Economic Studies. The authors use PSID data to identify different “health types”, that can predict most of the health history through the life of an individual. They point out that a Markov process of order 1 is not enough to capture the change of health status, although using higher orders is resources demanding. THey include a structural model in which they study economic choices of agents, and include several features such as medical insurance and retirement. The article is available here.\nCarleton et al., 2022: Valuing the Global Mortality Consequences of Climate Change Accounting for Adaptation Costs and Benefits, The Quarterly Journal of Economics. The authors include the income as a parameter in the mortality-temperature function, which seems necessary, and develop a conceptual framework to take into account adaptation. The article is available here.\nGould et al., 2024, Temperature extremes impact mortality and morbidity differently, NBER Working Papers. The authors use a Californian dataset including visits at emergency departments to study the response of health to temperature. They also try to differentiate between morbidity, understood as the general state of health, and mortality, associated to the death rate. They point out that the morbidity, for which they use non fatal events leading to an emergency department visit, react differently than mortality. The article is available here."
+  },
+  {
+    "objectID": "Presentation.html",
+    "href": "Presentation.html",
+    "title": "Modelling climate impact on economy through health",
+    "section": "",
+    "text": "This page is dedicated to my presentation.\nIt is currently under construction.\nYou can find my slides here."
   }
 ]

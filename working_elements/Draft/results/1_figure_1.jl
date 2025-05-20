@@ -6,7 +6,7 @@ begin
     default(fontfamily = "Times")
 end
 
-pwd() 
+# pwd() 
 
 default(fontfamily = "Times")
 temperature = CSV.read("working_elements/Empirical_models/temperature.csv", DataFrame)
@@ -42,4 +42,4 @@ tp_plot = Plots.plot(tp.Year,
 
 Plots.plot!(xaxis = "Year", yaxis = "Temperature")
 
-savefig("working_elements/Draft/output/figure_1.png")
+# savefig("working_elements/Draft/output/figure_1.png")
