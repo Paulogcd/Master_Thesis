@@ -9,6 +9,8 @@ ____
 
 My submitted Master Thesis is available [here](./resources/main.pdf).
 
+My presentation slides (currently under work) are available [here](Presentation.qmd).
+
 ## Overview
 
 I would like to study the economic effect of temperature variations induced by climate change on health.

@@ -1,0 +1,33 @@
+---
+title: "Master Thesis: The effect of temperature variation induced health transition on economics"
+author: "Paulo Gugelmo Cavalheiro Dias"
+format: revealjs
+engine: julia
+---
+
+## Introduction
+
+$$\mathbb{E} = c_{t+1}$$
+
+## Some 3D plot
+
+```{=html}
+<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+  <iframe src="resources/transition_from_Excellent.html" width="49%" height="500px" frameborder="0"></iframe>
+  <iframe src="resources/transition_from_Good.html" width="49%" height="500px" frameborder="0"></iframe>
+  <iframe src="resources/transition_from_Fair.html" width="49%" height="500px" frameborder="0"></iframe>
+  <iframe src="resources/transition_from_Poor.html" width="49%" height="500px" frameborder="0"></iframe>
+</div>
+```
+
+## Interactive 3D Plot
+
+```{julia}
+using Plots
+plotly()
+
+# Create a 3D surface plot
+z = [10 * sin(i/10) * cos(j/10) for i in 1:100, j in 1:100]
+p = surface(z, title="Interactive 3D Surface", xlabel="X", ylabel="Y", zlabel="Z")
+display(p)
+```

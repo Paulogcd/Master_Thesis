@@ -1,0 +1,41 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Master Thesis: The effect of temperature variation induced health transition on economics\"\n",
+        "author: \"Paulo Gugelmo Cavalheiro Dias\"\n",
+        "format: revealjs\n",
+        "---\n",
+        "\n",
+        "\n",
+        "## Introduction\n",
+        "\n",
+        "$$\\mathbb{E} = c_{t+1}$$\n",
+        "\n",
+        "## Some 3D plot\n",
+        "\n",
+        "\n",
+        "```{julia}\n",
+        "p = Plots.plot(1:10,1:10)\n",
+        "display(p)\n",
+        "```\n",
+        "\n",
+        "\n",
+        "## "
+      ],
+      "id": "e379cdbb"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
