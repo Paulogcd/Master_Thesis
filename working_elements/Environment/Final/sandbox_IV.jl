@@ -5,7 +5,7 @@ using GLM
 using OrdinalMultinomialModels
 using HypothesisTests
 using RegressionTables
-
+using JLD2
 
 df.HP = df.Blood_Pressure .+ 
     df.Lung_Disease .+ 
@@ -13,6 +13,7 @@ df.HP = df.Blood_Pressure .+
     df.Stroke
 
 df = dropmissing!(df)
+# df = df[df.Year .<= 2018, :]
 
 rename!(df, Dict("av_annual_t" => "Temperature"))
 
@@ -29,13 +30,24 @@ IV_formula = @formula(HP ~
 
 REG1 = lm(IV_formula, df)
 
+function save_regression(REG,name)
+    data_names = propertynames(REG.mf.data)
+    data_types = eltype.(values(REG.mf.data))
+    empty_data = NamedTuple{data_names}(Vector{T}() for T in data_types)
+    REG_clean = deepcopy(REG)
+    REG_clean.mf.data = empty_data
+    JLD2.jldsave("$name.jld2"; REG_clean)
+end
+
+save_regression(REG1,"regression_1")
+
 df.HP_predicted = predict(REG1, df)
 
 # Health transition regression:
 
 #Data: 
 DF = copy(df)
-df_2022 = DF[DF[:,:Year] .== 2022,:]	
+# df_2022 = DF[DF[:,:Year] .== 2022,:]	
 df_2020 = DF[DF[:,:Year] .== 2020,:]
 df_2018 = DF[DF[:,:Year] .== 2018,:]
 df_2016 = DF[DF[:,:Year] .== 2016,:]
@@ -45,7 +57,7 @@ df_2010 = DF[DF[:,:Year] .== 2010,:]
 df_2008 = DF[DF[:,:Year] .== 2008,:]
 df_2006 = DF[DF[:,:Year] .== 2006,:]
 
-df_2022_2020 = leftjoin(df_2022,df_2020, on = :ID, makeunique=true)
+# df_2022_2020 = leftjoin(df_2022,df_2020, on = :ID, makeunique=true)
 df_2020_2018 = leftjoin(df_2020,df_2018, on = :ID, makeunique=true)
 df_2018_2016 = leftjoin(df_2018,df_2016, on = :ID, makeunique=true)
 df_2016_2014 = leftjoin(df_2016,df_2014, on = :ID, makeunique=true)
@@ -53,7 +65,7 @@ df_2014_2012 = leftjoin(df_2014,df_2012, on = :ID, makeunique=true)
 df_2012_2010 = leftjoin(df_2012,df_2010, on = :ID, makeunique=true)
 df_2010_2008 = leftjoin(df_2010,df_2008, on = :ID, makeunique=true)
 
-DF = vcat(df_2022_2020,
+DF = vcat(# df_2022_2020,
         df_2020_2018,
         df_2018_2016,
         df_2016_2014, 
@@ -79,6 +91,8 @@ REG2 =
         DF, 
         LogitLink())
 
+save_regression(REG2,"regression_2")
+
 # Survival probability: 
 
 survival_equation = @formula(Status ~
@@ -89,6 +103,8 @@ REG3 = GLM.glm(survival_equation,
     DF,
     Bernoulli(),
     LogitLink())
+
+save_regression(REG3,"regression_2")
 
 # Print Regression Tables
 # latex_output = regtable(REG1; 
