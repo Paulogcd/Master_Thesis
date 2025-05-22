@@ -1,27 +1,28 @@
 ---
 title: "The effect of temperature-induced health variation on economics"
 author: "Paulo Gugelmo Cavalheiro Dias"
+date: today
+institute: "Sciences Po"
+toc: true
+toc-title: "Outline"
+toc-depth: 1
+smaller	: false
+
+slide-number: true
+show-slide-number: all
 format:
   revealjs:
     number-sections: true
     mathjax: true
+    include-after-body: header.html
 
 engine: julia
 mainfont: Times
-toc: true
 ---
 
-## Outline
+# Introduction 
 
-1. Introduction 
-2. Setting 
-3. Estimation methods
-4. Optimization program
-5. Numerical results 
-6. Comparison 
-7. Conclusion
-
-## Research topic 
+## Research object
 
 ```{mermaid}
 flowchart LR
@@ -47,7 +48,7 @@ Health of individuals:
 *How does temperature variations affect
 the economy through health?*
 
-## Literature 
+## Literature{#literature} 
 
 - Climate economics 
 
@@ -61,7 +62,9 @@ Literature gap: climate AND health on industrialized context.
 
 - Running an economic model to estimate the lifetime income loss due to temperature variations.
 
-## Setting
+# Setting
+
+## Formal description{#formal_description}
 
 At each period, agents draw health $H_{t}$ and living status $L_{t}$: 
 
@@ -80,7 +83,7 @@ We can also define the two history vectors:
   \mathcal{W}_t \equiv (W_1, W_2, \dots, W_t)
 \end{equation}
 
-[link to underlying assumptions]
+[More on underlying assumptions.](#framework_assumptions)
 
 ## Data 
 
@@ -96,8 +99,9 @@ We can also define the two history vectors:
 
 :::
 
+# Estimation method
 
-## Estimation method
+## History Simplification
 
 The general relationships: 
 
@@ -118,7 +122,7 @@ become:
   L_t \sim \mathcal{B}(p_t)\text{ | } p_{t}\equiv p_{t}({H}_t, {T}_t)
 \end{equation}
 
-## Estimation method
+## Health transition
 
 Sample space of Health: 
 $\Omega(H_{t}) \equiv [\![1,5]\!]$
@@ -135,12 +139,12 @@ Let $X_{H} \equiv (Age_{t}, T_{t}, Age_{t}\times T_{t}, H_{t-1})^{T}$
   \widehat{H_{t}} \sim \Lambda_{O}(\widehat{\beta_H}\cdot X_{H})
 \end{equation}
 
-[More about the Ordered Multinomial Logit Model]
+[More about it](#ordered_multinomial_logit_regression_details)
 
-## Estimation method
+## Living Status
 
 Sample space of living status: 
-$\Omega(L_{t}) = \{0,1\}$
+$\Omega(L_{t}) \equiv \{0,1\}$
 
 Logistic regression
 
@@ -154,11 +158,12 @@ Let $X_{L} \equiv (H_{t},Age_{t},T_{t},H_{t}\times Age_{t} \times T_{t})^{T}$
   \widehat{L_t} = \Lambda  (\widehat{\beta_L}\cdot X_{L})
 \end{equation}
 
-[More about the Logit Model]
+[More about it](#logit_model_details)
 
-## Alternative regression: Health Proxy regression
+## Health Proxy {#health_proxy_details}
 
-In the submitted version of my work, I define the health proxy $HP$, and use its estimate,
+In the submitted version of my work, I define the health proxy
+$HP_{i,t}$, and use its estimate, $\widehat{HP_{i,t}^{I}}$
 which leads to: 
 
 \begin{equation}\tag{1.4}
@@ -168,7 +173,7 @@ which leads to:
 \end{equation}
 
 \begin{equation}\tag{2.4}
-  \widehat{H_{i,t}} = \Lambda_{0} \left( \widehat{\beta_0} +
+  \widehat{H_{i,t}^{I}} = \Lambda_{0} \left( \widehat{\beta_0} +
     \widehat{\beta_{H}} \cdot Health_{i,t} +
     \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I} \right)
 \end{equation}
@@ -177,24 +182,15 @@ which leads to:
 
 - Focus on acute health events 
 
-- Final results are essentially the same
+- Final results are essentially the same ([More about it](#health_proxy_details)).
 
-[More about it]
-$HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}$,
-
-## Health transition - 1 
+## Health transition {.scrollable}
 
 ```{=html}
-<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+<div style="display: flex; flex-wrap: wrap; justify-content: center;">
   <iframe src="resources/transition_from_Excellent.html" width="49%" height="500px" frameborder="0"></iframe>
+  <iframe src="resources/transition_from_Very Good.html" width="49%" height="500px" frameborder="0"></iframe>
   <iframe src="resources/transition_from_Good.html" width="49%" height="500px" frameborder="0"></iframe>
-</div>
-```
-
-## Health transition - 2
-
-```{=html}
-<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
   <iframe src="resources/transition_from_Fair.html" width="49%" height="500px" frameborder="0"></iframe>
   <iframe src="resources/transition_from_Poor.html" width="49%" height="500px" frameborder="0"></iframe>
 </div>
@@ -226,20 +222,21 @@ Analytical solution inexistence.
 
 [Proof]
 
-## Numerical methods 
+# Numerical methods 
 
-How to show? 
+## Algorithms 
 
-## Comparison
+I have different ways of solving it numerically, 
+and it does matter for the results.
 
-Three temperature trajectories: 
+- list of algorithms 
+- performance 
 
-- Historical path: 0 to 1.5
-- Optimistic path: 0.5 to 2.00
-- Intermediate path: 0.5 to 3.00
-- Pessimistic path: 0.5 to 4.00
+- results: comparison, and interpretation of the general result idea.
 
-Methodology: 
+# Results
+
+## Methodology: 
 Taking different path, running the model, and comparing: 
 
 - health, 
@@ -251,4 +248,38 @@ Taking different path, running the model, and comparing:
 
 Focus on one statistics: lifetime income. 
 
-## Conclusion: 
+## Temperature trajectories
+
+Three temperature trajectories: 
+
+- Historical path: 0 to 1.5
+- Optimistic path: 0.5 to 2.00
+- Intermediate path: 0.5 to 3.00
+- Pessimistic path: 0.5 to 4.00
+
+## Discussion
+
+# Conclusion
+
+## Recap 
+## Results 
+
+# References 
+
+# Appendix
+
+## General framework assumptions{#framework_assumptions}
+
+- Independence assumption
+
+
+[Initial slide](#formal_description)
+
+## Health Proxy specification {#health_proxy_details}
+
+$HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}$
+
+[Go back]{#health_proxy}
+
+## Ordered Multinomial Logit Regression {#ordered_multinomial_logit_regression_details}
+

@@ -13,6 +13,7 @@
   <meta name="generator" content="quarto-1.6.40">
 
   <meta name="author" content="Paulo Gugelmo Cavalheiro Dias">
+  <meta name="dcterms.date" content="2025-05-22">
   <title>Modelling climate impact on economy through health – The effect of temperature-induced health variation on economics</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -140,48 +141,35 @@
 <div class="quarto-title-author-name">
 Paulo Gugelmo Cavalheiro Dias 
 </div>
-</div>
+        <p class="quarto-title-affiliation">
+            Sciences Po
+          </p>
+    </div>
 </div>
 
+  <p class="date">2025-05-22</p>
 </section><section id="TOC">
 <nav role="doc-toc"> 
-<h2 id="toc-title">Table of contents</h2>
+<h2 id="toc-title">Outline</h2>
 <ul>
-<li><a href="#/outline" id="/toc-outline"><span class="header-section-number">1</span> Outline</a></li>
-<li><a href="#/research-topic" id="/toc-research-topic"><span class="header-section-number">2</span> Research topic</a></li>
-<li><a href="#/literature" id="/toc-literature"><span class="header-section-number">3</span> Literature</a></li>
-<li><a href="#/research-strategy" id="/toc-research-strategy"><span class="header-section-number">4</span> Research strategy</a></li>
-<li><a href="#/setting" id="/toc-setting"><span class="header-section-number">5</span> Setting</a></li>
-<li><a href="#/data" id="/toc-data"><span class="header-section-number">6</span> Data</a></li>
-<li><a href="#/estimation-method" id="/toc-estimation-method"><span class="header-section-number">7</span> Estimation method</a></li>
-<li><a href="#/estimation-method-1" id="/toc-estimation-method-1"><span class="header-section-number">8</span> Estimation method</a></li>
-<li><a href="#/estimation-method-2" id="/toc-estimation-method-2"><span class="header-section-number">9</span> Estimation method</a></li>
-<li><a href="#/alternative-regression-health-proxy-regression" id="/toc-alternative-regression-health-proxy-regression"><span class="header-section-number">10</span> Alternative regression: Health Proxy regression</a></li>
-<li><a href="#/health-transition---1" id="/toc-health-transition---1"><span class="header-section-number">11</span> Health transition - 1</a></li>
-<li><a href="#/health-transition---2" id="/toc-health-transition---2"><span class="header-section-number">12</span> Health transition - 2</a></li>
-<li><a href="#/survival-probability" id="/toc-survival-probability"><span class="header-section-number">13</span> Survival probability</a></li>
-<li><a href="#/economic-model" id="/toc-economic-model"><span class="header-section-number">14</span> Economic model</a></li>
-<li><a href="#/first-order-conditions" id="/toc-first-order-conditions"><span class="header-section-number">15</span> First Order Conditions</a></li>
-<li><a href="#/numerical-methods" id="/toc-numerical-methods"><span class="header-section-number">16</span> Numerical methods</a></li>
-<li><a href="#/comparison" id="/toc-comparison"><span class="header-section-number">17</span> Comparison</a></li>
-<li><a href="#/conclusion" id="/toc-conclusion"><span class="header-section-number">18</span> Conclusion:</a></li>
+<li><a href="#/introduction" id="/toc-introduction"><span class="header-section-number">1</span> Introduction</a></li>
+<li><a href="#/setting" id="/toc-setting"><span class="header-section-number">2</span> Setting</a></li>
+<li><a href="#/estimation-method" id="/toc-estimation-method"><span class="header-section-number">3</span> Estimation method</a></li>
+<li><a href="#/numerical-methods" id="/toc-numerical-methods"><span class="header-section-number">4</span> Numerical methods</a></li>
+<li><a href="#/results" id="/toc-results"><span class="header-section-number">5</span> Results</a></li>
+<li><a href="#/conclusion" id="/toc-conclusion"><span class="header-section-number">6</span> Conclusion</a></li>
+<li><a href="#/references" id="/toc-references"><span class="header-section-number">7</span> References</a></li>
+<li><a href="#/appendix" id="/toc-appendix"><span class="header-section-number">8</span> Appendix</a></li>
 </ul>
 </nav>
 </section>
-<section id="outline" class="slide level2" data-number="1">
-<h2><span class="header-section-number">1</span> Outline</h2>
-<ol type="1">
-<li>Introduction</li>
-<li>Setting</li>
-<li>Estimation methods</li>
-<li>Optimization program</li>
-<li>Numerical results</li>
-<li>Comparison</li>
-<li>Conclusion</li>
-</ol>
+<section>
+<section id="introduction" class="title-slide slide level1 center" data-number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+
 </section>
-<section id="research-topic" class="slide level2" data-number="2">
-<h2><span class="header-section-number">2</span> Research topic</h2>
+<section id="research-object" class="slide level2" data-number="1.1">
+<h2><span class="header-section-number">1.1</span> Research object</h2>
 <div class="cell" data-reveal="true" data-layout-align="default">
 <div class="cell-output-display">
 <div>
@@ -213,23 +201,28 @@ classDef linkLabel fill:none,stroke:none;
 </ul>
 <p><em>How does temperature variations affect the economy through health?</em></p>
 </section>
-<section id="literature" class="slide level2" data-number="3">
-<h2><span class="header-section-number">3</span> Literature</h2>
+<section id="literature" class="slide level2" data-number="1.2">
+<h2><span class="header-section-number">1.2</span> Literature</h2>
 <ul>
 <li><p>Climate economics</p></li>
 <li><p>Health economics</p></li>
 </ul>
 <p>Literature gap: climate AND health on industrialized context.</p>
 </section>
-<section id="research-strategy" class="slide level2" data-number="4">
-<h2><span class="header-section-number">4</span> Research strategy</h2>
+<section id="research-strategy" class="slide level2" data-number="1.3">
+<h2><span class="header-section-number">1.3</span> Research strategy</h2>
 <ul>
 <li><p>Defining a Setting</p></li>
 <li><p>Running an economic model to estimate the lifetime income loss due to temperature variations.</p></li>
 </ul>
+</section></section>
+<section>
+<section id="setting" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> Setting</h1>
+
 </section>
-<section id="setting" class="slide level2" data-number="5">
-<h2><span class="header-section-number">5</span> Setting</h2>
+<section id="formal_description" class="slide level2" data-number="2.1">
+<h2><span class="header-section-number">2.1</span> Formal description</h2>
 <p>At each period, agents draw health <span class="math inline">\(H_{t}\)</span> and living status <span class="math inline">\(L_{t}\)</span>:</p>
 <p><span class="math display">\[\begin{equation}\tag{1}
   H_t \sim f_h(\mathcal{H}_{t-1}, \mathcal{W}_t)
@@ -241,10 +234,10 @@ classDef linkLabel fill:none,stroke:none;
 \end{equation}\]</span> <span class="math display">\[\begin{equation}\tag{4}
   \mathcal{W}_t \equiv (W_1, W_2, \dots, W_t)
 \end{equation}\]</span></p>
-<p>[link to underlying assumptions]</p>
+<p><a href="#/framework_assumptions">More on underlying assumptions.</a></p>
 </section>
-<section id="data" class="slide level2" data-number="6">
-<h2><span class="header-section-number">6</span> Data</h2>
+<section id="data" class="slide level2" data-number="2.2">
+<h2><span class="header-section-number">2.2</span> Data</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
@@ -261,9 +254,14 @@ classDef linkLabel fill:none,stroke:none;
 </figure>
 </div>
 </div></div>
+</section></section>
+<section>
+<section id="estimation-method" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> Estimation method</h1>
+
 </section>
-<section id="estimation-method" class="slide level2" data-number="7">
-<h2><span class="header-section-number">7</span> Estimation method</h2>
+<section id="history-simplification" class="slide level2" data-number="3.1">
+<h2><span class="header-section-number">3.1</span> History Simplification</h2>
 <p>The general relationships:</p>
 <p><span class="math display">\[\begin{equation}\tag{1}
   H_t \sim f_h(\mathcal{H}_{t-1}, \mathcal{W}_t)
@@ -278,8 +276,8 @@ classDef linkLabel fill:none,stroke:none;
   L_t \sim \mathcal{B}(p_t)\text{ | } p_{t}\equiv p_{t}({H}_t, {T}_t)
 \end{equation}\]</span></p>
 </section>
-<section id="estimation-method-1" class="slide level2" data-number="8">
-<h2><span class="header-section-number">8</span> Estimation method</h2>
+<section id="health-transition" class="slide level2" data-number="3.2">
+<h2><span class="header-section-number">3.2</span> Health transition</h2>
 <p>Sample space of Health: <span class="math inline">\(\Omega(H_{t}) \equiv [\![1,5]\!]\)</span></p>
 <p>Ordered Multinomial Logit Model</p>
 <p><span class="math display">\[\begin{equation}\tag{1.1}
@@ -289,11 +287,11 @@ classDef linkLabel fill:none,stroke:none;
 <p><span class="math display">\[\begin{equation}\tag{1.3}
   \widehat{H_{t}} \sim \Lambda_{O}(\widehat{\beta_H}\cdot X_{H})
 \end{equation}\]</span></p>
-<p>[More about the Ordered Multinomial Logit Model]</p>
+<p><a href="#/ordered_multinomial_logit_regression_details">More about it</a></p>
 </section>
-<section id="estimation-method-2" class="slide level2" data-number="9">
-<h2><span class="header-section-number">9</span> Estimation method</h2>
-<p>Sample space of living status: <span class="math inline">\(\Omega(L_{t}) = \{0,1\}\)</span></p>
+<section id="living-status" class="slide level2" data-number="3.3">
+<h2><span class="header-section-number">3.3</span> Living Status</h2>
+<p>Sample space of living status: <span class="math inline">\(\Omega(L_{t}) \equiv \{0,1\}\)</span></p>
 <p>Logistic regression</p>
 <p><span class="math display">\[\begin{equation}\tag{2.1}
   L_t \sim \mathcal{B}(p_t)\text{ | } p_{t}\equiv p_{t}({H}_t, {T}_t)
@@ -302,54 +300,49 @@ classDef linkLabel fill:none,stroke:none;
 <p><span class="math display">\[\begin{equation}\tag{2.3}
   \widehat{L_t} = \Lambda  (\widehat{\beta_L}\cdot X_{L})
 \end{equation}\]</span></p>
-<p>[More about the Logit Model]</p>
+<p><a href="#/logit_model_details">More about it</a></p>
 </section>
-<section id="alternative-regression-health-proxy-regression" class="slide level2" data-number="10">
-<h2><span class="header-section-number">10</span> Alternative regression: Health Proxy regression</h2>
-<p>In the submitted version of my work, I define the health proxy <span class="math inline">\(HP\)</span>, and use its estimate, which leads to:</p>
+<section id="health_proxy_details" class="slide level2" data-number="3.4">
+<h2><span class="header-section-number">3.4</span> Health Proxy</h2>
+<p>In the submitted version of my work, I define the health proxy <span class="math inline">\(HP_{i,t}\)</span>, and use its estimate, <span class="math inline">\(\widehat{HP_{i,t}^{I}}\)</span> which leads to:</p>
 <p><span class="math display">\[\begin{equation}\tag{1.4}
   \widehat{p_{i,t}} = \Lambda \left( \widehat{\beta_0} +
     \widehat{\beta_{H}} \cdot Health_{i,t} +
     \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I} \right)
 \end{equation}\]</span></p>
 <p><span class="math display">\[\begin{equation}\tag{2.4}
-  \widehat{H_{i,t}} = \Lambda_{0} \left( \widehat{\beta_0} +
+  \widehat{H_{i,t}^{I}} = \Lambda_{0} \left( \widehat{\beta_0} +
     \widehat{\beta_{H}} \cdot Health_{i,t} +
     \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I} \right)
 \end{equation}\]</span></p>
 <ul>
 <li><p>Motivation: Eliminate outer effects.</p></li>
 <li><p>Focus on acute health events</p></li>
-<li><p>Final results are essentially the same</p></li>
+<li><p>Final results are essentially the same (<a href="#/health_proxy_details">More about it</a>).</p></li>
 </ul>
-<p>[More about it] <span class="math inline">\(HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}\)</span>,</p>
 </section>
-<section id="health-transition---1" class="slide level2" data-number="11">
-<h2><span class="header-section-number">11</span> Health transition - 1</h2>
-<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+<section id="health-transition-1" class="slide level2 scrollable" data-number="3.5">
+<h2><span class="header-section-number">3.5</span> Health transition</h2>
+<div style="display: flex; flex-wrap: wrap; justify-content: center;">
   <iframe src="resources/transition_from_Excellent.html" width="49%" height="500px" frameborder="0"></iframe>
+  <iframe src="resources/transition_from_Very Good.html" width="49%" height="500px" frameborder="0"></iframe>
   <iframe src="resources/transition_from_Good.html" width="49%" height="500px" frameborder="0"></iframe>
-</div>
-</section>
-<section id="health-transition---2" class="slide level2" data-number="12">
-<h2><span class="header-section-number">12</span> Health transition - 2</h2>
-<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
   <iframe src="resources/transition_from_Fair.html" width="49%" height="500px" frameborder="0"></iframe>
   <iframe src="resources/transition_from_Poor.html" width="49%" height="500px" frameborder="0"></iframe>
 </div>
 </section>
-<section id="survival-probability" class="slide level2" data-number="13">
-<h2><span class="header-section-number">13</span> Survival probability</h2>
+<section id="survival-probability" class="slide level2" data-number="3.6">
+<h2><span class="header-section-number">3.6</span> Survival probability</h2>
 </section>
-<section id="economic-model" class="slide level2" data-number="14">
-<h2><span class="header-section-number">14</span> Economic model</h2>
+<section id="economic-model" class="slide level2" data-number="3.7">
+<h2><span class="header-section-number">3.7</span> Economic model</h2>
 <p><span class="math display">\[ \max_{\{c_{t},l_{t},s_{t+1}\}_{t=1}^{100}}{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot \left(\frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\varphi}}{1+\varphi}\right)\right]}\]</span></p>
 <p>subject to:</p>
 <p><span class="math display">\[c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})\]</span></p>
 <p><span class="math display">\[s_{t+1}\geq \underline{s}, \forall t \in [\![1,100]\!]\]</span></p>
 </section>
-<section id="first-order-conditions" class="slide level2" data-number="15">
-<h2><span class="header-section-number">15</span> First Order Conditions</h2>
+<section id="first-order-conditions" class="slide level2" data-number="3.8">
+<h2><span class="header-section-number">3.8</span> First Order Conditions</h2>
 <p><span class="math display">\[\begin{equation}\tag{F.O.C. 1}
   c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi}
 \end{equation}\]</span></p>
@@ -358,21 +351,29 @@ classDef linkLabel fill:none,stroke:none;
 \end{equation}\]</span></p>
 <p>Analytical solution inexistence.</p>
 <p>[Proof]</p>
+</section></section>
+<section>
+<section id="numerical-methods" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> Numerical methods</h1>
+
 </section>
-<section id="numerical-methods" class="slide level2" data-number="16">
-<h2><span class="header-section-number">16</span> Numerical methods</h2>
-<p>How to show?</p>
-</section>
-<section id="comparison" class="slide level2" data-number="17">
-<h2><span class="header-section-number">17</span> Comparison</h2>
-<p>Three temperature trajectories:</p>
+<section id="algorithms" class="slide level2" data-number="4.1">
+<h2><span class="header-section-number">4.1</span> Algorithms</h2>
+<p>I have different ways of solving it numerically, and it does matter for the results.</p>
 <ul>
-<li>Historical path: 0 to 1.5</li>
-<li>Optimistic path: 0.5 to 2.00</li>
-<li>Intermediate path: 0.5 to 3.00</li>
-<li>Pessimistic path: 0.5 to 4.00</li>
+<li><p>list of algorithms</p></li>
+<li><p>performance</p></li>
+<li><p>results: comparison, and interpretation of the general result idea.</p></li>
 </ul>
-<p>Methodology: Taking different path, running the model, and comparing:</p>
+</section></section>
+<section>
+<section id="results" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> Results</h1>
+
+</section>
+<section id="methodology" class="slide level2" data-number="5.1">
+<h2><span class="header-section-number">5.1</span> Methodology:</h2>
+<p>Taking different path, running the model, and comparing:</p>
 <ul>
 <li>health,</li>
 <li>survival,</li>
@@ -385,11 +386,57 @@ classDef linkLabel fill:none,stroke:none;
 </ul>
 <p>Focus on one statistics: lifetime income.</p>
 </section>
-<section id="conclusion" class="slide level2" data-number="18">
-<h2><span class="header-section-number">18</span> Conclusion:</h2>
-
+<section id="temperature-trajectories" class="slide level2" data-number="5.2">
+<h2><span class="header-section-number">5.2</span> Temperature trajectories</h2>
+<p>Three temperature trajectories:</p>
+<ul>
+<li>Historical path: 0 to 1.5</li>
+<li>Optimistic path: 0.5 to 2.00</li>
+<li>Intermediate path: 0.5 to 3.00</li>
+<li>Pessimistic path: 0.5 to 4.00</li>
+</ul>
+</section>
+<section id="discussion" class="slide level2" data-number="5.3">
+<h2><span class="header-section-number">5.3</span> Discussion</h2>
+</section></section>
+<section>
+<section id="conclusion" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> Conclusion</h1>
 
 </section>
+<section id="recap" class="slide level2" data-number="6.1">
+<h2><span class="header-section-number">6.1</span> Recap</h2>
+</section>
+<section id="results-1" class="slide level2" data-number="6.2">
+<h2><span class="header-section-number">6.2</span> Results</h2>
+</section></section>
+<section id="references" class="title-slide slide level1 center" data-number="7">
+<h1><span class="header-section-number">7</span> References</h1>
+
+</section>
+
+<section>
+<section id="appendix" class="title-slide slide level1 center" data-number="8">
+<h1><span class="header-section-number">8</span> Appendix</h1>
+
+</section>
+<section id="framework_assumptions" class="slide level2" data-number="8.1">
+<h2><span class="header-section-number">8.1</span> General framework assumptions</h2>
+<ul>
+<li>Independence assumption</li>
+</ul>
+<p><a href="#/formal_description">Initial slide</a></p>
+</section>
+<section id="health_proxy_details" class="slide level2" data-number="8.2">
+<h2><span class="header-section-number">8.2</span> Health Proxy specification</h2>
+<p><span class="math inline">\(HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}\)</span></p>
+<p><span id="health_proxy">Go back</span></p>
+</section>
+<section id="ordered_multinomial_logit_regression_details" class="slide level2" data-number="8.3">
+<h2><span class="header-section-number">8.3</span> Ordered Multinomial Logit Regression</h2>
+
+
+</section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
@@ -446,7 +493,7 @@ classDef linkLabel fill:none,stroke:none;
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',
@@ -605,6 +652,45 @@ classDef linkLabel fill:none,stroke:none;
         ]
       });
     </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const header = document.createElement('div');
+      header.className = 'slide-header';
+      document.querySelector('.reveal').appendChild(header);
+      
+      function updateHeader() {
+        const currentSlide = Reveal.getCurrentSlide();
+        
+        // Walk up the DOM to find the nearest top-level section
+        let parentSection = currentSlide;
+        while (parentSection && !parentSection.parentNode.classList.contains('slides')) {
+          parentSection = parentSection.parentNode.closest('section');
+        }
+        
+        // Get the title (looking first for h1, then h2)
+        const titleElement = parentSection?.querySelector('h1, h2');
+        header.textContent = titleElement?.textContent || '';
+      }
+      
+      Reveal.on('slidechanged', updateHeader);
+      Reveal.on('ready', updateHeader);
+    });
+    </script>
+
+    <style>
+    .slide-header {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      color: rgba(100, 100, 100, 0.6); /* Faded grey */
+      font-size: 0.65em;
+      font-weight: 400;
+      z-index: 10;
+      pointer-events: none;
+      text-transform: uppercase; /* Optional for discreet style */
+      letter-spacing: 1px; /* Optional for better readability */
+    }
+    </style>
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {

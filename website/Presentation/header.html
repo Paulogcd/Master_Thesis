@@ -1,0 +1,39 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const header = document.createElement('div');
+  header.className = 'slide-header';
+  document.querySelector('.reveal').appendChild(header);
+  
+  function updateHeader() {
+    const currentSlide = Reveal.getCurrentSlide();
+    
+    // Walk up the DOM to find the nearest top-level section
+    let parentSection = currentSlide;
+    while (parentSection && !parentSection.parentNode.classList.contains('slides')) {
+      parentSection = parentSection.parentNode.closest('section');
+    }
+    
+    // Get the title (looking first for h1, then h2)
+    const titleElement = parentSection?.querySelector('h1, h2');
+    header.textContent = titleElement?.textContent || '';
+  }
+  
+  Reveal.on('slidechanged', updateHeader);
+  Reveal.on('ready', updateHeader);
+});
+</script>
+
+<style>
+.slide-header {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  color: rgba(100, 100, 100, 0.6); /* Faded grey */
+  font-size: 0.65em;
+  font-weight: 400;
+  z-index: 10;
+  pointer-events: none;
+  text-transform: uppercase; /* Optional for discreet style */
+  letter-spacing: 1px; /* Optional for better readability */
+}
+</style>

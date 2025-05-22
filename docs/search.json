@@ -101,8 +101,8 @@
     "objectID": "Presentation/presentation.html#outline",
     "href": "Presentation/presentation.html#outline",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "1 Outline",
-    "text": "1 Outline\n\nIntroduction\nSetting\nEstimation methods\nOptimization program\nNumerical results\nComparison\nConclusion"
+    "section": "0.1 Outline",
+    "text": "0.1 Outline\nthis and that 1. Introduction 2. Setting 3. Estimation methods 4. Optimization program 5. Numerical results 6. Comparison 7. Conclusion"
   },
   {
     "objectID": "Presentation/presentation.html#setting",
@@ -115,8 +115,8 @@
     "objectID": "Presentation/presentation.html#data",
     "href": "Presentation/presentation.html#data",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "6 Data",
-    "text": "6 Data\n\n\n\n\n\nDistribution of Health status across years, in the HRS data.\n\n\n\n\n\n\nAverage annual temperature and its 95% confidence interval, in the Berkeley data."
+    "section": "2.2 Data",
+    "text": "2.2 Data\n\n\n\n\n\nDistribution of Health status across years, in the HRS data.\n\n\n\n\n\n\nAverage annual temperature and its 95% confidence interval, in the Berkeley data."
   },
   {
     "objectID": "Presentation/presentation.html#estimates",
@@ -136,15 +136,15 @@
     "objectID": "Presentation/presentation.html#research-topic",
     "href": "Presentation/presentation.html#research-topic",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "2 Research topic",
-    "text": "2 Research topic\n\n\n\n\n\nflowchart LR\n  A[Climate change] --&gt; B[Temperature distribution]\n  B --&gt; C[Other variables]\n  B --&gt; D[Health of individuals] \n  D --&gt; E[Economic production]\n  C --&gt; E\n\nlinkStyle default stroke:black\nlinkStyle 2 stroke:red\nlinkStyle 3 stroke:red\nstyle D color:red\n\nclassDef linkLabel fill:none,stroke:none;\n\n\n\n\n\n\nHealth of individuals:\n\nHealth state\nSurvival probability\n\nHow does temperature variations affect the economy through health?"
+    "section": "1.1 Research topic",
+    "text": "1.1 Research topic\n\n\n\n\n\nflowchart LR\n  A[Climate change] --&gt; B[Temperature distribution]\n  B --&gt; C[Other variables]\n  B --&gt; D[Health of individuals] \n  D --&gt; E[Economic production]\n  C --&gt; E\n\nlinkStyle default stroke:black\nlinkStyle 2 stroke:red\nlinkStyle 3 stroke:red\nstyle D color:red\n\nclassDef linkLabel fill:none,stroke:none;\n\n\n\n\n\n\nHealth of individuals:\n\nHealth state\nSurvival probability\n\nHow does temperature variations affect the economy through health?"
   },
   {
     "objectID": "Presentation/presentation.html#literature",
     "href": "Presentation/presentation.html#literature",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "3 Literature",
-    "text": "3 Literature\n\nClimate economics\nHealth economics\n\nLiterature gap: climate AND health on industrialized context."
+    "section": "1.2 Literature",
+    "text": "1.2 Literature\n\nClimate economics\nHealth economics\n\nLiterature gap: climate AND health on industrialized context."
   },
   {
     "objectID": "Presentation/presentation.html#healh-and-life-draw",
@@ -157,8 +157,8 @@
     "objectID": "Presentation/presentation.html#research-strategy",
     "href": "Presentation/presentation.html#research-strategy",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "4 Research strategy",
-    "text": "4 Research strategy\n\nDefining a Setting\nRunning an economic model to estimate the lifetime income loss due to temperature variations."
+    "section": "1.3 Research strategy",
+    "text": "1.3 Research strategy\n\nDefining a Setting\nRunning an economic model to estimate the lifetime income loss due to temperature variations."
   },
   {
     "objectID": "Presentation/presentation.html#estimation-method-definition-simplification",
@@ -192,77 +192,196 @@
     "objectID": "Presentation/presentation.html#alternative-regression-health-proxy-regression",
     "href": "Presentation/presentation.html#alternative-regression-health-proxy-regression",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "10 Alternative regression: Health Proxy regression",
-    "text": "10 Alternative regression: Health Proxy regression\nIn the submitted version of my work, I define the health proxy \\(HP\\), and use its estimate, which leads to:\n\\[\\begin{equation}\\tag{1.4}\n  \\widehat{p_{i,t}} = \\Lambda \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot Health_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP}_{i,t}^{I} \\right)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.4}\n  \\widehat{H_{i,t}} = \\Lambda_{0} \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot Health_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP}_{i,t}^{I} \\right)\n\\end{equation}\\]\n\nMotivation: Eliminate outer effects.\nFocus on acute health events\nFinal results are essentially the same\n\n[More about it] \\(HP_{i,t} = \\text{HighBP}_{i,t} + \\text{Lung}_{i,t} + \\text{Heart}_{i,t} + \\text{Stroke}_{i,t}\\),"
+    "section": "3.4 Alternative regression: Health Proxy regression",
+    "text": "3.4 Alternative regression: Health Proxy regression\nIn the submitted version of my work, I define the health proxy \\(HP\\), and use its estimate, which leads to:\n\\[\\begin{equation}\\tag{1.4}\n  \\widehat{p_{i,t}} = \\Lambda \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot Health_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP}_{i,t}^{I} \\right)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.4}\n  \\widehat{H_{i,t}} = \\Lambda_{0} \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot Health_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP}_{i,t}^{I} \\right)\n\\end{equation}\\]\n\nMotivation: Eliminate outer effects.\nFocus on acute health events\nFinal results are essentially the same\n\n[More about it] \\(HP_{i,t} = \\text{HighBP}_{i,t} + \\text{Lung}_{i,t} + \\text{Heart}_{i,t} + \\text{Stroke}_{i,t}\\),"
   },
   {
     "objectID": "Presentation/presentation.html#health-transition",
     "href": "Presentation/presentation.html#health-transition",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "11 Health transition",
-    "text": "11 Health transition"
+    "section": "3.2 Health transition",
+    "text": "3.2 Health transition\nSample space of Health: \\(\\Omega(H_{t}) \\equiv [\\![1,5]\\!]\\)\nOrdered Multinomial Logit Model\n\\[\\begin{equation}\\tag{1.1}\n  H_t \\sim f_h({H}_{t-1}, {T}_t)\n\\end{equation}\\]\nLet \\(X_{H} \\equiv (Age_{t}, T_{t}, Age_{t}\\times T_{t}, H_{t-1})^{T}\\)\n\\[\\begin{equation}\\tag{1.3}\n  \\widehat{H_{t}} \\sim \\Lambda_{O}(\\widehat{\\beta_H}\\cdot X_{H})\n\\end{equation}\\]\nMore about it"
   },
   {
     "objectID": "Presentation/presentation.html#health-transition-1",
     "href": "Presentation/presentation.html#health-transition-1",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "12 Health transition",
-    "text": "12 Health transition"
+    "section": "3.5 Health transition",
+    "text": "3.5 Health transition"
   },
   {
     "objectID": "Presentation/presentation.html#health-transition---1",
     "href": "Presentation/presentation.html#health-transition---1",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "11 Health transition - 1",
-    "text": "11 Health transition - 1"
+    "section": "3.5 Health transition - 1",
+    "text": "3.5 Health transition - 1"
   },
   {
     "objectID": "Presentation/presentation.html#health-transition---2",
     "href": "Presentation/presentation.html#health-transition---2",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "12 Health transition - 2",
-    "text": "12 Health transition - 2"
+    "section": "3.6 Health transition - 2",
+    "text": "3.6 Health transition - 2"
   },
   {
     "objectID": "Presentation/presentation.html#survival-probability",
     "href": "Presentation/presentation.html#survival-probability",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "13 Survival probability",
-    "text": "13 Survival probability"
+    "section": "3.6 Survival probability",
+    "text": "3.6 Survival probability"
   },
   {
     "objectID": "Presentation/presentation.html#economic-model",
     "href": "Presentation/presentation.html#economic-model",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "14 Economic model",
-    "text": "14 Economic model\n\\[ \\max_{\\{c_{t},l_{t},s_{t+1}\\}_{t=1}^{100}}{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\left(\\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right)\\right]}\\]\nsubject to:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\]\n\\[s_{t+1}\\geq \\underline{s}, \\forall t \\in [\\![1,100]\\!]\\]"
+    "section": "3.7 Economic model",
+    "text": "3.7 Economic model\n\\[ \\max_{\\{c_{t},l_{t},s_{t+1}\\}_{t=1}^{100}}{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\left(\\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right)\\right]}\\]\nsubject to:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\]\n\\[s_{t+1}\\geq \\underline{s}, \\forall t \\in [\\![1,100]\\!]\\]"
   },
   {
     "objectID": "Presentation/presentation.html#first-order-conditions",
     "href": "Presentation/presentation.html#first-order-conditions",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "15 First Order Conditions",
-    "text": "15 First Order Conditions\n\\[\\begin{equation}\\tag{F.O.C. 1}\n  c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{F.O.C. 2}\n  c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\]\nAnalytical solution inexistence.\n[Proof]"
+    "section": "3.8 First Order Conditions",
+    "text": "3.8 First Order Conditions\n\\[\\begin{equation}\\tag{F.O.C. 1}\n  c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{F.O.C. 2}\n  c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\]\nAnalytical solution inexistence.\n[Proof]"
   },
   {
     "objectID": "Presentation/presentation.html#numerical-methods",
     "href": "Presentation/presentation.html#numerical-methods",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "16 Numerical methods",
-    "text": "16 Numerical methods\nHow to show?"
+    "section": "3.10 Numerical methods",
+    "text": "3.10 Numerical methods\nHow to show?"
   },
   {
     "objectID": "Presentation/presentation.html#comparison",
     "href": "Presentation/presentation.html#comparison",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "17 Comparison",
-    "text": "17 Comparison\nThree temperature trajectories:\n\nHistorical path: 0 to 1.5\nOptimistic path: 0.5 to 2.00\nIntermediate path: 0.5 to 3.00\nPessimistic path: 0.5 to 4.00\n\nMethodology: Taking different path, running the model, and comparing:\n\nhealth,\nsurvival,\npolicies:\n\nconsumption,\nlabor,\nsavings\n\n\nFocus on one statistics: lifetime income."
+    "section": "3.11 Comparison",
+    "text": "3.11 Comparison\nThree temperature trajectories:\n\nHistorical path: 0 to 1.5\nOptimistic path: 0.5 to 2.00\nIntermediate path: 0.5 to 3.00\nPessimistic path: 0.5 to 4.00\n\nMethodology: Taking different path, running the model, and comparing:\n\nhealth,\nsurvival,\npolicies:\n\nconsumption,\nlabor,\nsavings\n\n\nFocus on one statistics: lifetime income."
   },
   {
     "objectID": "Presentation/presentation.html#conclusion",
     "href": "Presentation/presentation.html#conclusion",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "18 Conclusion:",
-    "text": "18 Conclusion:"
+    "section": "5.3 Conclusion:",
+    "text": "5.3 Conclusion:"
+  },
+  {
+    "objectID": "Presentation/presentation.html#setting-1",
+    "href": "Presentation/presentation.html#setting-1",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "2.1 Setting",
+    "text": "2.1 Setting\nAt each period, agents draw health \\(H_{t}\\) and living status \\(L_{t}\\):\n\\[\\begin{equation}\\tag{1}\n  H_t \\sim f_h(\\mathcal{H}_{t-1}, \\mathcal{W}_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{2}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}(\\mathcal{H}_t, \\mathcal{W}_t)\n\\end{equation}\\]\nWe can also define the two history vectors: \\[\\begin{equation}\\tag{3}\n  \\mathcal{H}_t \\equiv (H_1, H_2, \\dots, H_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{4}\n  \\mathcal{W}_t \\equiv (W_1, W_2, \\dots, W_t)\n\\end{equation}\\]\n[link to underlying assumptions]"
+  },
+  {
+    "objectID": "Presentation/presentation.html#history-simplification",
+    "href": "Presentation/presentation.html#history-simplification",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "3.1 History Simplification",
+    "text": "3.1 History Simplification\nThe general relationships:\n\\[\\begin{equation}\\tag{1}\n  H_t \\sim f_h(\\mathcal{H}_{t-1}, \\mathcal{W}_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{2}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}(\\mathcal{H}_t, \\mathcal{W}_t)\n\\end{equation}\\]\nbecome:\n\\[\\begin{equation}\\tag{1.1}\n  H_t \\sim f_h({H}_{t-1}, {T}_t)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.1}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}({H}_t, {T}_t)\n\\end{equation}\\]"
+  },
+  {
+    "objectID": "Presentation/presentation.html#living-status",
+    "href": "Presentation/presentation.html#living-status",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "3.3 Living Status",
+    "text": "3.3 Living Status\nSample space of living status: \\(\\Omega(L_{t}) \\equiv \\{0,1\\}\\)\nLogistic regression\n\\[\\begin{equation}\\tag{2.1}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}({H}_t, {T}_t)\n\\end{equation}\\]\nLet \\(X_{L} \\equiv (H_{t},Age_{t},T_{t},H_{t}\\times Age_{t} \\times T_{t})^{T}\\)\n\\[\\begin{equation}\\tag{2.3}\n  \\widehat{L_t} = \\Lambda  (\\widehat{\\beta_L}\\cdot X_{L})\n\\end{equation}\\]\nMore about it"
+  },
+  {
+    "objectID": "Presentation/presentation.html#research-object",
+    "href": "Presentation/presentation.html#research-object",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "1.1 Research object",
+    "text": "1.1 Research object\n\n\n\n\n\nflowchart LR\n  A[Climate change] --&gt; B[Temperature distribution]\n  B --&gt; C[Other variables]\n  B --&gt; D[Health of individuals] \n  D --&gt; E[Economic production]\n  C --&gt; E\n\nlinkStyle default stroke:black\nlinkStyle 2 stroke:red\nlinkStyle 3 stroke:red\nstyle D color:red\n\nclassDef linkLabel fill:none,stroke:none;\n\n\n\n\n\n\nHealth of individuals:\n\nHealth state\nSurvival probability\n\nHow does temperature variations affect the economy through health?"
+  },
+  {
+    "objectID": "Presentation/presentation.html#formal-description",
+    "href": "Presentation/presentation.html#formal-description",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "2.1 Formal description",
+    "text": "2.1 Formal description\nAt each period, agents draw health \\(H_{t}\\) and living status \\(L_{t}\\):\n\\[\\begin{equation}\\tag{1}\n  H_t \\sim f_h(\\mathcal{H}_{t-1}, \\mathcal{W}_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{2}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}(\\mathcal{H}_t, \\mathcal{W}_t)\n\\end{equation}\\]\nWe can also define the two history vectors: \\[\\begin{equation}\\tag{3}\n  \\mathcal{H}_t \\equiv (H_1, H_2, \\dots, H_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{4}\n  \\mathcal{W}_t \\equiv (W_1, W_2, \\dots, W_t)\n\\end{equation}\\]\nMore on underlying assumptions."
+  },
+  {
+    "objectID": "Presentation/presentation.html#framework_assumptions",
+    "href": "Presentation/presentation.html#framework_assumptions",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "8.1 General framework assumptions",
+    "text": "8.1 General framework assumptions\n\nIndependence assumption\n\nInitial slide"
+  },
+  {
+    "objectID": "Presentation/presentation.html#formal_description",
+    "href": "Presentation/presentation.html#formal_description",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "2.1 Formal description",
+    "text": "2.1 Formal description\nAt each period, agents draw health \\(H_{t}\\) and living status \\(L_{t}\\):\n\\[\\begin{equation}\\tag{1}\n  H_t \\sim f_h(\\mathcal{H}_{t-1}, \\mathcal{W}_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{2}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}(\\mathcal{H}_t, \\mathcal{W}_t)\n\\end{equation}\\]\nWe can also define the two history vectors: \\[\\begin{equation}\\tag{3}\n  \\mathcal{H}_t \\equiv (H_1, H_2, \\dots, H_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{4}\n  \\mathcal{W}_t \\equiv (W_1, W_2, \\dots, W_t)\n\\end{equation}\\]\nMore on underlying assumptions."
+  },
+  {
+    "objectID": "Presentation/presentation.html#methodology",
+    "href": "Presentation/presentation.html#methodology",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "5.1 Methodology:",
+    "text": "5.1 Methodology:\nTaking different path, running the model, and comparing:\n\nhealth,\nsurvival,\npolicies:\n\nconsumption,\nlabor,\nsavings\n\n\nFocus on one statistics: lifetime income."
+  },
+  {
+    "objectID": "Presentation/presentation.html#temperature-trajectories",
+    "href": "Presentation/presentation.html#temperature-trajectories",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "5.2 Temperature trajectories",
+    "text": "5.2 Temperature trajectories\nThree temperature trajectories:\n\nHistorical path: 0 to 1.5\nOptimistic path: 0.5 to 2.00\nIntermediate path: 0.5 to 3.00\nPessimistic path: 0.5 to 4.00"
+  },
+  {
+    "objectID": "Presentation/presentation.html#discussion",
+    "href": "Presentation/presentation.html#discussion",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "5.3 Discussion",
+    "text": "5.3 Discussion"
+  },
+  {
+    "objectID": "Presentation/presentation.html#recap",
+    "href": "Presentation/presentation.html#recap",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6.1 Recap",
+    "text": "6.1 Recap"
+  },
+  {
+    "objectID": "Presentation/presentation.html#results-1",
+    "href": "Presentation/presentation.html#results-1",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6.2 Results",
+    "text": "6.2 Results"
+  },
+  {
+    "objectID": "Presentation/presentation.html#algorithms",
+    "href": "Presentation/presentation.html#algorithms",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "4.1 Algorithms",
+    "text": "4.1 Algorithms\nI have different ways of solving it numerically, and it does matter for the results.\n\nlist of algorithms\nperformance\nresults: comparison, and interpretation of the general result idea."
+  },
+  {
+    "objectID": "Presentation/presentation.html#health-proxy",
+    "href": "Presentation/presentation.html#health-proxy",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "3.4 Health Proxy",
+    "text": "3.4 Health Proxy\nIn the submitted version of my work, I define the health proxy \\(HP_{i,t}\\), and use its estimate, which leads to:\n\\[\\begin{equation}\\tag{1.4}\n  \\widehat{p_{i,t}} = \\Lambda \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot Health_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP}_{i,t}^{I} \\right)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.4}\n  \\widehat{H_{i,t}} = \\Lambda_{0} \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot Health_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP}_{i,t}^{I} \\right)\n\\end{equation}\\]\n\nMotivation: Eliminate outer effects.\nFocus on acute health events\nFinal results are essentially the same\n\nDetails on this specification."
+  },
+  {
+    "objectID": "Presentation/presentation.html#health_proxy_details",
+    "href": "Presentation/presentation.html#health_proxy_details",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "8.2 Health Proxy specification",
+    "text": "8.2 Health Proxy specification\n\\(HP_{i,t} = \\text{HighBP}_{i,t} + \\text{Lung}_{i,t} + \\text{Heart}_{i,t} + \\text{Stroke}_{i,t}\\)\nGo back"
+  },
+  {
+    "objectID": "Presentation/presentation.html#ordered_multinomial_logit_regression_details",
+    "href": "Presentation/presentation.html#ordered_multinomial_logit_regression_details",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "8.3 Ordered Multinomial Logit Regression",
+    "text": "8.3 Ordered Multinomial Logit Regression"
+  },
+  {
+    "objectID": "Presentation/presentation.html#health-proxy-health_proxy_details",
+    "href": "Presentation/presentation.html#health-proxy-health_proxy_details",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "3.4 Health Proxy {#health_proxy_details}1",
+    "text": "3.4 Health Proxy {#health_proxy_details}1\nIn the submitted version of my work, I define the health proxy \\(HP_{i,t}\\), and use its estimate, \\(\\widehat{HP_{i,t}^{I}}\\) which leads to:\n\\[\\begin{equation}\\tag{1.4}\n  \\widehat{p_{i,t}} = \\Lambda \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot Health_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP}_{i,t}^{I} \\right)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.4}\n  \\widehat{H_{i,t}^{I}} = \\Lambda_{0} \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot Health_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP}_{i,t}^{I} \\right)\n\\end{equation}\\]\n\nMotivation: Eliminate outer effects.\nFocus on acute health events\nFinal results are essentially the same\n\nMore about it"
   }
 ]
