@@ -2,23 +2,23 @@
   {
     "objectID": "Presentation/presentation.html#introduction",
     "href": "Presentation/presentation.html#introduction",
-    "title": "Master Thesis: The effect of temperature variation induced health transition on economics",
+    "title": "The effect of temperature-induced health variation on economics",
     "section": "Introduction",
     "text": "Introduction\n\\[\\mathbb{E} = c_{t+1}\\]"
   },
   {
     "objectID": "Presentation/presentation.html#some-3d-plot",
     "href": "Presentation/presentation.html#some-3d-plot",
-    "title": "Master Thesis: The effect of temperature variation induced health transition on economics",
-    "section": "Some 3D plot",
-    "text": "Some 3D plot"
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "11 Some 3D plot",
+    "text": "11 Some 3D plot"
   },
   {
     "objectID": "Presentation/presentation.html#interactive-3d-plot",
     "href": "Presentation/presentation.html#interactive-3d-plot",
-    "title": "Master Thesis: The effect of temperature variation induced health transition on economics",
-    "section": "Interactive 3D Plot",
-    "text": "Interactive 3D Plot\n\n\n┌ Warning: Failed to load integration with PlotlyBase & PlotlyKaleido.\n│   exception =\n│    ArgumentError: Package PlotlyKaleido not found in current path.\n│    - Run `import Pkg; Pkg.add(\"PlotlyKaleido\")` to install the PlotlyKaleido package.\n│    Stacktrace:\n│      [1] macro expansion\n│        @ ./loading.jl:2296 [inlined]\n│      [2] macro expansion\n│        @ ./lock.jl:273 [inlined]\n│      [3] __require(into::Module, mod::Symbol)\n│        @ Base ./loading.jl:2271\n│      [4] #invoke_in_world#3\n│        @ ./essentials.jl:1089 [inlined]\n│      [5] invoke_in_world\n│        @ ./essentials.jl:1086 [inlined]\n│      [6] require(into::Module, mod::Symbol)\n│        @ Base ./loading.jl:2260\n│      [7] top-level scope\n│        @ ~/.julia/packages/Plots/Ec1L1/src/backends.jl:569\n│      [8] eval\n│        @ ./boot.jl:430 [inlined]\n│      [9] _initialize_backend(pkg::Plots.PlotlyBackend)\n│        @ Plots ~/.julia/packages/Plots/Ec1L1/src/backends.jl:567\n│     [10] backend(pkg::Plots.PlotlyBackend)\n│        @ Plots ~/.julia/packages/Plots/Ec1L1/src/backends.jl:245\n│     [11] plotly()\n│        @ Plots ~/.julia/packages/Plots/Ec1L1/src/backends.jl:86\n│     [12] top-level scope\n│        @ ~/Documents/Master_Thesis/website/Presentation/presentation.qmd:35\n│     [13] eval\n│        @ ./boot.jl:430 [inlined]\n│     [14] (::QuartoNotebookWorker.var\"#15#16\"{Module, Expr})()\n│        @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:222\n│     [15] (::QuartoNotebookWorker.Packages.IOCapture.var\"#5#9\"{DataType, QuartoNotebookWorker.var\"#15#16\"{Module, Expr}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{IOStream}, IOContext{Base.PipeEndpoint}})()\n│        @ QuartoNotebookWorker.Packages.IOCapture ~/.julia/packages/IOCapture/Y5rEA/src/IOCapture.jl:170\n│     [16] with_logstate(f::QuartoNotebookWorker.Packages.IOCapture.var\"#5#9\"{DataType, QuartoNotebookWorker.var\"#15#16\"{Module, Expr}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{IOStream}, IOContext{Base.PipeEndpoint}}, logstate::Base.CoreLogging.LogState)\n│        @ Base.CoreLogging ./logging/logging.jl:522\n│     [17] with_logger(f::Function, logger::Base.CoreLogging.ConsoleLogger)\n│        @ Base.CoreLogging ./logging/logging.jl:632\n│     [18] capture(f::QuartoNotebookWorker.var\"#15#16\"{Module, Expr}; rethrow::Type, color::Bool, passthrough::Bool, capture_buffer::IOBuffer, io_context::Vector{Pair{Symbol, Any}})\n│        @ QuartoNotebookWorker.Packages.IOCapture ~/.julia/packages/IOCapture/Y5rEA/src/IOCapture.jl:167\n│     [19] capture\n│        @ ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:248 [inlined]\n│     [20] io_capture(f::Function; cell_options::Dict{String, Any}, kws::@Kwargs{rethrow::DataType, color::Bool, io_context::Vector{Pair{Symbol, Any}}})\n│        @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:250\n│     [21] io_capture\n│        @ ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:246 [inlined]\n│     [22] include_str(mod::Module, code::String; file::String, line::Int64, cell_options::Dict{String, Any})\n│        @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:201\n│     [23] #invokelatest#2\n│        @ ./essentials.jl:1057 [inlined]\n│     [24] invokelatest\n│        @ ./essentials.jl:1052 [inlined]\n│     [25] #6\n│        @ ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:18 [inlined]\n│     [26] with_inline_display(f::QuartoNotebookWorker.var\"#6#7\"{String, String, Int64, Dict{String, Any}}, cell_options::Dict{String, Any})\n│        @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/InlineDisplay.jl:26\n│     [27] _render_thunk(thunk::Function, code::String, cell_options::Dict{String, Any}, is_expansion_ref::Base.RefValue{Bool}; inline::Bool)\n│        @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:43\n│     [28] _render_thunk\n│        @ ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:35 [inlined]\n│     [29] #render#5\n│        @ ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:15 [inlined]\n│     [30] render(code::String, file::String, line::Int64, cell_options::Dict{String, Any})\n│        @ QuartoNotebookWorker ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/QuartoNotebookWorker/src/render.jl:1\n│     [31] render(::String, ::Vararg{Any}; kwargs::@Kwargs{})\n│        @ Main ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/worker.jl:30\n│     [32] top-level scope\n│        @ none:1\n│     [33] eval\n│        @ ./boot.jl:430 [inlined]\n│     [34] (::Main.var\"#7#10\")(chan::Channel{Any})\n│        @ Main ~/.julia/packages/QuartoNotebookRunner/eYIiC/src/worker.jl:13\n│     [35] (::Base.var\"#739#740\"{Main.var\"#7#10\", Channel{Any}})()\n│        @ Base ./channels.jl:142\n└ @ Plots ~/.julia/packages/Plots/Ec1L1/src/backends.jl:577"
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "13 Interactive 3D Plot",
+    "text": "13 Interactive 3D Plot"
   },
   {
     "objectID": "about.html",
@@ -96,5 +96,173 @@
     "title": "Modelling climate impact on economy through health",
     "section": "",
     "text": "This page is dedicated to my presentation.\nIt is currently under construction.\nYou can find my slides here."
+  },
+  {
+    "objectID": "Presentation/presentation.html#outline",
+    "href": "Presentation/presentation.html#outline",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "1 Outline",
+    "text": "1 Outline\n\nIntroduction\nSetting\nEstimation methods\nOptimization program\nNumerical results\nComparison\nConclusion"
+  },
+  {
+    "objectID": "Presentation/presentation.html#setting",
+    "href": "Presentation/presentation.html#setting",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "5 Setting",
+    "text": "5 Setting\nAt each period, agents draw health \\(H_{t}\\) and living status \\(L_{t}\\):\n\\[\\begin{equation}\\tag{1}\n  H_t \\sim f_h(\\mathcal{H}_{t-1}, \\mathcal{W}_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{2}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}(\\mathcal{H}_t, \\mathcal{W}_t)\n\\end{equation}\\]\nWe can also define the two history vectors: \\[\\begin{equation}\\tag{3}\n  \\mathcal{H}_t \\equiv (H_1, H_2, \\dots, H_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{4}\n  \\mathcal{W}_t \\equiv (W_1, W_2, \\dots, W_t)\n\\end{equation}\\]\n[link to underlying assumptions]"
+  },
+  {
+    "objectID": "Presentation/presentation.html#data",
+    "href": "Presentation/presentation.html#data",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6 Data",
+    "text": "6 Data\n\n\n\n\n\nDistribution of Health status across years, in the HRS data.\n\n\n\n\n\n\nAverage annual temperature and its 95% confidence interval, in the Berkeley data."
+  },
+  {
+    "objectID": "Presentation/presentation.html#estimates",
+    "href": "Presentation/presentation.html#estimates",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "7 Estimates",
+    "text": "7 Estimates\nThe general relationship, defining health at \\(t\\) is:\n\\[\\begin{equation}\\tag{5}\n  H_t \\sim f_h(\\mathcal{H}_{t-1}, \\mathcal{W}_t)\n\\end{equation}\\]\nbecomes:\n\\[H_t \\sim f_h({H}_{t-1}, {T}_t)\\]\n\\[\\Omega(H_{t}) \\equiv [\\![1,5]\\!]\\]"
+  },
+  {
+    "objectID": "Presentation/presentation.html#section",
+    "href": "Presentation/presentation.html#section",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "8 ",
+    "text": "8 \n8.1 Functional forms of estimates\nSample space of Health:\n\\[\\Omega(H_{t}) \\equiv [\\![1,5]\\!]\\]\nOrdered Mulitnomial Logit Model\nH_{t} ~ Age, Temperature, interaction, H_{t-1}"
+  },
+  {
+    "objectID": "Presentation/presentation.html#research-topic",
+    "href": "Presentation/presentation.html#research-topic",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "2 Research topic",
+    "text": "2 Research topic\n\n\n\n\n\nflowchart LR\n  A[Climate change] --&gt; B[Temperature distribution]\n  B --&gt; C[Other variables]\n  B --&gt; D[Health of individuals] \n  D --&gt; E[Economic production]\n  C --&gt; E\n\nlinkStyle default stroke:black\nlinkStyle 2 stroke:red\nlinkStyle 3 stroke:red\nstyle D color:red\n\nclassDef linkLabel fill:none,stroke:none;\n\n\n\n\n\n\nHealth of individuals:\n\nHealth state\nSurvival probability\n\nHow does temperature variations affect the economy through health?"
+  },
+  {
+    "objectID": "Presentation/presentation.html#literature",
+    "href": "Presentation/presentation.html#literature",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "3 Literature",
+    "text": "3 Literature\n\nClimate economics\nHealth economics\n\nLiterature gap: climate AND health on industrialized context."
+  },
+  {
+    "objectID": "Presentation/presentation.html#healh-and-life-draw",
+    "href": "Presentation/presentation.html#healh-and-life-draw",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "Healh and Life draw:",
+    "text": "Healh and Life draw:"
+  },
+  {
+    "objectID": "Presentation/presentation.html#research-strategy",
+    "href": "Presentation/presentation.html#research-strategy",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "4 Research strategy",
+    "text": "4 Research strategy\n\nDefining a Setting\nRunning an economic model to estimate the lifetime income loss due to temperature variations."
+  },
+  {
+    "objectID": "Presentation/presentation.html#estimation-method-definition-simplification",
+    "href": "Presentation/presentation.html#estimation-method-definition-simplification",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "7 Estimation method: definition simplification",
+    "text": "7 Estimation method: definition simplification\nThe general relationship, defining health at \\(t\\) is:\n\\[\\begin{equation}\\tag{1}\n  H_t \\sim f_h(\\mathcal{H}_{t-1}, \\mathcal{W}_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{2}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}(\\mathcal{H}_t, \\mathcal{W}_t)\n\\end{equation}\\]\nbecome:\n\\[\\begin{equation}\\tag{1.1}\n  H_t \\sim f_h({H}_{t-1}, {T}_t)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.1}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}({H}_t, {W}_t)\n\\end{equation}\\]"
+  },
+  {
+    "objectID": "Presentation/presentation.html#estimation-method",
+    "href": "Presentation/presentation.html#estimation-method",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "7 Estimation method",
+    "text": "7 Estimation method\nThe general relationships:\n\\[\\begin{equation}\\tag{1}\n  H_t \\sim f_h(\\mathcal{H}_{t-1}, \\mathcal{W}_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{2}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}(\\mathcal{H}_t, \\mathcal{W}_t)\n\\end{equation}\\]\nbecome:\n\\[\\begin{equation}\\tag{1.1}\n  H_t \\sim f_h({H}_{t-1}, {T}_t)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.1}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}({H}_t, {T}_t)\n\\end{equation}\\]"
+  },
+  {
+    "objectID": "Presentation/presentation.html#estimation-method-1",
+    "href": "Presentation/presentation.html#estimation-method-1",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "8 Estimation method",
+    "text": "8 Estimation method\nSample space of Health: \\(\\Omega(H_{t}) \\equiv [\\![1,5]\\!]\\)\nOrdered Multinomial Logit Model\n\\[\\begin{equation}\\tag{1.1}\n  H_t \\sim f_h({H}_{t-1}, {T}_t)\n\\end{equation}\\]\nLet \\(X_{H} \\equiv (Age_{t}, T_{t}, Age_{t}\\times T_{t}, H_{t-1})^{T}\\)\n\\[\\begin{equation}\\tag{1.3}\n  \\widehat{H_{t}} \\sim \\Lambda_{O}(\\widehat{\\beta_H}\\cdot X_{H})\n\\end{equation}\\]\n[More about the Ordered Multinomial Logit Model]"
+  },
+  {
+    "objectID": "Presentation/presentation.html#estimation-method-2",
+    "href": "Presentation/presentation.html#estimation-method-2",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "9 Estimation method",
+    "text": "9 Estimation method\nSample space of living status: \\(\\Omega(L_{t}) = \\{0,1\\}\\)\nLogistic regression\n\\[\\begin{equation}\\tag{2.1}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}({H}_t, {T}_t)\n\\end{equation}\\]\nLet \\(X_{L} \\equiv (H_{t},Age_{t},T_{t},H_{t}\\times Age_{t} \\times T_{t})^{T}\\)\n\\[\\begin{equation}\\tag{2.3}\n  \\widehat{L_t} = \\Lambda  (\\widehat{\\beta_L}\\cdot X_{L})\n\\end{equation}\\]\n[More about the Logit Model]"
+  },
+  {
+    "objectID": "Presentation/presentation.html#alternative-regression-health-proxy-regression",
+    "href": "Presentation/presentation.html#alternative-regression-health-proxy-regression",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "10 Alternative regression: Health Proxy regression",
+    "text": "10 Alternative regression: Health Proxy regression\nIn the submitted version of my work, I define the health proxy \\(HP\\), and use its estimate, which leads to:\n\\[\\begin{equation}\\tag{1.4}\n  \\widehat{p_{i,t}} = \\Lambda \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot Health_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP}_{i,t}^{I} \\right)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.4}\n  \\widehat{H_{i,t}} = \\Lambda_{0} \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot Health_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP}_{i,t}^{I} \\right)\n\\end{equation}\\]\n\nMotivation: Eliminate outer effects.\nFocus on acute health events\nFinal results are essentially the same\n\n[More about it] \\(HP_{i,t} = \\text{HighBP}_{i,t} + \\text{Lung}_{i,t} + \\text{Heart}_{i,t} + \\text{Stroke}_{i,t}\\),"
+  },
+  {
+    "objectID": "Presentation/presentation.html#health-transition",
+    "href": "Presentation/presentation.html#health-transition",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "11 Health transition",
+    "text": "11 Health transition"
+  },
+  {
+    "objectID": "Presentation/presentation.html#health-transition-1",
+    "href": "Presentation/presentation.html#health-transition-1",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "12 Health transition",
+    "text": "12 Health transition"
+  },
+  {
+    "objectID": "Presentation/presentation.html#health-transition---1",
+    "href": "Presentation/presentation.html#health-transition---1",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "11 Health transition - 1",
+    "text": "11 Health transition - 1"
+  },
+  {
+    "objectID": "Presentation/presentation.html#health-transition---2",
+    "href": "Presentation/presentation.html#health-transition---2",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "12 Health transition - 2",
+    "text": "12 Health transition - 2"
+  },
+  {
+    "objectID": "Presentation/presentation.html#survival-probability",
+    "href": "Presentation/presentation.html#survival-probability",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "13 Survival probability",
+    "text": "13 Survival probability"
+  },
+  {
+    "objectID": "Presentation/presentation.html#economic-model",
+    "href": "Presentation/presentation.html#economic-model",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "14 Economic model",
+    "text": "14 Economic model\n\\[ \\max_{\\{c_{t},l_{t},s_{t+1}\\}_{t=1}^{100}}{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\left(\\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right)\\right]}\\]\nsubject to:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\]\n\\[s_{t+1}\\geq \\underline{s}, \\forall t \\in [\\![1,100]\\!]\\]"
+  },
+  {
+    "objectID": "Presentation/presentation.html#first-order-conditions",
+    "href": "Presentation/presentation.html#first-order-conditions",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "15 First Order Conditions",
+    "text": "15 First Order Conditions\n\\[\\begin{equation}\\tag{F.O.C. 1}\n  c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{F.O.C. 2}\n  c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\]\nAnalytical solution inexistence.\n[Proof]"
+  },
+  {
+    "objectID": "Presentation/presentation.html#numerical-methods",
+    "href": "Presentation/presentation.html#numerical-methods",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "16 Numerical methods",
+    "text": "16 Numerical methods\nHow to show?"
+  },
+  {
+    "objectID": "Presentation/presentation.html#comparison",
+    "href": "Presentation/presentation.html#comparison",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "17 Comparison",
+    "text": "17 Comparison\nThree temperature trajectories:\n\nHistorical path: 0 to 1.5\nOptimistic path: 0.5 to 2.00\nIntermediate path: 0.5 to 3.00\nPessimistic path: 0.5 to 4.00\n\nMethodology: Taking different path, running the model, and comparing:\n\nhealth,\nsurvival,\npolicies:\n\nconsumption,\nlabor,\nsavings\n\n\nFocus on one statistics: lifetime income."
+  },
+  {
+    "objectID": "Presentation/presentation.html#conclusion",
+    "href": "Presentation/presentation.html#conclusion",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "18 Conclusion:",
+    "text": "18 Conclusion:"
   }
 ]

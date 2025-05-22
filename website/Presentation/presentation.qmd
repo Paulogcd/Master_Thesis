@@ -1,33 +1,254 @@
 ---
-title: "Master Thesis: The effect of temperature variation induced health transition on economics"
+title: "The effect of temperature-induced health variation on economics"
 author: "Paulo Gugelmo Cavalheiro Dias"
-format: revealjs
+format:
+  revealjs:
+    number-sections: true
+    mathjax: true
+
 engine: julia
+mainfont: Times
+toc: true
 ---
 
-## Introduction
+## Outline
 
-$$\mathbb{E} = c_{t+1}$$
+1. Introduction 
+2. Setting 
+3. Estimation methods
+4. Optimization program
+5. Numerical results 
+6. Comparison 
+7. Conclusion
 
-## Some 3D plot
+## Research topic 
+
+```{mermaid}
+flowchart LR
+  A[Climate change] --> B[Temperature distribution]
+  B --> C[Other variables]
+  B --> D[Health of individuals] 
+  D --> E[Economic production]
+  C --> E
+
+linkStyle default stroke:black
+linkStyle 2 stroke:red
+linkStyle 3 stroke:red
+style D color:red
+
+classDef linkLabel fill:none,stroke:none;
+```
+
+Health of individuals: 
+
+- Health state 
+- Survival probability
+
+*How does temperature variations affect
+the economy through health?*
+
+## Literature 
+
+- Climate economics 
+
+- Health economics 
+
+Literature gap: climate AND health on industrialized context.
+
+## Research strategy
+
+- Defining a Setting
+
+- Running an economic model to estimate the lifetime income loss due to temperature variations.
+
+## Setting
+
+At each period, agents draw health $H_{t}$ and living status $L_{t}$: 
+
+\begin{equation}\tag{1}
+  H_t \sim f_h(\mathcal{H}_{t-1}, \mathcal{W}_t)
+\end{equation}
+\begin{equation}\tag{2}
+  L_t \sim \mathcal{B}(p_t)\text{ | } p_{t}\equiv p_{t}(\mathcal{H}_t, \mathcal{W}_t)
+\end{equation}
+
+We can also define the two history vectors:
+\begin{equation}\tag{3}
+  \mathcal{H}_t \equiv (H_1, H_2, \dots, H_t)
+\end{equation}
+\begin{equation}\tag{4}
+  \mathcal{W}_t \equiv (W_1, W_2, \dots, W_t)
+\end{equation}
+
+[link to underlying assumptions]
+
+## Data 
+
+::: {.columns}
+
+::: {.column width="50%"}
+![Distribution of Health status across years, in the HRS data.](resources/description_HRS.png){width=100%}
+:::
+
+::: {.column width="50%"}
+![Average annual temperature and its 95% confidence interval, in the Berkeley data.](resources/description_Berkeley.png){width=100%}
+:::
+
+:::
+
+
+## Estimation method
+
+The general relationships: 
+
+\begin{equation}\tag{1}
+  H_t \sim f_h(\mathcal{H}_{t-1}, \mathcal{W}_t)
+\end{equation}
+\begin{equation}\tag{2}
+  L_t \sim \mathcal{B}(p_t)\text{ | } p_{t}\equiv p_{t}(\mathcal{H}_t, \mathcal{W}_t)
+\end{equation}
+
+become:
+
+\begin{equation}\tag{1.1}
+  H_t \sim f_h({H}_{t-1}, {T}_t)
+\end{equation}
+
+\begin{equation}\tag{2.1}
+  L_t \sim \mathcal{B}(p_t)\text{ | } p_{t}\equiv p_{t}({H}_t, {T}_t)
+\end{equation}
+
+## Estimation method
+
+Sample space of Health: 
+$\Omega(H_{t}) \equiv [\![1,5]\!]$
+
+Ordered Multinomial Logit Model
+
+\begin{equation}\tag{1.1}
+  H_t \sim f_h({H}_{t-1}, {T}_t)
+\end{equation}
+
+Let $X_{H} \equiv (Age_{t}, T_{t}, Age_{t}\times T_{t}, H_{t-1})^{T}$
+
+\begin{equation}\tag{1.3}
+  \widehat{H_{t}} \sim \Lambda_{O}(\widehat{\beta_H}\cdot X_{H})
+\end{equation}
+
+[More about the Ordered Multinomial Logit Model]
+
+## Estimation method
+
+Sample space of living status: 
+$\Omega(L_{t}) = \{0,1\}$
+
+Logistic regression
+
+\begin{equation}\tag{2.1}
+  L_t \sim \mathcal{B}(p_t)\text{ | } p_{t}\equiv p_{t}({H}_t, {T}_t)
+\end{equation}
+
+Let $X_{L} \equiv (H_{t},Age_{t},T_{t},H_{t}\times Age_{t} \times T_{t})^{T}$
+
+\begin{equation}\tag{2.3}
+  \widehat{L_t} = \Lambda  (\widehat{\beta_L}\cdot X_{L})
+\end{equation}
+
+[More about the Logit Model]
+
+## Alternative regression: Health Proxy regression
+
+In the submitted version of my work, I define the health proxy $HP$, and use its estimate,
+which leads to: 
+
+\begin{equation}\tag{1.4}
+  \widehat{p_{i,t}} = \Lambda \left( \widehat{\beta_0} +
+    \widehat{\beta_{H}} \cdot Health_{i,t} +
+    \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I} \right)
+\end{equation}
+
+\begin{equation}\tag{2.4}
+  \widehat{H_{i,t}} = \Lambda_{0} \left( \widehat{\beta_0} +
+    \widehat{\beta_{H}} \cdot Health_{i,t} +
+    \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I} \right)
+\end{equation}
+
+- Motivation: Eliminate outer effects.
+
+- Focus on acute health events 
+
+- Final results are essentially the same
+
+[More about it]
+$HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}$,
+
+## Health transition - 1 
 
 ```{=html}
 <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
   <iframe src="resources/transition_from_Excellent.html" width="49%" height="500px" frameborder="0"></iframe>
   <iframe src="resources/transition_from_Good.html" width="49%" height="500px" frameborder="0"></iframe>
+</div>
+```
+
+## Health transition - 2
+
+```{=html}
+<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
   <iframe src="resources/transition_from_Fair.html" width="49%" height="500px" frameborder="0"></iframe>
   <iframe src="resources/transition_from_Poor.html" width="49%" height="500px" frameborder="0"></iframe>
 </div>
 ```
 
-## Interactive 3D Plot
+## Survival probability 
 
-```{julia}
-using Plots
-plotly()
+## Economic model 
 
-# Create a 3D surface plot
-z = [10 * sin(i/10) * cos(j/10) for i in 1:100, j in 1:100]
-p = surface(z, title="Interactive 3D Surface", xlabel="X", ylabel="Y", zlabel="Z")
-display(p)
-```
+$$ \max_{\{c_{t},l_{t},s_{t+1}\}_{t=1}^{100}}{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot \left(\frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\varphi}}{1+\varphi}\right)\right]}$$
+
+subject to: 
+
+$$c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})$$
+
+$$s_{t+1}\geq \underline{s}, \forall t \in [\![1,100]\!]$$
+
+## First Order Conditions
+
+\begin{equation}\tag{F.O.C. 1}
+  c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi} 
+\end{equation}
+
+\begin{equation}\tag{F.O.C. 2}
+  c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
+\end{equation}
+
+Analytical solution inexistence.
+
+[Proof]
+
+## Numerical methods 
+
+How to show? 
+
+## Comparison
+
+Three temperature trajectories: 
+
+- Historical path: 0 to 1.5
+- Optimistic path: 0.5 to 2.00
+- Intermediate path: 0.5 to 3.00
+- Pessimistic path: 0.5 to 4.00
+
+Methodology: 
+Taking different path, running the model, and comparing: 
+
+- health, 
+- survival, 
+- policies: 
+  - consumption, 
+  - labor, 
+  - savings
+
+Focus on one statistics: lifetime income. 
+
+## Conclusion: 
