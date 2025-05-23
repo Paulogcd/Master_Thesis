@@ -13,7 +13,7 @@
   <meta name="generator" content="quarto-1.6.40">
 
   <meta name="author" content="Paulo Gugelmo Cavalheiro Dias">
-  <meta name="dcterms.date" content="2025-05-22">
+  <meta name="dcterms.date" content="2025-05-23">
   <title>Modelling climate impact on economy through health – The effect of temperature-induced health variation on economics</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -147,7 +147,7 @@ Paulo Gugelmo Cavalheiro Dias
     </div>
 </div>
 
-  <p class="date">2025-05-22</p>
+  <p class="date">2025-05-23</p>
 </section><section id="TOC">
 <nav role="doc-toc"> 
 <h2 id="toc-title">Outline</h2>
@@ -155,11 +155,12 @@ Paulo Gugelmo Cavalheiro Dias
 <li><a href="#/introduction" id="/toc-introduction"><span class="header-section-number">1</span> Introduction</a></li>
 <li><a href="#/setting" id="/toc-setting"><span class="header-section-number">2</span> Setting</a></li>
 <li><a href="#/estimation-method" id="/toc-estimation-method"><span class="header-section-number">3</span> Estimation method</a></li>
-<li><a href="#/numerical-methods" id="/toc-numerical-methods"><span class="header-section-number">4</span> Numerical methods</a></li>
-<li><a href="#/results" id="/toc-results"><span class="header-section-number">5</span> Results</a></li>
-<li><a href="#/conclusion" id="/toc-conclusion"><span class="header-section-number">6</span> Conclusion</a></li>
-<li><a href="#/references" id="/toc-references"><span class="header-section-number">7</span> References</a></li>
-<li><a href="#/appendix" id="/toc-appendix"><span class="header-section-number">8</span> Appendix</a></li>
+<li><a href="#/estimation-results" id="/toc-estimation-results"><span class="header-section-number">4</span> Estimation results</a></li>
+<li><a href="#/numerical-methods" id="/toc-numerical-methods"><span class="header-section-number">5</span> Numerical methods</a></li>
+<li><a href="#/numerical-results" id="/toc-numerical-results"><span class="header-section-number">6</span> Numerical Results</a></li>
+<li><a href="#/conclusion" id="/toc-conclusion"><span class="header-section-number">7</span> Conclusion</a></li>
+<li><a href="#/references" id="/toc-references"><span class="header-section-number">8</span> References</a></li>
+<li><a href="#/appendix" id="/toc-appendix"><span class="header-section-number">9</span> Appendix</a></li>
 </ul>
 </nav>
 </section>
@@ -201,20 +202,44 @@ classDef linkLabel fill:none,stroke:none;
 </ul>
 <p><em>How does temperature variations affect the economy through health?</em></p>
 </section>
-<section id="literature" class="slide level2" data-number="1.2">
+<section id="literature" class="slide level2 smaller" data-number="1.2">
 <h2><span class="header-section-number">1.2</span> Literature</h2>
 <ul>
-<li><p>Climate economics</p></li>
-<li><p>Health economics</p></li>
-</ul>
-<p>Literature gap: climate AND health on industrialized context.</p>
-</section>
-<section id="research-strategy" class="slide level2" data-number="1.3">
-<h2><span class="header-section-number">1.3</span> Research strategy</h2>
+<li>Climate economics:
 <ul>
-<li><p>Defining a Setting</p></li>
-<li><p>Running an economic model to estimate the lifetime income loss due to temperature variations.</p></li>
+<li>Burke, Hsiang, Miguel, 2015: Global non-linear effect of temperature on economic production</li>
+<li>Hsiang, 2016: Climate Econometrics</li>
+<li>Carleton et al., 2022: Valuing the Global Mortality Consequences of Climate Change Accounting for Adaptation Costs and Benefits</li>
+</ul></li>
+<li>Health economics
+<ul>
+<li>Capatina, 2015: Life-cycle effects of health risk</li>
+<li>De Nardi, 2019: Lifetime costs of bad health</li>
+</ul></li>
 </ul>
+<p>Literature gap: climate <strong>and</strong> health effect in <strong>industrialized</strong> context.</p>
+</section>
+<section id="research-strategy" class="slide level2 smaller" data-number="1.3">
+<h2><span class="header-section-number">1.3</span> Research strategy</h2>
+<ol type="1">
+<li>Environment:
+<ul>
+<li>Empiry-based,</li>
+<li>Demographic and health response to temperature,</li>
+<li><em>Ceteris Paribus</em>.</li>
+</ul></li>
+<li>Economic model:
+<ul>
+<li>Simple features,</li>
+<li>Policy functions: consumption, labor, savings.</li>
+</ul></li>
+<li>Temperature path comparison:
+<ul>
+<li>Comparison of economic outcome for different temperature paths,</li>
+<li>Special focus on lifetime income,</li>
+<li>Historical (0 to 0.5 °C), Optimistic (0.5 to 2), Intermediate (to 3) and Pessimistic (to 4) scenarios.</li>
+</ul></li>
+</ol>
 </section></section>
 <section>
 <section id="setting" class="title-slide slide level1 center" data-number="2">
@@ -276,20 +301,20 @@ classDef linkLabel fill:none,stroke:none;
   L_t \sim \mathcal{B}(p_t)\text{ | } p_{t}\equiv p_{t}({H}_t, {T}_t)
 \end{equation}\]</span></p>
 </section>
-<section id="health-transition" class="slide level2" data-number="3.2">
-<h2><span class="header-section-number">3.2</span> Health transition</h2>
+<section id="health_transition" class="slide level2" data-number="3.2">
+<h2><span class="header-section-number">3.2</span> Health Transition</h2>
 <p>Sample space of Health: <span class="math inline">\(\Omega(H_{t}) \equiv [\![1,5]\!]\)</span></p>
 <p>Ordered Multinomial Logit Model</p>
 <p><span class="math display">\[\begin{equation}\tag{1.1}
   H_t \sim f_h({H}_{t-1}, {T}_t)
 \end{equation}\]</span></p>
 <p>Let <span class="math inline">\(X_{H} \equiv (Age_{t}, T_{t}, Age_{t}\times T_{t}, H_{t-1})^{T}\)</span></p>
-<p><span class="math display">\[\begin{equation}\tag{1.3}
+<p><span class="math display">\[\begin{equation}\tag{1.2}
   \widehat{H_{t}} \sim \Lambda_{O}(\widehat{\beta_H}\cdot X_{H})
 \end{equation}\]</span></p>
 <p><a href="#/ordered_multinomial_logit_regression_details">More about it</a></p>
 </section>
-<section id="living-status" class="slide level2" data-number="3.3">
+<section id="living_status" class="slide level2" data-number="3.3">
 <h2><span class="header-section-number">3.3</span> Living Status</h2>
 <p>Sample space of living status: <span class="math inline">\(\Omega(L_{t}) \equiv \{0,1\}\)</span></p>
 <p>Logistic regression</p>
@@ -297,32 +322,33 @@ classDef linkLabel fill:none,stroke:none;
   L_t \sim \mathcal{B}(p_t)\text{ | } p_{t}\equiv p_{t}({H}_t, {T}_t)
 \end{equation}\]</span></p>
 <p>Let <span class="math inline">\(X_{L} \equiv (H_{t},Age_{t},T_{t},H_{t}\times Age_{t} \times T_{t})^{T}\)</span></p>
-<p><span class="math display">\[\begin{equation}\tag{2.3}
-  \widehat{L_t} = \Lambda  (\widehat{\beta_L}\cdot X_{L})
+<p><span class="math display">\[\begin{equation}\tag{2.2}
+  \widehat{p_t} = \Lambda  (\widehat{\beta_L}\cdot X_{L})
 \end{equation}\]</span></p>
 <p><a href="#/logit_model_details">More about it</a></p>
 </section>
-<section id="health_proxy_details" class="slide level2" data-number="3.4">
+<section id="health_proxy" class="slide level2" data-number="3.4">
 <h2><span class="header-section-number">3.4</span> Health Proxy</h2>
-<p>In the submitted version of my work, I define the health proxy <span class="math inline">\(HP_{i,t}\)</span>, and use its estimate, <span class="math inline">\(\widehat{HP_{i,t}^{I}}\)</span> which leads to:</p>
+<p>In the submitted version, health proxy is defined as: <span class="math inline">\(HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}\)</span> and its estimate, <span class="math inline">\(\widehat{HP_{i,t}^{OLS}}\)</span> (<span class="math inline">\(\widehat{H^{I}_{i,t}}\)</span> in text) leads to:</p>
 <p><span class="math display">\[\begin{equation}\tag{1.4}
   \widehat{p_{i,t}} = \Lambda \left( \widehat{\beta_0} +
-    \widehat{\beta_{H}} \cdot Health_{i,t} +
-    \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I} \right)
+    \widehat{\beta_{H}} \cdot H_{i,t} +
+    \widehat{\beta_{HP}} \cdot \widehat{HP_{i,t}^{OLS}} \right)
 \end{equation}\]</span></p>
 <p><span class="math display">\[\begin{equation}\tag{2.4}
-  \widehat{H_{i,t}^{I}} = \Lambda_{0} \left( \widehat{\beta_0} +
-    \widehat{\beta_{H}} \cdot Health_{i,t} +
-    \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I} \right)
+  \widehat{H_{i,t}^{HP}} = \Lambda_{0} \left( \widehat{\beta_0} +
+    \widehat{\beta_{H}} \cdot H_{i,t} +
+    \widehat{\beta_{HP}} \cdot \widehat{HP_{i,t}^{OLS}} \right)
 \end{equation}\]</span></p>
-<ul>
-<li><p>Motivation: Eliminate outer effects.</p></li>
-<li><p>Focus on acute health events</p></li>
-<li><p>Final results are essentially the same (<a href="#/health_proxy_details">More about it</a>).</p></li>
-</ul>
+<p><a href="#/health_proxy_details">More about it</a></p>
+</section></section>
+<section>
+<section id="estimation-results" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> Estimation results</h1>
+
 </section>
-<section id="health-transition-1" class="slide level2 scrollable" data-number="3.5">
-<h2><span class="header-section-number">3.5</span> Health transition</h2>
+<section id="health-transition" class="slide level2 scrollable" data-number="4.1">
+<h2><span class="header-section-number">4.1</span> Health Transition</h2>
 <div style="display: flex; flex-wrap: wrap; justify-content: center;">
   <iframe src="resources/transition_from_Excellent.html" width="49%" height="500px" frameborder="0"></iframe>
   <iframe src="resources/transition_from_Very Good.html" width="49%" height="500px" frameborder="0"></iframe>
@@ -331,34 +357,53 @@ classDef linkLabel fill:none,stroke:none;
   <iframe src="resources/transition_from_Poor.html" width="49%" height="500px" frameborder="0"></iframe>
 </div>
 </section>
-<section id="survival-probability" class="slide level2" data-number="3.6">
-<h2><span class="header-section-number">3.6</span> Survival probability</h2>
+<section id="survival-probability" class="slide level2" data-number="4.2">
+<h2><span class="header-section-number">4.2</span> Survival probability</h2>
+<p>Estimating through simulations:</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/probabilities_comparison.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Average survival probabilities obtained with N = 10\ 000."><img data-src="resources/probabilities_comparison.png" style="width:100.0%" alt="Average survival probabilities obtained with N = 10\ 000."></a></p>
+<figcaption>Average survival probabilities obtained with <span class="math inline">\(N = 10\ 000\)</span>.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/demographic_comparison.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Demographic evolution obtained with N = 10\ 000."><img data-src="resources/demographic_comparison.png" style="width:100.0%" alt="Demographic evolution obtained with N = 10\ 000."></a></p>
+<figcaption>Demographic evolution obtained with <span class="math inline">\(N = 10\ 000\)</span>.</figcaption>
+</figure>
+</div>
+</div></div>
 </section>
-<section id="economic-model" class="slide level2" data-number="3.7">
-<h2><span class="header-section-number">3.7</span> Economic model</h2>
+<section id="economic_model" class="slide level2" data-number="4.3">
+<h2><span class="header-section-number">4.3</span> Economic model</h2>
 <p><span class="math display">\[ \max_{\{c_{t},l_{t},s_{t+1}\}_{t=1}^{100}}{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot \left(\frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\varphi}}{1+\varphi}\right)\right]}\]</span></p>
 <p>subject to:</p>
 <p><span class="math display">\[c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})\]</span></p>
 <p><span class="math display">\[s_{t+1}\geq \underline{s}, \forall t \in [\![1,100]\!]\]</span></p>
+<p>Expectation operator: <span class="math inline">\(\mathbb{E}[x_{t+1}] \equiv p_{t+1}\cdot x_{t+1}\)</span></p>
 </section>
-<section id="first-order-conditions" class="slide level2" data-number="3.8">
-<h2><span class="header-section-number">3.8</span> First Order Conditions</h2>
+<section id="first-order-conditions" class="slide level2" data-number="4.4">
+<h2><span class="header-section-number">4.4</span> First Order Conditions</h2>
 <p><span class="math display">\[\begin{equation}\tag{F.O.C. 1}
   c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi}
 \end{equation}\]</span></p>
 <p><span class="math display">\[\begin{equation}\tag{F.O.C. 2}
   c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
 \end{equation}\]</span></p>
-<p>Analytical solution inexistence.</p>
-<p>[Proof]</p>
+<p>With <span class="math inline">\(\gamma_{t}\)</span> the Lagrangien multiplicator associated with the borrowing constraint: <span class="math display">\[s_{t+1} \geq \underline{s}\]</span></p>
+<p>Analytical solution inexistence Numerical methods.</p>
+<p><a href="#/analytical_impossibility_proof">Proof</a></p>
 </section></section>
 <section>
-<section id="numerical-methods" class="title-slide slide level1 center" data-number="4">
-<h1><span class="header-section-number">4</span> Numerical methods</h1>
+<section id="numerical-methods" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> Numerical methods</h1>
 
 </section>
-<section id="algorithms" class="slide level2" data-number="4.1">
-<h2><span class="header-section-number">4.1</span> Algorithms</h2>
+<section id="algorithms" class="slide level2" data-number="5.1">
+<h2><span class="header-section-number">5.1</span> Algorithms</h2>
 <p>I have different ways of solving it numerically, and it does matter for the results.</p>
 <ul>
 <li><p>list of algorithms</p></li>
@@ -367,12 +412,12 @@ classDef linkLabel fill:none,stroke:none;
 </ul>
 </section></section>
 <section>
-<section id="results" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> Results</h1>
+<section id="numerical-results" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> Numerical Results</h1>
 
 </section>
-<section id="methodology" class="slide level2" data-number="5.1">
-<h2><span class="header-section-number">5.1</span> Methodology:</h2>
+<section id="methodology" class="slide level2" data-number="6.1">
+<h2><span class="header-section-number">6.1</span> Methodology:</h2>
 <p>Taking different path, running the model, and comparing:</p>
 <ul>
 <li>health,</li>
@@ -386,8 +431,8 @@ classDef linkLabel fill:none,stroke:none;
 </ul>
 <p>Focus on one statistics: lifetime income.</p>
 </section>
-<section id="temperature-trajectories" class="slide level2" data-number="5.2">
-<h2><span class="header-section-number">5.2</span> Temperature trajectories</h2>
+<section id="temperature-trajectories" class="slide level2" data-number="6.2">
+<h2><span class="header-section-number">6.2</span> Temperature trajectories</h2>
 <p>Three temperature trajectories:</p>
 <ul>
 <li>Historical path: 0 to 1.5</li>
@@ -396,44 +441,99 @@ classDef linkLabel fill:none,stroke:none;
 <li>Pessimistic path: 0.5 to 4.00</li>
 </ul>
 </section>
-<section id="discussion" class="slide level2" data-number="5.3">
-<h2><span class="header-section-number">5.3</span> Discussion</h2>
+<section id="discussion" class="slide level2" data-number="6.3">
+<h2><span class="header-section-number">6.3</span> Discussion</h2>
 </section></section>
 <section>
-<section id="conclusion" class="title-slide slide level1 center" data-number="6">
-<h1><span class="header-section-number">6</span> Conclusion</h1>
+<section id="conclusion" class="title-slide slide level1 center" data-number="7">
+<h1><span class="header-section-number">7</span> Conclusion</h1>
 
 </section>
-<section id="recap" class="slide level2" data-number="6.1">
-<h2><span class="header-section-number">6.1</span> Recap</h2>
+<section id="recap" class="slide level2" data-number="7.1">
+<h2><span class="header-section-number">7.1</span> Recap</h2>
 </section>
-<section id="results-1" class="slide level2" data-number="6.2">
-<h2><span class="header-section-number">6.2</span> Results</h2>
+<section id="results" class="slide level2" data-number="7.2">
+<h2><span class="header-section-number">7.2</span> Results</h2>
 </section></section>
-<section id="references" class="title-slide slide level1 center" data-number="7">
-<h1><span class="header-section-number">7</span> References</h1>
-
-</section>
-
 <section>
-<section id="appendix" class="title-slide slide level1 center" data-number="8">
-<h1><span class="header-section-number">8</span> Appendix</h1>
+<section id="references" class="title-slide slide level1 center" data-number="8">
+<h1><span class="header-section-number">8</span> References</h1>
 
 </section>
-<section id="framework_assumptions" class="slide level2" data-number="8.1">
-<h2><span class="header-section-number">8.1</span> General framework assumptions</h2>
+<section id="references---1" class="slide level2" data-number="8.1">
+<h2><span class="header-section-number">8.1</span> References - 1</h2>
+</section>
+<section id="references---2" class="slide level2" data-number="8.2">
+<h2><span class="header-section-number">8.2</span> References - 2</h2>
+</section></section>
+<section>
+<section id="appendix" class="title-slide slide level1 center" data-number="9">
+<h1><span class="header-section-number">9</span> Appendix</h1>
+
+</section>
+<section id="framework_assumptions" class="slide level2" data-number="9.1">
+<h2><span class="header-section-number">9.1</span> General framework assumptions</h2>
 <ul>
 <li>Independence assumption</li>
 </ul>
-<p><a href="#/formal_description">Initial slide</a></p>
+<p><a href="#/formal_description">Go back</a></p>
 </section>
-<section id="health_proxy_details" class="slide level2" data-number="8.2">
-<h2><span class="header-section-number">8.2</span> Health Proxy specification</h2>
+<section id="health_proxy_details" class="slide level2" data-number="9.2">
+<h2><span class="header-section-number">9.2</span> Health Proxy specification</h2>
+<ul>
+<li>Motivation: Eliminate outer effects.</li>
+<li>Focus on acute health events</li>
+<li>Final results are essentially the same.</li>
+</ul>
 <p><span class="math inline">\(HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}\)</span></p>
-<p><span id="health_proxy">Go back</span></p>
+<p><a href="#/health_proxy">Go back</a></p>
 </section>
-<section id="ordered_multinomial_logit_regression_details" class="slide level2" data-number="8.3">
-<h2><span class="header-section-number">8.3</span> Ordered Multinomial Logit Regression</h2>
+<section id="ordered_multinomial_logit_regression_details" class="slide level2" data-number="9.3">
+<h2><span class="header-section-number">9.3</span> Ordered Multinomial Logit Regression (OMNL) - 1</h2>
+<p>Let <span class="math inline">\(y\in\{0,1,\dots,J\}\)</span> be the dependent discrete ordinal variable we are trying to explain with covariates <span class="math inline">\(x \in \mathbb{R}^{1\times K}\)</span>. Defining a latent variable <span class="math inline">\(y^{*}\)</span> such that:</p>
+<p><span class="math inline">\(y^{*} = x\beta + e\)</span></p>
+<p>with:</p>
+<ul>
+<li><span class="math inline">\(\beta \in \mathbb{R}^{K}\)</span></li>
+<li><span class="math inline">\(e|x \sim \mathcal{N}(0,1)\)</span></li>
+</ul>
+</section>
+<section id="omnl---2" class="slide level2" data-number="9.4">
+<h2><span class="header-section-number">9.4</span> OMNL - 2</h2>
+<p>Let <span class="math inline">\(\alpha_{1}&lt;\alpha_2&lt;\dots &lt; \alpha_{J}\)</span>. The function linking <span class="math inline">\(y\)</span> and <span class="math inline">\(y^*\)</span> is:</p>
+<span class="math display">\[\begin{cases}
+y = 0 \text{ if } y^{*} \leq \alpha_1 \\
+y = 1 \text{ if } \alpha_{1} \leq y^{*} \leq \alpha_2 \\
+\dots \\
+y = J \text{ if } \alpha_{1} \leq y^{*} \leq \alpha_J \\
+\end{cases}\]</span>
+<p>It follows that:</p>
+<p><span class="math inline">\(P(y=0|x) = P(y^{*}\leq \alpha_1|x) = \Lambda (\alpha_1 - x\beta)\)</span> <span class="math inline">\(P(y=1|x) = P(\alpha_1 &lt; y^{*}\leq \alpha_2|x) = \Lambda (\alpha_2 - x\beta) - \Lambda (\alpha_1 - x\beta)\)</span> <span class="math inline">\(\dots\)</span> <span class="math inline">\(P(y=J|x) = P(y^{*}\leq \alpha_1|x) = P(y^{*} \geq \alpha_{J} | x) = 1 - \Lambda (\alpha_J - x\beta)\)</span></p>
+</section>
+<section id="omnl---3" class="slide level2" data-number="9.5">
+<h2><span class="header-section-number">9.5</span> OMNL - 3</h2>
+<p>The <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> vectors are estimated by maximizing the log-likelihood function such that:</p>
+<p><span class="math display">\[\begin{equation}
+  \begin{split}
+    \mathcal{l}_{i}(\alpha,\beta) = &amp; \ \mathbb{1}\cdot[y_i = 0] \cdot \log[\Lambda(\alpha_1 - x_i \beta)] \\
+    &amp; + \mathbb{1}\cdot[y_i = 1] \cdot \log[\Lambda(\alpha_2 - x_i \beta) - \Lambda(\alpha_1 - x_{i}\beta)] \\
+    &amp; \dots \\
+    &amp; + \mathbb{1}[y_i = J]\cdot \log(1-\Lambda(\alpha_J-x_{i}\beta))
+  \end{split}
+\end{equation}\]</span></p>
+<p><a href="#/health_transition">Go back</a></p>
+</section>
+<section id="logit_model_details" class="slide level2" data-number="9.6">
+<h2><span class="header-section-number">9.6</span> Logit model</h2>
+<p>Logit model: ordered logit model with <span class="math inline">\(J = 1\)</span>.</p>
+<p><span class="math inline">\(y \in \{0,1\}\)</span></p>
+<p><span class="math inline">\(Pr(y = 1|x) \equiv p_{t}(x)\)</span></p>
+<p><span class="math inline">\(\widehat{p_{t}} = \Lambda(x\widehat{\beta})\)</span></p>
+<p><a href="#/living_status">Go back</a></p>
+</section>
+<section id="analytical_impossibility_proof" class="slide level2" data-number="9.7">
+<h2><span class="header-section-number">9.7</span> Analytical solution inexistence</h2>
+<p><a href="#/economic_model">Go back</a></p>
 
 
 </section></section>
@@ -626,7 +726,7 @@ classDef linkLabel fill:none,stroke:none;
         margin: 0.1,
 
         math: {
-          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
           config: 'TeX-AMS_HTML-full',
           tex2jax: {
             inlineMath: [['\\(','\\)']],

@@ -8,12 +8,18 @@ toc-title: "Outline"
 toc-depth: 1
 smaller	: false
 
+html-math-method: mathjax #This fixes browser math police
+
 slide-number: true
 show-slide-number: all
 format:
   revealjs:
     number-sections: true
-    mathjax: true
+    mathjax:
+      tex-extensions:
+        - amsmath
+        - bm
+        - physics
     include-after-body: header.html
 
 engine: julia
@@ -48,19 +54,34 @@ Health of individuals:
 *How does temperature variations affect
 the economy through health?*
 
-## Literature{#literature} 
+## Literature{#literature .smaller} 
 
-- Climate economics 
+- Climate economics: 
+    - Burke, Hsiang, Miguel, 2015: Global non-linear effect of temperature on economic production
+    - Hsiang, 2016: Climate Econometrics
+    - Carleton et al., 2022: Valuing the Global Mortality Consequences of Climate Change Accounting for Adaptation Costs and Benefits
 
 - Health economics 
+    - Capatina, 2015: Life-cycle effects of health risk
+    - De Nardi, 2019: Lifetime costs of bad health
 
-Literature gap: climate AND health on industrialized context.
+Literature gap: climate **and** health effect in **industrialized** context.
 
-## Research strategy
+## Research strategy {.smaller}
 
-- Defining a Setting
+1. Environment: 
+    - Empiry-based,
+    - Demographic and health response to temperature,
+    - _Ceteris Paribus_.
 
-- Running an economic model to estimate the lifetime income loss due to temperature variations.
+2. Economic model: 
+    - Simple features,
+    - Policy functions: consumption, labor, savings.
+
+3. Temperature path comparison: 
+    - Comparison of economic outcome for different temperature paths,
+    - Special focus on lifetime income,
+    - Historical (0 to 0.5 °C), Optimistic (0.5 to 2), Intermediate (to 3) and Pessimistic (to 4) scenarios.
 
 # Setting
 
@@ -122,7 +143,7 @@ become:
   L_t \sim \mathcal{B}(p_t)\text{ | } p_{t}\equiv p_{t}({H}_t, {T}_t)
 \end{equation}
 
-## Health transition
+## Health Transition {#health_transition}
 
 Sample space of Health: 
 $\Omega(H_{t}) \equiv [\![1,5]\!]$
@@ -135,13 +156,13 @@ Ordered Multinomial Logit Model
 
 Let $X_{H} \equiv (Age_{t}, T_{t}, Age_{t}\times T_{t}, H_{t-1})^{T}$
 
-\begin{equation}\tag{1.3}
+\begin{equation}\tag{1.2}
   \widehat{H_{t}} \sim \Lambda_{O}(\widehat{\beta_H}\cdot X_{H})
 \end{equation}
 
 [More about it](#ordered_multinomial_logit_regression_details)
 
-## Living Status
+## Living Status{#living_status}
 
 Sample space of living status: 
 $\Omega(L_{t}) \equiv \{0,1\}$
@@ -154,37 +175,36 @@ Logistic regression
 
 Let $X_{L} \equiv (H_{t},Age_{t},T_{t},H_{t}\times Age_{t} \times T_{t})^{T}$
 
-\begin{equation}\tag{2.3}
-  \widehat{L_t} = \Lambda  (\widehat{\beta_L}\cdot X_{L})
+\begin{equation}\tag{2.2}
+  \widehat{p_t} = \Lambda  (\widehat{\beta_L}\cdot X_{L})
 \end{equation}
 
 [More about it](#logit_model_details)
 
-## Health Proxy {#health_proxy_details}
+## Health Proxy{#health_proxy}
 
-In the submitted version of my work, I define the health proxy
-$HP_{i,t}$, and use its estimate, $\widehat{HP_{i,t}^{I}}$
-which leads to: 
+In the submitted version, health proxy is defined as:
+$HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}$
+and its estimate, $\widehat{HP_{i,t}^{OLS}}$ ($\widehat{H^{I}_{i,t}}$ in text)
+leads to: 
 
 \begin{equation}\tag{1.4}
   \widehat{p_{i,t}} = \Lambda \left( \widehat{\beta_0} +
-    \widehat{\beta_{H}} \cdot Health_{i,t} +
-    \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I} \right)
+    \widehat{\beta_{H}} \cdot H_{i,t} +
+    \widehat{\beta_{HP}} \cdot \widehat{HP_{i,t}^{OLS}} \right)
 \end{equation}
 
 \begin{equation}\tag{2.4}
-  \widehat{H_{i,t}^{I}} = \Lambda_{0} \left( \widehat{\beta_0} +
-    \widehat{\beta_{H}} \cdot Health_{i,t} +
-    \widehat{\beta_{HP}} \cdot \widehat{HP}_{i,t}^{I} \right)
+  \widehat{H_{i,t}^{HP}} = \Lambda_{0} \left( \widehat{\beta_0} +
+    \widehat{\beta_{H}} \cdot H_{i,t} +
+    \widehat{\beta_{HP}} \cdot \widehat{HP_{i,t}^{OLS}} \right)
 \end{equation}
 
-- Motivation: Eliminate outer effects.
+[More about it](#health_proxy_details)
 
-- Focus on acute health events 
+# Estimation results
 
-- Final results are essentially the same ([More about it](#health_proxy_details)).
-
-## Health transition {.scrollable}
+## Health Transition {.scrollable}
 
 ```{=html}
 <div style="display: flex; flex-wrap: wrap; justify-content: center;">
@@ -198,7 +218,23 @@ which leads to:
 
 ## Survival probability 
 
-## Economic model 
+Estimating through simulations: 
+
+::: {.columns}
+
+::: {.column width="50%"}
+![Average survival probabilities obtained with $N = 10\ 000$.](resources/probabilities_comparison.png){width=100%}
+:::
+
+::: {.column width="50%"}
+![Demographic evolution obtained with $N = 10\ 000$.](resources/demographic_comparison.png){width=100%}
+:::
+
+:::
+
+
+
+## Economic model {#economic_model}
 
 $$ \max_{\{c_{t},l_{t},s_{t+1}\}_{t=1}^{100}}{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot \left(\frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\varphi}}{1+\varphi}\right)\right]}$$
 
@@ -207,6 +243,11 @@ subject to:
 $$c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})$$
 
 $$s_{t+1}\geq \underline{s}, \forall t \in [\![1,100]\!]$$
+
+
+Expectation operator: 
+$\mathbb{E}[x_{t+1}] \equiv p_{t+1}\cdot x_{t+1}$
+
 
 ## First Order Conditions
 
@@ -218,9 +259,11 @@ $$s_{t+1}\geq \underline{s}, \forall t \in [\![1,100]\!]$$
   c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
 \end{equation}
 
-Analytical solution inexistence.
+With $\gamma_{t}$ the Lagrangien multiplicator associated with the borrowing constraint: $$s_{t+1} \geq \underline{s}$$
 
-[Proof]
+Analytical solution inexistence \rightarrow Numerical methods.
+
+[Proof](#analytical_impossibility_proof)
 
 # Numerical methods 
 
@@ -234,7 +277,7 @@ and it does matter for the results.
 
 - results: comparison, and interpretation of the general result idea.
 
-# Results
+# Numerical Results
 
 ## Methodology: 
 Taking different path, running the model, and comparing: 
@@ -266,20 +309,86 @@ Three temperature trajectories:
 
 # References 
 
+## References - 1 
+## References - 2
+
 # Appendix
 
 ## General framework assumptions{#framework_assumptions}
 
 - Independence assumption
 
+[Go back](#formal_description)
 
-[Initial slide](#formal_description)
+## Health Proxy specification{#health_proxy_details}
 
-## Health Proxy specification {#health_proxy_details}
+  - Motivation: Eliminate outer effects.
+  - Focus on acute health events 
+  - Final results are essentially the same.
 
 $HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}$
 
-[Go back]{#health_proxy}
+[Go back](#health_proxy)
 
-## Ordered Multinomial Logit Regression {#ordered_multinomial_logit_regression_details}
+## Ordered Multinomial Logit Regression (OMNL) - 1 {#ordered_multinomial_logit_regression_details}
 
+Let $y\in\{0,1,\dots,J\}$ be the dependent discrete ordinal variable we are
+trying to explain with covariates $x \in \mathbb{R}^{1\times K}$.
+Defining a latent variable $y^{*}$ such that: 
+
+$y^{*} = x\beta + e$
+
+with: 
+
+- $\beta \in \mathbb{R}^{K}$
+- $e|x \sim \mathcal{N}(0,1)$
+
+## OMNL - 2
+
+Let $\alpha_{1}<\alpha_2<\dots < \alpha_{J}$.
+The function linking $y$ and $y^*$ is: 
+
+\begin{cases}
+y = 0 \text{ if } y^{*} \leq \alpha_1 \\ 
+y = 1 \text{ if } \alpha_{1} \leq y^{*} \leq \alpha_2 \\
+\dots \\
+y = J \text{ if } \alpha_{1} \leq y^{*} \leq \alpha_J \\
+\end{cases}
+
+It follows that: 
+
+$P(y=0|x) = P(y^{*}\leq \alpha_1|x) = \Lambda (\alpha_1 - x\beta)$
+$P(y=1|x) = P(\alpha_1 < y^{*}\leq \alpha_2|x) = \Lambda (\alpha_2 - x\beta) - \Lambda (\alpha_1 - x\beta)$
+$\dots$
+$P(y=J|x) = P(y^{*}\leq \alpha_1|x) = P(y^{*} \geq \alpha_{J} | x) = 1 - \Lambda (\alpha_J - x\beta)$
+
+## OMNL - 3
+
+The $\alpha$ and $\beta$ vectors are estimated by maximizing the log-likelihood function such that: 
+
+\begin{equation}
+  \begin{split}
+    \mathcal{l}_{i}(\alpha,\beta) = & \ \mathbb{1}\cdot[y_i = 0] \cdot \log[\Lambda(\alpha_1 - x_i \beta)] \\
+    & + \mathbb{1}\cdot[y_i = 1] \cdot \log[\Lambda(\alpha_2 - x_i \beta) - \Lambda(\alpha_1 - x_{i}\beta)] \\
+    & \dots \\ 
+    & + \mathbb{1}[y_i = J]\cdot \log(1-\Lambda(\alpha_J-x_{i}\beta))
+  \end{split}
+\end{equation}
+
+[Go back](#health_transition)
+
+## Logit model {#logit_model_details}
+
+Logit model: ordered logit model with $J = 1$.
+
+$y \in \{0,1\}$
+
+$Pr(y = 1|x) \equiv p_{t}(x)$
+
+$\widehat{p_{t}} = \Lambda(x\widehat{\beta})$
+
+[Go back](#living_status)
+
+## Analytical solution inexistence {#analytical_impossibility_proof}
+
+[Go back](#economic_model)

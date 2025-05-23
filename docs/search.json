@@ -129,8 +129,8 @@
     "objectID": "Presentation/presentation.html#section",
     "href": "Presentation/presentation.html#section",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "8 ",
-    "text": "8 \n8.1 Functional forms of estimates\nSample space of Health:\n\\[\\Omega(H_{t}) \\equiv [\\![1,5]\\!]\\]\nOrdered Mulitnomial Logit Model\nH_{t} ~ Age, Temperature, interaction, H_{t-1}"
+    "section": "8.4 ",
+    "text": "8.4 \nLet \\(\\alpha_{1}&lt;\\alpha_2&lt;\\dots &lt; \\alpha_{J}\\). The function linking \\(y\\) and \\(y^*\\) is:\n\\[\\begin{cases}\ny = 0 \\text{ if } y^{*} \\leq \\alpha_1 \\\\\ny = 1 \\text{ if } \\alpha_{1} \\leq y^{*} \\leq \\alpha_2 \\\\\n\\dots \\\\\ny = J \\text{ if } \\alpha_{1} \\leq y^{*} \\leq \\alpha_J \\\\\n\\end{cases}\\]\nIt follows that:\n\\(P(y=0|x) = P(y^{*}\\leq \\alpha_1|x) = \\Lambda (\\alpha_1 - x\\beta)\\) \\(P(y=1|x) = P(\\alpha_1 &lt; y^{*}\\leq \\alpha_2|x) = \\Lambda (\\alpha_2 - x\\beta) - \\Lambda (\\alpha_1 - x\\beta)\\) \\(\\dots\\) \\(P(y=J|x) = P(y^{*}\\leq \\alpha_1|x) = P(y^{*} \\geq \\alpha_{J} | x) = 1 - \\Lambda (\\alpha_J - x\\beta)\\)"
   },
   {
     "objectID": "Presentation/presentation.html#research-topic",
@@ -144,7 +144,7 @@
     "href": "Presentation/presentation.html#literature",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "1.2 Literature",
-    "text": "1.2 Literature\n\nClimate economics\nHealth economics\n\nLiterature gap: climate AND health on industrialized context."
+    "text": "1.2 Literature\n\nClimate economics:\n\nBurke, Hsiang, Miguel, 2015: Global non-linear effect of temperature on economic production\nHsiang, 2016: Climate Econometrics\nCarleton et al., 2022: Valuing the Global Mortality Consequences of Climate Change Accounting for Adaptation Costs and Benefits\n\nHealth economics\n\nCapatina, 2015: Life-cycle effects of health risk\nDe Nardi, 2019: Lifetime costs of bad health\n\n\nLiterature gap: climate and health effect in industrialized context."
   },
   {
     "objectID": "Presentation/presentation.html#healh-and-life-draw",
@@ -158,7 +158,7 @@
     "href": "Presentation/presentation.html#research-strategy",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "1.3 Research strategy",
-    "text": "1.3 Research strategy\n\nDefining a Setting\nRunning an economic model to estimate the lifetime income loss due to temperature variations."
+    "text": "1.3 Research strategy\n\nEnvironment:\n\nEmpiry-based,\nDemographic and health response to temperature,\nCeteris Paribus.\n\nEconomic model:\n\nSimple features,\nPolicy functions: consumption, labor, savings.\n\nTemperature path comparison:\n\nComparison of economic outcome for different temperature paths,\nSpecial focus on lifetime income,\nHistorical (0 to 0.5 °C), Optimistic (0.5 to 2), Intermediate (to 3) and Pessimistic (to 4) scenarios."
   },
   {
     "objectID": "Presentation/presentation.html#estimation-method-definition-simplification",
@@ -199,8 +199,8 @@
     "objectID": "Presentation/presentation.html#health-transition",
     "href": "Presentation/presentation.html#health-transition",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "3.2 Health transition",
-    "text": "3.2 Health transition\nSample space of Health: \\(\\Omega(H_{t}) \\equiv [\\![1,5]\\!]\\)\nOrdered Multinomial Logit Model\n\\[\\begin{equation}\\tag{1.1}\n  H_t \\sim f_h({H}_{t-1}, {T}_t)\n\\end{equation}\\]\nLet \\(X_{H} \\equiv (Age_{t}, T_{t}, Age_{t}\\times T_{t}, H_{t-1})^{T}\\)\n\\[\\begin{equation}\\tag{1.3}\n  \\widehat{H_{t}} \\sim \\Lambda_{O}(\\widehat{\\beta_H}\\cdot X_{H})\n\\end{equation}\\]\nMore about it"
+    "section": "4.1 Health Transition",
+    "text": "4.1 Health Transition"
   },
   {
     "objectID": "Presentation/presentation.html#health-transition-1",
@@ -227,8 +227,8 @@
     "objectID": "Presentation/presentation.html#survival-probability",
     "href": "Presentation/presentation.html#survival-probability",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "3.6 Survival probability",
-    "text": "3.6 Survival probability"
+    "section": "4.2 Survival probability",
+    "text": "4.2 Survival probability\nEstimating through simulations:\n\n\n\n\n\nAverage survival probabilities obtained with \\(N = 10\\ 000\\).\n\n\n\n\n\n\nDemographic evolution obtained with \\(N = 10\\ 000\\)."
   },
   {
     "objectID": "Presentation/presentation.html#economic-model",
@@ -241,8 +241,8 @@
     "objectID": "Presentation/presentation.html#first-order-conditions",
     "href": "Presentation/presentation.html#first-order-conditions",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "3.8 First Order Conditions",
-    "text": "3.8 First Order Conditions\n\\[\\begin{equation}\\tag{F.O.C. 1}\n  c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{F.O.C. 2}\n  c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\]\nAnalytical solution inexistence.\n[Proof]"
+    "section": "4.4 First Order Conditions",
+    "text": "4.4 First Order Conditions\n\\[\\begin{equation}\\tag{F.O.C. 1}\n  c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{F.O.C. 2}\n  c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\]\nWith \\(\\gamma_{t}\\) the Lagrangien multiplicator associated with the borrowing constraint: \\[s_{t+1} \\geq \\underline{s}\\]\nAnalytical solution inexistence Numerical methods.\nProof"
   },
   {
     "objectID": "Presentation/presentation.html#numerical-methods",
@@ -304,8 +304,8 @@
     "objectID": "Presentation/presentation.html#framework_assumptions",
     "href": "Presentation/presentation.html#framework_assumptions",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "8.1 General framework assumptions",
-    "text": "8.1 General framework assumptions\n\nIndependence assumption\n\nInitial slide"
+    "section": "9.1 General framework assumptions",
+    "text": "9.1 General framework assumptions\n\nIndependence assumption\n\nGo back"
   },
   {
     "objectID": "Presentation/presentation.html#formal_description",
@@ -318,43 +318,43 @@
     "objectID": "Presentation/presentation.html#methodology",
     "href": "Presentation/presentation.html#methodology",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "5.1 Methodology:",
-    "text": "5.1 Methodology:\nTaking different path, running the model, and comparing:\n\nhealth,\nsurvival,\npolicies:\n\nconsumption,\nlabor,\nsavings\n\n\nFocus on one statistics: lifetime income."
+    "section": "6.1 Methodology:",
+    "text": "6.1 Methodology:\nTaking different path, running the model, and comparing:\n\nhealth,\nsurvival,\npolicies:\n\nconsumption,\nlabor,\nsavings\n\n\nFocus on one statistics: lifetime income."
   },
   {
     "objectID": "Presentation/presentation.html#temperature-trajectories",
     "href": "Presentation/presentation.html#temperature-trajectories",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "5.2 Temperature trajectories",
-    "text": "5.2 Temperature trajectories\nThree temperature trajectories:\n\nHistorical path: 0 to 1.5\nOptimistic path: 0.5 to 2.00\nIntermediate path: 0.5 to 3.00\nPessimistic path: 0.5 to 4.00"
+    "section": "6.2 Temperature trajectories",
+    "text": "6.2 Temperature trajectories\nThree temperature trajectories:\n\nHistorical path: 0 to 1.5\nOptimistic path: 0.5 to 2.00\nIntermediate path: 0.5 to 3.00\nPessimistic path: 0.5 to 4.00"
   },
   {
     "objectID": "Presentation/presentation.html#discussion",
     "href": "Presentation/presentation.html#discussion",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "5.3 Discussion",
-    "text": "5.3 Discussion"
+    "section": "6.3 Discussion",
+    "text": "6.3 Discussion"
   },
   {
     "objectID": "Presentation/presentation.html#recap",
     "href": "Presentation/presentation.html#recap",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "6.1 Recap",
-    "text": "6.1 Recap"
+    "section": "7.1 Recap",
+    "text": "7.1 Recap"
   },
   {
     "objectID": "Presentation/presentation.html#results-1",
     "href": "Presentation/presentation.html#results-1",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "6.2 Results",
-    "text": "6.2 Results"
+    "section": "7.2 Results",
+    "text": "7.2 Results"
   },
   {
     "objectID": "Presentation/presentation.html#algorithms",
     "href": "Presentation/presentation.html#algorithms",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "4.1 Algorithms",
-    "text": "4.1 Algorithms\nI have different ways of solving it numerically, and it does matter for the results.\n\nlist of algorithms\nperformance\nresults: comparison, and interpretation of the general result idea."
+    "section": "5.1 Algorithms",
+    "text": "5.1 Algorithms\nI have different ways of solving it numerically, and it does matter for the results.\n\nlist of algorithms\nperformance\nresults: comparison, and interpretation of the general result idea."
   },
   {
     "objectID": "Presentation/presentation.html#health-proxy",
@@ -367,15 +367,15 @@
     "objectID": "Presentation/presentation.html#health_proxy_details",
     "href": "Presentation/presentation.html#health_proxy_details",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "8.2 Health Proxy specification",
-    "text": "8.2 Health Proxy specification\n\\(HP_{i,t} = \\text{HighBP}_{i,t} + \\text{Lung}_{i,t} + \\text{Heart}_{i,t} + \\text{Stroke}_{i,t}\\)\nGo back"
+    "section": "9.2 Health Proxy specification",
+    "text": "9.2 Health Proxy specification\n\nMotivation: Eliminate outer effects.\nFocus on acute health events\nFinal results are essentially the same.\n\n\\(HP_{i,t} = \\text{HighBP}_{i,t} + \\text{Lung}_{i,t} + \\text{Heart}_{i,t} + \\text{Stroke}_{i,t}\\)\nGo back"
   },
   {
     "objectID": "Presentation/presentation.html#ordered_multinomial_logit_regression_details",
     "href": "Presentation/presentation.html#ordered_multinomial_logit_regression_details",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "8.3 Ordered Multinomial Logit Regression",
-    "text": "8.3 Ordered Multinomial Logit Regression"
+    "section": "9.3 Ordered Multinomial Logit Regression (OMNL) - 1",
+    "text": "9.3 Ordered Multinomial Logit Regression (OMNL) - 1\nLet \\(y\\in\\{0,1,\\dots,J\\}\\) be the dependent discrete ordinal variable we are trying to explain with covariates \\(x \\in \\mathbb{R}^{1\\times K}\\). Defining a latent variable \\(y^{*}\\) such that:\n\\(y^{*} = x\\beta + e\\)\nwith:\n\n\\(\\beta \\in \\mathbb{R}^{K}\\)\n\\(e|x \\sim \\mathcal{N}(0,1)\\)"
   },
   {
     "objectID": "Presentation/presentation.html#health-proxy-health_proxy_details",
@@ -383,5 +383,89 @@
     "title": "The effect of temperature-induced health variation on economics",
     "section": "3.4 Health Proxy {#health_proxy_details}1",
     "text": "3.4 Health Proxy {#health_proxy_details}1\nIn the submitted version of my work, I define the health proxy \\(HP_{i,t}\\), and use its estimate, \\(\\widehat{HP_{i,t}^{I}}\\) which leads to:\n\\[\\begin{equation}\\tag{1.4}\n  \\widehat{p_{i,t}} = \\Lambda \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot Health_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP}_{i,t}^{I} \\right)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.4}\n  \\widehat{H_{i,t}^{I}} = \\Lambda_{0} \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot Health_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP}_{i,t}^{I} \\right)\n\\end{equation}\\]\n\nMotivation: Eliminate outer effects.\nFocus on acute health events\nFinal results are essentially the same\n\nMore about it"
+  },
+  {
+    "objectID": "Presentation/presentation.html#section-1",
+    "href": "Presentation/presentation.html#section-1",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "8.5 ",
+    "text": "8.5 \nThe and vectors are estimated by maximizing the log-likelihood function such that:\n\\[\\begin{equation}\n  \\begin{split}\n    \\mathcal{l}_{i}(\\alpha,\\beta) = & \\ \\mathbb{1}\\cdot[y_i = 0] \\cdot \\log[\\Lambda(\\alpha_1 - x_i \\beta)] \\\\\n    & + \\mathbb{1}\\cdot[y_i = 1] \\cdot \\log[\\Lambda(\\alpha_2 - x_i \\beta) - \\Lambda(\\alpha_1 - x_{i}\\beta)] \\\\\n    & \\dots \\\\\n    & + \\mathbb{1}[y_i = J]\\cdot \\log(1-\\Lambda(\\alpha_J-x_{i}\\beta))\n  \\end{split}\n\\end{equation}\\]"
+  },
+  {
+    "objectID": "Presentation/presentation.html#omnl---2",
+    "href": "Presentation/presentation.html#omnl---2",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "9.4 OMNL - 2",
+    "text": "9.4 OMNL - 2\nLet \\(\\alpha_{1}&lt;\\alpha_2&lt;\\dots &lt; \\alpha_{J}\\). The function linking \\(y\\) and \\(y^*\\) is:\n\\[\\begin{cases}\ny = 0 \\text{ if } y^{*} \\leq \\alpha_1 \\\\\ny = 1 \\text{ if } \\alpha_{1} \\leq y^{*} \\leq \\alpha_2 \\\\\n\\dots \\\\\ny = J \\text{ if } \\alpha_{1} \\leq y^{*} \\leq \\alpha_J \\\\\n\\end{cases}\\]\nIt follows that:\n\\(P(y=0|x) = P(y^{*}\\leq \\alpha_1|x) = \\Lambda (\\alpha_1 - x\\beta)\\) \\(P(y=1|x) = P(\\alpha_1 &lt; y^{*}\\leq \\alpha_2|x) = \\Lambda (\\alpha_2 - x\\beta) - \\Lambda (\\alpha_1 - x\\beta)\\) \\(\\dots\\) \\(P(y=J|x) = P(y^{*}\\leq \\alpha_1|x) = P(y^{*} \\geq \\alpha_{J} | x) = 1 - \\Lambda (\\alpha_J - x\\beta)\\)"
+  },
+  {
+    "objectID": "Presentation/presentation.html#omnl---3",
+    "href": "Presentation/presentation.html#omnl---3",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "9.5 OMNL - 3",
+    "text": "9.5 OMNL - 3\nThe \\(\\alpha\\) and \\(\\beta\\) vectors are estimated by maximizing the log-likelihood function such that:\n\\[\\begin{equation}\n  \\begin{split}\n    \\mathcal{l}_{i}(\\alpha,\\beta) = & \\ \\mathbb{1}\\cdot[y_i = 0] \\cdot \\log[\\Lambda(\\alpha_1 - x_i \\beta)] \\\\\n    & + \\mathbb{1}\\cdot[y_i = 1] \\cdot \\log[\\Lambda(\\alpha_2 - x_i \\beta) - \\Lambda(\\alpha_1 - x_{i}\\beta)] \\\\\n    & \\dots \\\\\n    & + \\mathbb{1}[y_i = J]\\cdot \\log(1-\\Lambda(\\alpha_J-x_{i}\\beta))\n  \\end{split}\n\\end{equation}\\]\nGo back"
+  },
+  {
+    "objectID": "Presentation/presentation.html#references---1",
+    "href": "Presentation/presentation.html#references---1",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "8.1 References - 1",
+    "text": "8.1 References - 1"
+  },
+  {
+    "objectID": "Presentation/presentation.html#references---2",
+    "href": "Presentation/presentation.html#references---2",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "8.2 References - 2",
+    "text": "8.2 References - 2"
+  },
+  {
+    "objectID": "Presentation/presentation.html#health_proxy",
+    "href": "Presentation/presentation.html#health_proxy",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "3.4 Health Proxy",
+    "text": "3.4 Health Proxy\nIn the submitted version, health proxy is defined as: \\(HP_{i,t} = \\text{HighBP}_{i,t} + \\text{Lung}_{i,t} + \\text{Heart}_{i,t} + \\text{Stroke}_{i,t}\\) and its estimate, \\(\\widehat{HP_{i,t}^{OLS}}\\) (\\(\\widehat{H^{I}_{i,t}}\\) in text) leads to:\n\\[\\begin{equation}\\tag{1.4}\n  \\widehat{p_{i,t}} = \\Lambda \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot H_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP_{i,t}^{OLS}} \\right)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.4}\n  \\widehat{H_{i,t}^{HP}} = \\Lambda_{0} \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot H_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP_{i,t}^{OLS}} \\right)\n\\end{equation}\\]\nMore about it"
+  },
+  {
+    "objectID": "Presentation/presentation.html#analytical_impossibility_proof",
+    "href": "Presentation/presentation.html#analytical_impossibility_proof",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "9.7 Analytical solution inexistence",
+    "text": "9.7 Analytical solution inexistence\nGo back"
+  },
+  {
+    "objectID": "Presentation/presentation.html#health_transition",
+    "href": "Presentation/presentation.html#health_transition",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "3.2 Health Transition",
+    "text": "3.2 Health Transition\nSample space of Health: \\(\\Omega(H_{t}) \\equiv [\\![1,5]\\!]\\)\nOrdered Multinomial Logit Model\n\\[\\begin{equation}\\tag{1.1}\n  H_t \\sim f_h({H}_{t-1}, {T}_t)\n\\end{equation}\\]\nLet \\(X_{H} \\equiv (Age_{t}, T_{t}, Age_{t}\\times T_{t}, H_{t-1})^{T}\\)\n\\[\\begin{equation}\\tag{1.2}\n  \\widehat{H_{t}} \\sim \\Lambda_{O}(\\widehat{\\beta_H}\\cdot X_{H})\n\\end{equation}\\]\nMore about it"
+  },
+  {
+    "objectID": "Presentation/presentation.html#economic_model",
+    "href": "Presentation/presentation.html#economic_model",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "4.3 Economic model",
+    "text": "4.3 Economic model\n\\[ \\max_{\\{c_{t},l_{t},s_{t+1}\\}_{t=1}^{100}}{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\left(\\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right)\\right]}\\]\nsubject to:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\]\n\\[s_{t+1}\\geq \\underline{s}, \\forall t \\in [\\![1,100]\\!]\\]\nExpectation operator: \\(\\mathbb{E}[x_{t+1}] \\equiv p_{t+1}\\cdot x_{t+1}\\)"
+  },
+  {
+    "objectID": "Presentation/presentation.html#living_status",
+    "href": "Presentation/presentation.html#living_status",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "3.3 Living Status",
+    "text": "3.3 Living Status\nSample space of living status: \\(\\Omega(L_{t}) \\equiv \\{0,1\\}\\)\nLogistic regression\n\\[\\begin{equation}\\tag{2.1}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}({H}_t, {T}_t)\n\\end{equation}\\]\nLet \\(X_{L} \\equiv (H_{t},Age_{t},T_{t},H_{t}\\times Age_{t} \\times T_{t})^{T}\\)\n\\[\\begin{equation}\\tag{2.2}\n  \\widehat{p_t} = \\Lambda  (\\widehat{\\beta_L}\\cdot X_{L})\n\\end{equation}\\]\nMore about it"
+  },
+  {
+    "objectID": "Presentation/presentation.html#logit_model_details",
+    "href": "Presentation/presentation.html#logit_model_details",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "9.6 Logit model",
+    "text": "9.6 Logit model\nLogit model: ordered logit model with \\(J = 1\\).\n\\(y \\in \\{0,1\\}\\)\n\\(Pr(y = 1|x) \\equiv p_{t}(x)\\)\n\\(\\widehat{p_{t}} = \\Lambda(x\\widehat{\\beta})\\)\nGo back"
+  },
+  {
+    "objectID": "Presentation/presentation.html#results",
+    "href": "Presentation/presentation.html#results",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "7.2 Results",
+    "text": "7.2 Results"
   }
 ]
