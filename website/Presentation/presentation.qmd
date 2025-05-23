@@ -261,7 +261,7 @@ $\mathbb{E}[x_{t+1}] \equiv p_{t+1}\cdot x_{t+1}$
 
 With $\gamma_{t}$ the Lagrangien multiplicator associated with the borrowing constraint: $$s_{t+1} \geq \underline{s}$$
 
-Analytical solution inexistence \rightarrow Numerical methods.
+Analytical solution inexistence $\rightarrow$ Numerical methods.
 
 [Proof](#analytical_impossibility_proof)
 
@@ -277,30 +277,48 @@ and it does matter for the results.
 
 - results: comparison, and interpretation of the general result idea.
 
-# Numerical Results
+# Comparison Results
 
-## Methodology: 
+## Methodology
 Taking different path, running the model, and comparing: 
 
-- health, 
-- survival, 
-- policies: 
-  - consumption, 
-  - labor, 
-  - savings
-
-Focus on one statistics: lifetime income. 
+- Health, 
+- Survival, 
+- Choice policies: 
+  - Consumption, 
+  - Labor, 
+  - Savings
 
 ## Temperature trajectories
 
-Three temperature trajectories: 
+Four temperature trajectories: 
 
 - Historical path: 0 to 1.5
 - Optimistic path: 0.5 to 2.00
 - Intermediate path: 0.5 to 3.00
 - Pessimistic path: 0.5 to 4.00
 
+## Health 
+
+## Survival 
+
+## Consumption 
+
+## Labor Supply 
+
+## Savings 
+
+## Focus on Lifetime Income
+
 ## Discussion
+
+- Overall loss driven by demographic effects. 
+
+- Productivity variation through age drives the results in a life cycle fashion. 
+
+- Productivity variation through health increases the differences between scenarios.
+
+- Labour disutility variation as a function of health and temperature has the same effect. 
 
 # Conclusion
 

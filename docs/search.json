@@ -242,7 +242,7 @@
     "href": "Presentation/presentation.html#first-order-conditions",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "4.4 First Order Conditions",
-    "text": "4.4 First Order Conditions\n\\[\\begin{equation}\\tag{F.O.C. 1}\n  c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{F.O.C. 2}\n  c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\]\nWith \\(\\gamma_{t}\\) the Lagrangien multiplicator associated with the borrowing constraint: \\[s_{t+1} \\geq \\underline{s}\\]\nAnalytical solution inexistence Numerical methods.\nProof"
+    "text": "4.4 First Order Conditions\n\\[\\begin{equation}\\tag{F.O.C. 1}\n  c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{F.O.C. 2}\n  c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\]\nWith \\(\\gamma_{t}\\) the Lagrangien multiplicator associated with the borrowing constraint: \\[s_{t+1} \\geq \\underline{s}\\]\nAnalytical solution inexistence \\(\\rightarrow\\) Numerical methods.\nProof"
   },
   {
     "objectID": "Presentation/presentation.html#numerical-methods",
@@ -318,22 +318,22 @@
     "objectID": "Presentation/presentation.html#methodology",
     "href": "Presentation/presentation.html#methodology",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "6.1 Methodology:",
-    "text": "6.1 Methodology:\nTaking different path, running the model, and comparing:\n\nhealth,\nsurvival,\npolicies:\n\nconsumption,\nlabor,\nsavings\n\n\nFocus on one statistics: lifetime income."
+    "section": "6.1 Methodology",
+    "text": "6.1 Methodology\nTaking different path, running the model, and comparing:\n\nHealth,\nSurvival,\nChoice policies:\n\nConsumption,\nLabor,\nSavings"
   },
   {
     "objectID": "Presentation/presentation.html#temperature-trajectories",
     "href": "Presentation/presentation.html#temperature-trajectories",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "6.2 Temperature trajectories",
-    "text": "6.2 Temperature trajectories\nThree temperature trajectories:\n\nHistorical path: 0 to 1.5\nOptimistic path: 0.5 to 2.00\nIntermediate path: 0.5 to 3.00\nPessimistic path: 0.5 to 4.00"
+    "text": "6.2 Temperature trajectories\nFour temperature trajectories:\n\nHistorical path: 0 to 1.5\nOptimistic path: 0.5 to 2.00\nIntermediate path: 0.5 to 3.00\nPessimistic path: 0.5 to 4.00"
   },
   {
     "objectID": "Presentation/presentation.html#discussion",
     "href": "Presentation/presentation.html#discussion",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "6.3 Discussion",
-    "text": "6.3 Discussion"
+    "section": "6.9 Discussion",
+    "text": "6.9 Discussion\n\nOverall loss driven by demographic effects.\nProductivity variation through age drives the results in a life cycle fashion.\nProductivity variation through health increases the differences between scenarios.\nLabour disutility variation as a function of health and temperature has the same effect."
   },
   {
     "objectID": "Presentation/presentation.html#recap",
@@ -467,5 +467,47 @@
     "title": "The effect of temperature-induced health variation on economics",
     "section": "7.2 Results",
     "text": "7.2 Results"
+  },
+  {
+    "objectID": "Presentation/presentation.html#health",
+    "href": "Presentation/presentation.html#health",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6.3 Health",
+    "text": "6.3 Health"
+  },
+  {
+    "objectID": "Presentation/presentation.html#survival",
+    "href": "Presentation/presentation.html#survival",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6.4 Survival",
+    "text": "6.4 Survival"
+  },
+  {
+    "objectID": "Presentation/presentation.html#consumption",
+    "href": "Presentation/presentation.html#consumption",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6.5 Consumption",
+    "text": "6.5 Consumption"
+  },
+  {
+    "objectID": "Presentation/presentation.html#labor-supply",
+    "href": "Presentation/presentation.html#labor-supply",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6.6 Labor Supply",
+    "text": "6.6 Labor Supply"
+  },
+  {
+    "objectID": "Presentation/presentation.html#savings",
+    "href": "Presentation/presentation.html#savings",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6.7 Savings",
+    "text": "6.7 Savings"
+  },
+  {
+    "objectID": "Presentation/presentation.html#focus-on-lifetime-income",
+    "href": "Presentation/presentation.html#focus-on-lifetime-income",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6.8 Focus on Lifetime Income",
+    "text": "6.8 Focus on Lifetime Income"
   }
 ]

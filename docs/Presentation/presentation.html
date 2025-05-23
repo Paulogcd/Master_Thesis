@@ -157,7 +157,7 @@ Paulo Gugelmo Cavalheiro Dias
 <li><a href="#/estimation-method" id="/toc-estimation-method"><span class="header-section-number">3</span> Estimation method</a></li>
 <li><a href="#/estimation-results" id="/toc-estimation-results"><span class="header-section-number">4</span> Estimation results</a></li>
 <li><a href="#/numerical-methods" id="/toc-numerical-methods"><span class="header-section-number">5</span> Numerical methods</a></li>
-<li><a href="#/numerical-results" id="/toc-numerical-results"><span class="header-section-number">6</span> Numerical Results</a></li>
+<li><a href="#/comparison-results" id="/toc-comparison-results"><span class="header-section-number">6</span> Comparison Results</a></li>
 <li><a href="#/conclusion" id="/toc-conclusion"><span class="header-section-number">7</span> Conclusion</a></li>
 <li><a href="#/references" id="/toc-references"><span class="header-section-number">8</span> References</a></li>
 <li><a href="#/appendix" id="/toc-appendix"><span class="header-section-number">9</span> Appendix</a></li>
@@ -394,7 +394,7 @@ classDef linkLabel fill:none,stroke:none;
   c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
 \end{equation}\]</span></p>
 <p>With <span class="math inline">\(\gamma_{t}\)</span> the Lagrangien multiplicator associated with the borrowing constraint: <span class="math display">\[s_{t+1} \geq \underline{s}\]</span></p>
-<p>Analytical solution inexistence Numerical methods.</p>
+<p>Analytical solution inexistence <span class="math inline">\(\rightarrow\)</span> Numerical methods.</p>
 <p><a href="#/analytical_impossibility_proof">Proof</a></p>
 </section></section>
 <section>
@@ -412,28 +412,27 @@ classDef linkLabel fill:none,stroke:none;
 </ul>
 </section></section>
 <section>
-<section id="numerical-results" class="title-slide slide level1 center" data-number="6">
-<h1><span class="header-section-number">6</span> Numerical Results</h1>
+<section id="comparison-results" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> Comparison Results</h1>
 
 </section>
 <section id="methodology" class="slide level2" data-number="6.1">
-<h2><span class="header-section-number">6.1</span> Methodology:</h2>
+<h2><span class="header-section-number">6.1</span> Methodology</h2>
 <p>Taking different path, running the model, and comparing:</p>
 <ul>
-<li>health,</li>
-<li>survival,</li>
-<li>policies:
+<li>Health,</li>
+<li>Survival,</li>
+<li>Choice policies:
 <ul>
-<li>consumption,</li>
-<li>labor,</li>
-<li>savings</li>
+<li>Consumption,</li>
+<li>Labor,</li>
+<li>Savings</li>
 </ul></li>
 </ul>
-<p>Focus on one statistics: lifetime income.</p>
 </section>
 <section id="temperature-trajectories" class="slide level2" data-number="6.2">
 <h2><span class="header-section-number">6.2</span> Temperature trajectories</h2>
-<p>Three temperature trajectories:</p>
+<p>Four temperature trajectories:</p>
 <ul>
 <li>Historical path: 0 to 1.5</li>
 <li>Optimistic path: 0.5 to 2.00</li>
@@ -441,8 +440,32 @@ classDef linkLabel fill:none,stroke:none;
 <li>Pessimistic path: 0.5 to 4.00</li>
 </ul>
 </section>
-<section id="discussion" class="slide level2" data-number="6.3">
-<h2><span class="header-section-number">6.3</span> Discussion</h2>
+<section id="health" class="slide level2" data-number="6.3">
+<h2><span class="header-section-number">6.3</span> Health</h2>
+</section>
+<section id="survival" class="slide level2" data-number="6.4">
+<h2><span class="header-section-number">6.4</span> Survival</h2>
+</section>
+<section id="consumption" class="slide level2" data-number="6.5">
+<h2><span class="header-section-number">6.5</span> Consumption</h2>
+</section>
+<section id="labor-supply" class="slide level2" data-number="6.6">
+<h2><span class="header-section-number">6.6</span> Labor Supply</h2>
+</section>
+<section id="savings" class="slide level2" data-number="6.7">
+<h2><span class="header-section-number">6.7</span> Savings</h2>
+</section>
+<section id="focus-on-lifetime-income" class="slide level2" data-number="6.8">
+<h2><span class="header-section-number">6.8</span> Focus on Lifetime Income</h2>
+</section>
+<section id="discussion" class="slide level2" data-number="6.9">
+<h2><span class="header-section-number">6.9</span> Discussion</h2>
+<ul>
+<li><p>Overall loss driven by demographic effects.</p></li>
+<li><p>Productivity variation through age drives the results in a life cycle fashion.</p></li>
+<li><p>Productivity variation through health increases the differences between scenarios.</p></li>
+<li><p>Labour disutility variation as a function of health and temperature has the same effect.</p></li>
+</ul>
 </section></section>
 <section>
 <section id="conclusion" class="title-slide slide level1 center" data-number="7">
