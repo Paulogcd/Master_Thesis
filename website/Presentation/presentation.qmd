@@ -289,7 +289,7 @@ and it does matter for the results.
 :::
 
 ::: {.column width="30%"}
-![Average annual temperature and its 95% confidence interval, in the Berkeley data.](resources/description_Berkeley.png){width=100%}
+![Consumption policy per age in the FOC approximated algorithm 2.](resources/numerical_FOC_2_approximation_Consumption.png){width=100%}
 :::
 
 :::
@@ -300,15 +300,15 @@ and it does matter for the results.
 ::: {.columns}
 
 ::: {.column width="30%"}
-![Consumption policy per age in the pure numerical algorithm.](resources/numerical_pure_numerical_Labour Supply.png){width=100%}
+![Labour supply policy per age in the pure numerical algorithm.](resources/numerical_pure_numerical_Labour Supply.png){width=100%}
 :::
 
 ::: {.column width="30%"}
-![Consumption policy per age in the FOC approximated algorithm 1.](resources/numerical_FOC_1_approximation_Labour Supply.png){width=100%}
+![Labour supply policy per age in the FOC approximated algorithm 1.](resources/numerical_FOC_1_approximation_Labour Supply.png){width=100%}
 :::
 
 ::: {.column width="30%"}
-![Average annual temperature and its 95% confidence interval, in the Berkeley data.](resources/description_Berkeley.png){width=100%}
+![Labour supply policy per age in the FOC approximated algorithm 2.](resources/numerical_FOC_2_approximation_Labour Supply.png){width=100%}
 :::
 
 :::
@@ -318,15 +318,15 @@ and it does matter for the results.
 ::: {.columns}
 
 ::: {.column width="30%"}
-![Consumption policy per age in the pure numerical algorithm.](resources/numerical_pure_numerical_Savings.png){width=100%}
+![Savings policy per age in the pure numerical algorithm.](resources/numerical_pure_numerical_Savings.png){width=100%}
 :::
 
 ::: {.column width="30%"}
-![Consumption policy per age in the FOC approximated algorithm 1.](resources/numerical_FOC_1_approximation_Savings.png){width=100%}
+![Savings policy per age in the FOC approximated algorithm 1.](resources/numerical_FOC_1_approximation_Savings.png){width=100%}
 :::
 
 ::: {.column width="30%"}
-![Average annual temperature and its 95% confidence interval, in the Berkeley data.](resources/description_Berkeley.png){width=100%}
+![Savings policy per age in the FOC approximated algorithm 2.](resources/numerical_FOC_2_approximation_Savings.png){width=100%}
 :::
 
 :::
@@ -336,20 +336,28 @@ and it does matter for the results.
 ::: {.columns}
 
 ::: {.column width="30%"}
-![Consumption policy per age in the pure numerical algorithm.](resources/numerical_pure_numerical_error.png){width=100%}
+![Performance of the pure numerical algorithm.](resources/numerical_pure_numerical_error.png){width=100%}
 :::
 
 ::: {.column width="30%"}
-![Consumption policy per age in the FOC approximated algorithm 1.](resources/numerical_FOC_1_approximation_error.png){width=100%}
+![Performance of the FOC approximated algorithm 1.](resources/numerical_FOC_1_approximation_error.png){width=100%}
 :::
 
 ::: {.column width="30%"}
-![Average annual temperature and its 95% confidence interval, in the Berkeley data.](resources/description_Berkeley.png){width=100%}
+![Performance of the FOC approximated algorithm 2.](resources/numerical_FOC_2_approximation_error.png){width=100%}
 :::
 
 :::
 
 ## General algorithmic assessment
+
+- Pure numerical approach performs better in terms of precision.
+
+- Labor FOC-approximation: interesting to see the F.O.C.
+
+- Consumption FOC-approximation: estimation of $\gamma_{t}$: positively correlated with age.
+
+- Endogenous grid method could have been better, but was not implemented here. 
 
 # Comparison Results
 
@@ -367,10 +375,10 @@ Taking different path, running the model, and comparing:
 
 Four temperature trajectories: 
 
-- Historical path: 0 to 1.5
-- Optimistic path: 0.5 to 2.00
-- Intermediate path: 0.5 to 3.00
-- Pessimistic path: 0.5 to 4.00
+- Historical path: 0 to 1.50 °C
+- Optimistic path: 0.5 to 2.00 °C
+- Intermediate path: 0.5 to 3.00 °C
+- Pessimistic path: 0.5 to 4.00 °C
 
 ## Health 
 
@@ -388,7 +396,7 @@ Four temperature trajectories:
 
 - Overall loss driven by demographic effects. 
 
-- Productivity variation through age drives the results in a life cycle fashion. 
+- Productivity variation through age drives the results in a life cycle fashion (increase of distance between ages).
 
 - Productivity variation through health increases the differences between scenarios.
 

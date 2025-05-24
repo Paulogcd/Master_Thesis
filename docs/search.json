@@ -102,35 +102,35 @@
     "href": "Presentation/presentation.html#results-consumption",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "5.2 Results: Consumption",
-    "text": "5.2 Results: Consumption\n\n\n\n\n\nConsumption policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nAverage annual temperature and its 95% confidence interval, in the Berkeley data."
+    "text": "5.2 Results: Consumption\n\n\n\n\n\nConsumption policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 2."
   },
   {
     "objectID": "Presentation/presentation.html#results-labour-supply",
     "href": "Presentation/presentation.html#results-labour-supply",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "5.3 Results: Labour supply",
-    "text": "5.3 Results: Labour supply\n\n\n\n\n\nConsumption policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nAverage annual temperature and its 95% confidence interval, in the Berkeley data."
+    "text": "5.3 Results: Labour supply\n\n\n\n\n\nLabour supply policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nLabour supply policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nLabour supply policy per age in the FOC approximated algorithm 2."
   },
   {
     "objectID": "Presentation/presentation.html#results-savings",
     "href": "Presentation/presentation.html#results-savings",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "5.4 Results: Savings",
-    "text": "5.4 Results: Savings\n\n\n\n\n\nConsumption policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nAverage annual temperature and its 95% confidence interval, in the Berkeley data."
+    "text": "5.4 Results: Savings\n\n\n\n\n\nSavings policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nSavings policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nSavings policy per age in the FOC approximated algorithm 2."
   },
   {
     "objectID": "Presentation/presentation.html#performance",
     "href": "Presentation/presentation.html#performance",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "5.5 Performance",
-    "text": "5.5 Performance\n\n\n\n\n\nConsumption policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nAverage annual temperature and its 95% confidence interval, in the Berkeley data."
+    "text": "5.5 Performance\n\n\n\n\n\nPerformance of the pure numerical algorithm.\n\n\n\n\n\n\nPerformance of the FOC approximated algorithm 1.\n\n\n\n\n\n\nPerformance of the FOC approximated algorithm 2."
   },
   {
     "objectID": "Presentation/presentation.html#general-algorithmic-assessment",
     "href": "Presentation/presentation.html#general-algorithmic-assessment",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "5.6 General algorithmic assessment",
-    "text": "5.6 General algorithmic assessment"
+    "text": "5.6 General algorithmic assessment\n\nPure numerical approach performs better in terms of precision.\nLabor FOC-approximation: interesting to see the F.O.C.\nConsumption FOC-approximation: estimation of \\(\\gamma_{t}\\): positively correlated with age.\nEndogenous grid method could have been better, but was not implemented here."
   },
   {
     "objectID": "Presentation/presentation.html#methodology",
@@ -144,7 +144,7 @@
     "href": "Presentation/presentation.html#temperature-trajectories",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "6.2 Temperature trajectories",
-    "text": "6.2 Temperature trajectories\nFour temperature trajectories:\n\nHistorical path: 0 to 1.5\nOptimistic path: 0.5 to 2.00\nIntermediate path: 0.5 to 3.00\nPessimistic path: 0.5 to 4.00"
+    "text": "6.2 Temperature trajectories\nFour temperature trajectories:\n\nHistorical path: 0 to 1.50 °C\nOptimistic path: 0.5 to 2.00 °C\nIntermediate path: 0.5 to 3.00 °C\nPessimistic path: 0.5 to 4.00 °C"
   },
   {
     "objectID": "Presentation/presentation.html#health",
@@ -193,7 +193,7 @@
     "href": "Presentation/presentation.html#discussion",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "6.9 Discussion",
-    "text": "6.9 Discussion\n\nOverall loss driven by demographic effects.\nProductivity variation through age drives the results in a life cycle fashion.\nProductivity variation through health increases the differences between scenarios.\nLabour disutility variation as a function of health and temperature has the same effect."
+    "text": "6.9 Discussion\n\nOverall loss driven by demographic effects.\nProductivity variation through age drives the results in a life cycle fashion (increase of distance between ages).\nProductivity variation through health increases the differences between scenarios.\nLabour disutility variation as a function of health and temperature has the same effect."
   },
   {
     "objectID": "Presentation/presentation.html#recap",
