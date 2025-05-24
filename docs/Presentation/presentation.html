@@ -13,7 +13,7 @@
   <meta name="generator" content="quarto-1.6.40">
 
   <meta name="author" content="Paulo Gugelmo Cavalheiro Dias">
-  <meta name="dcterms.date" content="2025-05-23">
+  <meta name="dcterms.date" content="2025-05-24">
   <title>Modelling climate impact on economy through health – The effect of temperature-induced health variation on economics</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -147,7 +147,7 @@ Paulo Gugelmo Cavalheiro Dias
     </div>
 </div>
 
-  <p class="date">2025-05-23</p>
+  <p class="date">2025-05-24</p>
 </section><section id="TOC">
 <nav role="doc-toc"> 
 <h2 id="toc-title">Outline</h2>
@@ -406,10 +406,117 @@ classDef linkLabel fill:none,stroke:none;
 <h2><span class="header-section-number">5.1</span> Algorithms</h2>
 <p>I have different ways of solving it numerically, and it does matter for the results.</p>
 <ul>
-<li><p>list of algorithms</p></li>
-<li><p>performance</p></li>
-<li><p>results: comparison, and interpretation of the general result idea.</p></li>
+<li>Pure numerical Value function iteration.</li>
+<li>FOC-approximated Value function iteration.</li>
+<li>Interpolated grid.</li>
 </ul>
+</section>
+<section id="results-consumption" class="slide level2" data-number="5.2">
+<h2><span class="header-section-number">5.2</span> Results: Consumption</h2>
+<div class="columns">
+<div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/numerical_pure_numerical_consumption.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Consumption policy per age in the pure numerical algorithm."><img data-src="resources/numerical_pure_numerical_consumption.png" style="width:100.0%" alt="Consumption policy per age in the pure numerical algorithm."></a></p>
+<figcaption>Consumption policy per age in the pure numerical algorithm.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/numerical_FOC_1_approximation_Consumption.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Consumption policy per age in the FOC approximated algorithm 1."><img data-src="resources/numerical_FOC_1_approximation_Consumption.png" style="width:100.0%" alt="Consumption policy per age in the FOC approximated algorithm 1."></a></p>
+<figcaption>Consumption policy per age in the FOC approximated algorithm 1.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/description_Berkeley.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Average annual temperature and its 95% confidence interval, in the Berkeley data."><img data-src="resources/description_Berkeley.png" style="width:100.0%" alt="Average annual temperature and its 95% confidence interval, in the Berkeley data."></a></p>
+<figcaption>Average annual temperature and its 95% confidence interval, in the Berkeley data.</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="results-labour-supply" class="slide level2" data-number="5.3">
+<h2><span class="header-section-number">5.3</span> Results: Labour supply</h2>
+<div class="columns">
+<div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/numerical_pure_numerical_Labour Supply.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Consumption policy per age in the pure numerical algorithm."><img data-src="resources/numerical_pure_numerical_Labour Supply.png" style="width:100.0%" alt="Consumption policy per age in the pure numerical algorithm."></a></p>
+<figcaption>Consumption policy per age in the pure numerical algorithm.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/numerical_FOC_1_approximation_Labour Supply.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Consumption policy per age in the FOC approximated algorithm 1."><img data-src="resources/numerical_FOC_1_approximation_Labour Supply.png" style="width:100.0%" alt="Consumption policy per age in the FOC approximated algorithm 1."></a></p>
+<figcaption>Consumption policy per age in the FOC approximated algorithm 1.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/description_Berkeley.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Average annual temperature and its 95% confidence interval, in the Berkeley data."><img data-src="resources/description_Berkeley.png" style="width:100.0%" alt="Average annual temperature and its 95% confidence interval, in the Berkeley data."></a></p>
+<figcaption>Average annual temperature and its 95% confidence interval, in the Berkeley data.</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="results-savings" class="slide level2" data-number="5.4">
+<h2><span class="header-section-number">5.4</span> Results: Savings</h2>
+<div class="columns">
+<div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/numerical_pure_numerical_Savings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Consumption policy per age in the pure numerical algorithm."><img data-src="resources/numerical_pure_numerical_Savings.png" style="width:100.0%" alt="Consumption policy per age in the pure numerical algorithm."></a></p>
+<figcaption>Consumption policy per age in the pure numerical algorithm.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/numerical_FOC_1_approximation_Savings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="Consumption policy per age in the FOC approximated algorithm 1."><img data-src="resources/numerical_FOC_1_approximation_Savings.png" style="width:100.0%" alt="Consumption policy per age in the FOC approximated algorithm 1."></a></p>
+<figcaption>Consumption policy per age in the FOC approximated algorithm 1.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/description_Berkeley.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="Average annual temperature and its 95% confidence interval, in the Berkeley data."><img data-src="resources/description_Berkeley.png" style="width:100.0%" alt="Average annual temperature and its 95% confidence interval, in the Berkeley data."></a></p>
+<figcaption>Average annual temperature and its 95% confidence interval, in the Berkeley data.</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="performance" class="slide level2" data-number="5.5">
+<h2><span class="header-section-number">5.5</span> Performance</h2>
+<div class="columns">
+<div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/numerical_pure_numerical_error.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" title="Consumption policy per age in the pure numerical algorithm."><img data-src="resources/numerical_pure_numerical_error.png" style="width:100.0%" alt="Consumption policy per age in the pure numerical algorithm."></a></p>
+<figcaption>Consumption policy per age in the pure numerical algorithm.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/numerical_FOC_1_approximation_error.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="Consumption policy per age in the FOC approximated algorithm 1."><img data-src="resources/numerical_FOC_1_approximation_error.png" style="width:100.0%" alt="Consumption policy per age in the FOC approximated algorithm 1."></a></p>
+<figcaption>Consumption policy per age in the FOC approximated algorithm 1.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="resources/description_Berkeley.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="Average annual temperature and its 95% confidence interval, in the Berkeley data."><img data-src="resources/description_Berkeley.png" style="width:100.0%" alt="Average annual temperature and its 95% confidence interval, in the Berkeley data."></a></p>
+<figcaption>Average annual temperature and its 95% confidence interval, in the Berkeley data.</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="general-algorithmic-assessment" class="slide level2" data-number="5.6">
+<h2><span class="header-section-number">5.6</span> General algorithmic assessment</h2>
 </section></section>
 <section>
 <section id="comparison-results" class="title-slide slide level1 center" data-number="6">

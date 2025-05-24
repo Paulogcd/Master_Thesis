@@ -272,10 +272,84 @@ Analytical solution inexistence $\rightarrow$ Numerical methods.
 I have different ways of solving it numerically, 
 and it does matter for the results.
 
-- list of algorithms 
-- performance 
+- Pure numerical Value function iteration.
+- FOC-approximated Value function iteration.
+- Interpolated grid.
 
-- results: comparison, and interpretation of the general result idea.
+## Results: Consumption 
+
+::: {.columns}
+
+::: {.column width="30%"}
+![Consumption policy per age in the pure numerical algorithm.](resources/numerical_pure_numerical_consumption.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Consumption policy per age in the FOC approximated algorithm 1.](resources/numerical_FOC_1_approximation_Consumption.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Average annual temperature and its 95% confidence interval, in the Berkeley data.](resources/description_Berkeley.png){width=100%}
+:::
+
+:::
+
+
+## Results: Labour supply 
+
+::: {.columns}
+
+::: {.column width="30%"}
+![Consumption policy per age in the pure numerical algorithm.](resources/numerical_pure_numerical_Labour Supply.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Consumption policy per age in the FOC approximated algorithm 1.](resources/numerical_FOC_1_approximation_Labour Supply.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Average annual temperature and its 95% confidence interval, in the Berkeley data.](resources/description_Berkeley.png){width=100%}
+:::
+
+:::
+
+## Results: Savings 
+
+::: {.columns}
+
+::: {.column width="30%"}
+![Consumption policy per age in the pure numerical algorithm.](resources/numerical_pure_numerical_Savings.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Consumption policy per age in the FOC approximated algorithm 1.](resources/numerical_FOC_1_approximation_Savings.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Average annual temperature and its 95% confidence interval, in the Berkeley data.](resources/description_Berkeley.png){width=100%}
+:::
+
+:::
+
+## Performance 
+
+::: {.columns}
+
+::: {.column width="30%"}
+![Consumption policy per age in the pure numerical algorithm.](resources/numerical_pure_numerical_error.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Consumption policy per age in the FOC approximated algorithm 1.](resources/numerical_FOC_1_approximation_error.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Average annual temperature and its 95% confidence interval, in the Berkeley data.](resources/description_Berkeley.png){width=100%}
+:::
+
+:::
+
+## General algorithmic assessment
 
 # Comparison Results
 
