@@ -382,13 +382,51 @@ Four temperature trajectories:
 
 ## Health 
 
+![Average health in different temperature scenarios.](resources/average_health.png){width=90%}
+
 ## Survival 
+
+::: {.columns}
+
+::: {.column width="50%"}
+![Average survival probabilities obtained with $N = 10\ 000$.](resources/probabilities_comparison.png){width=100%}
+:::
+
+::: {.column width="50%"}
+![Demographic evolution obtained with $N = 10\ 000$.](resources/demographic_comparison.png){width=100%}
+:::
+
+:::
 
 ## Consumption 
 
+::: {.columns}
+
+::: {.column width="100%"}
+![Consumption policy comparison accross scenarios.](resources/comparison_Consumption.png){width=90%}
+:::
+
+:::
+
 ## Labor Supply 
 
+::: {.columns}
+
+::: {.column width="100%"}
+![Consumption policy comparison accross scenarios.](resources/comparison_Labor.png){width=90%}
+:::
+
+:::
+
 ## Savings 
+
+::: {.columns}
+
+::: {.column width="100%"}
+![Consumption policy comparison accross scenarios.](resources/comparison_Savings.png){width=90%}
+:::
+
+:::
 
 ## Focus on Lifetime Income
 
