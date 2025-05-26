@@ -413,7 +413,7 @@ Four temperature trajectories:
 ::: {.columns}
 
 ::: {.column width="100%"}
-![Consumption policy comparison accross scenarios.](resources/comparison_Labor.png){width=90%}
+![Labor Supply policy comparison accross scenarios.](resources/comparison_Labor.png){width=90%}
 :::
 
 :::
@@ -423,12 +423,24 @@ Four temperature trajectories:
 ::: {.columns}
 
 ::: {.column width="100%"}
-![Consumption policy comparison accross scenarios.](resources/comparison_Savings.png){width=90%}
+![Savings policy comparison accross scenarios.](resources/comparison_Savings.png){width=90%}
 :::
 
 :::
 
 ## Focus on Lifetime Income
+
+::: {.columns}
+
+::: {.column width="50%"}
+![Lifetime income comparison of hand-to-mouth individuals accross scenarios.](resources/comparison_lifetime_income_hand_to_mouth.png){width=90%}
+:::
+
+::: {.column width="50%"}
+![Lifetime income of rich individuals comparison accross scenarios.](resources/comparison_lifetime_income_rich.png){width=90%}
+:::
+
+:::
 
 ## Discussion
 
