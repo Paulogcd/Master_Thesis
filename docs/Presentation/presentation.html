@@ -519,7 +519,6 @@ classDef linkLabel fill:none,stroke:none;
 <h2><span class="header-section-number">5.6</span> General algorithmic assessment</h2>
 <ul>
 <li><p>Pure numerical approach performs better in terms of precision.</p></li>
-<li><p>Labor FOC-approximation: interesting to see the F.O.C.</p></li>
 <li><p>Consumption FOC-approximation: estimation of <span class="math inline">\(\gamma_{t}\)</span>: positively correlated with age.</p></li>
 <li><p>Endogenous grid method could have been better, but was not implemented here.</p></li>
 </ul>
@@ -557,7 +556,7 @@ classDef linkLabel fill:none,stroke:none;
 <h2><span class="header-section-number">6.3</span> Health</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/average_health.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="Average health in different temperature scenarios."><img data-src="resources/average_health.png" style="width:90.0%" alt="Average health in different temperature scenarios."></a></p>
+<p><a href="resources/average_health.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="Average health in different temperature scenarios."><img data-src="resources/average_health.png" style="width:70.0%" alt="Average health in different temperature scenarios."></a></p>
 <figcaption>Average health in different temperature scenarios.</figcaption>
 </figure>
 </div>
@@ -581,44 +580,40 @@ classDef linkLabel fill:none,stroke:none;
 </div>
 </div></div>
 </section>
-<section id="consumption" class="slide level2" data-number="6.5">
+<section id="consumption_comparison" class="slide level2" data-number="6.5">
 <h2><span class="header-section-number">6.5</span> Consumption</h2>
-<div class="columns">
-<div class="column" style="width:100%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/comparison_Consumption.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20" title="Consumption policy comparison accross scenarios."><img data-src="resources/comparison_Consumption.png" style="width:90.0%" alt="Consumption policy comparison accross scenarios."></a></p>
+<p><a href="resources/comparison_Consumption.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20" title="Consumption policy comparison accross scenarios."><img data-src="resources/comparison_Consumption.png" style="width:60.0%" alt="Consumption policy comparison accross scenarios."></a></p>
 <figcaption>Consumption policy comparison accross scenarios.</figcaption>
 </figure>
 </div>
-</div></div>
+<p><a href="#/consumption_change_analytical">More about it.</a></p>
 </section>
-<section id="labor-supply" class="slide level2" data-number="6.6">
+<section id="labor_supply_comparison" class="slide level2" data-number="6.6">
 <h2><span class="header-section-number">6.6</span> Labor Supply</h2>
-<div class="columns">
-<div class="column" style="width:100%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/comparison_Labor.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21" title="Labor Supply policy comparison accross scenarios."><img data-src="resources/comparison_Labor.png" style="width:90.0%" alt="Labor Supply policy comparison accross scenarios."></a></p>
-<figcaption>Labor Supply policy comparison accross scenarios.</figcaption>
+<p><a href="resources/comparison_Labor.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21" title="Labor supply policy comparison accross scenarios."><img data-src="resources/comparison_Labor.png" style="width:60.0%" alt="Labor supply policy comparison accross scenarios."></a></p>
+<figcaption>Labor supply policy comparison accross scenarios.</figcaption>
 </figure>
 </div>
-</div></div>
+<p><a href="#/labor_change_analytical">More about it.</a></p>
 </section>
-<section id="savings" class="slide level2" data-number="6.7">
+<section id="savings_comparison" class="slide level2" data-number="6.7">
 <h2><span class="header-section-number">6.7</span> Savings</h2>
-<div class="columns">
-<div class="column" style="width:100%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/comparison_Savings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-22" title="Savings policy comparison accross scenarios."><img data-src="resources/comparison_Savings.png" style="width:90.0%" alt="Savings policy comparison accross scenarios."></a></p>
+<p><a href="resources/comparison_Savings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-22" title="Savings policy comparison accross scenarios."><img data-src="resources/comparison_Savings.png" style="width:60.0%" alt="Savings policy comparison accross scenarios."></a></p>
 <figcaption>Savings policy comparison accross scenarios.</figcaption>
 </figure>
 </div>
-</div></div>
+<p><a href="#/savings_change_analytical">More about it.</a></p>
 </section>
 <section id="focus-on-lifetime-income" class="slide level2" data-number="6.8">
 <h2><span class="header-section-number">6.8</span> Focus on Lifetime Income</h2>
+<p>Defining lifetime income as:</p>
+<p><span class="math display">\[Y \equiv \sum_{t = 20}^{100} \beta^t \cdot \mathbb{E}\left[l_{t}(s_{t}) \cdot z_{t}(s_{t})\right]\]</span></p>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
@@ -735,6 +730,41 @@ y = J \text{ if } \alpha_{1} \leq y^{*} \leq \alpha_J \\
 <section id="analytical_impossibility_proof" class="slide level2" data-number="9.7">
 <h2><span class="header-section-number">9.7</span> Analytical solution inexistence</h2>
 <p><a href="#/economic_model">Go back</a></p>
+</section>
+<section id="consumption_change_analytical" class="slide level2 smaller" data-number="9.8">
+<h2><span class="header-section-number">9.8</span> Analytical result of consumption change</h2>
+<p><span class="math display">\[\begin{equation}\tag{F.O.C. 2}
+  c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
+\end{equation}\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[\begin{equation}
+  c_{t} = \left[\beta \cdot p_{t+1}\cdot c^{-\rho}_{t+1}\cdot (1+r_{t+1}) + \gamma_{t}\right]^{-\frac{1}{\rho}}
+\end{equation}\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[\begin{equation}
+  \frac{\partial c_{t}}{\partial p_{t+1}} =  \left[\beta \cdot c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] \cdot c_{t}^{-1}
+\end{equation}\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[\begin{equation}
+  \frac{\partial c_{t}}{\partial p_{t+1}} =  \frac{\beta\cdot (1+r_{t+1})}{c_{t}\cdot c^{\rho}_{t+1}} &gt; 0
+\end{equation}\]</span></p>
+<p><a href="#/consumption_comparison">Go back</a></p>
+</section>
+<section id="labor_change_analytical" class="slide level2 smaller" data-number="9.9">
+<h2><span class="header-section-number">9.9</span> Analytical result of labor change</h2>
+<p><span class="math display">\[\begin{equation}\tag{F.O.C. 1}
+  c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi}
+\end{equation}\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[\begin{equation}
+  l_{t} = \left[\frac{z_{t}}{c^{\rho}_{t}\cdot\xi_{t}}\right]^{\frac{1}{\varphi}}
+\end{equation}\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[\begin{equation}
+  \frac{\partial l_{t}}{\partial p_{t+1}} = \left[\frac{z_{t}}{\xi_{t}}\right]^{\frac{1}{\varphi}} \cdot
+\frac{\partial}{\partial p_{t+1}} \cdot c_{t}^{-\frac{\rho}{\varphi}}
+\end{equation}\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[\begin{equation}
+  \frac{\partial l_{t}}{\partial p_{t+1}} = \left[\frac{z_{t}}{\xi_{t}}\right]^{\frac{1}{\varphi}} \cdot
+  \left(-\frac{\rho}{\varphi}\right) \cdot
+  \frac{\partial c_{t}}{\partial p_{t+1}} \cdot c_{t}^{-\frac{\rho+\varphi}{\varphi}} &lt; 0
+\end{equation}\]</span></p>
+<p><a href="#/labor_supply_comparison">Go back</a></p>
+</section>
+<section id="savings_change_analytical" class="slide level2 smaller" data-number="9.10">
+<h2><span class="header-section-number">9.10</span> Analytical result of savings</h2>
+<p>From the budget constraint, binding:</p>
+<p><span class="math display">\[c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[s_{t+1} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})-c_{t}\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[\frac{\partial s_{t+1}}{\partial p_{t+1}} = \frac{\partial }{\partial p_{t+1}} l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})-c_{t}\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[\frac{\partial s_{t+1}}{\partial p_{t+1}} = z_{t}\cdot\frac{\partial l_{t}}{\partial p_{t+1}} l_{t}  -\frac{\partial c_{t}}{\partial p_{t+1}} &lt; 0 \]</span></p>
+<p><a href="#/savings_comparison">Go back</a></p>
 
 
 </section></section>
@@ -990,6 +1020,9 @@ y = J \text{ if } \alpha_{1} \leq y^{*} \leq \alpha_J \\
       pointer-events: none;
       text-transform: uppercase; /* Optional for discreet style */
       letter-spacing: 1px; /* Optional for better readability */
+    }
+    .caption{
+       text-align: center;
     }
     </style>
     <script id="quarto-html-after-body" type="application/javascript">

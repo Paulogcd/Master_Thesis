@@ -353,8 +353,6 @@ and it does matter for the results.
 
 - Pure numerical approach performs better in terms of precision.
 
-- Labor FOC-approximation: interesting to see the F.O.C.
-
 - Consumption FOC-approximation: estimation of $\gamma_{t}$: positively correlated with age.
 
 - Endogenous grid method could have been better, but was not implemented here. 
@@ -382,7 +380,7 @@ Four temperature trajectories:
 
 ## Health 
 
-![Average health in different temperature scenarios.](resources/average_health.png){width=90%}
+![Average health in different temperature scenarios.](resources/average_health.png){width=70%}
 
 ## Survival 
 
@@ -398,37 +396,29 @@ Four temperature trajectories:
 
 :::
 
-## Consumption 
+## Consumption {#consumption_comparison}
 
-::: {.columns}
+![Consumption policy comparison accross scenarios.](resources/comparison_Consumption.png){width=60%}
 
-::: {.column width="100%"}
-![Consumption policy comparison accross scenarios.](resources/comparison_Consumption.png){width=90%}
-:::
+[More about it.](#consumption_change_analytical)
 
-:::
+## Labor Supply {#labor_supply_comparison}
 
-## Labor Supply 
+![Labor supply policy comparison accross scenarios.](resources/comparison_Labor.png){width=60%}
 
-::: {.columns}
+[More about it.](#labor_change_analytical)
 
-::: {.column width="100%"}
-![Labor Supply policy comparison accross scenarios.](resources/comparison_Labor.png){width=90%}
-:::
+## Savings {#savings_comparison}
 
-:::
+![Savings policy comparison accross scenarios.](resources/comparison_Savings.png){width=60%}
 
-## Savings 
-
-::: {.columns}
-
-::: {.column width="100%"}
-![Savings policy comparison accross scenarios.](resources/comparison_Savings.png){width=90%}
-:::
-
-:::
+[More about it.](#savings_change_analytical)
 
 ## Focus on Lifetime Income
+
+Defining lifetime income as: 
+
+$$Y \equiv \sum_{t = 20}^{100} \beta^t \cdot \mathbb{E}\left[l_{t}(s_{t}) \cdot z_{t}(s_{t})\right]$$
 
 ::: {.columns}
 
@@ -542,3 +532,60 @@ $\widehat{p_{t}} = \Lambda(x\widehat{\beta})$
 ## Analytical solution inexistence {#analytical_impossibility_proof}
 
 [Go back](#economic_model)
+
+## Analytical result of consumption change {#consumption_change_analytical .smaller}
+
+\begin{equation}\tag{F.O.C. 2}
+  c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
+\end{equation}
+$$\iff$$
+\begin{equation}
+  c_{t} = \left[\beta \cdot p_{t+1}\cdot c^{-\rho}_{t+1}\cdot (1+r_{t+1}) + \gamma_{t}\right]^{-\frac{1}{\rho}}
+\end{equation}
+$$\iff$$
+\begin{equation}
+  \frac{\partial c_{t}}{\partial p_{t+1}} =  \left[\beta \cdot c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] \cdot c_{t}^{-1}
+\end{equation}
+$$\iff$$
+\begin{equation}
+  \frac{\partial c_{t}}{\partial p_{t+1}} =  \frac{\beta\cdot (1+r_{t+1})}{c_{t}\cdot c^{\rho}_{t+1}} > 0
+\end{equation}
+
+[Go back](#consumption_comparison)
+
+## Analytical result of labor change {#labor_change_analytical .smaller}
+
+\begin{equation}\tag{F.O.C. 1}
+  c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi} 
+\end{equation}
+$$\iff$$
+\begin{equation}
+  l_{t} = \left[\frac{z_{t}}{c^{\rho}_{t}\cdot\xi_{t}}\right]^{\frac{1}{\varphi}}
+\end{equation}
+$$\iff$$
+\begin{equation}
+  \frac{\partial l_{t}}{\partial p_{t+1}} = \left[\frac{z_{t}}{\xi_{t}}\right]^{\frac{1}{\varphi}} \cdot 
+\frac{\partial}{\partial p_{t+1}} \cdot c_{t}^{-\frac{\rho}{\varphi}}
+\end{equation}
+$$\iff$$
+\begin{equation}
+  \frac{\partial l_{t}}{\partial p_{t+1}} = \left[\frac{z_{t}}{\xi_{t}}\right]^{\frac{1}{\varphi}} \cdot 
+  \left(-\frac{\rho}{\varphi}\right) \cdot 
+  \frac{\partial c_{t}}{\partial p_{t+1}} \cdot c_{t}^{-\frac{\rho+\varphi}{\varphi}} < 0
+\end{equation}
+
+[Go back](#labor_supply_comparison)
+
+## Analytical result of savings {#savings_change_analytical .smaller}
+
+From the budget constraint, binding: 
+
+$$c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})$$
+$$\iff$$
+$$s_{t+1} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})-c_{t}$$
+$$\iff$$
+$$\frac{\partial s_{t+1}}{\partial p_{t+1}} = \frac{\partial }{\partial p_{t+1}} l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})-c_{t}$$
+$$\iff$$
+$$\frac{\partial s_{t+1}}{\partial p_{t+1}} = z_{t}\cdot\frac{\partial l_{t}}{\partial p_{t+1}} l_{t}  -\frac{\partial c_{t}}{\partial p_{t+1}} < 0 $$
+
+[Go back](#savings_comparison)

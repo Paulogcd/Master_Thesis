@@ -130,7 +130,7 @@
     "href": "Presentation/presentation.html#general-algorithmic-assessment",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "5.6 General algorithmic assessment",
-    "text": "5.6 General algorithmic assessment\n\nPure numerical approach performs better in terms of precision.\nLabor FOC-approximation: interesting to see the F.O.C.\nConsumption FOC-approximation: estimation of \\(\\gamma_{t}\\): positively correlated with age.\nEndogenous grid method could have been better, but was not implemented here."
+    "text": "5.6 General algorithmic assessment\n\nPure numerical approach performs better in terms of precision.\nConsumption FOC-approximation: estimation of \\(\\gamma_{t}\\): positively correlated with age.\nEndogenous grid method could have been better, but was not implemented here."
   },
   {
     "objectID": "Presentation/presentation.html#methodology",
@@ -165,7 +165,7 @@
     "href": "Presentation/presentation.html#consumption",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "6.5 Consumption",
-    "text": "6.5 Consumption\n\n\n\n\n\nConsumption policy comparison accross scenarios."
+    "text": "6.5 Consumption\n\n\n\nConsumption policy comparison accross scenarios.\n\n\nMore about it."
   },
   {
     "objectID": "Presentation/presentation.html#labor-supply",
@@ -179,14 +179,14 @@
     "href": "Presentation/presentation.html#savings",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "6.7 Savings",
-    "text": "6.7 Savings\n\n\n\n\n\nSavings policy comparison accross scenarios."
+    "text": "6.7 Savings\n\n\n\nSavings policy comparison accross scenarios.\n\n\nMore about it."
   },
   {
     "objectID": "Presentation/presentation.html#focus-on-lifetime-income",
     "href": "Presentation/presentation.html#focus-on-lifetime-income",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "6.8 Focus on Lifetime Income",
-    "text": "6.8 Focus on Lifetime Income\n\n\n\n\n\nLifetime income comparison of hand-to-mouth individuals accross scenarios.\n\n\n\n\n\n\nLifetime income of rich individuals comparison accross scenarios."
+    "text": "6.8 Focus on Lifetime Income\nDefining lifetime income as:\n\\[Y \\equiv \\sum_{t = 20}^{100} \\beta^t \\cdot \\mathbb{E}\\left[l_{t}(s_{t}) \\cdot z_{t}(s_{t})\\right]\\]\n\n\n\n\n\nLifetime income comparison of hand-to-mouth individuals accross scenarios.\n\n\n\n\n\n\nLifetime income of rich individuals comparison accross scenarios."
   },
   {
     "objectID": "Presentation/presentation.html#discussion",
@@ -348,5 +348,54 @@
     "title": "References",
     "section": "",
     "text": "Here are some of the important bibliographical references I use in the development of my conceptual framework:\n\nDe Nardi et al., 2024: The Lifetime Costs of Bad Health, The Review of Economic Studies. The authors use PSID data to identify different “health types”, that can predict most of the health history through the life of an individual. They point out that a Markov process of order 1 is not enough to capture the change of health status, although using higher orders is resources demanding. THey include a structural model in which they study economic choices of agents, and include several features such as medical insurance and retirement. The article is available here.\nCarleton et al., 2022: Valuing the Global Mortality Consequences of Climate Change Accounting for Adaptation Costs and Benefits, The Quarterly Journal of Economics. The authors include the income as a parameter in the mortality-temperature function, which seems necessary, and develop a conceptual framework to take into account adaptation. The article is available here.\nGould et al., 2024, Temperature extremes impact mortality and morbidity differently, NBER Working Papers. The authors use a Californian dataset including visits at emergency departments to study the response of health to temperature. They also try to differentiate between morbidity, understood as the general state of health, and mortality, associated to the death rate. They point out that the morbidity, for which they use non fatal events leading to an emergency department visit, react differently than mortality. The article is available here."
+  },
+  {
+    "objectID": "Presentation/presentation.html#consumption_change_analytical",
+    "href": "Presentation/presentation.html#consumption_change_analytical",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "9.8 Analytical result of consumption change",
+    "text": "9.8 Analytical result of consumption change\n\\[\\begin{equation}\\tag{F.O.C. 2}\n  c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  c_{t} = \\left[\\beta \\cdot p_{t+1}\\cdot c^{-\\rho}_{t+1}\\cdot (1+r_{t+1}) + \\gamma_{t}\\right]^{-\\frac{1}{\\rho}}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  \\frac{\\partial c_{t}}{\\partial p_{t+1}} =  \\left[\\beta \\cdot c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] \\cdot c_{t}^{-1}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  \\frac{\\partial c_{t}}{\\partial p_{t+1}} =  \\frac{\\beta\\cdot (1+r_{t+1})}{c_{t}\\cdot c^{\\rho}_{t+1}} &gt; 0\n\\end{equation}\\]\nGo back"
+  },
+  {
+    "objectID": "Presentation/presentation.html#consumption_comparison",
+    "href": "Presentation/presentation.html#consumption_comparison",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6.5 Consumption",
+    "text": "6.5 Consumption\n\n\n\nConsumption policy comparison accross scenarios.\n\n\nMore about it."
+  },
+  {
+    "objectID": "Presentation/presentation.html#labor_supply_comparison",
+    "href": "Presentation/presentation.html#labor_supply_comparison",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6.6 Labor Supply",
+    "text": "6.6 Labor Supply\n\n\n\nLabor supply policy comparison accross scenarios.\n\n\nMore about it."
+  },
+  {
+    "objectID": "Presentation/presentation.html#labor_change_analytical",
+    "href": "Presentation/presentation.html#labor_change_analytical",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "9.9 Analytical result of labor change",
+    "text": "9.9 Analytical result of labor change\n\\[\\begin{equation}\\tag{F.O.C. 1}\n  c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  l_{t} = \\left[\\frac{z_{t}}{c^{\\rho}_{t}\\cdot\\xi_{t}}\\right]^{\\frac{1}{\\varphi}}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  \\frac{\\partial l_{t}}{\\partial p_{t+1}} = \\left[\\frac{z_{t}}{\\xi_{t}}\\right]^{\\frac{1}{\\varphi}} \\cdot\n\\frac{\\partial}{\\partial p_{t+1}} \\cdot c_{t}^{-\\frac{\\rho}{\\varphi}}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  \\frac{\\partial l_{t}}{\\partial p_{t+1}} = \\left[\\frac{z_{t}}{\\xi_{t}}\\right]^{\\frac{1}{\\varphi}} \\cdot\n  \\left(-\\frac{\\rho}{\\varphi}\\right) \\cdot\n  \\frac{\\partial c_{t}}{\\partial p_{t+1}} \\cdot c_{t}^{-\\frac{\\rho+\\varphi}{\\varphi}} &lt; 0\n\\end{equation}\\]\nGo back"
+  },
+  {
+    "objectID": "Presentation/presentation.html#savings_change_analytical",
+    "href": "Presentation/presentation.html#savings_change_analytical",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "9.10 Analytical result of savings",
+    "text": "9.10 Analytical result of savings\nFrom the budget constraint, binding:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\] \\[\\iff\\] \\[s_{t+1} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})-c_{t}\\] \\[\\iff\\] \\[\\frac{\\partial s_{t+1}}{\\partial p_{t+1}} = \\frac{\\partial }{\\partial p_{t+1}} l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})-c_{t}\\] \\[\\iff\\] \\[\\frac{\\partial s_{t+1}}{\\partial p_{t+1}} = z_{t}\\cdot\\frac{\\partial l_{t}}{\\partial p_{t+1}} l_{t}  -\\frac{\\partial c_{t}}{\\partial p_{t+1}} &lt; 0 \\]\nGo back"
+  },
+  {
+    "objectID": "Presentation/presentation.html#savings_change",
+    "href": "Presentation/presentation.html#savings_change",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6.7 Savings",
+    "text": "6.7 Savings\n\n\n\nSavings policy comparison accross scenarios.\n\n\nMore about it."
+  },
+  {
+    "objectID": "Presentation/presentation.html#savings_comparison",
+    "href": "Presentation/presentation.html#savings_comparison",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "6.7 Savings",
+    "text": "6.7 Savings\n\n\n\nSavings policy comparison accross scenarios.\n\n\nMore about it."
   }
 ]
