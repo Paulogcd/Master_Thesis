@@ -189,13 +189,13 @@ and its estimate, $\widehat{HP_{i,t}^{OLS}}$ ($\widehat{H^{I}_{i,t}}$ in text)
 leads to: 
 
 \begin{equation}\tag{1.4}
-  \widehat{p_{i,t}} = \Lambda \left( \widehat{\beta_0} +
+  \widehat{H_{i,t}^{HP}} = \Lambda_{0} \left( \widehat{\beta_0} +
     \widehat{\beta_{H}} \cdot H_{i,t} +
     \widehat{\beta_{HP}} \cdot \widehat{HP_{i,t}^{OLS}} \right)
 \end{equation}
 
 \begin{equation}\tag{2.4}
-  \widehat{H_{i,t}^{HP}} = \Lambda_{0} \left( \widehat{\beta_0} +
+  \widehat{p_{i,t}} = \Lambda \left( \widehat{\beta_0} +
     \widehat{\beta_{H}} \cdot H_{i,t} +
     \widehat{\beta_{HP}} \cdot \widehat{HP_{i,t}^{OLS}} \right)
 \end{equation}
@@ -234,7 +234,9 @@ Estimating through simulations:
 
 
 
-## Economic model {#economic_model}
+# Economic model 
+
+## Maximization program {#economic_model}
 
 $$ \max_{\{c_{t},l_{t},s_{t+1}\}_{t=1}^{100}}{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot \left(\frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\varphi}}{1+\varphi}\right)\right]}$$
 
@@ -544,11 +546,11 @@ $$\iff$$
 \end{equation}
 $$\iff$$
 \begin{equation}
-  \frac{\partial c_{t}}{\partial p_{t+1}} =  \left[\beta \cdot c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] \cdot c_{t}^{-1}
+  \frac{\partial c_{t}}{\partial p_{t+1}} = -\frac{1}{\rho}\cdot \left[\beta \cdot c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] \cdot c_{t}^{-1}
 \end{equation}
 $$\iff$$
 \begin{equation}
-  \frac{\partial c_{t}}{\partial p_{t+1}} =  \frac{\beta\cdot (1+r_{t+1})}{c_{t}\cdot c^{\rho}_{t+1}} > 0
+  \frac{\partial c_{t}}{\partial p_{t+1}} = -\frac{1}{\rho}\cdot\frac{\beta\cdot (1+r_{t+1})}{c_{t}\cdot c^{\rho}_{t+1}} < 0
 \end{equation}
 
 [Go back](#consumption_comparison)
@@ -571,7 +573,7 @@ $$\iff$$
 \begin{equation}
   \frac{\partial l_{t}}{\partial p_{t+1}} = \left[\frac{z_{t}}{\xi_{t}}\right]^{\frac{1}{\varphi}} \cdot 
   \left(-\frac{\rho}{\varphi}\right) \cdot 
-  \frac{\partial c_{t}}{\partial p_{t+1}} \cdot c_{t}^{-\frac{\rho+\varphi}{\varphi}} < 0
+  \frac{\partial c_{t}}{\partial p_{t+1}} \cdot c_{t}^{-\frac{\rho+\varphi}{\varphi}} > 0
 \end{equation}
 
 [Go back](#labor_supply_comparison)
@@ -586,6 +588,6 @@ $$s_{t+1} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})-c_{t}$$
 $$\iff$$
 $$\frac{\partial s_{t+1}}{\partial p_{t+1}} = \frac{\partial }{\partial p_{t+1}} l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})-c_{t}$$
 $$\iff$$
-$$\frac{\partial s_{t+1}}{\partial p_{t+1}} = z_{t}\cdot\frac{\partial l_{t}}{\partial p_{t+1}} l_{t}  -\frac{\partial c_{t}}{\partial p_{t+1}} < 0 $$
+$$\frac{\partial s_{t+1}}{\partial p_{t+1}} = z_{t}\cdot\frac{\partial l_{t}}{\partial p_{t+1}} l_{t}  -\frac{\partial c_{t}}{\partial p_{t+1}} > 0 $$
 
 [Go back](#savings_comparison)
