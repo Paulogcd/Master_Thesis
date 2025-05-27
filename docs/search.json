@@ -2,163 +2,163 @@
   {
     "objectID": "Presentation/presentation.html#research-object",
     "href": "Presentation/presentation.html#research-object",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "1.1 Research object",
     "text": "1.1 Research object\n\n\n\n\n\nflowchart LR\n  A[Climate change] --&gt; B[Temperature distribution]\n  B --&gt; C[Other variables]\n  B --&gt; D[Health of individuals] \n  D --&gt; E[Economic production]\n  C --&gt; E\n\nlinkStyle default stroke:black\nlinkStyle 2 stroke:red\nlinkStyle 3 stroke:red\nstyle D color:red\n\nclassDef linkLabel fill:none,stroke:none;\n\n\n\n\n\n\nHealth of individuals:\n\nHealth state\nSurvival probability\n\nHow does temperature variations affect the economy through health?"
   },
   {
     "objectID": "Presentation/presentation.html#literature",
     "href": "Presentation/presentation.html#literature",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "1.2 Literature",
-    "text": "1.2 Literature\n\nClimate economics:\n\nBurke, Hsiang, Miguel, 2015: Global non-linear effect of temperature on economic production\nHsiang, 2016: Climate Econometrics\nCarleton et al., 2022: Valuing the Global Mortality Consequences of Climate Change Accounting for Adaptation Costs and Benefits\n\nHealth economics\n\nCapatina, 2015: Life-cycle effects of health risk\nDe Nardi, 2019: Lifetime costs of bad health\n\n\nLiterature gap: climate and health effect in industrialized context."
+    "text": "1.2 Literature\n\nClimate economics:\n\nBurke, Hsiang, Miguel, 2013: Quantifying the Influence of Climate on Human Conflict\nBurke, Hsiang, Miguel, 2015: Global non-linear effect of temperature on economic production\nHsiang, 2016: Climate Econometrics\nCarleton et al., 2022: Valuing the Global Mortality Consequences of Climate Change Accounting for Adaptation Costs and Benefits\n\n\n\\(\\rightarrow\\) global impact, beginning of adaptation, developing countries.\n\nHealth economics\n\nCapatina, 2015: Life-cycle effects of health risk\nDe Nardi, 2019: Lifetime costs of bad health\n\n\n\\(\\rightarrow\\) lifetime effect, tradeoff with health investment.\nLiterature gap: climate and health effect in industrialized context."
   },
   {
     "objectID": "Presentation/presentation.html#research-strategy",
     "href": "Presentation/presentation.html#research-strategy",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "1.3 Research strategy",
-    "text": "1.3 Research strategy\n\nEnvironment:\n\nEmpiry-based,\nDemographic and health response to temperature,\nCeteris Paribus.\n\nEconomic model:\n\nSimple features,\nPolicy functions: consumption, labor, savings.\n\nTemperature path comparison:\n\nComparison of economic outcome for different temperature paths,\nSpecial focus on lifetime income,\nHistorical (0 to 0.5 °C), Optimistic (0.5 to 2), Intermediate (to 3) and Pessimistic (to 4) scenarios."
+    "text": "1.3 Research strategy\n\nEconomic model:\n\nReduced form, focus on lifetime individual decisions,\nSimple features,\nPolicy functions: consumption, labor, savings.\n\nEnvironment:\n\nEmpiry-based,\nDemographic and health response to temperature,\nCeteris Paribus.\n\nTemperature path comparison:\n\nComparison of economic outcome for different temperature paths,\nSpecial focus on lifetime income,\nHistorical (0 to 0.5 °C), Optimistic (0.5 to 2), Intermediate (to 3) and Pessimistic (to 4) scenarios."
   },
   {
     "objectID": "Presentation/presentation.html#formal_description",
     "href": "Presentation/presentation.html#formal_description",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "2.1 Formal description",
-    "text": "2.1 Formal description\nAt each period, agents draw health \\(H_{t}\\) and living status \\(L_{t}\\):\n\\[\\begin{equation}\\tag{1}\n  H_t \\sim f_h(\\mathcal{H}_{t-1}, \\mathcal{W}_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{2}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}(\\mathcal{H}_t, \\mathcal{W}_t)\n\\end{equation}\\]\nWe can also define the two history vectors: \\[\\begin{equation}\\tag{3}\n  \\mathcal{H}_t \\equiv (H_1, H_2, \\dots, H_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{4}\n  \\mathcal{W}_t \\equiv (W_1, W_2, \\dots, W_t)\n\\end{equation}\\]\nMore on underlying assumptions."
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "3.1 Formal description",
+    "text": "3.1 Formal description\nAt each period, agents draw health \\(H_{t}\\) and living status \\(L_{t}\\):\n\\[\\begin{equation}\\tag{1}\n  H_t \\sim f_h(\\mathcal{H}_{t-1}, \\mathcal{W}_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{2}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}(\\mathcal{H}_t, \\mathcal{W}_t)\n\\end{equation}\\]\nWe can also define the two history vectors: \\[\\begin{equation}\\tag{3}\n  \\mathcal{H}_t \\equiv (H_1, H_2, \\dots, H_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{4}\n  \\mathcal{W}_t \\equiv (W_1, W_2, \\dots, W_t)\n\\end{equation}\\]\nMore on underlying assumptions."
   },
   {
     "objectID": "Presentation/presentation.html#data",
     "href": "Presentation/presentation.html#data",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "2.2 Data",
-    "text": "2.2 Data\n\n\n\n\n\nDistribution of Health status across years, in the HRS data.\n\n\n\n\n\n\nAverage annual temperature and its 95% confidence interval, in the Berkeley data."
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "3.2 Data",
+    "text": "3.2 Data\n\nHRS: US micro-data on health, and age between 2002 and 2018.\nBerkeley Earth Project, global average annual temperature.\n\n\n\n\n\n\nDistribution of Health status across years, in the HRS data.\n\n\n\n\n\n\nAverage annual temperature and its 95% confidence interval, in the Berkeley data."
   },
   {
     "objectID": "Presentation/presentation.html#history-simplification",
     "href": "Presentation/presentation.html#history-simplification",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "3.1 History Simplification",
-    "text": "3.1 History Simplification\nThe general relationships:\n\\[\\begin{equation}\\tag{1}\n  H_t \\sim f_h(\\mathcal{H}_{t-1}, \\mathcal{W}_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{2}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}(\\mathcal{H}_t, \\mathcal{W}_t)\n\\end{equation}\\]\nbecome:\n\\[\\begin{equation}\\tag{1.1}\n  H_t \\sim f_h({H}_{t-1}, {T}_t)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.1}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}({H}_t, {T}_t)\n\\end{equation}\\]"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "4.1 History Simplification",
+    "text": "4.1 History Simplification\nThe general relationships:\n\\[\\begin{equation}\\tag{1}\n  H_t \\sim f_h(\\mathcal{H}_{t-1}, \\mathcal{W}_t)\n\\end{equation}\\] \\[\\begin{equation}\\tag{2}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}(\\mathcal{H}_t, \\mathcal{W}_t)\n\\end{equation}\\]\nbecome:\n\\[\\begin{equation}\\tag{1.1}\n  H_t \\sim f_h({H}_{t-1}, {T}_t)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.1}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}({H}_t, {T}_t)\n\\end{equation}\\]"
   },
   {
     "objectID": "Presentation/presentation.html#health_transition",
     "href": "Presentation/presentation.html#health_transition",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "3.2 Health Transition",
-    "text": "3.2 Health Transition\nSample space of Health: \\(\\Omega(H_{t}) \\equiv [\\![1,5]\\!]\\)\nOrdered Multinomial Logit Model\n\\[\\begin{equation}\\tag{1.1}\n  H_t \\sim f_h({H}_{t-1}, {T}_t)\n\\end{equation}\\]\nLet \\(X_{H} \\equiv (Age_{t}, T_{t}, Age_{t}\\times T_{t}, H_{t-1})^{T}\\)\n\\[\\begin{equation}\\tag{1.2}\n  \\widehat{H_{t}} \\sim \\Lambda_{O}(\\widehat{\\beta_H}\\cdot X_{H})\n\\end{equation}\\]\nMore about it"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "4.3 Health Transition",
+    "text": "4.3 Health Transition\nSample space of Health: \\(\\Omega(H_{t}) \\equiv [\\![1,5]\\!]\\)\nOrdered Multinomial Logit Model\n\\[\\begin{equation}\\tag{1.1}\n  H_t \\sim f_h({H}_{t-1}, {T}_t)\n\\end{equation}\\]\nLet \\(X_{H} \\equiv (Age_{t}, T_{t}, H_{t-1}, Age_{t}\\times T_{t}\\times H_{t-1},\\dots)^{T}\\)\n\\[\\begin{equation}\\tag{1.2}\n  \\widehat{H_{t}} \\sim \\widehat{f_h}({H}_{t-1}, {T}_t) = \\Lambda_{O}(\\widehat{\\beta_H}\\cdot X_{H})\n\\end{equation}\\]\nMore about it"
   },
   {
     "objectID": "Presentation/presentation.html#living_status",
     "href": "Presentation/presentation.html#living_status",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "3.3 Living Status",
-    "text": "3.3 Living Status\nSample space of living status: \\(\\Omega(L_{t}) \\equiv \\{0,1\\}\\)\nLogistic regression\n\\[\\begin{equation}\\tag{2.1}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}({H}_t, {T}_t)\n\\end{equation}\\]\nLet \\(X_{L} \\equiv (H_{t},Age_{t},T_{t},H_{t}\\times Age_{t} \\times T_{t})^{T}\\)\n\\[\\begin{equation}\\tag{2.2}\n  \\widehat{p_t} = \\Lambda  (\\widehat{\\beta_L}\\cdot X_{L})\n\\end{equation}\\]\nMore about it"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "4.4 Living Status",
+    "text": "4.4 Living Status\nSample space of living status: \\(\\Omega(L_{t}) \\equiv \\{0,1\\}\\)\nLogistic regression\n\\[\\begin{equation}\\tag{2.1}\n  L_t \\sim \\mathcal{B}(p_t)\\text{ | } p_{t}\\equiv p_{t}({H}_t, {T}_t)\n\\end{equation}\\]\nLet \\(X_{L} \\equiv (Age_{t},H_{t},T_{t},Age_{t} \\times H_{t}\\times T_{t},\\dots)^{T}\\)\n\\[\\begin{equation}\\tag{2.2}\n  \\widehat{L_t} \\sim \\mathcal{B}(\\widehat{p_{t}}) | \\widehat{p_t} = \\Lambda  (\\widehat{\\beta_L}\\cdot X_{L})\n\\end{equation}\\]\nMore about it"
   },
   {
     "objectID": "Presentation/presentation.html#health_proxy",
     "href": "Presentation/presentation.html#health_proxy",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "3.4 Health Proxy",
-    "text": "3.4 Health Proxy\nIn the submitted version, health proxy is defined as: \\(HP_{i,t} = \\text{HighBP}_{i,t} + \\text{Lung}_{i,t} + \\text{Heart}_{i,t} + \\text{Stroke}_{i,t}\\) and its estimate, \\(\\widehat{HP_{i,t}^{OLS}}\\) (\\(\\widehat{H^{I}_{i,t}}\\) in text) leads to:\n\\[\\begin{equation}\\tag{1.4}\n  \\widehat{H_{i,t}^{HP}} = \\Lambda_{0} \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot H_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP_{i,t}^{OLS}} \\right)\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.4}\n  \\widehat{p_{i,t}} = \\Lambda \\left( \\widehat{\\beta_0} +\n    \\widehat{\\beta_{H}} \\cdot H_{i,t} +\n    \\widehat{\\beta_{HP}} \\cdot \\widehat{HP_{i,t}^{OLS}} \\right)\n\\end{equation}\\]\nMore about it"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "4.5 Health Proxy",
+    "text": "4.5 Health Proxy\nIn the submitted version, health proxy is constructed as: \\(HP_{i,t} = \\text{HighBP}_{i,t} + \\text{Lung}_{i,t} + \\text{Heart}_{i,t} + \\text{Stroke}_{i,t}\\).\nIts estimate \\(\\widehat{HP_{i,t}^{OLS}}\\) (\\(\\widehat{H^{I}_{i,t}}\\) in text) is defined as:\n\\[X_{i,t}^{HP}\\equiv (Age_{i,t},T_{t},Age_{i,t}\\times T_{t})^{T}\\]\n\\[\\begin{equation}\n  \\widehat{HP_{i,t}^{OLS}} = \\widehat{\\beta^{OLS}_{HP}}\\cdot X_{i,t}^{HP}\n\\end{equation}\\]\nUsing its estimate leads to:\n\\[\\begin{equation}\\tag{1.4}\n  \\widehat{H_{i,t}^{HP}} = \\Lambda_{O} \\left( \\widehat{\\beta_{H_{i,t}^{HP}}}\\cdot X_{H_{i,t}} \\right)\n    |\n    X_{H_{i,t}} \\equiv (H_{i,t-1},\\widehat{HP_{i,t}^{OLS}})^{T}\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{2.4}\n  \\widehat{p_{i,t}^{HP}} = \\Lambda \\left( \\widehat{\\beta_{p_{i,t}^{HP}}} \\cdot X_{p_{i,t}} \\right)\n    |\n    X_{p_{i,t}} \\equiv (H_{i,t},\\widehat{HP_{i,t}^{OLS}})^{T}\n\\end{equation}\\]\nMore about it"
   },
   {
     "objectID": "Presentation/presentation.html#health-transition",
     "href": "Presentation/presentation.html#health-transition",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "4.1 Health Transition",
-    "text": "4.1 Health Transition"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "5.1 Health Transition",
+    "text": "5.1 Health Transition"
   },
   {
     "objectID": "Presentation/presentation.html#survival-probability",
     "href": "Presentation/presentation.html#survival-probability",
     "title": "The effect of temperature-induced health variation on economics",
     "section": "4.2 Survival probability",
-    "text": "4.2 Survival probability\nEstimating through simulations:\n\n\n\n\n\nAverage survival probabilities obtained with \\(N = 10\\ 000\\).\n\n\n\n\n\n\nDemographic evolution obtained with \\(N = 10\\ 000\\)."
+    "text": "4.2 Survival probability\nEstimating through simulations:\n\n\n\n\n\nAverage survival probabilities obtained with \\(N = 1\\ 00\\) and fixed temperature at 0.61 °C.\n\n\n\n\n\n\nDemographic evolution obtained with \\(N = 1\\ 00\\) and fixed temperature at 0.61 °C."
   },
   {
     "objectID": "Presentation/presentation.html#economic_model",
     "href": "Presentation/presentation.html#economic_model",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "5.1 Maximization program",
-    "text": "5.1 Maximization program\n\\[ \\max_{\\{c_{t},l_{t},s_{t+1}\\}_{t=1}^{100}}{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\left(\\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right)\\right]}\\]\nsubject to:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\]\n\\[s_{t+1}\\geq \\underline{s}, \\forall t \\in [\\![1,100]\\!]\\]\nExpectation operator: \\(\\mathbb{E}[x_{t+1}] \\equiv p_{t+1}\\cdot x_{t+1}\\)"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "2.1 Maximization program",
+    "text": "2.1 Maximization program\n\\[ \\max_{\\{c_{t},l_{t},s_{t+1}\\}_{t=1}^{100}}{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\left(\\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right)\\right]}\\]\nsubject to:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\]\n\\[s_{t+1}\\geq \\underline{s}, \\forall t \\in [\\![1,100]\\!]\\]\nExpectation operator: \\(\\mathbb{E}[x_{t+1}] \\equiv p_{t+1}\\cdot x_{t+1}\\)"
   },
   {
     "objectID": "Presentation/presentation.html#first-order-conditions",
     "href": "Presentation/presentation.html#first-order-conditions",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "5.2 First Order Conditions",
-    "text": "5.2 First Order Conditions\n\\[\\begin{equation}\\tag{F.O.C. 1}\n  c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{F.O.C. 2}\n  c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\]\nWith \\(\\gamma_{t}\\) the Lagrangien multiplicator associated with the borrowing constraint: \\[s_{t+1} \\geq \\underline{s}\\]\nAnalytical solution inexistence \\(\\rightarrow\\) Numerical methods.\nProof"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "2.2 First Order Conditions",
+    "text": "2.2 First Order Conditions\n\\[\\begin{equation}\\tag{F.O.C. 1}\n  c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\n\\end{equation}\\]\n\\[\\begin{equation}\\tag{F.O.C. 2}\n  c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\]\nWith \\(\\gamma_{t}\\) the Lagrangien multiplicator associated with the borrowing constraint: \\[s_{t+1} \\geq \\underline{s}\\]\nAnalytical solution inexistence \\(\\rightarrow\\) Numerical methods.\nProof"
   },
   {
     "objectID": "Presentation/presentation.html#algorithms",
     "href": "Presentation/presentation.html#algorithms",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "6.1 Algorithms",
-    "text": "6.1 Algorithms\nI have different ways of solving it numerically, and it does matter for the results.\n\nPure numerical Value function iteration.\nFOC-approximated Value function iteration.\nInterpolated grid."
+    "text": "6.1 Algorithms\nThe absence of analytical solution calls for a detailed description of the numerical methods. The different used algorithms are:\n\nPure numerical value function iteration,\nFOC-approximated value function iteration,\nInterpolated grid versions.\n\nFocus on:\n\nPerformance,\nPolicies."
   },
   {
     "objectID": "Presentation/presentation.html#results-consumption",
     "href": "Presentation/presentation.html#results-consumption",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "6.2 Results: Consumption",
-    "text": "6.2 Results: Consumption\n\n\n\n\n\nConsumption policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 2."
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "6.3 Results: Consumption",
+    "text": "6.3 Results: Consumption\n\\[\\\\ \\\\ \\\\\\]\n\n\n\n\n\nConsumption policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 2."
   },
   {
     "objectID": "Presentation/presentation.html#results-labour-supply",
     "href": "Presentation/presentation.html#results-labour-supply",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "6.3 Results: Labour supply",
-    "text": "6.3 Results: Labour supply\n\n\n\n\n\nLabour supply policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nLabour supply policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nLabour supply policy per age in the FOC approximated algorithm 2."
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "6.4 Results: Labour supply",
+    "text": "6.4 Results: Labour supply\n\\[\\\\ \\\\ \\\\\\]\n\n\n\n\n\nLabour supply policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nLabour supply policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nLabour supply policy per age in the FOC approximated algorithm 2."
   },
   {
     "objectID": "Presentation/presentation.html#results-savings",
     "href": "Presentation/presentation.html#results-savings",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "6.4 Results: Savings",
-    "text": "6.4 Results: Savings\n\n\n\n\n\nSavings policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nSavings policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nSavings policy per age in the FOC approximated algorithm 2."
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "6.5 Results: Savings",
+    "text": "6.5 Results: Savings\n\\[\\\\ \\\\ \\\\\\]\n\n\n\n\n\nSavings policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nSavings policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nSavings policy per age in the FOC approximated algorithm 2."
   },
   {
     "objectID": "Presentation/presentation.html#performance",
     "href": "Presentation/presentation.html#performance",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "6.5 Performance",
-    "text": "6.5 Performance\n\n\n\n\n\nPerformance of the pure numerical algorithm.\n\n\n\n\n\n\nPerformance of the FOC approximated algorithm 1.\n\n\n\n\n\n\nPerformance of the FOC approximated algorithm 2."
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "6.2 Performance",
+    "text": "6.2 Performance\n\\[\\\\ \\\\ \\\\\\]\n\n\n\n\n\nPerformance of the pure numerical algorithm.\n\n\n\n\n\n\nPerformance of the FOC approximated algorithm 1.\n\n\n\n\n\n\nPerformance of the FOC approximated algorithm 2."
   },
   {
     "objectID": "Presentation/presentation.html#general-algorithmic-assessment",
     "href": "Presentation/presentation.html#general-algorithmic-assessment",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "6.6 General algorithmic assessment",
-    "text": "6.6 General algorithmic assessment\n\nPure numerical approach performs better in terms of precision.\nConsumption FOC-approximation: estimation of \\(\\gamma_{t}\\): positively correlated with age.\nEndogenous grid method could have been better, but was not implemented here."
+    "text": "6.6 General algorithmic assessment\n\nPure numerical approach performs better in terms of precision.\nConsumption FOC-approximation allows for an estimation of \\(\\gamma_{t}\\), which is positively correlated with age."
   },
   {
     "objectID": "Presentation/presentation.html#methodology",
     "href": "Presentation/presentation.html#methodology",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "7.1 Methodology",
     "text": "7.1 Methodology\nTaking different path, running the model, and comparing:\n\nHealth,\nSurvival,\nChoice policies:\n\nConsumption,\nLabor,\nSavings"
   },
   {
     "objectID": "Presentation/presentation.html#temperature-trajectories",
     "href": "Presentation/presentation.html#temperature-trajectories",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "7.2 Temperature trajectories",
     "text": "7.2 Temperature trajectories\nFour temperature trajectories:\n\nHistorical path: 0 to 1.50 °C\nOptimistic path: 0.5 to 2.00 °C\nIntermediate path: 0.5 to 3.00 °C\nPessimistic path: 0.5 to 4.00 °C"
   },
   {
     "objectID": "Presentation/presentation.html#health",
     "href": "Presentation/presentation.html#health",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "7.3 Health",
     "text": "7.3 Health\n\n\n\nAverage health in different temperature scenarios."
   },
   {
     "objectID": "Presentation/presentation.html#survival",
     "href": "Presentation/presentation.html#survival",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "7.4 Survival",
-    "text": "7.4 Survival\n\n\n\n\n\nAverage survival probabilities obtained with \\(N = 10\\ 000\\).\n\n\n\n\n\n\nDemographic evolution obtained with \\(N = 10\\ 000\\)."
+    "text": "7.4 Survival\n\n\n\n\n\nAverage survival probabilities for different scenarios.\n\n\n\n\n\n\nDemographic evolution for different scenarios."
   },
   {
     "objectID": "Presentation/presentation.html#consumption",
@@ -192,8 +192,8 @@
     "objectID": "Presentation/presentation.html#discussion",
     "href": "Presentation/presentation.html#discussion",
     "title": "The effect of temperature-induced health variation on economics",
-    "section": "7.9 Discussion",
-    "text": "7.9 Discussion\n\nOverall loss driven by demographic effects.\nProductivity variation through age drives the results in a life cycle fashion (increase of distance between ages).\nProductivity variation through health increases the differences between scenarios.\nLabour disutility variation as a function of health and temperature has the same effect."
+    "section": "7.11 Discussion",
+    "text": "7.11 Discussion\n\nOverall loss driven by demographic effects."
   },
   {
     "objectID": "Presentation/presentation.html#recap",
@@ -205,72 +205,72 @@
   {
     "objectID": "Presentation/presentation.html#results",
     "href": "Presentation/presentation.html#results",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "8.2 Results",
-    "text": "8.2 Results"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "8.1 Results",
+    "text": "8.1 Results\n\nBaseline model, with lifetime income set at $1.450 Mio, we obtain a loss of approximately $110,000.\nMore generally, we obtain a loss of around 8% of total income."
   },
   {
     "objectID": "Presentation/presentation.html#references---1",
     "href": "Presentation/presentation.html#references---1",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "9.1 References - 1",
     "text": "9.1 References - 1"
   },
   {
     "objectID": "Presentation/presentation.html#references---2",
     "href": "Presentation/presentation.html#references---2",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "9.2 References - 2",
     "text": "9.2 References - 2"
   },
   {
     "objectID": "Presentation/presentation.html#framework_assumptions",
     "href": "Presentation/presentation.html#framework_assumptions",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "10.1 General framework assumptions",
-    "text": "10.1 General framework assumptions\n\nIndependence assumption\n\nGo back"
+    "text": "10.1 General framework assumptions\n\nIndependence assumption:\n\n\\(\\widehat{p_{t}} \\approx Pr(L_{t}=1)\\)\n\\(\\widehat{p_{t}} \\neq Pr(L_{t}=1 | L_{t-1} = 1)\\)\nInstantaneous survival probabilities \\(\\neq\\) Cumulated survival probabilities.\nGo back"
   },
   {
     "objectID": "Presentation/presentation.html#health_proxy_details",
     "href": "Presentation/presentation.html#health_proxy_details",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "10.2 Health Proxy specification",
-    "text": "10.2 Health Proxy specification\n\nMotivation: Eliminate outer effects.\nFocus on acute health events\nFinal results are essentially the same.\n\n\\(HP_{i,t} = \\text{HighBP}_{i,t} + \\text{Lung}_{i,t} + \\text{Heart}_{i,t} + \\text{Stroke}_{i,t}\\)\nGo back"
+    "text": "10.2 Health Proxy specification\n\nMotivation: Eliminate outer effects, and focus on acute health events,\nFinal results are essentially the same, slighlty under those without \\(\\widehat{HP_{i,t}^{OLS}}\\).\n\n\\(HP_{i,t} = \\text{HighBP}_{i,t} + \\text{Lung}_{i,t} + \\text{Heart}_{i,t} + \\text{Stroke}_{i,t}\\)\n\\[\\begin{equation}\n  \\widehat{HP_{i,t}^{OLS}} = \\widehat{\\beta^{OLS}_{HP}}\\cdot X_{i,t}^{HP}\n\\end{equation}\\]\n\\(\\widehat{HP_{i,t}^{\\Lambda_{O}}}\\) did not differ strongly from the OLS estimate.\nGo back"
   },
   {
     "objectID": "Presentation/presentation.html#ordered_multinomial_logit_regression_details",
     "href": "Presentation/presentation.html#ordered_multinomial_logit_regression_details",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "10.3 Ordered Multinomial Logit Regression (OMNL) - 1",
-    "text": "10.3 Ordered Multinomial Logit Regression (OMNL) - 1\nLet \\(y\\in\\{0,1,\\dots,J\\}\\) be the dependent discrete ordinal variable we are trying to explain with covariates \\(x \\in \\mathbb{R}^{1\\times K}\\). Defining a latent variable \\(y^{*}\\) such that:\n\\(y^{*} = x\\beta + e\\)\nwith:\n\n\\(\\beta \\in \\mathbb{R}^{K}\\)\n\\(e|x \\sim \\mathcal{N}(0,1)\\)"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "10.4 Ordered Multinomial Logit Regression (OMNL) - 1",
+    "text": "10.4 Ordered Multinomial Logit Regression (OMNL) - 1\nLet \\(y\\in\\{0,1,\\dots,J\\}\\) be the dependent discrete ordinal variable we are trying to explain with covariates \\(x \\in \\mathbb{R}^{1\\times K}\\). Defining a latent variable \\(y^{*}\\) such that:\n\\(y^{*} = x\\beta + e\\)\nwith:\n\n\\(\\beta \\in \\mathbb{R}^{K}\\)\n\\(e|x \\sim \\mathcal{N}(0,1)\\)"
   },
   {
     "objectID": "Presentation/presentation.html#omnl---2",
     "href": "Presentation/presentation.html#omnl---2",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "10.4 OMNL - 2",
-    "text": "10.4 OMNL - 2\nLet \\(\\alpha_{1}&lt;\\alpha_2&lt;\\dots &lt; \\alpha_{J}\\). The function linking \\(y\\) and \\(y^*\\) is:\n\\[\\begin{cases}\ny = 0 \\text{ if } y^{*} \\leq \\alpha_1 \\\\\ny = 1 \\text{ if } \\alpha_{1} \\leq y^{*} \\leq \\alpha_2 \\\\\n\\dots \\\\\ny = J \\text{ if } \\alpha_{1} \\leq y^{*} \\leq \\alpha_J \\\\\n\\end{cases}\\]\nIt follows that:\n\\(P(y=0|x) = P(y^{*}\\leq \\alpha_1|x) = \\Lambda (\\alpha_1 - x\\beta)\\) \\(P(y=1|x) = P(\\alpha_1 &lt; y^{*}\\leq \\alpha_2|x) = \\Lambda (\\alpha_2 - x\\beta) - \\Lambda (\\alpha_1 - x\\beta)\\) \\(\\dots\\) \\(P(y=J|x) = P(y^{*}\\leq \\alpha_1|x) = P(y^{*} \\geq \\alpha_{J} | x) = 1 - \\Lambda (\\alpha_J - x\\beta)\\)"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "10.5 OMNL - 2",
+    "text": "10.5 OMNL - 2\nLet \\(\\alpha_{1}&lt;\\alpha_2&lt;\\dots &lt; \\alpha_{J}\\). The function linking \\(y\\) and \\(y^*\\) is:\n\\[\\begin{cases}\ny = 0 \\text{ if } y^{*} \\leq \\alpha_1 \\\\\ny = 1 \\text{ if } \\alpha_{1} \\leq y^{*} \\leq \\alpha_2 \\\\\n\\dots \\\\\ny = J \\text{ if } \\alpha_{1} \\leq y^{*} \\leq \\alpha_J \\\\\n\\end{cases}\\]\nIt follows that:\n\\(P(y=0|x) = P(y^{*}\\leq \\alpha_1|x) = \\Lambda (\\alpha_1 - x\\beta)\\) \\(P(y=1|x) = P(\\alpha_1 &lt; y^{*}\\leq \\alpha_2|x) = \\Lambda (\\alpha_2 - x\\beta) - \\Lambda (\\alpha_1 - x\\beta)\\) \\(\\dots\\) \\(P(y=J|x) = P(y^{*}\\leq \\alpha_1|x) = P(y^{*} \\geq \\alpha_{J} | x) = 1 - \\Lambda (\\alpha_J - x\\beta)\\)"
   },
   {
     "objectID": "Presentation/presentation.html#omnl---3",
     "href": "Presentation/presentation.html#omnl---3",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "10.5 OMNL - 3",
-    "text": "10.5 OMNL - 3\nThe \\(\\alpha\\) and \\(\\beta\\) vectors are estimated by maximizing the log-likelihood function such that:\n\\[\\begin{equation}\n  \\begin{split}\n    \\mathcal{l}_{i}(\\alpha,\\beta) = & \\ \\mathbb{1}\\cdot[y_i = 0] \\cdot \\log[\\Lambda(\\alpha_1 - x_i \\beta)] \\\\\n    & + \\mathbb{1}\\cdot[y_i = 1] \\cdot \\log[\\Lambda(\\alpha_2 - x_i \\beta) - \\Lambda(\\alpha_1 - x_{i}\\beta)] \\\\\n    & \\dots \\\\\n    & + \\mathbb{1}[y_i = J]\\cdot \\log(1-\\Lambda(\\alpha_J-x_{i}\\beta))\n  \\end{split}\n\\end{equation}\\]\nGo back"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "10.6 OMNL - 3",
+    "text": "10.6 OMNL - 3\nThe \\(\\alpha\\) and \\(\\beta\\) vectors are estimated by maximizing the log-likelihood function such that:\n\\[\\begin{equation}\n  \\begin{split}\n    \\mathcal{l}_{i}(\\alpha,\\beta) = & \\ \\mathbb{1}\\cdot[y_i = 0] \\cdot \\log[\\Lambda(\\alpha_1 - x_i \\beta)] \\\\\n    & + \\mathbb{1}\\cdot[y_i = 1] \\cdot \\log[\\Lambda(\\alpha_2 - x_i \\beta) - \\Lambda(\\alpha_1 - x_{i}\\beta)] \\\\\n    & \\dots \\\\\n    & + \\mathbb{1}[y_i = J]\\cdot \\log(1-\\Lambda(\\alpha_J-x_{i}\\beta))\n  \\end{split}\n\\end{equation}\\]\nGo back"
   },
   {
     "objectID": "Presentation/presentation.html#logit_model_details",
     "href": "Presentation/presentation.html#logit_model_details",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "10.6 Logit model",
-    "text": "10.6 Logit model\nLogit model: ordered logit model with \\(J = 1\\).\n\\(y \\in \\{0,1\\}\\)\n\\(Pr(y = 1|x) \\equiv p_{t}(x)\\)\n\\(\\widehat{p_{t}} = \\Lambda(x\\widehat{\\beta})\\)\nGo back"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "10.7 Logit model",
+    "text": "10.7 Logit model\nLogit model: ordered logit model with \\(J = 1\\).\n\\(y \\in \\{0,1\\}\\)\n\\(Pr(y = 1|x) \\equiv p_{t}(x)\\)\n\\(\\widehat{p_{t}} = \\Lambda(x\\widehat{\\beta})\\)\nGo back"
   },
   {
     "objectID": "Presentation/presentation.html#analytical_impossibility_proof",
     "href": "Presentation/presentation.html#analytical_impossibility_proof",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "10.7 Analytical solution inexistence",
-    "text": "10.7 Analytical solution inexistence\nGo back"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "10.8 Analytical solution inexistence",
+    "text": "10.8 Analytical solution inexistence\n\\[ \\max_{\\{c_{t},l_{t},s_{t+1}\\}_{t=1}^{100}}\n{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right]}\\]\nSubject to budget and borrowing constraints:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\]\n\\[s_{t+1}\\geq \\underline{s}, \\forall t \\in [\\![1,100]\\!]\\]\nA first solving attempt consists in assuming that the budget constraint binds. We can then obtain the following expression for consumption:\n\\[c_{t} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1}\\]\nPlugging it into the maximization program, we obtain:\n\\[ \\max_{\\{l_{t},s_{t+1}\\}_{t=1}^{100}}\n{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\frac{\\left(l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1}\\right)^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right]}\\]\nThe F.O.C. with respect to labor implies:\n\\[\\begin{equation}\n    l_{t}^{\\varphi}\\cdot \\xi_{t} = \\left[l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})- s_{t+1}\\right]^{-\\rho}\\cdot z_{t}\n\\end{equation}\\]\nWe can develop the decomposition of consumption if and only if \\(\\rho \\in \\mathbb{N}\\). Indeed, this equation is of form \\(x = (x-\\alpha)^{\\beta} \\cdot z\\). With \\(\\beta\\notin \\mathbb{N}\\), is a transcendental equation.\nWe can now try to compute the F.O.C. first, and then make use of the Budget Constraint. The Lagrangian function associated witht the maximization program of the agent is: \\[\\begin{equation}\n    \\begin{split}\n        \\mathcal{L}(c_{t},l_{t},s_{t+1};\\lambda_t,\\gamma_{t}) &\n        = \\mathbb{E}\\Big[\\sum_{t=1}^{100} \\beta^{t}\\cdot ((\\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot\\frac{l_{t}^{1+\\varphi}}{1+\\varphi}) \\\\\n        & +\\lambda_{t}\\cdot \\left(l_{t}\\cdot z_{t}+s_{t}\\cdot (1+r_{t})-c_{t}-s_{t+1}\\right) \\\\\n        & + \\gamma_{t}\\cdot \\left(s_{t+1}-\\underline{s}\\right))\\Big] \\\\\n    \\end{split}\n\\end{equation}\\]\nThe First Order Conditions are the following:\n\\[\\frac{\\partial \\mathcal{L}}{\\partial c_{t}} = 0 \\iff c_{t}^{-\\rho} = \\lambda_{t}\\]\n\\[\\frac{\\partial \\mathcal{L}}{\\partial l_{t}} = 0 \\iff \\lambda_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\\]\n\\[\\frac{\\partial \\mathcal{L}}{\\partial s_{t+1}} = 0 \\iff \\lambda_{t} = \\beta \\cdot \\mathbb{E}\\left[\\lambda_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\\]\nWe first note that we must obtain a closed-form solution for \\(c_{t}\\) and \\(l_{t}\\) to obtain the optimal value of \\(s_{t+1}\\). Indeed, since \\(s_{t+1}\\) is linear in \\(\\mathcal{L}\\), we would need to plug the closed-form solutions of \\(c_{t}\\) and \\(l_{t}\\) in the budget constraint.\nReplacing the expression of \\(\\lambda_{t}\\) in the two other equation yields:\n\\[\\begin{equation}\n    c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi} \\iff\n        \\begin{cases}\n        & c_t = \\left[\\frac{\\xi_{t}\\cdot l_{t}^{\\varphi}}{z_{t}}\\right]^{-\\frac{1}{\\rho}}\\\\\n        & l_{t} = \\left[\\frac{c_{t}^{-\\rho}z_{t}\\cdot}{\\xi_{t}}\\right]^{\\frac{1}{\\varphi}}\n    \\end{cases}\n\\end{equation}\\] And \\[\\begin{equation}\n    c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\]\nAssuming that the budget constraint binds, it becomes, as previously seen:\n\\[c_{t} + s_{t+1} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\n\\iff\nc_{t} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1}\n\\]\nThis leads to the following equation system:\n\\[\n\\begin{cases}\n    & c_t = \\left[\\frac{\\xi_{t}\\cdot l_{t}^{\\varphi}}{z_{t}}\\right]^{-\\frac{1}{\\rho}} \\\\\n    & c_{t} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1}\n\\end{cases}\n\\]\n\\[\\iff\\] \\[ \\left[\\frac{\\xi_{t}\\cdot l_{t}^{\\varphi}}{z_{t}}\\right]^{-\\frac{1}{\\rho}} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1} \\] \\[\\iff\\] \\[ l_{t}^{-\\frac{\\varphi}{\\rho}} \\cdot \\left(\\frac{\\xi_{t}}{z_{t}}\\right)^{-\\frac{1}{\\rho}} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1} \\] \\[\\iff\\] \\[ l_{t}^{-\\frac{\\varphi}{\\rho}} \\cdot \\left(\\frac{z_{t}}{\\xi_{t}}\\right)^{\\frac{1}{\\rho}} - l_{t}\\cdot z_{t} - s_{t}\\cdot(1+r_{t}) - s_{t+1} = 0 \\]\nThis is a transcendental equation of form \\(x^{\\alpha}\\cdot b - x\\cdot y - c = 0\\), which admits a solution if and only if \\(-\\frac{\\varphi}{\\rho} \\in \\mathbb{N}\\). This condition seems unrealistic in our context:\nNote that if we set \\(-\\rho\\in\\mathbb{N}\\) and further develop the last equation in the budget constraint binding attempt, we end up with the same condition.\nIf we try to solve it backwards, we now go to the last period. At the last period, \\(s_{t+1} = \\underline{s}\\) for sure: Since there is no future, the agent will borrow as much as they can, or will at least not save anything more than what is imposed by the constraint.\nFor simplification, let \\(\\underline{s}\\) be fixed such that: \\(\\underline{s} = 0\\). The new optimality condition is:\n\\[\\begin{equation}\n    l_{t}^{\\varphi}\\cdot \\xi_{t} = \\left[l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\right]^{-\\rho}\\cdot z_{t}\n\\end{equation}\\]\nAlthough we simplified the term at the exponential of which we have \\(-\\rho\\), this is still a transcendental equation due to the sum of labor income and income coming from savings of last period, and the problem remain the same.\nGo back"
   },
   {
     "objectID": "about.html",
@@ -319,7 +319,7 @@
     "href": "Presentation.html",
     "title": "Modelling climate impact on economy through health",
     "section": "",
-    "text": "This page is dedicated to my presentation.\nIt is currently under construction.\nYou can find my slides here."
+    "text": "This page is dedicated to my presentation.\nYou can find my slides here."
   },
   {
     "objectID": "index.html",
@@ -352,37 +352,37 @@
   {
     "objectID": "Presentation/presentation.html#consumption_change_analytical",
     "href": "Presentation/presentation.html#consumption_change_analytical",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "10.8 Analytical result of consumption change",
-    "text": "10.8 Analytical result of consumption change\n\\[\\begin{equation}\\tag{F.O.C. 2}\n  c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  c_{t} = \\left[\\beta \\cdot p_{t+1}\\cdot c^{-\\rho}_{t+1}\\cdot (1+r_{t+1}) + \\gamma_{t}\\right]^{-\\frac{1}{\\rho}}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  \\frac{\\partial c_{t}}{\\partial p_{t+1}} = -\\frac{1}{\\rho}\\cdot \\left[\\beta \\cdot c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] \\cdot c_{t}^{-1}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  \\frac{\\partial c_{t}}{\\partial p_{t+1}} = -\\frac{1}{\\rho}\\cdot\\frac{\\beta\\cdot (1+r_{t+1})}{c_{t}\\cdot c^{\\rho}_{t+1}} &lt; 0\n\\end{equation}\\]\nGo back"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "10.9 Analytical result of consumption change",
+    "text": "10.9 Analytical result of consumption change\n\\[\\begin{equation}\\tag{F.O.C. 2}\n  c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  c_{t} = \\left[\\beta \\cdot p_{t+1}\\cdot c^{-\\rho}_{t+1}\\cdot (1+r_{t+1}) + \\gamma_{t}\\right]^{-\\frac{1}{\\rho}}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  \\frac{\\partial c_{t}}{\\partial p_{t+1}} = -\\frac{1}{\\rho}\\cdot \\left[\\beta \\cdot c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] \\cdot c_{t}^{-1}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  \\frac{\\partial c_{t}}{\\partial p_{t+1}} = -\\frac{1}{\\rho}\\cdot\\frac{\\beta\\cdot (1+r_{t+1})}{c_{t}\\cdot c^{\\rho}_{t+1}} &lt; 0\n\\end{equation}\\]\nGo back"
   },
   {
     "objectID": "Presentation/presentation.html#consumption_comparison",
     "href": "Presentation/presentation.html#consumption_comparison",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "7.5 Consumption",
     "text": "7.5 Consumption\n\n\n\nConsumption policy comparison accross scenarios.\n\n\nMore about it."
   },
   {
     "objectID": "Presentation/presentation.html#labor_supply_comparison",
     "href": "Presentation/presentation.html#labor_supply_comparison",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "7.6 Labor Supply",
     "text": "7.6 Labor Supply\n\n\n\nLabor supply policy comparison accross scenarios.\n\n\nMore about it."
   },
   {
     "objectID": "Presentation/presentation.html#labor_change_analytical",
     "href": "Presentation/presentation.html#labor_change_analytical",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "10.9 Analytical result of labor change",
-    "text": "10.9 Analytical result of labor change\n\\[\\begin{equation}\\tag{F.O.C. 1}\n  c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  l_{t} = \\left[\\frac{z_{t}}{c^{\\rho}_{t}\\cdot\\xi_{t}}\\right]^{\\frac{1}{\\varphi}}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  \\frac{\\partial l_{t}}{\\partial p_{t+1}} = \\left[\\frac{z_{t}}{\\xi_{t}}\\right]^{\\frac{1}{\\varphi}} \\cdot\n\\frac{\\partial}{\\partial p_{t+1}} \\cdot c_{t}^{-\\frac{\\rho}{\\varphi}}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  \\frac{\\partial l_{t}}{\\partial p_{t+1}} = \\left[\\frac{z_{t}}{\\xi_{t}}\\right]^{\\frac{1}{\\varphi}} \\cdot\n  \\left(-\\frac{\\rho}{\\varphi}\\right) \\cdot\n  \\frac{\\partial c_{t}}{\\partial p_{t+1}} \\cdot c_{t}^{-\\frac{\\rho+\\varphi}{\\varphi}} &gt; 0\n\\end{equation}\\]\nGo back"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "10.10 Analytical result of labor change",
+    "text": "10.10 Analytical result of labor change\n\\[\\begin{equation}\\tag{F.O.C. 1}\n  c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  l_{t} = \\left[\\frac{z_{t}}{c^{\\rho}_{t}\\cdot\\xi_{t}}\\right]^{\\frac{1}{\\varphi}}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  \\frac{\\partial l_{t}}{\\partial p_{t+1}} = \\left[\\frac{z_{t}}{\\xi_{t}}\\right]^{\\frac{1}{\\varphi}} \\cdot\n\\frac{\\partial}{\\partial p_{t+1}} \\cdot c_{t}^{-\\frac{\\rho}{\\varphi}}\n\\end{equation}\\] \\[\\iff\\] \\[\\begin{equation}\n  \\frac{\\partial l_{t}}{\\partial p_{t+1}} = \\left[\\frac{z_{t}}{\\xi_{t}}\\right]^{\\frac{1}{\\varphi}} \\cdot\n  \\left(-\\frac{\\rho}{\\varphi}\\right) \\cdot\n  \\frac{\\partial c_{t}}{\\partial p_{t+1}} \\cdot c_{t}^{-\\frac{\\rho+\\varphi}{\\varphi}} &gt; 0\n\\end{equation}\\]\nGo back"
   },
   {
     "objectID": "Presentation/presentation.html#savings_change_analytical",
     "href": "Presentation/presentation.html#savings_change_analytical",
-    "title": "The effect of temperature-induced health variation on economics",
-    "section": "10.10 Analytical result of savings",
-    "text": "10.10 Analytical result of savings\nFrom the budget constraint, binding:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\] \\[\\iff\\] \\[s_{t+1} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})-c_{t}\\] \\[\\iff\\] \\[\\frac{\\partial s_{t+1}}{\\partial p_{t+1}} = \\frac{\\partial }{\\partial p_{t+1}} l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})-c_{t}\\] \\[\\iff\\] \\[\\frac{\\partial s_{t+1}}{\\partial p_{t+1}} = z_{t}\\cdot\\frac{\\partial l_{t}}{\\partial p_{t+1}} l_{t}  -\\frac{\\partial c_{t}}{\\partial p_{t+1}} &gt; 0 \\]\nGo back"
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "10.11 Analytical result of savings",
+    "text": "10.11 Analytical result of savings\nFrom the budget constraint, binding:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\] \\[\\iff\\] \\[s_{t+1} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})-c_{t}\\] \\[\\iff\\] \\[\\frac{\\partial s_{t+1}}{\\partial p_{t+1}} = \\frac{\\partial }{\\partial p_{t+1}} l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})-c_{t}\\] \\[\\iff\\] \\[\\frac{\\partial s_{t+1}}{\\partial p_{t+1}} = z_{t}\\cdot\\frac{\\partial l_{t}}{\\partial p_{t+1}} l_{t}  -\\frac{\\partial c_{t}}{\\partial p_{t+1}} &gt; 0 \\]\nGo back"
   },
   {
     "objectID": "Presentation/presentation.html#savings_change",
@@ -394,7 +394,7 @@
   {
     "objectID": "Presentation/presentation.html#savings_comparison",
     "href": "Presentation/presentation.html#savings_comparison",
-    "title": "The effect of temperature-induced health variation on economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
     "section": "7.7 Savings",
     "text": "7.7 Savings\n\n\n\nSavings policy comparison accross scenarios.\n\n\nMore about it."
   },
@@ -404,5 +404,103 @@
     "title": "The effect of temperature-induced health variation on economics",
     "section": "5.1 Maximization program",
     "text": "5.1 Maximization program\n\\[ \\max_{\\{c_{t},l_{t},s_{t+1}\\}_{t=1}^{100}}{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\left(\\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right)\\right]}\\]\nsubject to:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\]\n\\[s_{t+1}\\geq \\underline{s}, \\forall t \\in [\\![1,100]\\!]\\]\nExpectation operator: \\(\\mathbb{E}[x_{t+1}] \\equiv p_{t+1}\\cdot x_{t+1}\\)"
+  },
+  {
+    "objectID": "Presentation/presentation.html#health_proxy_plot",
+    "href": "Presentation/presentation.html#health_proxy_plot",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "10.3 Health Proxy plot",
+    "text": "10.3 Health Proxy plot\n\n\n\nPredicted values of health proxy for different scenarios.\n\n\nGo back"
+  },
+  {
+    "objectID": "Presentation/presentation.html#regression-strategy",
+    "href": "Presentation/presentation.html#regression-strategy",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "4.2 Regression strategy",
+    "text": "4.2 Regression strategy\n\\[f_{h} = ?\\] \\[p_{t} = ?\\]\nMultiple ways to estimate them:\n\nSimple approach,\nHealth Proxy: A multi-staged approach."
+  },
+  {
+    "objectID": "Presentation/presentation.html#survival_probability",
+    "href": "Presentation/presentation.html#survival_probability",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "5.2 Survival probability",
+    "text": "5.2 Survival probability\nSimulations yield:\n\n\n\n\n\nAverage survival probabilities obtained with \\(N = 1\\ 00\\) and fixed temperature at 0.61 °C.\n\n\n\n\n\n\nDemographic evolution obtained with \\(N = 1\\ 00\\) and fixed temperature at 0.61 °C.\n\n\n\nMore about it"
+  },
+  {
+    "objectID": "Presentation/presentation.html#survival_probability_details",
+    "href": "Presentation/presentation.html#survival_probability_details",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "10.12 Survival per health status",
+    "text": "10.12 Survival per health status\n\n\n\nSurvival probability per health status\n\n\nGo back"
+  },
+  {
+    "objectID": "Presentation/presentation.html#lifetime-income",
+    "href": "Presentation/presentation.html#lifetime-income",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "7.8 Lifetime Income",
+    "text": "7.8 Lifetime Income\nDefining lifetime income as:\n\\[Y \\equiv \\sum_{t = 20}^{100} \\beta^{t-20} \\cdot \\mathbb{E}\\left[l_{t}(s_{t}) \\cdot z_{t}(s_{t})\\right]= \\sum_{t = 20}^{100} \\beta^{t-20} \\cdot p_{t}\\cdot l_{t}(s_{t}) \\cdot z_{t}(s_{t})\\]\n\n\n\nLifetime income comparison of hand-to-mouth individuals accross scenarios.\n\n\nMore about it"
+  },
+  {
+    "objectID": "Presentation/presentation.html#comparative-statics-productivity",
+    "href": "Presentation/presentation.html#comparative-statics-productivity",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "7.9 Comparative statics: productivity",
+    "text": "7.9 Comparative statics: productivity\n\nProductivity variation through age drives the results in a life cycle fashion (increase of distance between ages).\nProductivity variation through health increases the differences between scenarios.\n\nPrevious model: \\(z_{i,t}(h_{i,t})=\\frac{1}{h_{i,t}}\\in\\left[0.2,1\\right]\\)\n\nFinal productivity function, such as: \\[z(age, temperature, h) = \\frac{1}{2}\\left(\\alpha_5 \\cdot z_i(age)+\\alpha_6 \\cdot z_i(temperature)-\\alpha_{2}\\cdot\\mathbb{1}(h\\in b)\\right)\\] With \\(b \\equiv \\{4,5\\}\\)"
+  },
+  {
+    "objectID": "Presentation/presentation.html#comparative-statics-labour-disutility",
+    "href": "Presentation/presentation.html#comparative-statics-labour-disutility",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "7.10 Comparative statics: labour disutility",
+    "text": "7.10 Comparative statics: labour disutility\n\nLabour disutility variation as a function of health and temperature has the same effect.\n\n\\(\\xi_{i,t}(h_{i,t}) = \\left[1+\\mathbb{1}(h_{i,t} \\in \\{4,5\\})\\right]\\)\n\\(\\xi_{i,t}(h_{i,t}) = h_{i,t}\\)"
+  },
+  {
+    "objectID": "Presentation/presentation.html#comparative-statics",
+    "href": "Presentation/presentation.html#comparative-statics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "7.9 Comparative statics",
+    "text": "7.9 Comparative statics\nProductivity\n\nProductivity variation through age drives the results in a life cycle fashion (increase of distance between ages).\nProductivity variation through health increases the differences between scenarios.\n\nPrevious model: \\(z_{i,t}(h_{i,t})=\\frac{1}{h_{i,t}}\\in\\left[0.2,1\\right]\\)\n\nFinal productivity function, such as: \\[z(age, temperature, h) = \\frac{1}{2}\\left(\\alpha_{1} \\cdot z_i(age)+\\alpha_{2} \\cdot z_i(temperature)-\\alpha_{2}\\cdot\\mathbb{1}(h\\in b)\\right)\\] With \\(b \\equiv \\{4,5\\}\\)\n\nLabour disutility\n\nLabour disutility variation as a function of health and temperature has the same effect.\n\n\\(\\xi_{i,t}(h_{i,t}) = \\left[1+\\mathbb{1}(h_{i,t} \\in \\{4,5\\})\\right]\\)\n\\(\\xi_{i,t}(h_{i,t}) = h_{i,t}\\)"
+  },
+  {
+    "objectID": "Presentation/presentation.html#lifetime_income_rich",
+    "href": "Presentation/presentation.html#lifetime_income_rich",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "10.13 Lifetime Income for Rich individuals",
+    "text": "10.13 Lifetime Income for Rich individuals\n\n\n\nLifetime income of rich individuals comparison accross scenarios.\n\n\nGo back"
+  },
+  {
+    "objectID": "Presentation/presentation.html#lifetime_income_hand_to_mouth",
+    "href": "Presentation/presentation.html#lifetime_income_hand_to_mouth",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "7.8 Lifetime Income",
+    "text": "7.8 Lifetime Income\nDefining lifetime income as:\n\\[Y \\equiv \\sum_{t = 20}^{100} \\beta^{t-20} \\cdot \\mathbb{E}\\left[l_{t}(s_{t}) \\cdot z_{t}(s_{t})\\right]= \\sum_{t = 20}^{100} \\beta^{t-20} \\cdot p_{t}\\cdot l_{t}(s_{t}) \\cdot z_{t}(s_{t})\\]\n\n\n\nLifetime income comparison of hand-to-mouth individuals accross scenarios.\n\n\nMore about it"
+  },
+  {
+    "objectID": "Presentation/presentation.html#analytical-solution-inexistence-analytical_impossibility_proof-scrollabe",
+    "href": "Presentation/presentation.html#analytical-solution-inexistence-analytical_impossibility_proof-scrollabe",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "10.8 Analytical solution inexistence {#analytical_impossibility_proof scrollabe}",
+    "text": "10.8 Analytical solution inexistence {#analytical_impossibility_proof scrollabe}\n\\[ \\max_{\\{c_{t},l_{t},s_{t+1}\\}_{t=1}^{100}}\n{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right]}\\]\nSubject to budget and borrowing constraints:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\]\n\\[s_{t+1}\\geq \\underline{s}, \\forall t \\in [\\![1,100]\\!]\\]\nA first solving attempt consists in assuming that the budget constraint binds. We can then obtain the following expression for consumption:\n\\[c_{t} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1}\\]\nPlugging it into the maximization program, we obtain:\n\\[ \\max_{\\{l_{t},s_{t+1}\\}_{t=1}^{100}}\n{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\frac{\\left(l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1}\\right)^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right]}\\]\nThe F.O.C. with respect to labor implies:\n\\[\\begin{equation}\n    l_{t}^{\\varphi}\\cdot \\xi_{t} = \\left[l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})- s_{t+1}\\right]^{-\\rho}\\cdot z_{t}\n\\end{equation}\\]\nWe can develop the decomposition of consumption if and only if \\(\\rho \\in \\mathbb{N}\\). Indeed, this equation is of form \\(x = (x-\\alpha)^{\\beta} \\cdot z\\). With \\(\\beta\\notin \\mathbb{N}\\), is a transcendental equation.\nWe can now try to compute the F.O.C. first, and then make use of the Budget Constraint. The Lagrangian function associated witht the maximization program of the agent is: \\[\\begin{equation}\n    \\begin{split}\n        \\mathcal{L}(c_{t},l_{t},s_{t+1};\\lambda_t,\\gamma_{t}) &\n        = \\mathbb{E}\\Big[\\sum_{t=1}^{100} \\beta^{t}\\cdot ((\\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot\\frac{l_{t}^{1+\\varphi}}{1+\\varphi}) \\\\\n        & +\\lambda_{t}\\cdot \\left(l_{t}\\cdot z_{t}+s_{t}\\cdot (1+r_{t})-c_{t}-s_{t+1}\\right) \\\\\n        & + \\gamma_{t}\\cdot \\left(s_{t+1}-\\underline{s}\\right))\\Big] \\\\\n    \\end{split}\n\\end{equation}\\]\nThe First Order Conditions are the following:\n\\[\\frac{\\partial \\mathcal{L}}{\\partial c_{t}} = 0 \\iff c_{t}^{-\\rho} = \\lambda_{t}\\]\n\\[\\frac{\\partial \\mathcal{L}}{\\partial l_{t}} = 0 \\iff \\lambda_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\\]\n\\[\\frac{\\partial \\mathcal{L}}{\\partial s_{t+1}} = 0 \\iff \\lambda_{t} = \\beta \\cdot \\mathbb{E}\\left[\\lambda_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\\]\nWe first note that we must obtain a closed-form solution for \\(c_{t}\\) and \\(l_{t}\\) to obtain the optimal value of \\(s_{t+1}\\). Indeed, since \\(s_{t+1}\\) is linear in \\(\\mathcal{L}\\), we would need to plug the closed-form solutions of \\(c_{t}\\) and \\(l_{t}\\) in the budget constraint. \\\nReplacing the expression of \\(\\lambda_{t}\\) in the two other equation yields:\n\\[\\begin{equation}\n    c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi} \\iff\n        \\begin{cases}\n        & c_t = \\left[\\frac{\\xi_{t}\\cdot l_{t}^{\\varphi}}{z_{t}}\\right]^{-\\frac{1}{\\rho}}\\\\\n        & l_{t} = \\left[\\frac{c_{t}^{-\\rho}z_{t}\\cdot}{\\xi_{t}}\\right]^{\\frac{1}{\\varphi}}\n    \\end{cases}\n\\end{equation}\\] And \\[\\begin{equation}\n    c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\]\nAssuming that the budget constraint binds, it becomes, as previously seen:\n\\[c_{t} + s_{t+1} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\n\\iff\nc_{t} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1}\n\\]\nThis leads to the following equation system:\n\\[\n\\begin{cases}\n    & c_t = \\left[\\frac{\\xi_{t}\\cdot l_{t}^{\\varphi}}{z_{t}}\\right]^{-\\frac{1}{\\rho}} \\\\\n    & c_{t} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1}\n\\end{cases}\n\\]\n\\[\\iff\\] \\[ \\left[\\frac{\\xi_{t}\\cdot l_{t}^{\\varphi}}{z_{t}}\\right]^{-\\frac{1}{\\rho}} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1} \\] \\[\\iff\\] \\[ l_{t}^{-\\frac{\\varphi}{\\rho}} \\cdot \\left(\\frac{\\xi_{t}}{z_{t}}\\right)^{-\\frac{1}{\\rho}} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1} \\] \\[\\iff\\] \\[ l_{t}^{-\\frac{\\varphi}{\\rho}} \\cdot \\left(\\frac{z_{t}}{\\xi_{t}}\\right)^{\\frac{1}{\\rho}} - l_{t}\\cdot z_{t} - s_{t}\\cdot(1+r_{t}) - s_{t+1} = 0 \\]\nThis is a transcendental equation of form \\(x^{\\alpha}\\cdot b - x\\cdot y - c = 0\\), which admits a solution if and only if \\(-\\frac{\\varphi}{\\rho} \\in \\mathbb{N}\\). This condition seems unrealistic in our context:\nNote that if we set \\(-\\rho\\in\\mathbb{N}\\) and further develop the last equation in the budget constraint binding attempt, we end up with the same condition.\nIf we try to solve it backwards, we now go to the last period. At the last period, \\(s_{t+1} = \\underline{s}\\) for sure: Since there is no future, the agent will borrow as much as they can, or will at least not save anything more than what is imposed by the constraint.\nFor simplification, let \\(\\underline{s}\\) be fixed such that: \\(\\underline{s} = 0\\). The new optimality condition is:\n\\[\\begin{equation}\n    l_{t}^{\\varphi}\\cdot \\xi_{t} = \\left[l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\right]^{-\\rho}\\cdot z_{t}\n\\end{equation}\\]\nAlthough we simplified the term at the exponential of which we have \\(-\\rho\\), this is still a transcendental equation due to the sum of labor income and income coming from savings of last period, and the problem remain the same.\nGo back"
+  },
+  {
+    "objectID": "Presentation/presentation.html#analytical-solution-inexistence-analytical_impossibility_proof-scrollable",
+    "href": "Presentation/presentation.html#analytical-solution-inexistence-analytical_impossibility_proof-scrollable",
+    "title": "The effect of temperature-induced health variation on economics",
+    "section": "10.8 Analytical solution inexistence {#analytical_impossibility_proof scrollable}",
+    "text": "10.8 Analytical solution inexistence {#analytical_impossibility_proof scrollable}\n\\[ \\max_{\\{c_{t},l_{t},s_{t+1}\\}_{t=1}^{100}}\n{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right]}\\]\nSubject to budget and borrowing constraints:\n\\[c_{t} + s_{t+1} \\leq l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\]\n\\[s_{t+1}\\geq \\underline{s}, \\forall t \\in [\\![1,100]\\!]\\]\nA first solving attempt consists in assuming that the budget constraint binds. We can then obtain the following expression for consumption:\n\\[c_{t} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1}\\]\nPlugging it into the maximization program, we obtain:\n\\[ \\max_{\\{l_{t},s_{t+1}\\}_{t=1}^{100}}\n{\\mathbb{E}\\left[\\sum_{t=1}^{100} \\beta^{t}\\cdot \\frac{\\left(l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1}\\right)^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot \\frac{l_{t}^{1+\\varphi}}{1+\\varphi}\\right]}\\]\nThe F.O.C. with respect to labor implies:\n\\[\\begin{equation}\n    l_{t}^{\\varphi}\\cdot \\xi_{t} = \\left[l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})- s_{t+1}\\right]^{-\\rho}\\cdot z_{t}\n\\end{equation}\\]\nWe can develop the decomposition of consumption if and only if \\(\\rho \\in \\mathbb{N}\\). Indeed, this equation is of form \\(x = (x-\\alpha)^{\\beta} \\cdot z\\). With \\(\\beta\\notin \\mathbb{N}\\), is a transcendental equation.\nWe can now try to compute the F.O.C. first, and then make use of the Budget Constraint. The Lagrangian function associated witht the maximization program of the agent is: \\[\\begin{equation}\n    \\begin{split}\n        \\mathcal{L}(c_{t},l_{t},s_{t+1};\\lambda_t,\\gamma_{t}) &\n        = \\mathbb{E}\\Big[\\sum_{t=1}^{100} \\beta^{t}\\cdot ((\\frac{c_{t}^{1-\\rho}}{1-\\rho}-\\xi_{t}\\cdot\\frac{l_{t}^{1+\\varphi}}{1+\\varphi}) \\\\\n        & +\\lambda_{t}\\cdot \\left(l_{t}\\cdot z_{t}+s_{t}\\cdot (1+r_{t})-c_{t}-s_{t+1}\\right) \\\\\n        & + \\gamma_{t}\\cdot \\left(s_{t+1}-\\underline{s}\\right))\\Big] \\\\\n    \\end{split}\n\\end{equation}\\]\nThe First Order Conditions are the following:\n\\[\\frac{\\partial \\mathcal{L}}{\\partial c_{t}} = 0 \\iff c_{t}^{-\\rho} = \\lambda_{t}\\]\n\\[\\frac{\\partial \\mathcal{L}}{\\partial l_{t}} = 0 \\iff \\lambda_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi}\\]\n\\[\\frac{\\partial \\mathcal{L}}{\\partial s_{t+1}} = 0 \\iff \\lambda_{t} = \\beta \\cdot \\mathbb{E}\\left[\\lambda_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\\]\nWe first note that we must obtain a closed-form solution for \\(c_{t}\\) and \\(l_{t}\\) to obtain the optimal value of \\(s_{t+1}\\). Indeed, since \\(s_{t+1}\\) is linear in \\(\\mathcal{L}\\), we would need to plug the closed-form solutions of \\(c_{t}\\) and \\(l_{t}\\) in the budget constraint. \\\nReplacing the expression of \\(\\lambda_{t}\\) in the two other equation yields:\n\\[\\begin{equation}\n    c^{-\\rho}_{t}\\cdot z_{t} = \\xi_{t}\\cdot l_{t}^{\\varphi} \\iff\n        \\begin{cases}\n        & c_t = \\left[\\frac{\\xi_{t}\\cdot l_{t}^{\\varphi}}{z_{t}}\\right]^{-\\frac{1}{\\rho}}\\\\\n        & l_{t} = \\left[\\frac{c_{t}^{-\\rho}z_{t}\\cdot}{\\xi_{t}}\\right]^{\\frac{1}{\\varphi}}\n    \\end{cases}\n\\end{equation}\\] And \\[\\begin{equation}\n    c^{-\\rho}_{t} = \\beta \\cdot \\mathbb{E}\\left[c^{-\\rho}_{t+1}\\cdot (1+r_{t+1})\\right] + \\gamma_{t}\n\\end{equation}\\]\nAssuming that the budget constraint binds, it becomes, as previously seen:\n\\[c_{t} + s_{t+1} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\n\\iff\nc_{t} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1}\n\\]\nThis leads to the following equation system:\n\\[\n\\begin{cases}\n    & c_t = \\left[\\frac{\\xi_{t}\\cdot l_{t}^{\\varphi}}{z_{t}}\\right]^{-\\frac{1}{\\rho}} \\\\\n    & c_{t} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1}\n\\end{cases}\n\\]\n\\[\\iff\\] \\[ \\left[\\frac{\\xi_{t}\\cdot l_{t}^{\\varphi}}{z_{t}}\\right]^{-\\frac{1}{\\rho}} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1} \\] \\[\\iff\\] \\[ l_{t}^{-\\frac{\\varphi}{\\rho}} \\cdot \\left(\\frac{\\xi_{t}}{z_{t}}\\right)^{-\\frac{1}{\\rho}} = l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t}) - s_{t+1} \\] \\[\\iff\\] \\[ l_{t}^{-\\frac{\\varphi}{\\rho}} \\cdot \\left(\\frac{z_{t}}{\\xi_{t}}\\right)^{\\frac{1}{\\rho}} - l_{t}\\cdot z_{t} - s_{t}\\cdot(1+r_{t}) - s_{t+1} = 0 \\]\nThis is a transcendental equation of form \\(x^{\\alpha}\\cdot b - x\\cdot y - c = 0\\), which admits a solution if and only if \\(-\\frac{\\varphi}{\\rho} \\in \\mathbb{N}\\). This condition seems unrealistic in our context:\nNote that if we set \\(-\\rho\\in\\mathbb{N}\\) and further develop the last equation in the budget constraint binding attempt, we end up with the same condition.\nIf we try to solve it backwards, we now go to the last period. At the last period, \\(s_{t+1} = \\underline{s}\\) for sure: Since there is no future, the agent will borrow as much as they can, or will at least not save anything more than what is imposed by the constraint.\nFor simplification, let \\(\\underline{s}\\) be fixed such that: \\(\\underline{s} = 0\\). The new optimality condition is:\n\\[\\begin{equation}\n    l_{t}^{\\varphi}\\cdot \\xi_{t} = \\left[l_{t}\\cdot z_{t} + s_{t}\\cdot(1+r_{t})\\right]^{-\\rho}\\cdot z_{t}\n\\end{equation}\\]\nAlthough we simplified the term at the exponential of which we have \\(-\\rho\\), this is still a transcendental equation due to the sum of labor income and income coming from savings of last period, and the problem remain the same.\nGo back"
+  },
+  {
+    "objectID": "Presentation/presentation.html#climate-economics",
+    "href": "Presentation/presentation.html#climate-economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "9.1 Climate Economics",
+    "text": "9.1 Climate Economics\n\nBurke et al. (2013). Science 341, p.1235367\nBurke et al. (2015). Nature 527, 235-239\n\nHsiang (2016). An. Rev. Res. Econ. 8, 43-75\n\nCarleton et al. (2022). QJE 137, 2037-2105"
+  },
+  {
+    "objectID": "Presentation/presentation.html#health-economics",
+    "href": "Presentation/presentation.html#health-economics",
+    "title": "Temperature-induced health variation effects on individual tradeoff",
+    "section": "9.2 Health Economics",
+    "text": "9.2 Health Economics\n\nCapatina (2015). J. Health Econ. 44, 1-12\n\nDe Nardi (2019). Rev. Econ. Stud. 86, 1681-1726"
   }
 ]

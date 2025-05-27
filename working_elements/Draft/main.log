@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.16)  22 MAY 2025 11:33
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.16)  27 MAY 2025 15:32
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -687,11 +687,11 @@ File: /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/hist
 Package pdftex.def Info: /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png  used on input line 273.
 (pdftex.def)             Requested size: 345.0pt x 229.98463pt.
  [9 </Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/histogram_1.png>]
-</Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png, id=320, 602.25pt x 401.5pt>
+</Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png, id=320, 2409.0pt x 1606.0pt>
 File: /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png Graphic file (type png)
 <use /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png>
 Package pdftex.def Info: /Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png  used on input line 292.
-(pdftex.def)             Requested size: 345.0pt x 230.00912pt.
+(pdftex.def)             Requested size: 345.0pt x 229.98463pt.
  [10 </Users/paulogcd/Documents/Master_Thesis/working_elements/Draft/output/figure_1.png>] [11]
 Underfull \hbox (badness 10000) in paragraph at lines 370--375
 
@@ -833,7 +833,7 @@ Here is how much of TeX's memory you used:
  1141 hyphenation exceptions out of 8191
  82i,19n,95p,2161b,3949s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on main.pdf (36 pages, 2406480 bytes).
+Output written on main.pdf (36 pages, 2525683 bytes).
 PDF statistics:
  716 PDF objects out of 1000 (max. 8388607)
  603 compressed objects within 7 object streams

@@ -13,8 +13,8 @@
   <meta name="generator" content="quarto-1.6.40">
 
   <meta name="author" content="Paulo Gugelmo Cavalheiro Dias">
-  <meta name="dcterms.date" content="2025-05-26">
-  <title>Modelling climate impact on economy through health – The effect of temperature-induced health variation on economics</title>
+  <meta name="dcterms.date" content="2025-05-27">
+  <title>Modelling climate impact on economy through health – Temperature-induced health variation effects on individual tradeoff</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -134,7 +134,7 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">The effect of temperature-induced health variation on economics</h1>
+  <h1 class="title">Temperature-induced health variation effects on individual tradeoff</h1>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -147,16 +147,16 @@ Paulo Gugelmo Cavalheiro Dias
     </div>
 </div>
 
-  <p class="date">2025-05-26</p>
+  <p class="date">2025-05-27</p>
 </section><section id="TOC">
 <nav role="doc-toc"> 
 <h2 id="toc-title">Outline</h2>
 <ul>
 <li><a href="#/introduction" id="/toc-introduction"><span class="header-section-number">1</span> Introduction</a></li>
-<li><a href="#/setting" id="/toc-setting"><span class="header-section-number">2</span> Setting</a></li>
-<li><a href="#/estimation-method" id="/toc-estimation-method"><span class="header-section-number">3</span> Estimation method</a></li>
-<li><a href="#/estimation-results" id="/toc-estimation-results"><span class="header-section-number">4</span> Estimation results</a></li>
-<li><a href="#/economic-model" id="/toc-economic-model"><span class="header-section-number">5</span> Economic model</a></li>
+<li><a href="#/economic-model" id="/toc-economic-model"><span class="header-section-number">2</span> Economic model</a></li>
+<li><a href="#/setting" id="/toc-setting"><span class="header-section-number">3</span> Setting</a></li>
+<li><a href="#/estimation-method" id="/toc-estimation-method"><span class="header-section-number">4</span> Estimation method</a></li>
+<li><a href="#/estimation-results" id="/toc-estimation-results"><span class="header-section-number">5</span> Estimation results</a></li>
 <li><a href="#/numerical-methods" id="/toc-numerical-methods"><span class="header-section-number">6</span> Numerical methods</a></li>
 <li><a href="#/comparison-results" id="/toc-comparison-results"><span class="header-section-number">7</span> Comparison Results</a></li>
 <li><a href="#/conclusion" id="/toc-conclusion"><span class="header-section-number">8</span> Conclusion</a></li>
@@ -208,31 +208,37 @@ classDef linkLabel fill:none,stroke:none;
 <ul>
 <li>Climate economics:
 <ul>
+<li>Burke, Hsiang, Miguel, 2013: Quantifying the Influence of Climate on Human Conflict</li>
 <li>Burke, Hsiang, Miguel, 2015: Global non-linear effect of temperature on economic production</li>
 <li>Hsiang, 2016: Climate Econometrics</li>
 <li>Carleton et al., 2022: Valuing the Global Mortality Consequences of Climate Change Accounting for Adaptation Costs and Benefits</li>
 </ul></li>
+</ul>
+<p><span class="math inline">\(\rightarrow\)</span> global impact, beginning of adaptation, developing countries.</p>
+<ul>
 <li>Health economics
 <ul>
 <li>Capatina, 2015: Life-cycle effects of health risk</li>
 <li>De Nardi, 2019: Lifetime costs of bad health</li>
 </ul></li>
 </ul>
+<p><span class="math inline">\(\rightarrow\)</span> lifetime effect, tradeoff with health investment.</p>
 <p>Literature gap: climate <strong>and</strong> health effect in <strong>industrialized</strong> context.</p>
 </section>
 <section id="research-strategy" class="slide level2 smaller" data-number="1.3">
 <h2><span class="header-section-number">1.3</span> Research strategy</h2>
 <ol type="1">
+<li>Economic model:
+<ul>
+<li>Reduced form, focus on lifetime individual decisions,</li>
+<li>Simple features,</li>
+<li>Policy functions: consumption, labor, savings.</li>
+</ul></li>
 <li>Environment:
 <ul>
 <li>Empiry-based,</li>
 <li>Demographic and health response to temperature,</li>
 <li><em>Ceteris Paribus</em>.</li>
-</ul></li>
-<li>Economic model:
-<ul>
-<li>Simple features,</li>
-<li>Policy functions: consumption, labor, savings.</li>
 </ul></li>
 <li>Temperature path comparison:
 <ul>
@@ -243,12 +249,37 @@ classDef linkLabel fill:none,stroke:none;
 </ol>
 </section></section>
 <section>
-<section id="setting" class="title-slide slide level1 center" data-number="2">
-<h1><span class="header-section-number">2</span> Setting</h1>
+<section id="economic-model" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> Economic model</h1>
 
 </section>
-<section id="formal_description" class="slide level2" data-number="2.1">
-<h2><span class="header-section-number">2.1</span> Formal description</h2>
+<section id="economic_model" class="slide level2" data-number="2.1">
+<h2><span class="header-section-number">2.1</span> Maximization program</h2>
+<p><span class="math display">\[ \max_{\{c_{t},l_{t},s_{t+1}\}_{t=1}^{100}}{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot \left(\frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\varphi}}{1+\varphi}\right)\right]}\]</span></p>
+<p>subject to:</p>
+<p><span class="math display">\[c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})\]</span></p>
+<p><span class="math display">\[s_{t+1}\geq \underline{s}, \forall t \in [\![1,100]\!]\]</span></p>
+<p>Expectation operator: <span class="math inline">\(\mathbb{E}[x_{t+1}] \equiv p_{t+1}\cdot x_{t+1}\)</span></p>
+</section>
+<section id="first-order-conditions" class="slide level2" data-number="2.2">
+<h2><span class="header-section-number">2.2</span> First Order Conditions</h2>
+<p><span class="math display">\[\begin{equation}\tag{F.O.C. 1}
+  c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi}
+\end{equation}\]</span></p>
+<p><span class="math display">\[\begin{equation}\tag{F.O.C. 2}
+  c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
+\end{equation}\]</span></p>
+<p>With <span class="math inline">\(\gamma_{t}\)</span> the Lagrangien multiplicator associated with the borrowing constraint: <span class="math display">\[s_{t+1} \geq \underline{s}\]</span></p>
+<p>Analytical solution inexistence <span class="math inline">\(\rightarrow\)</span> Numerical methods.</p>
+<p><a href="#/analytical_impossibility_proof">Proof</a></p>
+</section></section>
+<section>
+<section id="setting" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> Setting</h1>
+
+</section>
+<section id="formal_description" class="slide level2" data-number="3.1">
+<h2><span class="header-section-number">3.1</span> Formal description</h2>
 <p>At each period, agents draw health <span class="math inline">\(H_{t}\)</span> and living status <span class="math inline">\(L_{t}\)</span>:</p>
 <p><span class="math display">\[\begin{equation}\tag{1}
   H_t \sim f_h(\mathcal{H}_{t-1}, \mathcal{W}_t)
@@ -262,32 +293,36 @@ classDef linkLabel fill:none,stroke:none;
 \end{equation}\]</span></p>
 <p><a href="#/framework_assumptions">More on underlying assumptions.</a></p>
 </section>
-<section id="data" class="slide level2" data-number="2.2">
-<h2><span class="header-section-number">2.2</span> Data</h2>
+<section id="data" class="slide level2 smaller" data-number="3.2">
+<h2><span class="header-section-number">3.2</span> Data</h2>
+<ul>
+<li><p>HRS: US micro-data on health, and age between 2002 and 2018.</p></li>
+<li><p>Berkeley Earth Project, global average annual temperature.</p></li>
+</ul>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/description_HRS.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Distribution of Health status across years, in the HRS data."><img data-src="resources/description_HRS.png" style="width:100.0%" alt="Distribution of Health status across years, in the HRS data."></a></p>
+<p><a href="description_HRS.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Distribution of Health status across years, in the HRS data."><img data-src="description_HRS.png" style="width:100.0%" alt="Distribution of Health status across years, in the HRS data."></a></p>
 <figcaption>Distribution of Health status across years, in the HRS data.</figcaption>
 </figure>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/description_Berkeley.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Average annual temperature and its 95% confidence interval, in the Berkeley data."><img data-src="resources/description_Berkeley.png" style="width:100.0%" alt="Average annual temperature and its 95% confidence interval, in the Berkeley data."></a></p>
+<p><a href="output/description_Berkeley_data.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Average annual temperature and its 95% confidence interval, in the Berkeley data."><img data-src="output/description_Berkeley_data.png" style="width:100.0%" alt="Average annual temperature and its 95% confidence interval, in the Berkeley data."></a></p>
 <figcaption>Average annual temperature and its 95% confidence interval, in the Berkeley data.</figcaption>
 </figure>
 </div>
 </div></div>
 </section></section>
 <section>
-<section id="estimation-method" class="title-slide slide level1 center" data-number="3">
-<h1><span class="header-section-number">3</span> Estimation method</h1>
+<section id="estimation-method" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> Estimation method</h1>
 
 </section>
-<section id="history-simplification" class="slide level2" data-number="3.1">
-<h2><span class="header-section-number">3.1</span> History Simplification</h2>
+<section id="history-simplification" class="slide level2" data-number="4.1">
+<h2><span class="header-section-number">4.1</span> History Simplification</h2>
 <p>The general relationships:</p>
 <p><span class="math display">\[\begin{equation}\tag{1}
   H_t \sim f_h(\mathcal{H}_{t-1}, \mathcal{W}_t)
@@ -302,106 +337,97 @@ classDef linkLabel fill:none,stroke:none;
   L_t \sim \mathcal{B}(p_t)\text{ | } p_{t}\equiv p_{t}({H}_t, {T}_t)
 \end{equation}\]</span></p>
 </section>
-<section id="health_transition" class="slide level2" data-number="3.2">
-<h2><span class="header-section-number">3.2</span> Health Transition</h2>
+<section id="regression-strategy" class="slide level2" data-number="4.2">
+<h2><span class="header-section-number">4.2</span> Regression strategy</h2>
+<p><span class="math display">\[f_{h} = ?\]</span> <span class="math display">\[p_{t} = ?\]</span></p>
+<p>Multiple ways to estimate them:</p>
+<ul>
+<li><p>Simple approach,</p></li>
+<li><p>Health Proxy: A multi-staged approach.</p></li>
+</ul>
+</section>
+<section id="health_transition" class="slide level2" data-number="4.3">
+<h2><span class="header-section-number">4.3</span> Health Transition</h2>
 <p>Sample space of Health: <span class="math inline">\(\Omega(H_{t}) \equiv [\![1,5]\!]\)</span></p>
 <p>Ordered Multinomial Logit Model</p>
 <p><span class="math display">\[\begin{equation}\tag{1.1}
   H_t \sim f_h({H}_{t-1}, {T}_t)
 \end{equation}\]</span></p>
-<p>Let <span class="math inline">\(X_{H} \equiv (Age_{t}, T_{t}, Age_{t}\times T_{t}, H_{t-1})^{T}\)</span></p>
+<p>Let <span class="math inline">\(X_{H} \equiv (Age_{t}, T_{t}, H_{t-1}, Age_{t}\times T_{t}\times H_{t-1},\dots)^{T}\)</span></p>
 <p><span class="math display">\[\begin{equation}\tag{1.2}
-  \widehat{H_{t}} \sim \Lambda_{O}(\widehat{\beta_H}\cdot X_{H})
+  \widehat{H_{t}} \sim \widehat{f_h}({H}_{t-1}, {T}_t) = \Lambda_{O}(\widehat{\beta_H}\cdot X_{H})
 \end{equation}\]</span></p>
 <p><a href="#/ordered_multinomial_logit_regression_details">More about it</a></p>
 </section>
-<section id="living_status" class="slide level2" data-number="3.3">
-<h2><span class="header-section-number">3.3</span> Living Status</h2>
+<section id="living_status" class="slide level2" data-number="4.4">
+<h2><span class="header-section-number">4.4</span> Living Status</h2>
 <p>Sample space of living status: <span class="math inline">\(\Omega(L_{t}) \equiv \{0,1\}\)</span></p>
 <p>Logistic regression</p>
 <p><span class="math display">\[\begin{equation}\tag{2.1}
   L_t \sim \mathcal{B}(p_t)\text{ | } p_{t}\equiv p_{t}({H}_t, {T}_t)
 \end{equation}\]</span></p>
-<p>Let <span class="math inline">\(X_{L} \equiv (H_{t},Age_{t},T_{t},H_{t}\times Age_{t} \times T_{t})^{T}\)</span></p>
+<p>Let <span class="math inline">\(X_{L} \equiv (Age_{t},H_{t},T_{t},Age_{t} \times H_{t}\times T_{t},\dots)^{T}\)</span></p>
 <p><span class="math display">\[\begin{equation}\tag{2.2}
-  \widehat{p_t} = \Lambda  (\widehat{\beta_L}\cdot X_{L})
+  \widehat{L_t} \sim \mathcal{B}(\widehat{p_{t}}) | \widehat{p_t} = \Lambda  (\widehat{\beta_L}\cdot X_{L})
 \end{equation}\]</span></p>
 <p><a href="#/logit_model_details">More about it</a></p>
 </section>
-<section id="health_proxy" class="slide level2" data-number="3.4">
-<h2><span class="header-section-number">3.4</span> Health Proxy</h2>
-<p>In the submitted version, health proxy is defined as: <span class="math inline">\(HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}\)</span> and its estimate, <span class="math inline">\(\widehat{HP_{i,t}^{OLS}}\)</span> (<span class="math inline">\(\widehat{H^{I}_{i,t}}\)</span> in text) leads to:</p>
+<section id="health_proxy" class="slide level2 smaller" data-number="4.5">
+<h2><span class="header-section-number">4.5</span> Health Proxy</h2>
+<p>In the submitted version, health proxy is constructed as: <span class="math inline">\(HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}\)</span>.</p>
+<p>Its estimate <span class="math inline">\(\widehat{HP_{i,t}^{OLS}}\)</span> (<span class="math inline">\(\widehat{H^{I}_{i,t}}\)</span> in text) is defined as:</p>
+<p><span class="math display">\[X_{i,t}^{HP}\equiv (Age_{i,t},T_{t},Age_{i,t}\times T_{t})^{T}\]</span></p>
+<p><span class="math display">\[\begin{equation}
+  \widehat{HP_{i,t}^{OLS}} = \widehat{\beta^{OLS}_{HP}}\cdot X_{i,t}^{HP}
+\end{equation}\]</span></p>
+<p>Using its estimate leads to:</p>
 <p><span class="math display">\[\begin{equation}\tag{1.4}
-  \widehat{H_{i,t}^{HP}} = \Lambda_{0} \left( \widehat{\beta_0} +
-    \widehat{\beta_{H}} \cdot H_{i,t} +
-    \widehat{\beta_{HP}} \cdot \widehat{HP_{i,t}^{OLS}} \right)
+  \widehat{H_{i,t}^{HP}} = \Lambda_{O} \left( \widehat{\beta_{H_{i,t}^{HP}}}\cdot X_{H_{i,t}} \right)
+    |
+    X_{H_{i,t}} \equiv (H_{i,t-1},\widehat{HP_{i,t}^{OLS}})^{T}
 \end{equation}\]</span></p>
 <p><span class="math display">\[\begin{equation}\tag{2.4}
-  \widehat{p_{i,t}} = \Lambda \left( \widehat{\beta_0} +
-    \widehat{\beta_{H}} \cdot H_{i,t} +
-    \widehat{\beta_{HP}} \cdot \widehat{HP_{i,t}^{OLS}} \right)
+  \widehat{p_{i,t}^{HP}} = \Lambda \left( \widehat{\beta_{p_{i,t}^{HP}}} \cdot X_{p_{i,t}} \right)
+    |
+    X_{p_{i,t}} \equiv (H_{i,t},\widehat{HP_{i,t}^{OLS}})^{T}
 \end{equation}\]</span></p>
 <p><a href="#/health_proxy_details">More about it</a></p>
 </section></section>
 <section>
-<section id="estimation-results" class="title-slide slide level1 center" data-number="4">
-<h1><span class="header-section-number">4</span> Estimation results</h1>
+<section id="estimation-results" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> Estimation results</h1>
 
 </section>
-<section id="health-transition" class="slide level2 scrollable" data-number="4.1">
-<h2><span class="header-section-number">4.1</span> Health Transition</h2>
+<section id="health-transition" class="slide level2 scrollable" data-number="5.1">
+<h2><span class="header-section-number">5.1</span> Health Transition</h2>
 <div style="display: flex; flex-wrap: wrap; justify-content: center;">
-  <iframe src="resources/transition_from_Excellent.html" width="49%" height="500px" frameborder="0"></iframe>
-  <iframe src="resources/transition_from_Very Good.html" width="49%" height="500px" frameborder="0"></iframe>
-  <iframe src="resources/transition_from_Good.html" width="49%" height="500px" frameborder="0"></iframe>
-  <iframe src="resources/transition_from_Fair.html" width="49%" height="500px" frameborder="0"></iframe>
-  <iframe src="resources/transition_from_Poor.html" width="49%" height="500px" frameborder="0"></iframe>
+  <iframe src="output/transition_from_Excellent.html" width="49%" height="500px" frameborder="0"></iframe>
+  <iframe src="output/transition_from_Very Good.html" width="49%" height="500px" frameborder="0"></iframe>
+  <iframe src="output/transition_from_Good.html" width="49%" height="500px" frameborder="0"></iframe>
+  <iframe src="output/transition_from_Fair.html" width="49%" height="500px" frameborder="0"></iframe>
+  <iframe src="output/transition_from_Poor.html" width="49%" height="500px" frameborder="0"></iframe>
 </div>
 </section>
-<section id="survival-probability" class="slide level2" data-number="4.2">
-<h2><span class="header-section-number">4.2</span> Survival probability</h2>
-<p>Estimating through simulations:</p>
+<section id="survival_probability" class="slide level2" data-number="5.2">
+<h2><span class="header-section-number">5.2</span> Survival probability</h2>
+<p>Simulations yield:</p>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/probabilities_comparison.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Average survival probabilities obtained with N = 10\ 000."><img data-src="resources/probabilities_comparison.png" style="width:100.0%" alt="Average survival probabilities obtained with N = 10\ 000."></a></p>
-<figcaption>Average survival probabilities obtained with <span class="math inline">\(N = 10\ 000\)</span>.</figcaption>
+<p><a href="output/probabilities_one_path.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Average survival probabilities obtained with N = 1\ 00 and fixed temperature at 0.61 °C."><img data-src="output/probabilities_one_path.png" style="width:100.0%" alt="Average survival probabilities obtained with N = 1\ 00 and fixed temperature at 0.61 °C."></a></p>
+<figcaption>Average survival probabilities obtained with <span class="math inline">\(N = 1\ 00\)</span> and fixed temperature at 0.61 °C.</figcaption>
 </figure>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/demographic_comparison.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Demographic evolution obtained with N = 10\ 000."><img data-src="resources/demographic_comparison.png" style="width:100.0%" alt="Demographic evolution obtained with N = 10\ 000."></a></p>
-<figcaption>Demographic evolution obtained with <span class="math inline">\(N = 10\ 000\)</span>.</figcaption>
+<p><a href="output/population_one_path.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Demographic evolution obtained with N = 1\ 00 and fixed temperature at 0.61 °C."><img data-src="output/population_one_path.png" style="width:100.0%" alt="Demographic evolution obtained with N = 1\ 00 and fixed temperature at 0.61 °C."></a></p>
+<figcaption>Demographic evolution obtained with <span class="math inline">\(N = 1\ 00\)</span> and fixed temperature at 0.61 °C.</figcaption>
 </figure>
 </div>
 </div></div>
-</section></section>
-<section>
-<section id="economic-model" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> Economic model</h1>
-
-</section>
-<section id="economic_model" class="slide level2" data-number="5.1">
-<h2><span class="header-section-number">5.1</span> Maximization program</h2>
-<p><span class="math display">\[ \max_{\{c_{t},l_{t},s_{t+1}\}_{t=1}^{100}}{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot \left(\frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\varphi}}{1+\varphi}\right)\right]}\]</span></p>
-<p>subject to:</p>
-<p><span class="math display">\[c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})\]</span></p>
-<p><span class="math display">\[s_{t+1}\geq \underline{s}, \forall t \in [\![1,100]\!]\]</span></p>
-<p>Expectation operator: <span class="math inline">\(\mathbb{E}[x_{t+1}] \equiv p_{t+1}\cdot x_{t+1}\)</span></p>
-</section>
-<section id="first-order-conditions" class="slide level2" data-number="5.2">
-<h2><span class="header-section-number">5.2</span> First Order Conditions</h2>
-<p><span class="math display">\[\begin{equation}\tag{F.O.C. 1}
-  c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi}
-\end{equation}\]</span></p>
-<p><span class="math display">\[\begin{equation}\tag{F.O.C. 2}
-  c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
-\end{equation}\]</span></p>
-<p>With <span class="math inline">\(\gamma_{t}\)</span> the Lagrangien multiplicator associated with the borrowing constraint: <span class="math display">\[s_{t+1} \geq \underline{s}\]</span></p>
-<p>Analytical solution inexistence <span class="math inline">\(\rightarrow\)</span> Numerical methods.</p>
-<p><a href="#/analytical_impossibility_proof">Proof</a></p>
+<p><a href="#/survival_probability_details">More about it</a></p>
 </section></section>
 <section>
 <section id="numerical-methods" class="title-slide slide level1 center" data-number="6">
@@ -410,113 +436,122 @@ classDef linkLabel fill:none,stroke:none;
 </section>
 <section id="algorithms" class="slide level2" data-number="6.1">
 <h2><span class="header-section-number">6.1</span> Algorithms</h2>
-<p>I have different ways of solving it numerically, and it does matter for the results.</p>
+<p>The absence of analytical solution calls for a detailed description of the numerical methods. The different used algorithms are:</p>
 <ul>
-<li>Pure numerical Value function iteration.</li>
-<li>FOC-approximated Value function iteration.</li>
-<li>Interpolated grid.</li>
+<li>Pure numerical value function iteration,</li>
+<li>FOC-approximated value function iteration,</li>
+<li>Interpolated grid versions.</li>
+</ul>
+<p>Focus on:</p>
+<ul>
+<li>Performance,</li>
+<li>Policies.</li>
 </ul>
 </section>
-<section id="results-consumption" class="slide level2" data-number="6.2">
-<h2><span class="header-section-number">6.2</span> Results: Consumption</h2>
-<div class="columns">
+<section id="performance" class="slide level2" data-number="6.2">
+<h2><span class="header-section-number">6.2</span> Performance</h2>
+<p><span class="math display">\[\\ \\ \\\]</span></p>
+<div class="{columns}">
 <div class="column" style="width:30%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/numerical_pure_numerical_consumption.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Consumption policy per age in the pure numerical algorithm."><img data-src="resources/numerical_pure_numerical_consumption.png" style="width:100.0%" alt="Consumption policy per age in the pure numerical algorithm."></a></p>
-<figcaption>Consumption policy per age in the pure numerical algorithm.</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="resources/numerical_FOC_1_approximation_Consumption.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Consumption policy per age in the FOC approximated algorithm 1."><img data-src="resources/numerical_FOC_1_approximation_Consumption.png" style="width:100.0%" alt="Consumption policy per age in the FOC approximated algorithm 1."></a></p>
-<figcaption>Consumption policy per age in the FOC approximated algorithm 1.</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="resources/numerical_FOC_2_approximation_Consumption.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Consumption policy per age in the FOC approximated algorithm 2."><img data-src="resources/numerical_FOC_2_approximation_Consumption.png" style="width:100.0%" alt="Consumption policy per age in the FOC approximated algorithm 2."></a></p>
-<figcaption>Consumption policy per age in the FOC approximated algorithm 2.</figcaption>
-</figure>
-</div>
-</div></div>
-</section>
-<section id="results-labour-supply" class="slide level2" data-number="6.3">
-<h2><span class="header-section-number">6.3</span> Results: Labour supply</h2>
-<div class="columns">
-<div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="resources/numerical_pure_numerical_Labour Supply.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Labour supply policy per age in the pure numerical algorithm."><img data-src="resources/numerical_pure_numerical_Labour Supply.png" style="width:100.0%" alt="Labour supply policy per age in the pure numerical algorithm."></a></p>
-<figcaption>Labour supply policy per age in the pure numerical algorithm.</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="resources/numerical_FOC_1_approximation_Labour Supply.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Labour supply policy per age in the FOC approximated algorithm 1."><img data-src="resources/numerical_FOC_1_approximation_Labour Supply.png" style="width:100.0%" alt="Labour supply policy per age in the FOC approximated algorithm 1."></a></p>
-<figcaption>Labour supply policy per age in the FOC approximated algorithm 1.</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="resources/numerical_FOC_2_approximation_Labour Supply.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Labour supply policy per age in the FOC approximated algorithm 2."><img data-src="resources/numerical_FOC_2_approximation_Labour Supply.png" style="width:100.0%" alt="Labour supply policy per age in the FOC approximated algorithm 2."></a></p>
-<figcaption>Labour supply policy per age in the FOC approximated algorithm 2.</figcaption>
-</figure>
-</div>
-</div></div>
-</section>
-<section id="results-savings" class="slide level2" data-number="6.4">
-<h2><span class="header-section-number">6.4</span> Results: Savings</h2>
-<div class="columns">
-<div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="resources/numerical_pure_numerical_Savings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Savings policy per age in the pure numerical algorithm."><img data-src="resources/numerical_pure_numerical_Savings.png" style="width:100.0%" alt="Savings policy per age in the pure numerical algorithm."></a></p>
-<figcaption>Savings policy per age in the pure numerical algorithm.</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="resources/numerical_FOC_1_approximation_Savings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="Savings policy per age in the FOC approximated algorithm 1."><img data-src="resources/numerical_FOC_1_approximation_Savings.png" style="width:100.0%" alt="Savings policy per age in the FOC approximated algorithm 1."></a></p>
-<figcaption>Savings policy per age in the FOC approximated algorithm 1.</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="resources/numerical_FOC_2_approximation_Savings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="Savings policy per age in the FOC approximated algorithm 2."><img data-src="resources/numerical_FOC_2_approximation_Savings.png" style="width:100.0%" alt="Savings policy per age in the FOC approximated algorithm 2."></a></p>
-<figcaption>Savings policy per age in the FOC approximated algorithm 2.</figcaption>
-</figure>
-</div>
-</div></div>
-</section>
-<section id="performance" class="slide level2" data-number="6.5">
-<h2><span class="header-section-number">6.5</span> Performance</h2>
-<div class="columns">
-<div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="resources/numerical_pure_numerical_error.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" title="Performance of the pure numerical algorithm."><img data-src="resources/numerical_pure_numerical_error.png" style="width:100.0%" alt="Performance of the pure numerical algorithm."></a></p>
+<p><a href="output/numerical_pure_numerical_error.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Performance of the pure numerical algorithm."><img data-src="output/numerical_pure_numerical_error.png" style="width:100.0%" alt="Performance of the pure numerical algorithm."></a></p>
 <figcaption>Performance of the pure numerical algorithm.</figcaption>
 </figure>
 </div>
 </div><div class="column" style="width:30%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/numerical_FOC_1_approximation_error.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="Performance of the FOC approximated algorithm 1."><img data-src="resources/numerical_FOC_1_approximation_error.png" style="width:100.0%" alt="Performance of the FOC approximated algorithm 1."></a></p>
+<p><a href="output/numerical_FOC_1_approximation_error.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Performance of the FOC approximated algorithm 1."><img data-src="output/numerical_FOC_1_approximation_error.png" style="width:100.0%" alt="Performance of the FOC approximated algorithm 1."></a></p>
 <figcaption>Performance of the FOC approximated algorithm 1.</figcaption>
 </figure>
 </div>
 </div><div class="column" style="width:30%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/numerical_FOC_2_approximation_error.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="Performance of the FOC approximated algorithm 2."><img data-src="resources/numerical_FOC_2_approximation_error.png" style="width:100.0%" alt="Performance of the FOC approximated algorithm 2."></a></p>
+<p><a href="output/numerical_FOC_2_approximation_error.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Performance of the FOC approximated algorithm 2."><img data-src="output/numerical_FOC_2_approximation_error.png" style="width:100.0%" alt="Performance of the FOC approximated algorithm 2."></a></p>
 <figcaption>Performance of the FOC approximated algorithm 2.</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="results-consumption" class="slide level2" data-number="6.3">
+<h2><span class="header-section-number">6.3</span> Results: Consumption</h2>
+<p><span class="math display">\[\\ \\ \\\]</span></p>
+<div class="columns">
+<div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="output/numerical_pure_numerical_consumption.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Consumption policy per age in the pure numerical algorithm."><img data-src="output/numerical_pure_numerical_consumption.png" style="width:100.0%" alt="Consumption policy per age in the pure numerical algorithm."></a></p>
+<figcaption>Consumption policy per age in the pure numerical algorithm.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="output/numerical_FOC_1_approximation_Consumption.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Consumption policy per age in the FOC approximated algorithm 1."><img data-src="output/numerical_FOC_1_approximation_Consumption.png" style="width:100.0%" alt="Consumption policy per age in the FOC approximated algorithm 1."></a></p>
+<figcaption>Consumption policy per age in the FOC approximated algorithm 1.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="output/numerical_FOC_2_approximation_Consumption.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Consumption policy per age in the FOC approximated algorithm 2."><img data-src="output/numerical_FOC_2_approximation_Consumption.png" style="width:100.0%" alt="Consumption policy per age in the FOC approximated algorithm 2."></a></p>
+<figcaption>Consumption policy per age in the FOC approximated algorithm 2.</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="results-labour-supply" class="slide level2" data-number="6.4">
+<h2><span class="header-section-number">6.4</span> Results: Labour supply</h2>
+<p><span class="math display">\[\\ \\ \\\]</span></p>
+<div class="columns">
+<div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="output/numerical_pure_numerical_Labour Supply.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Labour supply policy per age in the pure numerical algorithm."><img data-src="output/numerical_pure_numerical_Labour Supply.png" style="width:100.0%" alt="Labour supply policy per age in the pure numerical algorithm."></a></p>
+<figcaption>Labour supply policy per age in the pure numerical algorithm.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="output/numerical_FOC_1_approximation_Labour Supply.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="Labour supply policy per age in the FOC approximated algorithm 1."><img data-src="output/numerical_FOC_1_approximation_Labour Supply.png" style="width:100.0%" alt="Labour supply policy per age in the FOC approximated algorithm 1."></a></p>
+<figcaption>Labour supply policy per age in the FOC approximated algorithm 1.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="output/numerical_FOC_2_approximation_Labour Supply.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="Labour supply policy per age in the FOC approximated algorithm 2."><img data-src="output/numerical_FOC_2_approximation_Labour Supply.png" style="width:100.0%" alt="Labour supply policy per age in the FOC approximated algorithm 2."></a></p>
+<figcaption>Labour supply policy per age in the FOC approximated algorithm 2.</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="results-savings" class="slide level2" data-number="6.5">
+<h2><span class="header-section-number">6.5</span> Results: Savings</h2>
+<p><span class="math display">\[\\ \\ \\\]</span></p>
+<div class="columns">
+<div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="output/numerical_pure_numerical_Savings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" title="Savings policy per age in the pure numerical algorithm."><img data-src="output/numerical_pure_numerical_Savings.png" style="width:100.0%" alt="Savings policy per age in the pure numerical algorithm."></a></p>
+<figcaption>Savings policy per age in the pure numerical algorithm.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="output/numerical_FOC_1_approximation_Savings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="Savings policy per age in the FOC approximated algorithm 1."><img data-src="output/numerical_FOC_1_approximation_Savings.png" style="width:100.0%" alt="Savings policy per age in the FOC approximated algorithm 1."></a></p>
+<figcaption>Savings policy per age in the FOC approximated algorithm 1.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="output/numerical_FOC_2_approximation_Savings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="Savings policy per age in the FOC approximated algorithm 2."><img data-src="output/numerical_FOC_2_approximation_Savings.png" style="width:100.0%" alt="Savings policy per age in the FOC approximated algorithm 2."></a></p>
+<figcaption>Savings policy per age in the FOC approximated algorithm 2.</figcaption>
 </figure>
 </div>
 </div></div>
@@ -525,8 +560,7 @@ classDef linkLabel fill:none,stroke:none;
 <h2><span class="header-section-number">6.6</span> General algorithmic assessment</h2>
 <ul>
 <li><p>Pure numerical approach performs better in terms of precision.</p></li>
-<li><p>Consumption FOC-approximation: estimation of <span class="math inline">\(\gamma_{t}\)</span>: positively correlated with age.</p></li>
-<li><p>Endogenous grid method could have been better, but was not implemented here.</p></li>
+<li><p>Consumption FOC-approximation allows for an estimation of <span class="math inline">\(\gamma_{t}\)</span>, which is positively correlated with age.</p></li>
 </ul>
 </section></section>
 <section>
@@ -562,7 +596,7 @@ classDef linkLabel fill:none,stroke:none;
 <h2><span class="header-section-number">7.3</span> Health</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/average_health.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="Average health in different temperature scenarios."><img data-src="resources/average_health.png" style="width:70.0%" alt="Average health in different temperature scenarios."></a></p>
+<p><a href="output/average_health.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="Average health in different temperature scenarios."><img data-src="output/average_health.png" style="width:70.0%" alt="Average health in different temperature scenarios."></a></p>
 <figcaption>Average health in different temperature scenarios.</figcaption>
 </figure>
 </div>
@@ -573,15 +607,15 @@ classDef linkLabel fill:none,stroke:none;
 <div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/probabilities_comparison.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18" title="Average survival probabilities obtained with N = 10\ 000."><img data-src="resources/probabilities_comparison.png" style="width:100.0%" alt="Average survival probabilities obtained with N = 10\ 000."></a></p>
-<figcaption>Average survival probabilities obtained with <span class="math inline">\(N = 10\ 000\)</span>.</figcaption>
+<p><a href="output/probabilities_comparison.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18" title="Average survival probabilities for different scenarios."><img data-src="output/probabilities_comparison.png" style="width:100.0%" alt="Average survival probabilities for different scenarios."></a></p>
+<figcaption>Average survival probabilities for different scenarios.</figcaption>
 </figure>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/demographic_comparison.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19" title="Demographic evolution obtained with N = 10\ 000."><img data-src="resources/demographic_comparison.png" style="width:100.0%" alt="Demographic evolution obtained with N = 10\ 000."></a></p>
-<figcaption>Demographic evolution obtained with <span class="math inline">\(N = 10\ 000\)</span>.</figcaption>
+<p><a href="output/demographic_comparison.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19" title="Demographic evolution for different scenarios."><img data-src="output/demographic_comparison.png" style="width:100.0%" alt="Demographic evolution for different scenarios."></a></p>
+<figcaption>Demographic evolution for different scenarios.</figcaption>
 </figure>
 </div>
 </div></div>
@@ -590,7 +624,7 @@ classDef linkLabel fill:none,stroke:none;
 <h2><span class="header-section-number">7.5</span> Consumption</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/comparison_Consumption.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20" title="Consumption policy comparison accross scenarios."><img data-src="resources/comparison_Consumption.png" style="width:60.0%" alt="Consumption policy comparison accross scenarios."></a></p>
+<p><a href="output/comparison_Consumption.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20" title="Consumption policy comparison accross scenarios."><img data-src="output/comparison_Consumption.png" style="width:60.0%" alt="Consumption policy comparison accross scenarios."></a></p>
 <figcaption>Consumption policy comparison accross scenarios.</figcaption>
 </figure>
 </div>
@@ -600,7 +634,7 @@ classDef linkLabel fill:none,stroke:none;
 <h2><span class="header-section-number">7.6</span> Labor Supply</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/comparison_Labor.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21" title="Labor supply policy comparison accross scenarios."><img data-src="resources/comparison_Labor.png" style="width:60.0%" alt="Labor supply policy comparison accross scenarios."></a></p>
+<p><a href="output/comparison_Labor.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21" title="Labor supply policy comparison accross scenarios."><img data-src="output/comparison_Labor.png" style="width:60.0%" alt="Labor supply policy comparison accross scenarios."></a></p>
 <figcaption>Labor supply policy comparison accross scenarios.</figcaption>
 </figure>
 </div>
@@ -610,63 +644,86 @@ classDef linkLabel fill:none,stroke:none;
 <h2><span class="header-section-number">7.7</span> Savings</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/comparison_Savings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-22" title="Savings policy comparison accross scenarios."><img data-src="resources/comparison_Savings.png" style="width:60.0%" alt="Savings policy comparison accross scenarios."></a></p>
+<p><a href="output/comparison_Savings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-22" title="Savings policy comparison accross scenarios."><img data-src="output/comparison_Savings.png" style="width:60.0%" alt="Savings policy comparison accross scenarios."></a></p>
 <figcaption>Savings policy comparison accross scenarios.</figcaption>
 </figure>
 </div>
 <p><a href="#/savings_change_analytical">More about it.</a></p>
 </section>
-<section id="focus-on-lifetime-income" class="slide level2" data-number="7.8">
-<h2><span class="header-section-number">7.8</span> Focus on Lifetime Income</h2>
+<section id="lifetime_income_hand_to_mouth" class="slide level2 smaller" data-number="7.8">
+<h2><span class="header-section-number">7.8</span> Lifetime Income</h2>
 <p>Defining lifetime income as:</p>
-<p><span class="math display">\[Y \equiv \sum_{t = 20}^{100} \beta^t \cdot \mathbb{E}\left[l_{t}(s_{t}) \cdot z_{t}(s_{t})\right]\]</span></p>
-<div class="columns">
-<div class="column" style="width:50%;">
+<p><span class="math display">\[Y \equiv \sum_{t = 20}^{100} \beta^{t-20} \cdot \mathbb{E}\left[l_{t}(s_{t}) \cdot z_{t}(s_{t})\right]= \sum_{t = 20}^{100} \beta^{t-20} \cdot p_{t}\cdot l_{t}(s_{t}) \cdot z_{t}(s_{t})\]</span></p>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="resources/comparison_lifetime_income_hand_to_mouth.png" class="lightbox" data-gallery="quarto-lightbox-gallery-23" title="Lifetime income comparison of hand-to-mouth individuals accross scenarios."><img data-src="resources/comparison_lifetime_income_hand_to_mouth.png" style="width:90.0%" alt="Lifetime income comparison of hand-to-mouth individuals accross scenarios."></a></p>
+<p><a href="output/comparison_lifetime_income_hand_to_mouth.png" class="lightbox" data-gallery="quarto-lightbox-gallery-23" title="Lifetime income comparison of hand-to-mouth individuals accross scenarios."><img data-src="output/comparison_lifetime_income_hand_to_mouth.png" style="width:50.0%" alt="Lifetime income comparison of hand-to-mouth individuals accross scenarios."></a></p>
 <figcaption>Lifetime income comparison of hand-to-mouth individuals accross scenarios.</figcaption>
 </figure>
 </div>
-</div><div class="column" style="width:50%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="resources/comparison_lifetime_income_rich.png" class="lightbox" data-gallery="quarto-lightbox-gallery-24" title="Lifetime income of rich individuals comparison accross scenarios."><img data-src="resources/comparison_lifetime_income_rich.png" style="width:90.0%" alt="Lifetime income of rich individuals comparison accross scenarios."></a></p>
-<figcaption>Lifetime income of rich individuals comparison accross scenarios.</figcaption>
-</figure>
-</div>
-</div></div>
+<p><a href="#/lifetime_income_rich">More about it</a></p>
 </section>
-<section id="discussion" class="slide level2" data-number="7.9">
-<h2><span class="header-section-number">7.9</span> Discussion</h2>
+<section id="comparative-statics" class="slide level2 smaller" data-number="7.9">
+<h2><span class="header-section-number">7.9</span> Comparative statics</h2>
+<p><strong>Productivity</strong></p>
 <ul>
-<li><p>Overall loss driven by demographic effects.</p></li>
 <li><p>Productivity variation through age drives the results in a life cycle fashion (increase of distance between ages).</p></li>
-<li><p>Productivity variation through health increases the differences between scenarios.</p></li>
-<li><p>Labour disutility variation as a function of health and temperature has the same effect.</p></li>
+<li><p>Productivity variation through health increases the differences between scenarios.</p>
+<ul>
+<li>Previous model: <span class="math inline">\(z_{i,t}(h_{i,t})=\frac{1}{h_{i,t}}\in\left[0.2,1\right]\)</span></li>
+</ul></li>
+<li><p>Final productivity function, such as: <span class="math display">\[z(age, temperature, h) = \frac{1}{2}\left(\alpha_{1} \cdot z_i(age)+\alpha_{2} \cdot z_i(temperature)-\alpha_{2}\cdot\mathbb{1}(h\in b)\right)\]</span> With <span class="math inline">\(b \equiv \{4,5\}\)</span></p></li>
+</ul>
+<p><strong>Labour disutility</strong></p>
+<ul>
+<li>Labour disutility variation as a function of health and temperature has the same effect.
+<ul>
+<li><span class="math inline">\(\xi_{i,t}(h_{i,t}) = \left[1+\mathbb{1}(h_{i,t} \in \{4,5\})\right]\)</span></li>
+<li><span class="math inline">\(\xi_{i,t}(h_{i,t}) = h_{i,t}\)</span></li>
+</ul></li>
 </ul>
 </section></section>
-<section>
-<section id="conclusion" class="title-slide slide level1 center" data-number="8">
+<section id="conclusion" class="title-slide slide level1 smaller center" data-number="8">
 <h1><span class="header-section-number">8</span> Conclusion</h1>
+<p><span class="math display">\[\\ \\ \\\]</span></p>
+<ul>
+<li><p>Baseline model, with lifetime income set at $1.450 Mio, we obtain a loss of approximately $110,000,</p></li>
+<li><p>More generally, we obtain a loss of around 8% of total income,</p></li>
+<li><p>Weak mitigation.</p></li>
+</ul>
+<p>Limitations:</p>
+<ul>
+<li>Purely demographic effect, no adaptation, individual perspective.</li>
+</ul>
+<p>Further:</p>
+<ul>
+<li>More robust estimation,</li>
+<li>General Equilibrium.</li>
+</ul>
+</section>
 
-</section>
-<section id="recap" class="slide level2" data-number="8.1">
-<h2><span class="header-section-number">8.1</span> Recap</h2>
-</section>
-<section id="results" class="slide level2" data-number="8.2">
-<h2><span class="header-section-number">8.2</span> Results</h2>
-</section></section>
 <section>
 <section id="references" class="title-slide slide level1 center" data-number="9">
 <h1><span class="header-section-number">9</span> References</h1>
 
 </section>
-<section id="references---1" class="slide level2" data-number="9.1">
-<h2><span class="header-section-number">9.1</span> References - 1</h2>
+<section id="climate-economics" class="slide level2" data-number="9.1">
+<h2><span class="header-section-number">9.1</span> Climate Economics</h2>
+<ul>
+<li>Burke et al.&nbsp;(2013). <em>Science</em> 341, p.1235367</li>
+<li>Burke et al.&nbsp;(2015). <em>Nature</em> 527, 235-239<br>
+</li>
+<li>Hsiang (2016). <em>An. Rev.&nbsp;Res. Econ.</em> 8, 43-75<br>
+</li>
+<li>Carleton et al.&nbsp;(2022). <em>QJE</em> 137, 2037-2105</li>
+</ul>
 </section>
-<section id="references---2" class="slide level2" data-number="9.2">
-<h2><span class="header-section-number">9.2</span> References - 2</h2>
+<section id="health-economics" class="slide level2" data-number="9.2">
+<h2><span class="header-section-number">9.2</span> Health Economics</h2>
+<ul>
+<li>Capatina (2015). <em>J. Health Econ.</em> 44, 1-12<br>
+</li>
+<li>De Nardi (2019). <em>Rev.&nbsp;Econ. Stud.</em> 86, 1681-1726</li>
+</ul>
 </section></section>
 <section>
 <section id="appendix" class="title-slide slide level1 center" data-number="10">
@@ -676,22 +733,38 @@ classDef linkLabel fill:none,stroke:none;
 <section id="framework_assumptions" class="slide level2" data-number="10.1">
 <h2><span class="header-section-number">10.1</span> General framework assumptions</h2>
 <ul>
-<li>Independence assumption</li>
+<li>Independence assumption:</li>
 </ul>
+<p><span class="math inline">\(\widehat{p_{t}} \approx Pr(L_{t}=1)\)</span></p>
+<p><span class="math inline">\(\widehat{p_{t}} \neq Pr(L_{t}=1 |&nbsp;L_{t-1} = 1)\)</span></p>
+<p>Instantaneous survival probabilities <span class="math inline">\(\neq\)</span> Cumulated survival probabilities.</p>
 <p><a href="#/formal_description">Go back</a></p>
 </section>
 <section id="health_proxy_details" class="slide level2" data-number="10.2">
 <h2><span class="header-section-number">10.2</span> Health Proxy specification</h2>
 <ul>
-<li>Motivation: Eliminate outer effects.</li>
-<li>Focus on acute health events</li>
-<li>Final results are essentially the same.</li>
+<li>Motivation: Eliminate outer effects, and focus on acute health events,</li>
+<li>Final results are essentially the same, slighlty under those without <span class="math inline">\(\widehat{HP_{i,t}^{OLS}}\)</span>.</li>
 </ul>
 <p><span class="math inline">\(HP_{i,t} = \text{HighBP}_{i,t} + \text{Lung}_{i,t} + \text{Heart}_{i,t} + \text{Stroke}_{i,t}\)</span></p>
+<p><span class="math display">\[\begin{equation}
+  \widehat{HP_{i,t}^{OLS}} = \widehat{\beta^{OLS}_{HP}}\cdot X_{i,t}^{HP}
+\end{equation}\]</span></p>
+<p><span class="math inline">\(\widehat{HP_{i,t}^{\Lambda_{O}}}\)</span> did not differ strongly from the OLS estimate.</p>
 <p><a href="#/health_proxy">Go back</a></p>
 </section>
-<section id="ordered_multinomial_logit_regression_details" class="slide level2" data-number="10.3">
-<h2><span class="header-section-number">10.3</span> Ordered Multinomial Logit Regression (OMNL) - 1</h2>
+<section id="health_proxy_plot" class="slide level2" data-number="10.3">
+<h2><span class="header-section-number">10.3</span> Health Proxy plot</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="output/health_proxy.png" class="lightbox" data-gallery="quarto-lightbox-gallery-24" title="Predicted values of health proxy for different scenarios."><img data-src="output/health_proxy.png" style="width:70.0%" alt="Predicted values of health proxy for different scenarios."></a></p>
+<figcaption>Predicted values of health proxy for different scenarios.</figcaption>
+</figure>
+</div>
+<p><a href="#/health_proxy">Go back</a></p>
+</section>
+<section id="ordered_multinomial_logit_regression_details" class="slide level2" data-number="10.4">
+<h2><span class="header-section-number">10.4</span> Ordered Multinomial Logit Regression (OMNL) - 1</h2>
 <p>Let <span class="math inline">\(y\in\{0,1,\dots,J\}\)</span> be the dependent discrete ordinal variable we are trying to explain with covariates <span class="math inline">\(x \in \mathbb{R}^{1\times K}\)</span>. Defining a latent variable <span class="math inline">\(y^{*}\)</span> such that:</p>
 <p><span class="math inline">\(y^{*} = x\beta + e\)</span></p>
 <p>with:</p>
@@ -700,8 +773,8 @@ classDef linkLabel fill:none,stroke:none;
 <li><span class="math inline">\(e|x \sim \mathcal{N}(0,1)\)</span></li>
 </ul>
 </section>
-<section id="omnl---2" class="slide level2" data-number="10.4">
-<h2><span class="header-section-number">10.4</span> OMNL - 2</h2>
+<section id="omnl---2" class="slide level2" data-number="10.5">
+<h2><span class="header-section-number">10.5</span> OMNL - 2</h2>
 <p>Let <span class="math inline">\(\alpha_{1}&lt;\alpha_2&lt;\dots &lt; \alpha_{J}\)</span>. The function linking <span class="math inline">\(y\)</span> and <span class="math inline">\(y^*\)</span> is:</p>
 <span class="math display">\[\begin{cases}
 y = 0 \text{ if } y^{*} \leq \alpha_1 \\
@@ -712,8 +785,8 @@ y = J \text{ if } \alpha_{1} \leq y^{*} \leq \alpha_J \\
 <p>It follows that:</p>
 <p><span class="math inline">\(P(y=0|x) = P(y^{*}\leq \alpha_1|x) = \Lambda (\alpha_1 - x\beta)\)</span> <span class="math inline">\(P(y=1|x) = P(\alpha_1 &lt; y^{*}\leq \alpha_2|x) = \Lambda (\alpha_2 - x\beta) - \Lambda (\alpha_1 - x\beta)\)</span> <span class="math inline">\(\dots\)</span> <span class="math inline">\(P(y=J|x) = P(y^{*}\leq \alpha_1|x) = P(y^{*} \geq \alpha_{J} | x) = 1 - \Lambda (\alpha_J - x\beta)\)</span></p>
 </section>
-<section id="omnl---3" class="slide level2" data-number="10.5">
-<h2><span class="header-section-number">10.5</span> OMNL - 3</h2>
+<section id="omnl---3" class="slide level2" data-number="10.6">
+<h2><span class="header-section-number">10.6</span> OMNL - 3</h2>
 <p>The <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> vectors are estimated by maximizing the log-likelihood function such that:</p>
 <p><span class="math display">\[\begin{equation}
   \begin{split}
@@ -725,20 +798,79 @@ y = J \text{ if } \alpha_{1} \leq y^{*} \leq \alpha_J \\
 \end{equation}\]</span></p>
 <p><a href="#/health_transition">Go back</a></p>
 </section>
-<section id="logit_model_details" class="slide level2" data-number="10.6">
-<h2><span class="header-section-number">10.6</span> Logit model</h2>
+<section id="logit_model_details" class="slide level2" data-number="10.7">
+<h2><span class="header-section-number">10.7</span> Logit model</h2>
 <p>Logit model: ordered logit model with <span class="math inline">\(J = 1\)</span>.</p>
 <p><span class="math inline">\(y \in \{0,1\}\)</span></p>
 <p><span class="math inline">\(Pr(y = 1|x) \equiv p_{t}(x)\)</span></p>
 <p><span class="math inline">\(\widehat{p_{t}} = \Lambda(x\widehat{\beta})\)</span></p>
 <p><a href="#/living_status">Go back</a></p>
 </section>
-<section id="analytical_impossibility_proof" class="slide level2" data-number="10.7">
-<h2><span class="header-section-number">10.7</span> Analytical solution inexistence</h2>
+<section id="analytical_impossibility_proof" class="slide level2 scrollable smaller" data-number="10.8">
+<h2><span class="header-section-number">10.8</span> Analytical solution inexistence</h2>
+<p><span class="math display">\[ \max_{\{c_{t},l_{t},s_{t+1}\}_{t=1}^{100}}
+{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot \frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\varphi}}{1+\varphi}\right]}\]</span></p>
+<p>Subject to budget and borrowing constraints:</p>
+<p><span class="math display">\[c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})\]</span></p>
+<p><span class="math display">\[s_{t+1}\geq \underline{s}, \forall t \in [\![1,100]\!]\]</span></p>
+<p>A first solving attempt consists in assuming that the budget constraint binds. We can then obtain the following expression for consumption:</p>
+<p><span class="math display">\[c_{t} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1}\]</span></p>
+<p>Plugging it into the maximization program, we obtain:</p>
+<p><span class="math display">\[ \max_{\{l_{t},s_{t+1}\}_{t=1}^{100}}
+{\mathbb{E}\left[\sum_{t=1}^{100} \beta^{t}\cdot \frac{\left(l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1}\right)^{1-\rho}}{1-\rho}-\xi_{t}\cdot \frac{l_{t}^{1+\varphi}}{1+\varphi}\right]}\]</span></p>
+<p>The F.O.C. with respect to labor implies:</p>
+<p><span class="math display">\[\begin{equation}
+    l_{t}^{\varphi}\cdot \xi_{t} = \left[l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})- s_{t+1}\right]^{-\rho}\cdot z_{t}
+\end{equation}\]</span></p>
+<p>We can develop the decomposition of consumption if and only if <span class="math inline">\(\rho \in \mathbb{N}\)</span>. Indeed, this equation is of form <span class="math inline">\(x = (x-\alpha)^{\beta} \cdot z\)</span>. With <span class="math inline">\(\beta\notin \mathbb{N}\)</span>, is a transcendental equation.</p>
+<p>We can now try to compute the F.O.C. first, and then make use of the Budget Constraint. The Lagrangian function associated witht the maximization program of the agent is: <span class="math display">\[\begin{equation}
+    \begin{split}
+        \mathcal{L}(c_{t},l_{t},s_{t+1};\lambda_t,\gamma_{t}) &amp;
+        = \mathbb{E}\Big[\sum_{t=1}^{100} \beta^{t}\cdot ((\frac{c_{t}^{1-\rho}}{1-\rho}-\xi_{t}\cdot\frac{l_{t}^{1+\varphi}}{1+\varphi}) \\
+        &amp; +\lambda_{t}\cdot \left(l_{t}\cdot z_{t}+s_{t}\cdot (1+r_{t})-c_{t}-s_{t+1}\right) \\
+        &amp; + \gamma_{t}\cdot \left(s_{t+1}-\underline{s}\right))\Big] \\
+    \end{split}
+\end{equation}\]</span></p>
+<p>The First Order Conditions are the following:</p>
+<p><span class="math display">\[\frac{\partial \mathcal{L}}{\partial c_{t}} = 0 \iff c_{t}^{-\rho} = \lambda_{t}\]</span></p>
+<p><span class="math display">\[\frac{\partial \mathcal{L}}{\partial l_{t}} = 0 \iff \lambda_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi}\]</span></p>
+<p><span class="math display">\[\frac{\partial \mathcal{L}}{\partial s_{t+1}} = 0 \iff \lambda_{t} = \beta \cdot \mathbb{E}\left[\lambda_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}\]</span></p>
+<p>We first note that we must obtain a closed-form solution for <span class="math inline">\(c_{t}\)</span> and <span class="math inline">\(l_{t}\)</span> to obtain the optimal value of <span class="math inline">\(s_{t+1}\)</span>. Indeed, since <span class="math inline">\(s_{t+1}\)</span> is linear in <span class="math inline">\(\mathcal{L}\)</span>, we would need to plug the closed-form solutions of <span class="math inline">\(c_{t}\)</span> and <span class="math inline">\(l_{t}\)</span> in the budget constraint.</p>
+<p>Replacing the expression of <span class="math inline">\(\lambda_{t}\)</span> in the two other equation yields:</p>
+<p><span class="math display">\[\begin{equation}
+    c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi} \iff
+        \begin{cases}
+        &amp; c_t = \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}}\\
+        &amp; l_{t} = \left[\frac{c_{t}^{-\rho}z_{t}\cdot}{\xi_{t}}\right]^{\frac{1}{\varphi}}
+    \end{cases}
+\end{equation}\]</span> And <span class="math display">\[\begin{equation}
+    c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
+\end{equation}\]</span></p>
+<p>Assuming that the budget constraint binds, it becomes, as previously seen:</p>
+<p><span class="math display">\[c_{t} + s_{t+1} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})
+\iff
+c_{t} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1}
+\]</span></p>
+<p>This leads to the following equation system:</p>
+<p><span class="math display">\[
+\begin{cases}
+    &amp; c_t = \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}} \\
+    &amp; c_{t} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1}
+\end{cases}
+\]</span></p>
+<p><span class="math display">\[\iff\]</span> <span class="math display">\[ \left[\frac{\xi_{t}\cdot l_{t}^{\varphi}}{z_{t}}\right]^{-\frac{1}{\rho}} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} \]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[ l_{t}^{-\frac{\varphi}{\rho}} \cdot \left(\frac{\xi_{t}}{z_{t}}\right)^{-\frac{1}{\rho}} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t}) - s_{t+1} \]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[ l_{t}^{-\frac{\varphi}{\rho}} \cdot \left(\frac{z_{t}}{\xi_{t}}\right)^{\frac{1}{\rho}} - l_{t}\cdot z_{t} - s_{t}\cdot(1+r_{t}) - s_{t+1} = 0 \]</span></p>
+<p>This is a transcendental equation of form <span class="math inline">\(x^{\alpha}\cdot b - x\cdot y - c = 0\)</span>, which admits a solution if and only if <span class="math inline">\(-\frac{\varphi}{\rho} \in \mathbb{N}\)</span>. This condition seems unrealistic in our context:</p>
+<p>Note that if we set <span class="math inline">\(-\rho\in\mathbb{N}\)</span> and further develop the last equation in the budget constraint binding attempt, we end up with the same condition.</p>
+<p>If we try to solve it backwards, we now go to the last period. At the last period, <span class="math inline">\(s_{t+1} = \underline{s}\)</span> for sure: Since there is no future, the agent will borrow as much as they can, or will at least not save anything more than what is imposed by the constraint.</p>
+<p>For simplification, let <span class="math inline">\(\underline{s}\)</span> be fixed such that: <span class="math inline">\(\underline{s} = 0\)</span>. The new optimality condition is:</p>
+<p><span class="math display">\[\begin{equation}
+    l_{t}^{\varphi}\cdot \xi_{t} = \left[l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})\right]^{-\rho}\cdot z_{t}
+\end{equation}\]</span></p>
+<p>Although we simplified the term at the exponential of which we have <span class="math inline">\(-\rho\)</span>, this is still a transcendental equation due to the sum of labor income and income coming from savings of last period, and the problem remain the same.</p>
 <p><a href="#/economic_model">Go back</a></p>
 </section>
-<section id="consumption_change_analytical" class="slide level2 smaller" data-number="10.8">
-<h2><span class="header-section-number">10.8</span> Analytical result of consumption change</h2>
+<section id="consumption_change_analytical" class="slide level2 smaller" data-number="10.9">
+<h2><span class="header-section-number">10.9</span> Analytical result of consumption change</h2>
 <p><span class="math display">\[\begin{equation}\tag{F.O.C. 2}
   c^{-\rho}_{t} = \beta \cdot \mathbb{E}\left[c^{-\rho}_{t+1}\cdot (1+r_{t+1})\right] + \gamma_{t}
 \end{equation}\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[\begin{equation}
@@ -750,8 +882,8 @@ y = J \text{ if } \alpha_{1} \leq y^{*} \leq \alpha_J \\
 \end{equation}\]</span></p>
 <p><a href="#/consumption_comparison">Go back</a></p>
 </section>
-<section id="labor_change_analytical" class="slide level2 smaller" data-number="10.9">
-<h2><span class="header-section-number">10.9</span> Analytical result of labor change</h2>
+<section id="labor_change_analytical" class="slide level2 smaller" data-number="10.10">
+<h2><span class="header-section-number">10.10</span> Analytical result of labor change</h2>
 <p><span class="math display">\[\begin{equation}\tag{F.O.C. 1}
   c^{-\rho}_{t}\cdot z_{t} = \xi_{t}\cdot l_{t}^{\varphi}
 \end{equation}\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[\begin{equation}
@@ -766,11 +898,31 @@ y = J \text{ if } \alpha_{1} \leq y^{*} \leq \alpha_J \\
 \end{equation}\]</span></p>
 <p><a href="#/labor_supply_comparison">Go back</a></p>
 </section>
-<section id="savings_change_analytical" class="slide level2 smaller" data-number="10.10">
-<h2><span class="header-section-number">10.10</span> Analytical result of savings</h2>
+<section id="savings_change_analytical" class="slide level2 smaller" data-number="10.11">
+<h2><span class="header-section-number">10.11</span> Analytical result of savings</h2>
 <p>From the budget constraint, binding:</p>
 <p><span class="math display">\[c_{t} + s_{t+1} \leq l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[s_{t+1} = l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})-c_{t}\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[\frac{\partial s_{t+1}}{\partial p_{t+1}} = \frac{\partial }{\partial p_{t+1}} l_{t}\cdot z_{t} + s_{t}\cdot(1+r_{t})-c_{t}\]</span> <span class="math display">\[\iff\]</span> <span class="math display">\[\frac{\partial s_{t+1}}{\partial p_{t+1}} = z_{t}\cdot\frac{\partial l_{t}}{\partial p_{t+1}} l_{t}  -\frac{\partial c_{t}}{\partial p_{t+1}} &gt; 0 \]</span></p>
 <p><a href="#/savings_comparison">Go back</a></p>
+</section>
+<section id="survival_probability_details" class="slide level2" data-number="10.12">
+<h2><span class="header-section-number">10.12</span> Survival per health status</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="output/extra_health_survival_plot.png" class="lightbox" data-gallery="quarto-lightbox-gallery-25" title="Survival probability per health status"><img data-src="output/extra_health_survival_plot.png" style="width:70.0%" alt="Survival probability per health status"></a></p>
+<figcaption>Survival probability per health status</figcaption>
+</figure>
+</div>
+<p><a href="#/survival_probability">Go back</a></p>
+</section>
+<section id="lifetime_income_rich" class="slide level2" data-number="10.13">
+<h2><span class="header-section-number">10.13</span> Lifetime Income for Rich individuals</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="output/comparison_lifetime_income_rich.png" class="lightbox" data-gallery="quarto-lightbox-gallery-26" title="Lifetime income of rich individuals comparison accross scenarios."><img data-src="output/comparison_lifetime_income_rich.png" style="width:50.0%" alt="Lifetime income of rich individuals comparison accross scenarios."></a></p>
+<figcaption>Lifetime income of rich individuals comparison accross scenarios.</figcaption>
+</figure>
+</div>
+<p><a href="#/lifetime_income_hand_to_mouth">Go back</a></p>
 
 
 </section></section>
