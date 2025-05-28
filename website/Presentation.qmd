@@ -1,4 +1,6 @@
 This page is dedicated to my presentation. 
 
+All the plots of my presentation were done with the replication package of my Master, [available here](https://www.paulogcd.com/Master_Thesis_Paulogcd_2025).
+
 You can find my slides [here](Presentation/presentation.qmd).
 

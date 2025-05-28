@@ -313,7 +313,6 @@ Focus on:
 - Policies.
 
 ## Performance 
-$$\\ \\ \\$$
 
 ::: {columns}
 
@@ -331,8 +330,23 @@ $$\\ \\ \\$$
 
 :::
 
+::: {columns}
+
+::: {.column width="30%"}
+![Interpolated version.](output/numerical_pure_numerical_interpolated_error.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Interpolated version.](output/numerical_FOC_1_approximation_error_interpolated.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Interpolated version.](output/numerical_FOC_2_approximation_error_interpolated.png){width=100%}
+:::
+
+:::
+
 ## Results: Consumption 
-$$\\ \\ \\$$
 
 ::: {.columns}
 
@@ -350,9 +364,24 @@ $$\\ \\ \\$$
 
 :::
 
+::: {.columns}
+
+::: {.column width="30%"}
+![Interpolated version.](output/numerical_pure_numerical_interpolated_consumption.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Interpolated version.](output/numerical_FOC_1_approximation_interpolated_Consumption.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Interpolated version.](output/numerical_FOC_2_approximation_interpolated_Consumption.png){width=100%}
+:::
+
+:::
+
 
 ## Results: Labour supply 
-$$\\ \\ \\$$
 
 ::: {.columns}
 
@@ -370,8 +399,23 @@ $$\\ \\ \\$$
 
 :::
 
+::: {.columns}
+
+::: {.column width="30%"}
+![Interpolated version.](output/numerical_pure_numerical_interpolated_Labour Supply.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Interpolated version.](output/numerical_FOC_1_approximation_interpolated_Labour Supply.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Interpolated version.](output/numerical_FOC_2_approximation_interpolated_Labour Supply.png){width=100%}
+:::
+
+:::
+
 ## Results: Savings 
-$$\\ \\ \\$$
 
 ::: {.columns}
 
@@ -385,6 +429,22 @@ $$\\ \\ \\$$
 
 ::: {.column width="30%"}
 ![Savings policy per age in the FOC approximated algorithm 2.](output/numerical_FOC_2_approximation_Savings.png){width=100%}
+:::
+
+:::
+
+::: {.columns}
+
+::: {.column width="30%"}
+![Interpolated version.](output/numerical_pure_numerical_interpolated_Savings.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Interpolated version.](output/numerical_FOC_1_approximation_interpolated_Savings.png){width=100%}
+:::
+
+::: {.column width="30%"}
+![Interpolated version.](output/numerical_FOC_2_approximation_interpolated_Savings.png){width=100%}
 :::
 
 :::

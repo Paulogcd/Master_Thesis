@@ -109,28 +109,28 @@
     "href": "Presentation/presentation.html#performance",
     "title": "Lifetime temperature-induced health variation effects on individual economics",
     "section": "6.2 Performance",
-    "text": "6.2 Performance\n\\[\\\\ \\\\ \\\\\\]\n\n\n\n\n\nPerformance of the pure numerical algorithm.\n\n\n\n\n\n\nPerformance of the FOC approximated algorithm 1.\n\n\n\n\n\n\nPerformance of the FOC approximated algorithm 2."
+    "text": "6.2 Performance\n\n\n\n\n\nPerformance of the pure numerical algorithm.\n\n\n\n\n\n\nPerformance of the FOC approximated algorithm 1.\n\n\n\n\n\n\nPerformance of the FOC approximated algorithm 2.\n\n\n\n\n\n\n\n\nInterpolated version.\n\n\n\n\n\n\nInterpolated version.\n\n\n\n\n\n\nInterpolated version."
   },
   {
     "objectID": "Presentation/presentation.html#results-consumption",
     "href": "Presentation/presentation.html#results-consumption",
     "title": "Lifetime temperature-induced health variation effects on individual economics",
     "section": "6.3 Results: Consumption",
-    "text": "6.3 Results: Consumption\n\\[\\\\ \\\\ \\\\\\]\n\n\n\n\n\nConsumption policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 2."
+    "text": "6.3 Results: Consumption\n\n\n\n\n\nConsumption policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nConsumption policy per age in the FOC approximated algorithm 2.\n\n\n\n\n\n\n\n\nInterpolated version.\n\n\n\n\n\n\nInterpolated version.\n\n\n\n\n\n\nInterpolated version."
   },
   {
     "objectID": "Presentation/presentation.html#results-labour-supply",
     "href": "Presentation/presentation.html#results-labour-supply",
     "title": "Lifetime temperature-induced health variation effects on individual economics",
     "section": "6.4 Results: Labour supply",
-    "text": "6.4 Results: Labour supply\n\\[\\\\ \\\\ \\\\\\]\n\n\n\n\n\nLabour supply policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nLabour supply policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nLabour supply policy per age in the FOC approximated algorithm 2."
+    "text": "6.4 Results: Labour supply\n\n\n\n\n\nLabour supply policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nLabour supply policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nLabour supply policy per age in the FOC approximated algorithm 2.\n\n\n\n\n\n\n\n\nInterpolated version.\n\n\n\n\n\n\nInterpolated version.\n\n\n\n\n\n\nInterpolated version."
   },
   {
     "objectID": "Presentation/presentation.html#results-savings",
     "href": "Presentation/presentation.html#results-savings",
     "title": "Lifetime temperature-induced health variation effects on individual economics",
     "section": "6.5 Results: Savings",
-    "text": "6.5 Results: Savings\n\\[\\\\ \\\\ \\\\\\]\n\n\n\n\n\nSavings policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nSavings policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nSavings policy per age in the FOC approximated algorithm 2."
+    "text": "6.5 Results: Savings\n\n\n\n\n\nSavings policy per age in the pure numerical algorithm.\n\n\n\n\n\n\nSavings policy per age in the FOC approximated algorithm 1.\n\n\n\n\n\n\nSavings policy per age in the FOC approximated algorithm 2.\n\n\n\n\n\n\n\n\nInterpolated version.\n\n\n\n\n\n\nInterpolated version.\n\n\n\n\n\n\nInterpolated version."
   },
   {
     "objectID": "Presentation/presentation.html#general-algorithmic-assessment",
@@ -354,7 +354,7 @@
     "href": "Presentation.html",
     "title": "Modelling climate impact on economy through health",
     "section": "",
-    "text": "This page is dedicated to my presentation.\nYou can find my slides here."
+    "text": "This page is dedicated to my presentation.\nAll the plots of my presentation were done with the replication package of my Master, available here.\nYou can find my slides here."
   },
   {
     "objectID": "index.html",
