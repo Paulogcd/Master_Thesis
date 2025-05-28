@@ -1,5 +1,5 @@
 ---
-title: "Temperature-induced health variation effects on individual tradeoff"
+title: "Lifetime temperature-induced health variation effects on individual economics"
 author: "Paulo Gugelmo Cavalheiro Dias"
 date: today
 institute: "Sciences Po"
