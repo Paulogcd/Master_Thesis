@@ -13,7 +13,7 @@
   <meta name="generator" content="quarto-1.6.40">
 
   <meta name="author" content="Paulo Gugelmo Cavalheiro Dias">
-  <meta name="dcterms.date" content="2025-05-29">
+  <meta name="dcterms.date" content="2025-05-30">
   <title>Modelling climate impact on economy through health – Lifetime temperature-induced health variation effects on individual economics</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -147,7 +147,7 @@ Paulo Gugelmo Cavalheiro Dias
     </div>
 </div>
 
-  <p class="date">2025-05-29</p>
+  <p class="date">2025-05-30</p>
 </section><section id="TOC">
 <nav role="doc-toc"> 
 <h2 id="toc-title">Outline</h2>
@@ -202,6 +202,7 @@ classDef linkLabel fill:none,stroke:none;
 <li>Survival probability</li>
 </ul>
 <p><em>How does temperature variations affect the economy through health?</em></p>
+<p><span class="math inline">\(\rightarrow\)</span> Case of individual lifetime variables.</p>
 </section>
 <section id="literature" class="slide level2 smaller" data-number="1.2">
 <h2><span class="header-section-number">1.2</span> Literature</h2>
@@ -647,7 +648,9 @@ classDef linkLabel fill:none,stroke:none;
 <section id="general-algorithmic-assessment" class="slide level2" data-number="6.6">
 <h2><span class="header-section-number">6.6</span> General algorithmic assessment</h2>
 <ul>
-<li><p>Pure numerical approach performs better in terms of precision.</p></li>
+<li><p>Pure numerical approach performs better in terms of precision at small scales.</p></li>
+<li><p>At larger scales, the consumption approximation by FOC performs better.</p></li>
+<li><p>The interpolation of the <span class="math inline">\(s\)</span> values between periods leads to less last-period errors.</p></li>
 <li><p>Consumption FOC-approximation allows for an estimation of <span class="math inline">\(\gamma_{t}\)</span>, which is positively correlated with age.</p></li>
 </ul>
 </section></section>
@@ -765,8 +768,7 @@ classDef linkLabel fill:none,stroke:none;
 <ul>
 <li>Labour disutility variation as a function of health and temperature has the same effect.
 <ul>
-<li><span class="math inline">\(\xi_{i,t}(h_{i,t}) = \left[1+\mathbb{1}(h_{i,t} \in \{4,5\})\right]\)</span></li>
-<li><span class="math inline">\(\xi_{i,t}(h_{i,t}) = h_{i,t}\)</span></li>
+<li><span class="math inline">\(\xi_{i,t}(h_{i,t}) = \left[1+\mathbb{1}(h_{i,t} \in \{4,5\})\right]\)</span>, or <span class="math inline">\(\xi_{i,t}(h_{i,t}) = h_{i,t}\)</span></li>
 </ul></li>
 </ul>
 </section></section>
@@ -776,7 +778,6 @@ classDef linkLabel fill:none,stroke:none;
 <ul>
 <li><p>Baseline model, with lifetime income set at $1.450 Mio, we obtain a loss of approximately $110,000,</p></li>
 <li><p>More generally, we obtain a loss of around 8% of total income,</p></li>
-<li><p>Weak mitigation.</p></li>
 </ul>
 <p>Limitations:</p>
 <ul>
@@ -785,14 +786,15 @@ classDef linkLabel fill:none,stroke:none;
 <p>Further:</p>
 <ul>
 <li>More robust estimation,</li>
-<li>General Equilibrium.</li>
+<li>Introduce health production function in individual choices,</li>
+<li>General Equilibrium effects.</li>
 </ul>
 </section>
 
 <section>
 <section id="references" class="title-slide slide level1 center" data-number="9">
 <h1><span class="header-section-number">9</span> References</h1>
-
+<p><span class="math inline">\(\rightarrow\)</span> <a href="https://www.paulogcd.com/Master_Thesis_Paulogcd_2025/dev/">Replication Package</a></p>
 </section>
 <section id="climate-economics" class="slide level2" data-number="9.1">
 <h2><span class="header-section-number">9.1</span> Climate Economics</h2>

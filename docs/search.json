@@ -4,7 +4,7 @@
     "href": "Presentation/presentation.html#research-object",
     "title": "Lifetime temperature-induced health variation effects on individual economics",
     "section": "1.1 Research object",
-    "text": "1.1 Research object\n\n\n\n\n\nflowchart LR\n  A[Climate change] --&gt; B[Temperature distribution]\n  B --&gt; C[Other variables]\n  B --&gt; D[Health of individuals] \n  D --&gt; E[Economic production]\n  C --&gt; E\n\nlinkStyle default stroke:black\nlinkStyle 2 stroke:red\nlinkStyle 3 stroke:red\nstyle D color:red\n\nclassDef linkLabel fill:none,stroke:none;\n\n\n\n\n\n\nHealth of individuals:\n\nHealth state\nSurvival probability\n\nHow does temperature variations affect the economy through health?"
+    "text": "1.1 Research object\n\n\n\n\n\nflowchart LR\n  A[Climate change] --&gt; B[Temperature distribution]\n  B --&gt; C[Other variables]\n  B --&gt; D[Health of individuals] \n  D --&gt; E[Economic production]\n  C --&gt; E\n\nlinkStyle default stroke:black\nlinkStyle 2 stroke:red\nlinkStyle 3 stroke:red\nstyle D color:red\n\nclassDef linkLabel fill:none,stroke:none;\n\n\n\n\n\n\nHealth of individuals:\n\nHealth state\nSurvival probability\n\nHow does temperature variations affect the economy through health?\n\\(\\rightarrow\\) Case of individual lifetime variables."
   },
   {
     "objectID": "Presentation/presentation.html#literature",
@@ -137,7 +137,7 @@
     "href": "Presentation/presentation.html#general-algorithmic-assessment",
     "title": "Lifetime temperature-induced health variation effects on individual economics",
     "section": "6.6 General algorithmic assessment",
-    "text": "6.6 General algorithmic assessment\n\nPure numerical approach performs better in terms of precision.\nConsumption FOC-approximation allows for an estimation of \\(\\gamma_{t}\\), which is positively correlated with age."
+    "text": "6.6 General algorithmic assessment\n\nPure numerical approach performs better in terms of precision at small scales.\nAt larger scales, the consumption approximation by FOC performs better.\nThe interpolation of the \\(s\\) values between periods leads to less last-period errors.\nConsumption FOC-approximation allows for an estimation of \\(\\gamma_{t}\\), which is positively correlated with age."
   },
   {
     "objectID": "Presentation/presentation.html#methodology",
@@ -200,7 +200,7 @@
     "href": "Presentation/presentation.html#comparative-statics",
     "title": "Lifetime temperature-induced health variation effects on individual economics",
     "section": "7.9 Comparative statics",
-    "text": "7.9 Comparative statics\nProductivity\n\nProductivity variation through age drives the results in a life cycle fashion (increase of distance between ages).\nProductivity variation through health increases the differences between scenarios.\n\nPrevious model: \\(z_{i,t}(h_{i,t})=\\frac{1}{h_{i,t}}\\in\\left[0.2,1\\right]\\)\n\nFinal productivity function, such as: \\[z(age, temperature, h) = \\frac{1}{2}\\left(\\alpha_{1} \\cdot z_i(age)+\\alpha_{2} \\cdot z_i(temperature)-\\alpha_{2}\\cdot\\mathbb{1}(h\\in b)\\right)\\] With \\(b \\equiv \\{4,5\\}\\)\n\nLabour disutility\n\nLabour disutility variation as a function of health and temperature has the same effect.\n\n\\(\\xi_{i,t}(h_{i,t}) = \\left[1+\\mathbb{1}(h_{i,t} \\in \\{4,5\\})\\right]\\)\n\\(\\xi_{i,t}(h_{i,t}) = h_{i,t}\\)"
+    "text": "7.9 Comparative statics\nProductivity\n\nProductivity variation through age drives the results in a life cycle fashion (increase of distance between ages).\nProductivity variation through health increases the differences between scenarios.\n\nPrevious model: \\(z_{i,t}(h_{i,t})=\\frac{1}{h_{i,t}}\\in\\left[0.2,1\\right]\\)\n\nFinal productivity function, such as: \\[z(age, temperature, h) = \\frac{1}{2}\\left(\\alpha_{1} \\cdot z_i(age)+\\alpha_{2} \\cdot z_i(temperature)-\\alpha_{2}\\cdot\\mathbb{1}(h\\in b)\\right)\\] With \\(b \\equiv \\{4,5\\}\\)\n\nLabour disutility\n\nLabour disutility variation as a function of health and temperature has the same effect.\n\n\\(\\xi_{i,t}(h_{i,t}) = \\left[1+\\mathbb{1}(h_{i,t} \\in \\{4,5\\})\\right]\\), or \\(\\xi_{i,t}(h_{i,t}) = h_{i,t}\\)"
   },
   {
     "objectID": "Presentation/presentation.html#climate-economics",

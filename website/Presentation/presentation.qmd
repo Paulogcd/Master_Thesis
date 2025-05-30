@@ -54,6 +54,8 @@ Health of individuals:
 *How does temperature variations affect
 the economy through health?*
 
+$\rightarrow$ Case of individual lifetime variables.
+
 ## Literature{#literature .smaller} 
 
 - Climate economics: 
@@ -451,7 +453,11 @@ Focus on:
 
 ## General algorithmic assessment
 
-- Pure numerical approach performs better in terms of precision.
+- Pure numerical approach performs better in terms of precision at small scales.
+
+- At larger scales, the consumption approximation by FOC performs better.
+
+- The interpolation of the $s$ values between periods leads to less last-period errors.
 
 - Consumption FOC-approximation allows for an estimation of $\gamma_{t}$, which is positively correlated with age.
 
@@ -538,8 +544,7 @@ With $b \equiv \{4,5\}$
 **Labour disutility**
 
 - Labour disutility variation as a function of health and temperature has the same effect. 
-    - $\xi_{i,t}(h_{i,t}) = \left[1+\mathbb{1}(h_{i,t} \in \{4,5\})\right]$
-    - $\xi_{i,t}(h_{i,t}) = h_{i,t}$
+    - $\xi_{i,t}(h_{i,t}) = \left[1+\mathbb{1}(h_{i,t} \in \{4,5\})\right]$, or $\xi_{i,t}(h_{i,t}) = h_{i,t}$
 
 # Conclusion {.smaller}
 
@@ -550,8 +555,6 @@ of approximately $110,000,
 
 - More generally, we obtain a loss of around 8\% of total income,
 
-- Weak mitigation.
-
 Limitations: 
 
 - Purely demographic effect, no adaptation, individual perspective. 
@@ -559,9 +562,12 @@ Limitations:
 Further:
 
 - More robust estimation, 
-- General Equilibrium.
+- Introduce health production function in individual choices,
+- General Equilibrium effects.
 
 # References 
+
+$\rightarrow$ [Replication Package](https://www.paulogcd.com/Master_Thesis_Paulogcd_2025/dev/)
 
 ## Climate Economics
 
